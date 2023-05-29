@@ -1,22 +1,76 @@
-# Ignore node_modules directory
-node_modules/
-
-# Ignore build output
-android/build/
-
-ios/build/
-ios/Pods/
-
-Gemfile.lock
-# Ignore log files
+# Logs
+logs
 *.log
+
+# Build files
+/android/app/build/
+/ios/Pods/
+/ios/build/
+/ios/Podfile.lock
+/node_modules/
+
+# Dependency directories
+**/.gradle/
+/android/app/.externalNativeBuild/
+/ios/Pods/
+/ios/Podfile.lock
+
+# Bundle artifacts
+/android/app/src/main/assets/index.android.bundle
+/android/app/src/main/assets/index.android.bundle.meta
+/ios/build/
+
+# Generated files
+*.iml
+*.pbxproj
+*.pbxuser
+*.xcworkspace
+*.xcuserstate
+*.lock
+*.swp
+*.DS_Store
+*.idea/
+*.vscode/
+*.expo/
+*.expo-shared/
+*.expo-settings.json
+
+# Mac files
+.DS_Store
+
+# Environment variables
+.env
+.env.*
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# IDE and Editor files
+.idea/
+.vscode/
+*.sln
+*.suo
+*.sw*
+*.csproj
+*.pidb
+*.user
+*.suo
+*.sln.ide
+*.suo.ide
+
+# Dependency files
 yarn.lock
 
-# Ignore environment-specific files
-.env
-.env.local
-.env.production
+# Android files
+/android/
 
-# Ignore specific files or directories
-screenshots/
-secret_file.txt
+# Exclude all Android files
+**/android/
+**/android/**/*
+!**/android/build.gradle
+!**/android/gradle.properties
+!**/android/gradlew
+!**/android/gradlew.bat
+!**/android/settings.gradle
+**/.gradle/
