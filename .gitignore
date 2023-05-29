@@ -1,0 +1,22 @@
+# Ignore node_modules directory
+node_modules/
+
+# Ignore build output
+android/build/
+
+ios/build/
+ios/Pods/
+
+Gemfile.lock
+# Ignore log files
+*.log
+yarn.lock
+
+# Ignore environment-specific files
+.env
+.env.local
+.env.production
+
+# Ignore specific files or directories
+screenshots/
+secret_file.txt
