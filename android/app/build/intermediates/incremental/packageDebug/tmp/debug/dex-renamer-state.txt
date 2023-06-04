@@ -1,19 +1,19 @@
-#Sun May 28 07:26:31 PKT 2023
+#Mon May 29 15:48:45 PKT 2023
 path.4=14/classes.dex
 path.3=13/classes.dex
 path.2=0/classes.dex
 path.1=0/classes.dex
 path.5=classes2.dex
 path.0=classes.dex
-base.4=/Users/ebryx/Downloads/ReactNative/AwesomeProject/android/app/build/intermediates/dex/debug/mergeProjectDexDebug/14/classes.dex
-base.3=/Users/ebryx/Downloads/ReactNative/AwesomeProject/android/app/build/intermediates/dex/debug/mergeProjectDexDebug/13/classes.dex
-base.2=/Users/ebryx/Downloads/ReactNative/AwesomeProject/android/app/build/intermediates/dex/debug/mergeProjectDexDebug/0/classes.dex
-base.1=/Users/ebryx/Downloads/ReactNative/AwesomeProject/android/app/build/intermediates/dex/debug/mergeLibDexDebug/0/classes.dex
-base.0=/Users/ebryx/Downloads/ReactNative/AwesomeProject/android/app/build/intermediates/dex/debug/mergeExtDexDebug/classes.dex
+base.4=/Users/zohaib.shahid/Downloads/fits-ts/android/app/build/intermediates/dex/debug/mergeProjectDexDebug/14/classes.dex
+base.3=/Users/zohaib.shahid/Downloads/fits-ts/android/app/build/intermediates/dex/debug/mergeProjectDexDebug/13/classes.dex
+base.2=/Users/zohaib.shahid/Downloads/fits-ts/android/app/build/intermediates/dex/debug/mergeProjectDexDebug/0/classes.dex
+base.1=/Users/zohaib.shahid/Downloads/fits-ts/android/app/build/intermediates/dex/debug/mergeLibDexDebug/0/classes.dex
+base.0=/Users/zohaib.shahid/Downloads/fits-ts/android/app/build/intermediates/dex/debug/mergeExtDexDebug/classes.dex
 renamed.3=classes4.dex
 renamed.2=classes3.dex
 renamed.1=classes2.dex
 renamed.0=classes.dex
 renamed.5=classes6.dex
 renamed.4=classes5.dex
-base.5=/Users/ebryx/Downloads/ReactNative/AwesomeProject/android/app/build/intermediates/dex/debug/mergeExtDexDebug/classes2.dex
+base.5=/Users/zohaib.shahid/Downloads/fits-ts/android/app/build/intermediates/dex/debug/mergeExtDexDebug/classes2.dex

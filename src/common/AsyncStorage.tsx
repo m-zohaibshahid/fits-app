@@ -6,4 +6,9 @@ const getUserAsyncStroage = async () => {
 
   return await JSON.parse(userData ?? '');
 };
-export {getUserAsyncStroage};
+const getUserAsyncStroageToken = async () => {
+  const userData: string | null = await AsyncStorage.getItem('token');
+
+  return await JSON.parse(userData ?? '');
+};
+export { getUserAsyncStroage, getUserAsyncStroageToken };

@@ -1,76 +1,13 @@
-# Logs
-logs
-*.log
+# Ignored folders
+android/
+ios/
+node_modules/
 
-# Build files
-/android/app/build/
-/ios/Pods/
-/ios/build/
-/ios/Podfile.lock
-/node_modules/
-
-# Dependency directories
-**/.gradle/
-/android/app/.externalNativeBuild/
-/ios/Pods/
-/ios/Podfile.lock
-
-# Bundle artifacts
-/android/app/src/main/assets/index.android.bundle
-/android/app/src/main/assets/index.android.bundle.meta
-/ios/build/
-
-# Generated files
-*.iml
-*.pbxproj
-*.pbxuser
-*.xcworkspace
-*.xcuserstate
-*.lock
-*.swp
-*.DS_Store
-*.idea/
-*.vscode/
-*.expo/
-*.expo-shared/
-*.expo-settings.json
-
-# Mac files
+# Ignored files
 .DS_Store
-
-# Environment variables
-.env
-.env.*
-.env.local
-.env.development.local
-.env.test.local
-.env.production.local
-
-# IDE and Editor files
-.idea/
-.vscode/
-*.sln
-*.suo
-*.sw*
-*.csproj
-*.pidb
-*.user
-*.suo
-*.sln.ide
-*.suo.ide
-
-# Dependency files
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+package-lock.json
 yarn.lock
-
-# Android files
-/android/
-
-# Exclude all Android files
-**/android/
-**/android/**/*
-!**/android/build.gradle
-!**/android/gradle.properties
-!**/android/gradlew
-!**/android/gradlew.bat
-!**/android/settings.gradle
-**/.gradle/

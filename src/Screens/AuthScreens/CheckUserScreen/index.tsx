@@ -1,7 +1,3 @@
-/* eslint-disable react-native/no-inline-styles */
-/* eslint-disable @typescript-eslint/no-unused-vars */
-/* eslint-disable prettier/prettier */
-/* eslint-disable react-hooks/exhaustive-deps */
 import React, {useEffect} from 'react';
 import {View, StatusBar, ToastAndroid, Text} from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -10,8 +6,11 @@ import styles from './styles';
 import {useGetUserMeQuery} from '../../../slice/FitsApi.slice';
 import {useSelector} from 'react-redux';
 import {UserDetailInfoInterface} from '../../../interfaces/index';
+import { useNavigation } from '@react-navigation/core';
+
 let id: string;
-const CheckUser = ({navigation}) => {
+const CheckUser = () => {
+  const navigation = useNavigation();
   const {data: userInfo, isLoading, isError, error} = useGetUserMeQuery({id});
 
   useEffect(() => {
@@ -29,32 +28,31 @@ const CheckUser = ({navigation}) => {
   // Functions
   const checkTrainer = (profile_status: any) => {
     if (!profile_status?.personal_step_1) {
-      navigation.navigate('PersonalInfo');
+      handleNavigate('PersonalInfo');
     } else if (!profile_status?.professional_step_2) {
-      navigation.navigate('ProfessionalInfo');
+      handleNavigate('ProfessionalInfo');
     } else if (!profile_status?.service_offered_step_3) {
-      navigation.navigate('ServicesOffered');
+      handleNavigate('ServicesOffered');
     } else {
-      navigation.navigate('TrainerTabb');
+      handleNavigate('TrainerTabb');
     }
   };
   const checkTrainee = (profile_status: any) => {
-    console.log('profile_status', profile_status);
     if (!profile_status?.personal_step_1) {
-      navigation.navigate('PersonalInfo');
+      handleNavigate('PersonalInfo');
     } else if (!profile_status?.fitness_level_step_2) {
-      navigation.navigate('FitnessLevel');
+      handleNavigate('FitnessLevel');
     } else if (!profile_status?.fitness_goal_step_3) {
-      navigation.navigate('FitnessGoal');
+      handleNavigate('FitnessGoal');
     } else {
-      navigation.navigate('TraineeTabb');
+      handleNavigate('TraineeTabb');
     }
   };
 
   const getUserInfo = async (profile_status: any) => {
     if (userData.userInfo === null) {
       ToastAndroid.show('Please Enter your email.', ToastAndroid.SHORT);
-      navigation.navigate('Welcome');
+      handleNavigate('Welcome');
     } else {
       if (userData.userInfo?.login || userData.userInfo?.register) {
         if (userData.userInfo?.data?.role === 'trainer') {
@@ -63,15 +61,20 @@ const CheckUser = ({navigation}) => {
           checkTrainee(profile_status);
         }
       } else {
-        navigation.navigate('Welcome');
+        handleNavigate('Welcome');
       }
     }
   };
 
-  if (userInfo?.success) {
-    const profile_status = userInfo?.profile_status;
-    getUserInfo(profile_status);
-  }
+  const handleNavigate = (screen: string) => navigation.navigate(screen);
+
+
+  useEffect(() => {
+    if (userInfo?.success) {
+      const profile_status = userInfo?.profile_status;
+      getUserInfo(profile_status);
+    }
+  }, [userInfo])
 
   return (
     <>
