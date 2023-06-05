@@ -4,41 +4,7 @@
             "outputFile": "com.awesomeproject.app-mergeDebugResources-37:/values-hy/values-hy.xml",
             "map": [
                 {
-                    "source": "/Users/zohaib.shahid/.gradle/caches/transforms-3/67ca49f2262aa7a0144e62f9d757168e/transformed/jetified-play-services-basement-18.1.0/res/values-hy/values.xml",
-                    "from": {
-                        "startLines": "4",
-                        "startColumns": "0",
-                        "startOffsets": "195",
-                        "endColumns": "146",
-                        "endOffsets": "341"
-                    },
-                    "to": {
-                        "startLines": "37",
-                        "startColumns": "4",
-                        "startOffsets": "3857",
-                        "endColumns": "150",
-                        "endOffsets": "4003"
-                    }
-                },
-                {
-                    "source": "/Users/zohaib.shahid/.gradle/caches/transforms-3/3994986e4b6f29f228dfe8fb9122f0d7/transformed/core-1.7.0/res/values-hy/values-hy.xml",
-                    "from": {
-                        "startLines": "2",
-                        "startColumns": "4",
-                        "startOffsets": "55",
-                        "endColumns": "100",
-                        "endOffsets": "151"
-                    },
-                    "to": {
-                        "startLines": "48",
-                        "startColumns": "4",
-                        "startOffsets": "5212",
-                        "endColumns": "100",
-                        "endOffsets": "5308"
-                    }
-                },
-                {
-                    "source": "/Users/zohaib.shahid/.gradle/caches/transforms-3/2869819762abc67901fd58a9b84e0d6d/transformed/appcompat-1.4.1/res/values-hy/values-hy.xml",
+                    "source": "/Users/ebryx/.gradle/caches/transforms-3/2869819762abc67901fd58a9b84e0d6d/transformed/appcompat-1.4.1/res/values-hy/values-hy.xml",
                     "from": {
                         "startLines": "2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29",
                         "startColumns": "4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4",
@@ -55,7 +21,41 @@
                     }
                 },
                 {
-                    "source": "/Users/zohaib.shahid/.gradle/caches/transforms-3/a350750691e61e796e908b38f4d6bfee/transformed/jetified-play-services-base-18.1.0/res/values-hy/values.xml",
+                    "source": "/Users/ebryx/.gradle/caches/transforms-3/67ca49f2262aa7a0144e62f9d757168e/transformed/jetified-play-services-basement-18.1.0/res/values-hy/values.xml",
+                    "from": {
+                        "startLines": "4",
+                        "startColumns": "0",
+                        "startOffsets": "195",
+                        "endColumns": "146",
+                        "endOffsets": "341"
+                    },
+                    "to": {
+                        "startLines": "37",
+                        "startColumns": "4",
+                        "startOffsets": "3857",
+                        "endColumns": "150",
+                        "endOffsets": "4003"
+                    }
+                },
+                {
+                    "source": "/Users/ebryx/.gradle/caches/transforms-3/3994986e4b6f29f228dfe8fb9122f0d7/transformed/core-1.7.0/res/values-hy/values-hy.xml",
+                    "from": {
+                        "startLines": "2",
+                        "startColumns": "4",
+                        "startOffsets": "55",
+                        "endColumns": "100",
+                        "endOffsets": "151"
+                    },
+                    "to": {
+                        "startLines": "48",
+                        "startColumns": "4",
+                        "startOffsets": "5212",
+                        "endColumns": "100",
+                        "endOffsets": "5308"
+                    }
+                },
+                {
+                    "source": "/Users/ebryx/.gradle/caches/transforms-3/a350750691e61e796e908b38f4d6bfee/transformed/jetified-play-services-base-18.1.0/res/values-hy/values.xml",
                     "from": {
                         "startLines": "4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20",
                         "startColumns": "0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0",
