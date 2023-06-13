@@ -12,6 +12,7 @@ import Home from "./Home";
 import MyClasses from "./MyClasses";
 import Chat from "./Chat";
 import Account from "./Account";
+import { Platform } from "react-native/Libraries/Utilities/Platform";
 
 const Tab = createBottomTabNavigator();
 

@@ -1,102 +1,122 @@
-import React, {useEffect} from 'react';
-import {View, StatusBar, ToastAndroid, Text} from 'react-native';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import FastImage from 'react-native-fast-image';
-import styles from './styles';
-import {useGetUserMeQuery} from '../../../slice/FitsApi.slice';
-import {useSelector} from 'react-redux';
-import {UserDetailInfoInterface} from '../../../interfaces/index';
-import { useNavigation } from '@react-navigation/core';
+import React, { useEffect } from "react";
+import { View, StatusBar, ToastAndroid } from "react-native";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import FastImage from "react-native-fast-image";
+import { url } from "../../../constants/url";
+import styles from "./styles";
 
-let id: string;
-const CheckUser = () => {
-  const navigation = useNavigation();
-  const {data: userInfo, isLoading, isError, error} = useGetUserMeQuery({id});
-
+const CheckUser = ({ navigation }) => {
+  // Effects
   useEffect(() => {
-    navigation.addListener('focus', async () => {
-      const userData: null | string = await AsyncStorage.getItem('userData');
-      let userDatax = await JSON.parse(userData ?? '');
-      id = userDatax?.data?._id;
+    navigation.addListener("focus", () => {
+      userMe();
     });
-  }, []);
+  }, [userMe]);
 
-  const userData = useSelector(
-    (state: {fitsStore: any; userInfo: UserDetailInfoInterface}) =>
-      state.fitsStore,
-  );
   // Functions
-  const checkTrainer = (profile_status: any) => {
-    if (!profile_status?.personal_step_1) {
-      handleNavigate('PersonalInfo');
-    } else if (!profile_status?.professional_step_2) {
-      handleNavigate('ProfessionalInfo');
-    } else if (!profile_status?.service_offered_step_3) {
-      handleNavigate('ServicesOffered');
-    } else {
-      handleNavigate('TrainerTabb');
-    }
-  };
-  const checkTrainee = (profile_status: any) => {
-    if (!profile_status?.personal_step_1) {
-      handleNavigate('PersonalInfo');
-    } else if (!profile_status?.fitness_level_step_2) {
-      handleNavigate('FitnessLevel');
-    } else if (!profile_status?.fitness_goal_step_3) {
-      handleNavigate('FitnessGoal');
-    } else {
-      handleNavigate('TraineeTabb');
-    }
+  const userMe = async () => {
+    const userData = await AsyncStorage.getItem("userData");
+    let userDatax = await JSON.parse(userData);
+    await fetch(`${url}user/me/${userDatax?.data?._id}`, {
+      method: "GET",
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${userDatax?.access_token}`,
+      },
+    })
+      .then((res) => res.json())
+      .then((res2) => {
+        console.log(res2.message);
+        if (res2?.success) {
+          const profile_status = res2.profile_status;
+          getUserInfo(profile_status);
+        } else {
+          ToastAndroid.show(res2.message, ToastAndroid.SHORT);
+          //alert(res2.errors);
+        }
+      })
+      .catch((error) => {
+        console.log(error);
+      });
   };
 
-  const getUserInfo = async (profile_status: any) => {
-    if (userData.userInfo === null) {
-      ToastAndroid.show('Please Enter your email.', ToastAndroid.SHORT);
-      handleNavigate('Welcome');
+  const getUserInfo = async (profile_status) => {
+    const userData = await AsyncStorage.getItem("userData");
+    let userDatax = JSON.parse(userData);
+    if (userDatax === null) {
+      ToastAndroid.show("Please Enter your email.", ToastAndroid.SHORT);
+      navigation.navigate("Welcome");
     } else {
-      if (userData.userInfo?.login || userData.userInfo?.register) {
-        if (userData.userInfo?.data?.role === 'trainer') {
-          checkTrainer(profile_status);
-        } else if (userData.userInfo?.data?.role === 'trainee') {
-          checkTrainee(profile_status);
+      if (userDatax?.login === true) {
+        if (userDatax?.data?.role === "trainer") {
+          if (profile_status?.personal_step_1 === false) {
+            navigation.navigate("PersonalInfo");
+          } else if (profile_status?.professional_step_2 === false) {
+            navigation.navigate("ProfessionalInfo");
+          } else if (profile_status?.service_offered_step_3 === false) {
+            navigation.navigate("ServicesOffered");
+          } else {
+            navigation.navigate("TrainerTabb");
+          }
+        } else if (userDatax?.data?.role === "trainee") {
+          if (profile_status?.personal_step_1 === false) {
+            navigation.navigate("PersonalInfo");
+          } else if (profile_status?.fitness_level_step_2 === false) {
+            navigation.navigate("FitnessLevel");
+          } else if (profile_status?.fitness_goal_step_3 === false) {
+            navigation.navigate("FitnessGoal");
+          } else {
+            navigation.navigate("TraineeTabb");
+          }
+        } else {
+        }
+      } else if (userDatax?.register === true) {
+        if (userDatax?.data?.role === "trainer") {
+          if (profile_status?.personal_step_1 === false) {
+            navigation.navigate("PersonalInfo");
+          } else if (profile_status?.professional_step_2 === false) {
+            navigation.navigate("ProfessionalInfo");
+          } else if (profile_status?.service_offered_step_3 === false) {
+            navigation.navigate("ServicesOffered");
+          } else {
+            navigation.navigate("TrainerTabb");
+          }
+        } else if (userDatax?.data?.role === "trainee") {
+          if (profile_status?.personal_step_1 === false) {
+            navigation.navigate("PersonalInfo");
+          } else if (profile_status?.fitness_level_step_2 === false) {
+            navigation.navigate("FitnessLevel");
+          } else if (profile_status?.fitness_goal_step_3 === false) {
+            navigation.navigate("FitnessGoal");
+          } else {
+            navigation.navigate("TraineeTabb");
+          }
+        } else {
         }
       } else {
-        handleNavigate('Welcome');
+        navigation.navigate("Welcome");
       }
     }
   };
 
-  const handleNavigate = (screen: string) => navigation.navigate(screen);
-
-
-  useEffect(() => {
-    if (userInfo?.success) {
-      const profile_status = userInfo?.profile_status;
-      getUserInfo(profile_status);
-    }
-  }, [userInfo])
-
   return (
     <>
-      {isLoading && (
-        <>
-          <StatusBar backgroundColor="#000" />
-          <View style={styles.mainContainer}>
-            <FastImage
-              style={{
-                width: 50,
-                height: 50,
-              }}
-              source={{
-                uri: 'https://i.gifer.com/ZZ5H.gif',
-                headers: {Authorization: 'someAuthToken'},
-                priority: FastImage.priority.normal,
-              }}
-              resizeMode={FastImage.resizeMode.cover}
-            />
-          </View>
-        </>
-      )}
+      <StatusBar backgroundColor="#000" />
+      <View style={styles.mainContainer}>
+        <FastImage
+          style={{
+            width: 50,
+            height: 50,
+          }}
+          source={{
+            uri: "https://i.gifer.com/ZZ5H.gif",
+            headers: { Authorization: "someAuthToken" },
+            priority: FastImage.priority.normal,
+          }}
+          resizeMode={FastImage.resizeMode.cover}
+        />
+      </View>
     </>
   );
 };

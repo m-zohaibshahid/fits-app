@@ -1,5 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
-/* eslint-disable prettier/prettier */
 import React, { useState } from "react";
 import {
   Text,
@@ -7,30 +5,31 @@ import {
   TextInput,
   Modal,
   ScrollView,
-  Platform,
+  ToastAndroid,
 } from "react-native";
 import Ionicons from "react-native-vector-icons/Ionicons";
-
-import styles from "./styles";
-import Toast from "react-native-toast-message";
-import Button from "../../../Components/Button";
-import Header from "../../../Components/Header/index";
-import { useRegisterUserMutation } from "../../../slice/FitsApi.slice";
+import Header from "../../../Components/Header";
 import Colors from "../../../constants/Colors";
-import { ParamListBase, RouteProp, useRoute } from "@react-navigation/native";
+import Button from "../../../Components/Button";
+import { url } from "../../../constants/url";
+import { useRoute } from "@react-navigation/native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { Toast } from "react-native-toast-message/lib/src/Toast";
+import styles from "./styles";
 
 const SignUpScreen = ({ navigation }: any) => {
   // Hooks
-  const { params }: RouteProp<ParamListBase | any> = useRoute();
+  const route = useRoute();
   const [hidePass, setHidePass] = useState(true);
   const [email, setEmail] = useState(""); //abbastrainee1@yopmail.com
   const [password, setPassword] = useState(""); //Abbas110@
   const [confirmPassword, setConfirmPassword] = useState(""); //Abbas110@
+  const [load, setLoad] = useState(false);
   const [modalVisible, setModalVisible] = useState(false);
 
-  const storeUserData = async (userData: any) => {
+  const storeUserData = async (userData) => {
     try {
+      setLoad(false);
       await AsyncStorage.setItem("userData", JSON.stringify(userData));
       navigation.navigate("Verification");
     } catch (e) {
@@ -38,8 +37,6 @@ const SignUpScreen = ({ navigation }: any) => {
     }
   };
 
-  const [registerUser, { isLoading, isError, isSuccess }] =
-    useRegisterUserMutation();
   const signupCall = async () => {
     if (password.length < 8) {
       Toast.show({
@@ -62,23 +59,49 @@ const SignUpScreen = ({ navigation }: any) => {
         text1: "Password does not match.",
       });
     } else {
-      registerUser({ role: params?.role ?? "trainee", email, password })
-        .unwrap()
-        .then((data) => {
-          console.log("data-----", data);
-          // Registration successful, handle the response data
-          if (data.message === "success" || isSuccess) {
+      setLoad(true);
+      await fetch(`${url}/register`, {
+        method: "POST",
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          email: email,
+          password: password,
+          role: route?.params?.role,
+        }),
+      })
+        .then((res) => {
+          return res.json();
+        })
+        .then((res2) => {
+          setLoad(false);
+          if (res2.message === "success") {
             Toast.show({
               type: "success",
               text1: "OTP sent to your email",
             });
-            navigation.navigate("Verification");
-            storeUserData(data.data);
+            storeUserData(res2);
+          } else if ("Already Have An Account, Please SignIn!") {
+            Toast.show({
+              type: "error",
+              text1: res2?.message,
+            });
+            setModalVisible(true);
+          } else {
+            Toast.show({
+              type: "success",
+              text1: res2?.message,
+            });
           }
         })
-        .catch((error) => {
-          // Registration failed, handle the error
-          console.error("Registration error:", error);
+        .catch(() => {
+          setLoad(false);
+          Toast.show({
+            type: "error",
+            text1: "You already have account , Please signin.",
+          });
         });
     }
   };
@@ -102,7 +125,7 @@ const SignUpScreen = ({ navigation }: any) => {
               <View style={styles.inputTypeView}>
                 <TextInput
                   style={styles.inputTypeStyle}
-                  // label="Email"
+                  label="Email"
                   placeholderTextColor={"#afafafe3"}
                   placeholder="xyz@gmail.com"
                   value={email}
@@ -121,7 +144,7 @@ const SignUpScreen = ({ navigation }: any) => {
               <View style={styles.inputTypeView}>
                 <TextInput
                   style={styles.inputTypeStyle}
-                  // label="Password"
+                  label="Password"
                   placeholder="**********"
                   placeholderTextColor={"#afafafe3"}
                   value={password}
@@ -149,7 +172,7 @@ const SignUpScreen = ({ navigation }: any) => {
               <View style={styles.inputTypeView}>
                 <TextInput
                   style={styles.inputTypeStyle}
-                  // label="Password"
+                  label="Password"
                   placeholder="**********"
                   placeholderTextColor={"#afafafe3"}
                   value={confirmPassword}
@@ -175,50 +198,50 @@ const SignUpScreen = ({ navigation }: any) => {
       >
         <Button
           navigation={navigation}
-          // loader={load}
+          loader={load}
           disabled={!email || !password || !confirmPassword}
           label={"NEXT"}
           onPress={() => {
-            // navigation.navigate('Verification');
+            //navigation.navigate("Verification");
             signupCall();
           }}
         />
       </View>
       {/*Modal Start*/}
-      {/* <Modal
+      <Modal
         animationType="fade"
         transparent={true}
         visible={modalVisible}
         onRequestClose={() => {
           setModalVisible(false);
         }}
-      > */}
-      <View style={styles.centeredView}>
-        <View style={styles.modalView}>
-          <View style={{ width: "90%", alignSelf: "center" }}>
-            <Text style={styles.vercodetext}>
-              Already Have An Account, Please SignIn!
-            </Text>
-          </View>
+      >
+        <View style={styles.centeredView}>
+          <View style={styles.modalView}>
+            <View style={{ width: "90%", alignSelf: "center" }}>
+              <Text style={styles.vercodetext}>
+                Already Have An Account, Please SignIn!
+              </Text>
+            </View>
 
-          <View
-            style={{
-              marginTop: Platform.OS === "ios" ? 50 : 10,
-              width: "100%",
-            }}
-          >
-            <Button
-              navigation={navigation}
-              label={"Go"}
-              onPress={() => {
-                setModalVisible(false);
-                navigation.navigate("SignIn");
+            <View
+              style={{
+                marginTop: Platform.OS === "ios" ? 50 : 10,
+                width: "100%",
               }}
-            />
+            >
+              <Button
+                navigation={navigation}
+                label={"Go"}
+                onPress={() => {
+                  setModalVisible(false);
+                  navigation.navigate("SignIn");
+                }}
+              />
+            </View>
           </View>
         </View>
-      </View>
-      {/* </Modal> */}
+      </Modal>
       {/* Modal End*/}
     </View>
   );

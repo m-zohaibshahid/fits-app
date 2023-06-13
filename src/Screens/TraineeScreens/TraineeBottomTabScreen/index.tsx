@@ -12,43 +12,44 @@ import Home from "../Home";
 import MyClasses from "../MyClasses";
 import Chat from "../Chat";
 import Account from "../Account";
+import { Platform } from "react-native";
 
 const Tab = createBottomTabNavigator();
 
 const TraineeBottomTabScreen = ({ navigation }) => {
   return (
     <Tab.Navigator
-      screenOptions={({ route }) => ({
-        tabBarIcon: ({ focused, color, size }) => {
-          let iconName;
-          if (route.name === "Home") {
-            iconName = focused ? "home-filled" : "home-filled";
-            return <MaterialIcons name={iconName} size={wp(6)} color={color} />;
-          } else if (route.name === "MyClasses") {
-            iconName = focused ? "account-group" : "account-group";
-            return (
-              <MaterialCommunityIcons
-                name={iconName}
-                size={wp(6)}
-                color={color}
-              />
-            );
-          } else if (route.name === "Chat") {
-            iconName = focused ? "send" : "send";
-            return <FontAwesome name={iconName} size={wp(6)} color={color} />;
-          } else if (route.name === "Account") {
-            iconName = focused ? "settings" : "settings";
-            return <Ionicons name={iconName} size={wp(6)} color={color} />;
-          }
-        },
-        tabBarStyle: {
-          height: Platform.OS === "ios" ? 110 : 50,
-          justifyContent: "center",
-          bottom: Platform.OS === "ios" ? -30 : 0,
-          marginBottom: 0,
-          position: "absolute",
-        },
-      })}
+      screenOptions={({ route }) => {
+        let iconName: any;
+        let IconComponent: any;
+
+        if (route.name === "Home") {
+          iconName = "home-filled";
+          IconComponent = MaterialIcons;
+        } else if (route.name === "MyClasses") {
+          iconName = "account-group";
+          IconComponent = MaterialCommunityIcons;
+        } else if (route.name === "Chat") {
+          iconName = "send";
+          IconComponent = FontAwesome;
+        } else if (route.name === "Account") {
+          iconName = "settings";
+          IconComponent = Ionicons;
+        }
+
+        return {
+          tabBarIcon: ({ color, size }) => {
+            return <IconComponent name={iconName} size={wp(6)} color={color} />;
+          },
+        };
+      }}
+      tabBarStyle={{
+        height: Platform.OS === "ios" ? 110 : 50,
+        justifyContent: "center",
+        bottom: Platform.OS === "ios" ? -30 : 0,
+        marginBottom: 0,
+        position: "absolute",
+      }}
       tabBarOptions={{
         activeTintColor: "#fff",
         inactiveTintColor: "grey",
@@ -63,7 +64,7 @@ const TraineeBottomTabScreen = ({ navigation }) => {
         name="Home"
         component={Home}
         options={{ headerShown: false }}
-        listeners={({ navigation, route }) => ({
+        listeners={({ navigation, route }: any) => ({
           tabPress: (e) => {
             if (route.state && route.state.routeNames.length > 0) {
               navigation.navigate("Device");
