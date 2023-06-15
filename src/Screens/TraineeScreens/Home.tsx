@@ -34,19 +34,19 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import Geolocation from "react-native-geolocation-service";
 import Geocoder from "react-native-geocoder";
 import FastImage from "react-native-fast-image";
+import { useConnectAccountLinkQuery, useGetUserMeQuery, useSessionsQuery, useStripeCustomerMutation, useUpdateFilterMutation } from "../../slice/FitsApi.slice";
+import { useSelector } from "react-redux";
+import { UserDetailInfoInterface } from "../../interfaces";
 
-const Home = ({ navigation }) => {
+const Home = ({ navigation }:any) => {
   // states
+
   const [modalVisible, setModalVisible] = useState(false);
   const [sort, setSort] = useState(true);
-  const [id, setId] = useState("");
-  const [token, setToken] = useState("");
   const [sports, setSports] = useState(false);
   const [price, SetPrice] = useState(false);
   const [type, setType] = useState(false);
-  const [name, setName] = useState("");
-  const [cityStateCountry, setCityStateCountry] = useState("");
-  const [data, setData] = useState([]);
+  const [filterData, setFilterData] = useState([]);
   const [dumdata, setDumData] = useState([]);
   const [userData, setUserData] = useState([]);
   const [personalInfoData, setPersonalInfoData] = useState([]);
@@ -57,26 +57,40 @@ const Home = ({ navigation }) => {
   const [classtype, setClasstype] = useState(null);
   const [classsort, setClasssort] = useState(null);
   const [search, setSearch] = useState("");
+
   const [m, setM] = useState("");
 
+  const token:string  = useSelector((state: {token:string}) => state.token)
+  const { userInfo } = useSelector((state: Partial<UserDetailInfoInterface>) => state.fitsStore)
+  
+  const { data, isLoading, error, isSuccess } = useGetUserMeQuery({ id: userInfo?._id });
+  
+  const { data: session, isLoading: isLoading2, error: error2, isSuccess: isSuccess2 } = useSessionsQuery({});
+
+  const { data: connectAccountLink, isLoading: isLoading3, error: error3, isSuccess: isSuccess3 } = useConnectAccountLinkQuery({});
+  
+  const [stripeCustomer, { data: stripeCustomerData, isLoading: isLoading4, error: error4, isSuccess: isSuccess4 }] = useStripeCustomerMutation({});
+  
+  const [updateFilter,{ data:updateFilterData, isLoading:isLoading5, error:error5,isSuccess:isSuccess5 } ]= useUpdateFilterMutation({});
+ 
   // filter data User define functions
-  const handleSportsData = (item) => {
+  const handleSportsData = (item: { name: React.SetStateAction<null>; }) => {
     setModalVisible(false);
     setSportData(item?.name);
   };
-  const minPriceData = (minPrice) => {
+  const minPriceData = (minPrice: React.SetStateAction<null>) => {
     setModalVisible(false);
     setMinimumPrice(minPrice);
   };
-  const maxPriceData = (maxPrice) => {
+  const maxPriceData = (maxPrice: React.SetStateAction<null>) => {
     setModalVisible(false);
     setMaximumPrice(maxPrice);
   };
-  const handleClassType = (item) => {
+  const handleClassType = (item: { Name: { toLowerCase: () => React.SetStateAction<null>; }; }) => {
     setModalVisible(false);
     setClasstype(item?.Name.toLowerCase());
   };
-  const classSorts = (item) => {
+  const classSorts = (item: { Name: React.SetStateAction<null>; }) => {
     setModalVisible(false);
     setClasssort(item?.Name);
   };
@@ -87,37 +101,23 @@ const Home = ({ navigation }) => {
     }
   }, [sportData, minimumPrice, maximumPrice, classtype, classsort]);
   // filter Api states
-  const [loadx, setLoadx] = useState(false);
   const Filter = async () => {
-    console.log("m yaha hu");
-    setLoadx(true);
-    await fetch(`${url}/filter`, {
-      method: "PUT",
-      headers: {
-        Accept: "application/json",
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
-      body: JSON.stringify({
-        sports: sportData,
-        min_price: minimumPrice,
-        max_price: maximumPrice,
-        type: classtype,
-        sort_by: classsort,
-      }),
-    })
-      .then((res) => res.json())
+    updateFilter({
+      sports: sportData,
+      min_price: minimumPrice,
+      max_price: maximumPrice,
+      type: classtype,
+      sort_by: classsort,
+    }).unwrap()
       .then((res2) => {
-        setLoadx(false);
         if (res2.success) {
-          setData(res2?.data?.result);
+          setFilterData(res2?.data?.result);
           ToastAndroid.show(res2.message, ToastAndroid.SHORT);
         } else {
           ToastAndroid.show(res2.message, ToastAndroid.SHORT);
         }
       })
       .catch((error) => {
-        setLoadx(false);
       });
   };
   //states
@@ -140,11 +140,10 @@ const Home = ({ navigation }) => {
 
   const getPersonalInfo = async () => {
     const userData = await AsyncStorage.getItem("userPersonalInfo");
-    let userDatax = JSON.parse(userData);
-    setName(userDatax?.name);
+    let userDataPersonal = JSON.parse(userData);
   };
 
-  const setUserLocation = async (data) => {
+  const setUserLocation = async (data: string) => {
     await AsyncStorage.setItem("userLocation", JSON.stringify(data));
   };
 
@@ -164,12 +163,16 @@ const Home = ({ navigation }) => {
           (position) => {
             setSuperLong(position?.coords?.longitude);
             setSuperLat(position?.coords?.latitude);
-            var pos = {
+            const  pos = {
               lat: position?.coords?.latitude,
               lng: position?.coords?.longitude,
             };
             Geocoder.geocodePosition(pos)
-              .then((res) => {
+              .then((res: {
+                subLocality: string;
+                locality: string;
+                adminArea: string; country: string; 
+}[]) => {
                 setUserLocation(
                   res[0].subLocality +
                   " " +
@@ -179,17 +182,9 @@ const Home = ({ navigation }) => {
                   "-" +
                   res[0].country
                 );
-                setCityStateCountry(
-                  res[0].subLocality +
-                  " ," +
-                  res[0].locality +
-                  " ," +
-                  res[0].adminArea +
-                  "-" +
-                  res[0].country
-                );
+               
               })
-              .catch((error) => alert(error));
+              .catch((error: any) => alert(error));
           },
           (error) => {
             // See error code charts below.
@@ -208,14 +203,9 @@ const Home = ({ navigation }) => {
     requestLocationPermission();
   }, []);
 
-  // useEffect(() => {
-  //   const interval = setInterval(() => {
-  //     bookASessioan();
-  //   }, 1000);
-  //   return () => clearInterval(interval);
-  // }, [bookASessioan]);
-
+  
   useEffect(() => {
+   
     navigation.addListener("focus", () => {
       bookASessioan();
     });
@@ -223,93 +213,42 @@ const Home = ({ navigation }) => {
 
   useEffect(() => {
     navigation.addListener("focus", () => {
-      getUserInfo();
       getPersonalInfo();
       userMe();
     });
-  }, [getUserInfo]);
+  }, []);
 
   const userMe = async () => {
-    setLoad(true);
-    const userData = await AsyncStorage.getItem("userData");
-    let userDatax = JSON.parse(userData);
-    await fetch(`${url}/user/me/${userDatax?.data?._id}`, {
-      method: "GET",
-      headers: {
-        Accept: "application/json",
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${userDatax?.access_token}`,
-      },
-    })
-      .then((res) => res.json())
-      .then((res2) => {
-        if (res2?.success === true) {
-          setUserData(res2);
-          createStripeAccount(res2);
+        setLoad(true);
+        if (isSuccess) {
+          setUserData(data);
+          createStripeAccount(data);
           setLoad(false);
         } else {
-          alert(res2.errors);
+          alert(error);
         }
-      })
-      .catch((error) => {
-        setLoad(false);
-      });
+     
   };
-  const stripeConnectionCall = async () => {
-    setLoad(true);
-    const userData = await AsyncStorage.getItem("userData");
-    let userDatax = JSON.parse(userData);
-    await fetch(`${url}/stripe/connect/accountLink`, {
-      method: "GET",
-      headers: {
-        Accept: "application/json",
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${userDatax?.access_token}`,
-      },
-    })
-      .then((res) => res.json())
-      .then((res2) => {
-        setLoad(false);
-        if (res2?.message === "Create Express Account Link Successfully!") {
-          setForLinkStripeCall(res2?.data);
-        }
-      })
-      .catch((error) => {
-        setLoad(false);
-        console.log("stripe connection error", error);
-      });
+  
+
+ 
+  const setForCareateStripeCall = async (filterData: any) => {
+    await AsyncStorage.setItem("createStripeData", JSON.stringify(filterData));
   };
 
-  // const setForLinkStripeCall = async (data) => {
-  //   await AsyncStorage.setItem("linkStripeCall", JSON.stringify(data));
-  // };
-  const setForCareateStripeCall = async (data) => {
-    await AsyncStorage.setItem("createStripeData", JSON.stringify(data));
-  };
-
-  const createStripeAccount = async (data) => {
+  const createStripeAccount = async (filterData: { personal_info: { name: any; }; user: { email: any; }; }) => {
     setLoad(true);
-    const userDatas = await AsyncStorage.getItem("userData");
-    let userDataxx = JSON.parse(userDatas);
-    await fetch(`${url}/stripe/customer`, {
-      method: "POST",
-      headers: {
-        Accept: "application/json",
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${userDataxx?.access_token}`,
-      },
-      body: JSON.stringify({
-        name: data?.personal_info?.name,
-        email: data?.user?.email,
-        phone: "03001011010",
-      }),
-    })
-      .then((res) => res.json())
+    
+    stripeCustomer({ name: filterData?.personal_info?.name,
+      email: filterData?.user?.email,
+      phone: "03001011010"}).unwrap()
       .then((res2) => {
+        console.log("res2?.data",res2?.data)
         if (
           res2?.message === "success" ||
           res2?.message === "customer already exists"
         ) {
+          console.log("res2.data",res2?.data)
           setForCareateStripeCall(res2?.data);
         }
       })
@@ -319,12 +258,7 @@ const Home = ({ navigation }) => {
       });
   };
 
-  const getUserInfo = async () => {
-    const userData = await AsyncStorage.getItem("userData");
-    let userDatax = JSON.parse(userData);
-    setToken(userDatax?.access_token);
-    setId(userDatax?.data?._id);
-  };
+ 
 
   const handleSetSort = () => {
     setSort(true);
@@ -350,7 +284,7 @@ const Home = ({ navigation }) => {
     SetPrice(false);
     setType(true);
   };
-  const dummyData = (id, item) => {
+  const dummyData = (id: any, item: never) => {
     const check = personalInfoData.find((data) => data?.user === id);
     const checkx = professionalData.find((data) => data?.user === id);
     if (check === undefined) {
@@ -369,38 +303,39 @@ const Home = ({ navigation }) => {
     }
   };
   const bookASessioan = async () => {
-    const userData = await AsyncStorage.getItem("userData");
-    let userDatax = JSON.parse(userData);
     setLoad(true);
-
+   
     await fetch(`${url}/session`, {
       method: "GET",
       headers: {
         Accept: "application/json",
         "Content-Type": "application/json",
-        Authorization: `Bearer ${userDatax?.access_token}`,
+        Authorization: `Bearer ${token}`,
       },
     })
       .then((res) => res.json())
       .then((res2) => {
+        const {personal_info,profession_info,classes}=res2?.data
         setLoad(false);
         if (res2.message === "all classes get successfully") {
-          setPersonalInfoData(res2?.data?.personal_info);
-          setProfessionalData(res2?.data?.profession_info);
-          setData(res2?.data?.classes);
-          setDumData(res2?.data?.classes);
-          getDistanceFunction(res2?.data?.classes);
+          setPersonalInfoData(personal_info);
+          setProfessionalData(profession_info);
+          setFilterData(classes);
+          setDumData(classes);
+          getDistanceFunction(classes);
         } else {
           alert(res2.errors);
         }
       })
-      .catch((error) => {
+    if(isError){
+      
         setLoad(false);
         console.log("book session error", error);
-      });
+  
+  }
   };
 
-  const getDistanceGoogle = (lat, lng) => {
+  const getDistanceGoogle = (lat: any, lng: any) => {
     let dis;
     dis = getDistance(
       { latitude: lat, longitude: lng },
@@ -411,7 +346,7 @@ const Home = ({ navigation }) => {
 
     return distanceInKM;
   };
-  const getDistanceFunction = (data) => {
+  const getDistanceFunction = (data: any) => {
     let dummy = [...data];
     dummy.map((item, i) => {
       var dis = getDistanceGoogle(item.session_type.lat, item.session_type.lng);
@@ -419,19 +354,21 @@ const Home = ({ navigation }) => {
     });
   };
 
-  const find = (t) => {
-    const words = [...data];
+  const find = (t:any) => {
+   console.log("t",t)
+    const words = [data];
     setSearch(t);
     if (t === "") {
       setM("");
-      setData(dumdata);
+      setFilterData(dumdata);
     } else {
       const newData = words.filter((item) => {
         const itemData = `${item?.item?.toUpperCase()} ${item?.class_title?.toUpperCase()}`;
         const textData = t?.toUpperCase();
         return itemData.indexOf(textData) > -1;
       });
-      setData(newData);
+      console.log("first")
+      setFilterData(newData);
     }
   };
   return (
@@ -531,7 +468,7 @@ const Home = ({ navigation }) => {
       <ScrollView showsVerticalScrollIndicator={false} style={styles.main}>
         {nearyou && load ? (
           <ActivityIndicator size="large" color="red" />
-        ) : data !== [] ? (
+        ) : filterData !== [] ? (
           <>
             <ScrollView
               horizontal={true}
@@ -539,7 +476,7 @@ const Home = ({ navigation }) => {
               style={styles.main}
             >
               {/*start image box view*/}
-              {data.map((item, i) => (
+              {filterData.map((item, i) => (
                 <Pressable
                   onPress={() => dummyData(item?.user?._id, item)}
                   style={styles.boxview}

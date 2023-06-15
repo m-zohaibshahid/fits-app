@@ -2,35 +2,21 @@ import React, { useState, useEffect } from "react";
 import {
   Text,
   View,
-  ImageBackground,
   Pressable,
   StyleSheet,
-  TextInput,
-  Modal,
-  Image,
-  ScrollView,
-  ToastAndroid,
-  ActivityIndicator,
-  Platform,
+  
 } from "react-native";
-import AntDesign from "react-native-vector-icons/AntDesign";
 import FontAwesome from "react-native-vector-icons/FontAwesome";
-import { RFPercentage, RFValue } from "react-native-responsive-fontsize";
+import {  RFValue } from "react-native-responsive-fontsize";
 import {
   Calendar,
-  CalendarList,
-  Agenda,
-  ExpandableCalendar,
-  Timeline,
-  CalendarProvider,
 } from "react-native-calendars";
-import * as Images from "../../constants/Images";
 import Entypo from "react-native-vector-icons/Entypo";
-import { url } from "../../constants/url";
 import { useRoute } from "@react-navigation/native";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import { heightPercentageToDP } from "react-native-responsive-screen";
 import moment from "moment";
+import { useGetUserMeQuery } from "../../slice/FitsApi.slice";
+import { getUserAsyncStroage } from "../../common/AsyncStorage";
 
 const Schedule = ({ navigation }) => {
   const route = useRoute();
@@ -49,6 +35,9 @@ const Schedule = ({ navigation }) => {
   const [card, setCard] = useState("");
   const [sessionId, setSessionId] = useState("");
   const [trainerId, setTrainerId] = useState("");
+  const [userDatax, setUserDatax] = useState();
+
+  const { data: userMeData, isLoading:isLoading1, error:error1, isSuccess } = useGetUserMeQuery({ id: userDatax?.data._id });
 
   useEffect(() => {
     navigation.addListener("focus", () => {
@@ -57,24 +46,15 @@ const Schedule = ({ navigation }) => {
       userMe();
     });
   }, []);
+
+  useEffect(() => {
+      setCard(userMeData?.user?.cardCreated);
+
+  }, [userMeData]);
   const userMe = async () => {
-    const userData = await AsyncStorage.getItem("userData");
-    let userDatax = JSON.parse(userData);
-    await fetch(`${url}/user/me/${userDatax?.data?._id}`, {
-      method: "GET",
-      headers: {
-        Accept: "application/json",
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${userDatax?.access_token}`,
-      },
-    })
-      .then((res) => res.json())
-      .then((res2) => {
-        setCard(res2?.user?.cardCreated);
-      })
-      .catch((error) => {
-        console.log(error);
-      });
+    const userData=await getUserAsyncStroage()
+    setUserDatax(userData)
+    
   };
   return (
     <View style={styles.container}>
@@ -198,21 +178,15 @@ const Schedule = ({ navigation }) => {
                   paddingBottom: heightPercentageToDP(2),
                 }}
               >
-                {/*<View style={styles.dotmainview}>
-                  <View style={styles.dotview}>
-                    <FontAwesome name="circle" style={{ color: "#979797" }} />
-                  </View>
-                  <View style={{ width: "90%" }}>
-                    <Text style={styles.textstyle}>Type:{"\n"}</Text>
-                  </View>
-                </View>*/}
+              
                 <View style={styles.dotmainview}>
                   <View style={styles.dotview}>
                     <FontAwesome name="circle" style={{ color: "#979797" }} />
                   </View>
                   <View style={{ width: "90%" }}>
                     <Text style={styles.textstyle}>
-                      Cost: {"\n"}$ {route.params.userData.item.price}
+                      Cost: {"\n"}$ 
+                    {route?.params?.userData?.item.price}
                     </Text>
                   </View>
                 </View>

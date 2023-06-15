@@ -18,6 +18,9 @@ import { Toast } from "react-native-toast-message/lib/src/Toast";
 import styles from "./styles";
 import { useLoginUserMutation } from "../../../slice/FitsApi.slice";
 import { useDispatch } from "react-redux";
+import { LoginInterface } from "../../../slice/store.interface";
+import { setToken } from "../../../slice/token.slice";
+import { setUserInfo } from "../../../slice/FitsSlice.store";
 
 const SignInScreen = ({ navigation }) => {
   // Hooks
@@ -28,9 +31,11 @@ const SignInScreen = ({ navigation }) => {
   const [loadxx, setLoadxx] = useState(false);
   const [modalVisible, setModalVisible] = useState(false);
   const [loginUser, { data, isLoading, error }] = useLoginUserMutation();
+
   const dispatch = useDispatch();
+  
   // Functions
-  const storeData = async (userToken, userData) => {
+  const storeData = async (userToken: string, userData: LoginInterface) => {
     try {
       setLoad(false);
       await AsyncStorage.setItem("userToken", JSON.stringify(userToken));
@@ -82,10 +87,7 @@ const SignInScreen = ({ navigation }) => {
 
   const signInCall = async () => {
     setLoad(true);
-    console.log(
-      "==================================================================",
-      "=================================================================="
-    );
+    
     if (!email.includes("@")) {
       Toast.show({
         type: "error",
@@ -97,18 +99,15 @@ const SignInScreen = ({ navigation }) => {
       password,
     })
       .unwrap()
-      // .then((res) => res.json())
       .then(async (res2) => {
-        console.log(
-          res2,
-          "=================================================================="
-        );
         setLoad(false);
         if (res2?.login) {
           Toast.show({
             type: "success",
             text1: "Login Successfully",
           });
+          dispatch(setToken(res2?.access_token));
+          dispatch(setUserInfo(res2.data))
           await storeData("usertoken", res2);
         } else if (res2?.message === "please verify your email first") {
           OpneModule();
@@ -124,6 +123,7 @@ const SignInScreen = ({ navigation }) => {
         console.log(err);
       });
   };
+  
 
   return (
     <View style={styles.mainContainer}>

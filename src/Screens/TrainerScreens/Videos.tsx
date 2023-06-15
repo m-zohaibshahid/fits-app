@@ -2,24 +2,19 @@ import React, { useState } from "react";
 import {
   Text,
   View,
-  ImageBackground,
   TouchableOpacity,
   StyleSheet,
-  TextInput,
-  Modal,
-  Image,
+ 
   ScrollView,
+  Platform,
 } from "react-native";
-import AntDesign from "react-native-vector-icons/AntDesign";
-import { RFPercentage, RFValue } from "react-native-responsive-fontsize";
+import type { RouteProp } from '@react-navigation/native';
+import {  RFValue } from "react-native-responsive-fontsize";
 import MyVideos from "./MyVideos";
 import UpdatedClasses from "./UpdatedClasses";
-import * as Images from "../../constants/Images";
-import Header from "../../Components/Header";
-import Button from "../../Components/Button";
-import Entypo from "react-native-vector-icons/Entypo";
 
-const Videos = ({ navigation }) => {
+type VideosScreenRouteProp = RouteProp<RootStackParamList, 'Profile'>;
+const Videos = ({ navigation } ) => {
   const [myVideos, setMyVideos] = useState(true);
   const [updatedClasses, setUpdatedClasses] = useState(false);
 

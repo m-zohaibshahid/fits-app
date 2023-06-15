@@ -2,22 +2,13 @@ import React, { useState } from "react";
 import {
   Text,
   View,
-  ImageBackground,
   TouchableOpacity,
   StyleSheet,
-  TextInput,
-  Modal,
-  Image,
   ScrollView,
 } from "react-native";
-import AntDesign from "react-native-vector-icons/AntDesign";
-import { RFPercentage, RFValue } from "react-native-responsive-fontsize";
+import {  RFValue } from "react-native-responsive-fontsize";
 import ScheduledClasses from "./ScheduledClasses";
 import VideosForClasses from "./VideosForClasses";
-import * as Images from "../../constants/Images";
-import Header from "../../Components/Header";
-import Button from "../../Components/Button";
-import Entypo from "react-native-vector-icons/Entypo";
 
 const MyClasses = ({ navigation }) => {
   const [scheduledClasses, setScheduledClasses] = useState(true);

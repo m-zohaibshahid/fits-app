@@ -1,8 +1,8 @@
 /* eslint-disable prettier/prettier */
-import {createApi, fetchBaseQuery} from '@reduxjs/toolkit/query/react';
-import {url} from '../constants/url';
+import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
+import { url } from '../constants/url';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import {LoginInterface} from './store.interface';
+import { LoginInterface } from './store.interface';
 
 // Define a service using a base URL and expected endpoints
 export const fitsApi = createApi({
@@ -37,13 +37,19 @@ export const fitsApi = createApi({
     //   return data;
     // },
   }),
+  // global configuration for the api
+  keepUnusedDataFor: 30,
   endpoints: builder => ({
     getUsers: builder.query<any[], void>({
       query: () => 'users',
     }),
+
+    //userMe
     getUserMe: builder.query<any, Partial<any>>({
       query: id => `/user/me/${id}`,
     }),
+
+    //register User
     registerUser: builder.mutation<LoginInterface, Partial<any>>({
       query: body => ({
         url: '/register',
@@ -51,6 +57,8 @@ export const fitsApi = createApi({
         body: body,
       }),
     }),
+
+    //login User
     loginUser: builder.mutation<LoginInterface, Partial<any>>({
       query: body => ({
         url: '/login',
@@ -58,6 +66,17 @@ export const fitsApi = createApi({
         body: body,
       }),
     }),
+
+    //stripe Customer
+    stripeCustomer: builder.mutation<any, Partial<any>>({
+      query: body => ({
+        url: '/stripe/customer',
+        method: 'POST',
+        body: body,
+      }),
+    }),
+
+    // updateUser
     updateUser: builder.mutation<any, Partial<any>>({
       query: user => ({
         url: `users/${user.id}`,
@@ -65,13 +84,47 @@ export const fitsApi = createApi({
         body: user,
       }),
     }),
+
+    //filter by price  sports,min_price,max_price,type,sort_by,
+
+    updateFilter: builder.mutation<any, Partial<any>>({
+      query: user => ({
+        url: `/filter`,
+        method: 'PUT',
+        body: user,
+      }),
+    }),
+    //delet eUser
     deleteUser: builder.mutation<void, number>({
       query: id => ({
         url: `users/${id}`,
         method: 'DELETE',
       }),
     }),
+
+    //updatePassword
+    updatePassword: builder.mutation<void, Partial<any>>({
+      query: ({ id, ...data }) => ({
+        url: `/profile/edit/password/${id}`,
+        method: 'PUT',
+        body: data,
+      }),
+    }),
+
+    //user Me
+    sessions: builder.query<void, Partial<any>>({
+      query: () => '/session'
+    }),
+
+    //Connect account link
+    connectAccountLink: builder.query<void, Partial<any>>({
+      query: () => '/stripe/connect/accountLink'
+    }),
+
   }),
+
+
+
 
   // getPokemonByName: builder.query<any, string>({
   //   query: name => `pokemon/${name}`,
@@ -99,10 +152,16 @@ export const fitsApi = createApi({
 // export const {useGetPokemonByNameQuery} = fitsApi;
 // Export the generated hooks for using the endpoints
 export const {
-  useGetUserMeQuery,
-  useGetUsersQuery,
+
   useRegisterUserMutation,
   useLoginUserMutation,
   useUpdateUserMutation,
   useDeleteUserMutation,
+  useUpdatePasswordMutation,
+  useStripeCustomerMutation,
+  useUpdateFilterMutation,
+  useSessionsQuery,
+  useConnectAccountLinkQuery,
+  useGetUserMeQuery,
+  useGetUsersQuery,
 } = fitsApi;

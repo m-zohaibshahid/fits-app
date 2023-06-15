@@ -1,26 +1,20 @@
-import React, {useState, useRef} from 'react';
+import React from 'react';
 import {
   Text,
   View,
-  Button,
-  ImageBackground,
-  TouchableOpacity,
+  
   StyleSheet,
-  TextInput,
-  Modal,
-  Image,
+  
   ScrollView,
 } from 'react-native';
-import FontAwesome from 'react-native-vector-icons/FontAwesome';
-import AntDesign from 'react-native-vector-icons/AntDesign';
-import {RFPercentage, RFValue} from 'react-native-responsive-fontsize';
+import { RFValue} from 'react-native-responsive-fontsize';
 import VideoPlayer from 'react-native-video-player';
 import * as Images from '../../constants/Images';
 
-const Videos2 = ({navigation}) => {
+const Videos2 = () => {
   return (
     <View style={styles.container}>
-      <View styl={styles.header}>
+      <View style={styles.header}>
         <View style={styles.TopView}>
           <View style={styles.topView}>
             <Text style={styles.VideoboughtText}>Videos bought from you</Text>
@@ -136,8 +130,5 @@ const styles = StyleSheet.create({
   },
   VideoView: {
     width:330,
-    // height: 190,
-    // borderTopLeftRadius: 20,
-    // borderTopRightRadius: 20,
   },
 });

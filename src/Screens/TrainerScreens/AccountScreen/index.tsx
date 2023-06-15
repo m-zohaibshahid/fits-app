@@ -25,6 +25,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import {url} from '../../../constants/url';
 import FastImage from 'react-native-fast-image';
 import {Toast} from 'react-native-toast-message/lib/src/Toast';
+import { useUpdatePasswordMutation } from '../../../slice/FitsApi.slice';
 
 const AccountScreen = ({navigation}) => {
   const [hidePass, setHidePass] = useState(true);
@@ -38,6 +39,8 @@ const AccountScreen = ({navigation}) => {
   const [oldPassword, setOldPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
+
+  const [updatePassword, {  isLoading, error }] = useUpdatePasswordMutation();
 
   const NextScreen = data => {
     navigation.navigate('TrainerWallet', {
@@ -105,21 +108,15 @@ const AccountScreen = ({navigation}) => {
         text1: 'Confirmation password do not match.',
       });
     } else {
+      const body={
+        oldPassword: oldPassword,
+        password: newPassword,
+      }
       setLoad(true);
-
-      await fetch(`${url}/profile/edit/password/${id}`, {
-        method: 'PUT',
-        headers: {
-          Accept: 'application/json',
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify({
-          oldPassword: oldPassword,
-          password: newPassword,
-        }),
-      })
-        .then(res => res.json())
+      console.log("body",body)
+      
+      await updatePassword({ id, ...body })
+      .unwrap()
         .then(res2 => {
           setLoad(false);
           if (res2.success === true) {

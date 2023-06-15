@@ -12,9 +12,9 @@ import {
 } from 'react-native-responsive-screen';
 
 import {Platform} from 'react-native';
-import Home from '../../../Components/Home';
 import MyVideos from '../MyVideosScreen/index';
 import AccountScreen from '../AccountScreen/index';
+import Home from '../../TraineeScreens/Home';
 
 const Tab = createBottomTabNavigator();
 

@@ -5,9 +5,7 @@ import {
   StyleSheet,
   ScrollView,
   Pressable,
-  ToastAndroid,
   ActivityIndicator,
-  TouchableOpacity,
   Platform,
   Linking,
 } from "react-native";
@@ -17,7 +15,6 @@ import { RFValue } from "react-native-responsive-fontsize";
 import Header from "../../../Components/Header";
 import Button from "../../../Components/Button";
 import { url } from "../../../constants/url";
-import { useRoute } from "@react-navigation/native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const WalletScreen = ({ navigation }) => {

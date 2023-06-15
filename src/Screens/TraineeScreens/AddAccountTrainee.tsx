@@ -16,6 +16,8 @@ import Colors from "../../constants/Colors";
 import Button from "../../Components/Button";
 import { url } from "../../constants/url";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useGetUserMeQuery } from "../../slice/FitsApi.slice";
+import { getUserAsyncStroage } from "../../common/AsyncStorage";
 
 const AddAccountTrainee = ({ navigation }) => {
   const [cardNumber, setCardNumber] = useState("");
@@ -23,7 +25,10 @@ const AddAccountTrainee = ({ navigation }) => {
   const [expiryYear, setExpiryYear] = useState("");
   const [cvc, setCvc] = useState("");
   const [space, setSpace] = useState(" ");
+  const [userDatax, setUserDatax] = useState();
 
+  const { data: userMeData, isLoading, error, isSuccess } = useGetUserMeQuery({ id: userDatax?.data._id });
+  
   const GoBack = () => {
     navigation.goBack();
   };
@@ -41,43 +46,23 @@ const AddAccountTrainee = ({ navigation }) => {
 
   useEffect(() => {
     navigation.addListener("focus", () => {
-      getUserInfo();
       userMe();
     });
-  }, [getUserInfo]);
+  }, []);
 
-  const getUserInfo = async () => {
-    const userData = await AsyncStorage.getItem("userData");
-    let userDatax = JSON.parse(userData);
-    setToken(userDatax?.access_token);
-  };
+  useEffect(() => {
+    if (userMeData?.success === true) {
+          setData(userMeData?.stripe?.customer?.id);
+        } else {
+          alert(userMeData.errors);
+        }
+  }, [userMeData]);
+
+  
 
   const userMe = async () => {
-    setLoadx(true);
-    const userData = await AsyncStorage.getItem("userData");
-    let userDatax = JSON.parse(userData);
-    await fetch(`${url}/user/me/${userDatax?.data?._id}`, {
-      method: "GET",
-      headers: {
-        Accept: "application/json",
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${userDatax?.access_token}`,
-      },
-    })
-      .then((res) => res.json())
-      .then((res2) => {
-        setLoadx(false);
-        if (res2.success === true) {
-          setData(res2?.stripe?.customer?.id);
-        } else {
-          alert(res2.errors);
-        }
-      })
-      .catch((error) => {
-        setLoadx(false);
-        alert("Something Went Wrong");
-        console.log(error);
-      });
+    const userData=await getUserAsyncStroage()
+    setUserDatax(userData)
   };
 
   const UpdateCard = async () => {
@@ -102,7 +87,7 @@ const AddAccountTrainee = ({ navigation }) => {
         headers: {
           Accept: "application/json",
           "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
+          Authorization: `Bearer ${userDatax?.access_token}`,
         },
         body: JSON.stringify({
           card_number: cardNumber,

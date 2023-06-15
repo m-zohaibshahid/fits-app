@@ -18,15 +18,13 @@ import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityI
 import Entypo from "react-native-vector-icons/Entypo";
 import Fontisto from "react-native-vector-icons/Fontisto";
 import Ionicons from "react-native-vector-icons/Ionicons";
-import FontAwesome from "react-native-vector-icons/FontAwesome";
-import { RFPercentage, RFValue } from "react-native-responsive-fontsize";
+import {  RFValue } from "react-native-responsive-fontsize";
 import * as Images from "../../constants/Images";
-import Header from "../../Components/Header";
-import Button from "../../Components/Button";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { url } from "../../constants/url";
-import { useRoute } from "@react-navigation/native";
 import FastImage from "react-native-fast-image";
+import { useGetUserMeQuery, useUpdatePasswordMutation } from "../../slice/FitsApi.slice";
+import { getUserAsyncStroage } from "../../common/AsyncStorage";
 
 const Account = ({ navigation }) => {
   const [hidePass, setHidePass] = React.useState(true);
@@ -41,65 +39,57 @@ const Account = ({ navigation }) => {
   const [token, setToken] = useState("");
   const [id, setId] = useState("");
 
-  const [data, setData] = useState("");
+  const [userData, setUserData] = useState("");
 
   const [load, setLoad] = useState("");
   const [loadx, setLoadx] = useState("");
+  const [userDatax, setUserDatax] = useState();
 
   const [userCurrentLocation, setUserCurrentLocation] = useState("");
 
   const [oldPassword, setOldPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+  
+  const { data: userMeData, isLoading:isLoading1, error:error1, isSuccess } = useGetUserMeQuery({ id: userDatax?.data._id });
+  
+  const [updatePassword, {  isLoading, error }] = useUpdatePasswordMutation();
+
+
 
   useEffect(() => {
     navigation.addListener("focus", () => {
       getUserInfo();
-      userMe();
     });
-  }, [getUserInfo]);
+  }, []);
+
+  useEffect(() => {
+    userMe();
+  }, [userMeData]);
 
   const getUserInfo = async () => {
-    const userData = await AsyncStorage.getItem("userData");
-    let userDatax = JSON.parse(userData);
-    setToken(userDatax?.access_token);
-    setId(userDatax?.data?._id);
+    const userData=await getUserAsyncStroage()
+    setUserDatax(userData)
+    setToken(userData?.access_token);
+    setId(userData?.userData?._id);
     const userLoc = await AsyncStorage.getItem("userLocation");
     let userLocx = JSON.parse(userLoc);
     console.log(
       userLocx
     );
     setUserCurrentLocation(userLocx);
-    //setEmail(userDatax.data.email);
+    //setEmail(userDatax.userData.email);
   };
 
   const userMe = async () => {
-    setLoadx(true);
-    const userData = await AsyncStorage.getItem("userData");
-    let userDatax = JSON.parse(userData);
-    await fetch(`${url}/user/me/${userDatax?.data?._id}`, {
-      method: "GET",
-      headers: {
-        Accept: "application/json",
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${userDatax?.access_token}`,
-      },
-    })
-      .then((res) => res.json())
-      .then((res2) => {
-        setLoadx(false);
-        if (res2.success === true) {
-          // ToastAndroid.show("User done", ToastAndroid.LONG);
-          setData(res2);
+    
+    
+        if (userMeData.success === true) {
+          setUserData(userMeData);
         } else {
-          alert(res2.errors);
+          alert(userMeData.errors);
         }
-      })
-      .catch((error) => {
-        setLoadx(false);
-        alert("Something Went Wrong");
-        console.log(error);
-      });
+      
   };
   const UpdatePassword = async () => {
     if (oldPassword === "") {
@@ -114,19 +104,24 @@ const Account = ({ navigation }) => {
     } else {
       setLoad(true);
 
-      await fetch(`${url}/profile/edit/password/${id}`, {
-        method: "PUT",
-        headers: {
-          Accept: "application/json",
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify({
-          oldPassword: oldPassword,
-          password: newPassword,
-        }),
-      })
-        .then((res) => res.json())
+      // await fetch(`${url}/profile/edit/password/${id}`, {
+      //   method: "PUT",
+      //   headers: {
+      //     Accept: "application/json",
+      //     "Content-Type": "application/json",
+      //     Authorization: `Bearer ${token}`,
+      //   },
+      //   body: JSON.stringify({
+      //     oldPassword: oldPassword,
+      //     password: newPassword,
+      //   }),
+      // })
+      const body = {
+        oldPassword: oldPassword,
+        password: newPassword,
+      }
+      await updatePassword({ id, ...body })
+      .unwrap()
         .then((res2) => {
           setLoad(false);
           if (res2.success === true) {
@@ -163,10 +158,10 @@ const Account = ({ navigation }) => {
     navigation.navigate("logoutNow");
   };
 
-  const NextScreen = (data) => {
+  const NextScreen = (userData) => {
     navigation.navigate("WalletForTrainee", {
-      Name: data?.personal_info?.name,
-      Email: data?.user?.email,
+      Name: userData?.personal_info?.name,
+      Email: userData?.user?.email,
       Token: token,
     });
   };
@@ -223,7 +218,7 @@ const Account = ({ navigation }) => {
                   alignItems: "center",
                 }}
               >
-                {data?.personal_info?.profileImage ? (
+                {userData?.personal_info?.profileImage ? (
                   <FastImage
                     style={{
                       width: 165,
@@ -231,7 +226,7 @@ const Account = ({ navigation }) => {
                       borderRadius: 200 / 2,
                     }}
                     source={{
-                      uri: `${data?.personal_info?.profileImage}`,
+                      uri: `${userData?.personal_info?.profileImage}`,
                       headers: { Authorization: "someAuthToken" },
                       priority: FastImage.priority.normal,
                     }}
@@ -259,7 +254,7 @@ const Account = ({ navigation }) => {
                     textTransform: "capitalize",
                   }}
                 >
-                  {data?.personal_info?.name}
+                  {userData?.personal_info?.name}
                 </Text>
               </View>
             </View>
@@ -371,7 +366,7 @@ const Account = ({ navigation }) => {
                             textTransform: "capitalize",
                           }}
                         >
-                          {data?.personal_info?.name}
+                          {userData?.personal_info?.name}
                         </Text>
                       </View>
                     </View>
@@ -427,7 +422,7 @@ const Account = ({ navigation }) => {
                             fontFamily: "Poppins-Regular",
                           }}
                         >
-                          {data?.user?.email}
+                          {userData?.user?.email}
                         </Text>
                       </View>
                     </View>
@@ -457,7 +452,7 @@ const Account = ({ navigation }) => {
                             fontFamily: "Poppins-Regular",
                           }}
                         >
-                          {data?.personal_info?.country}
+                          {userData?.personal_info?.country}
                         </Text>
                       </View>
                     </View>
@@ -487,7 +482,7 @@ const Account = ({ navigation }) => {
                             fontFamily: "Poppins-Regular",
                           }}
                         >
-                          {data?.personal_info?.state}
+                          {userData?.personal_info?.state}
                         </Text>
                       </View>
                     </View>
@@ -517,7 +512,7 @@ const Account = ({ navigation }) => {
                             fontFamily: "Poppins-Regular",
                           }}
                         >
-                          {data?.personal_info?.city}
+                          {userData?.personal_info?.city}
                         </Text>
                       </View>
                     </View>
@@ -547,7 +542,7 @@ const Account = ({ navigation }) => {
                             fontFamily: "Poppins-Regular",
                           }}
                         >
-                          {data?.personal_info?.gender}
+                          {userData?.personal_info?.gender}
                         </Text>
                       </View>
                       {/* <Pressable
@@ -592,7 +587,7 @@ const Account = ({ navigation }) => {
                             fontFamily: "Poppins-Regular",
                           }}
                         >
-                          {data?.user?.fitness_level?.key}
+                          {userData?.user?.fitness_level?.key}
                         </Text>
                       </View>
                     </View>
@@ -622,7 +617,7 @@ const Account = ({ navigation }) => {
                             fontFamily: "Poppins-Regular",
                           }}
                         >
-                          {data?.user?.fitness_goal?.key}
+                          {userData?.user?.fitness_goal?.key}
                         </Text>
                       </View>
                     </View>
@@ -637,7 +632,7 @@ const Account = ({ navigation }) => {
             >
               <Pressable
                 onPress={() => {
-                  if (data?.stripe?.card) {
+                  if (userData?.stripe?.card) {
                     navigation.navigate("WalletForTrainee");
                   } else {
                     navigation.navigate("CreateCardTrainee");

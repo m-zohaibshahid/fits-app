@@ -2,25 +2,17 @@ import React, { useState } from "react";
 import {
   Text,
   View,
-  ImageBackground,
-  Pressable,
+ 
   StyleSheet,
-  TextInput,
-  Modal,
-  Image,
-  ScrollView,
+ 
 } from "react-native";
-import AntDesign from "react-native-vector-icons/AntDesign";
 import FontAwesome from "react-native-vector-icons/FontAwesome";
-import { RFPercentage, RFValue } from "react-native-responsive-fontsize";
-import * as Images from "../../constants/Images";
-import Header from "../../Components/Header";
-import Button from "../../Components/Button";
+import {  RFValue } from "react-native-responsive-fontsize";
 import { useRoute } from "@react-navigation/native";
 import { heightPercentageToDP } from "react-native-responsive-screen";
 import moment from "moment";
 
-const About = ({ navigation }) => {
+const About = ({ navigation }:any) => {
   const route = useRoute();
   const GoBack = () => {
     navigation.goBack();

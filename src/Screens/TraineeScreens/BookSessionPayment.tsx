@@ -2,31 +2,26 @@ import React, { useState, useEffect } from "react";
 import {
   Text,
   View,
-  ImageBackground,
-  TouchableOpacity,
   StyleSheet,
-  TextInput,
-  Modal,
-  Alert,
-  Image,
   ScrollView,
-  ToastAndroid,
   Pressable,
   ActivityIndicator,
+  Platform,
 } from "react-native";
 import moment from "moment";
 import AntDesign from "react-native-vector-icons/AntDesign";
 import FontAwesome from "react-native-vector-icons/FontAwesome";
-import { RFPercentage, RFValue } from "react-native-responsive-fontsize";
-import * as Images from "../../constants/Images";
+import {  RFValue } from "react-native-responsive-fontsize";
 import Header from "../../Components/Header";
 import { url } from "../../constants/url";
 import Button from "../../Components/Button";
 import { useRoute } from "@react-navigation/native";
 
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { clockRunning } from "react-native-reanimated";
 import { Toast } from "react-native-toast-message/lib/src/Toast";
+import { useSelector } from "react-redux";
+import { UserDetailInfoInterface } from "../../interfaces";
+import { useGetUserMeQuery } from "../../slice/FitsApi.slice";
 
 const BookSessionPayment = ({ navigation }) => {
   const [details, setDetails] = useState(false);
@@ -37,33 +32,27 @@ const BookSessionPayment = ({ navigation }) => {
 
   const reciverId = route.params?.data.userData.item?.user.cus_id;
 
+  const token: string = useSelector((state: { token: string }) => state.token)
+  const { userInfo } = useSelector((state: Partial<UserDetailInfoInterface>) => state.fitsStore)
+  
+  const { data, isLoading, error, isSuccess } = useGetUserMeQuery({ id: userInfo?._id });
+
+
+
+
   const userMe = async () => {
     setLoad(true);
-    const userData = await AsyncStorage.getItem("userData");
-    let userDatax = JSON.parse(userData);
-    if (userDatax) {
-      await fetch(`${url}/user/me/${userDatax?.data?._id}`, {
-        method: "GET",
-        headers: {
-          Accept: "application/json",
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${userDatax?.access_token}`,
-        },
-      })
-        .then((res) => res.json())
-        .then((res2) => {
-          if (res2?.success) {
-            getStripeCard(res2?.stripe?.card?.customer.id);
-            setSenderId(res2?.stripe?.card?.customer.id);
+    
+     
+        
+          if (data?.success) {
+            getStripeCard(data?.stripe?.card?.customer.id);
+            setSenderId(data?.stripe?.card?.customer.id);
           } else {
           }
-        })
-        .catch((error) => {
-          setLoad(false);
-          console.log(error);
-        });
+       
     }
-  };
+  
 
   const getStripeCard = async (id) => {
     setLoad(true);

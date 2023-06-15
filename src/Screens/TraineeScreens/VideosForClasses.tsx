@@ -4,49 +4,36 @@ import {
   View,
   TouchableOpacity,
   StyleSheet,
-  ScrollView,
   ToastAndroid,
   ActivityIndicator,
 } from "react-native";
-import {
-  widthPercentageToDP as wp,
-  heightPercentageToDP as hp,
-} from "react-native-responsive-screen";
-import {
-  CodeField,
-  Cursor,
-  useBlurOnFulfill,
-  useClearByFocusCell,
-} from "react-native-confirmation-code-field";
 import AntDesign from "react-native-vector-icons/AntDesign";
-import Entypo from "react-native-vector-icons/Entypo";
 import FontAwesome from "react-native-vector-icons/FontAwesome";
-import Octicons from "react-native-vector-icons/Octicons";
-import { RFPercentage, RFValue } from "react-native-responsive-fontsize";
-import { heightPercentageToDP } from "react-native-responsive-screen";
+import {  RFValue } from "react-native-responsive-fontsize";
 import VideoPlayer from "react-native-video-player";
-import * as Images from "../../constants/Images";
-import Header from "../../Components/Header";
-import Button from "../../Components/Button";
 import { url } from "../../constants/url";
-import { useRoute } from "@react-navigation/native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import Pressable from "react-native/Libraries/Components/Pressable/Pressable";
 import Colors from "../../constants/Colors";
+import { getUserAsyncStroage } from "../../common/AsyncStorage";
 
 const VideosForClasses = ({ navigation }) => {
+  
+  const [userDatax, setUserDatax] = useState();
+
+
   useEffect(() => {
     navigation.addListener("focus", () => {
       getUserInfo();
       userMe();
     });
-  }, [getUserInfo]);
+  }, []);
 
   const [token, setToken] = useState("");
 
   const getUserInfo = async () => {
-    const userData = await AsyncStorage.getItem("userData");
-    let userDatax = JSON.parse(userData);
+    const userData=await getUserAsyncStroage()
+    setUserDatax(userData)
     setToken(userDatax?.access_token);
   };
   const userMe = async () => {
@@ -144,7 +131,7 @@ const VideosForClasses = ({ navigation }) => {
           headers: {
             Accept: "application/json",
             "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
+            Authorization: `Bearer ${userDatax?.access_token}`,
           },
           body: JSON.stringify({
             videoId: videoId,
@@ -177,10 +164,11 @@ const VideosForClasses = ({ navigation }) => {
       getAllVideos();
     });
   }, []);
+
   const [videoId, setVideoId] = useState("");
   const getAllVideos = async () => {
-    const userData = await AsyncStorage.getItem("userData");
-    let userDatax = JSON.parse(userData);
+     const userData=await getUserAsyncStroage()
+    setUserDatax(userData)
     setLoad(true);
 
     await fetch(`${url}/video`, {
@@ -188,7 +176,7 @@ const VideosForClasses = ({ navigation }) => {
       headers: {
         Accept: "application/json",
         "Content-Type": "application/json",
-        Authorization: `Bearer ${userDatax.access_token}`,
+        Authorization: `Bearer ${userData?.access_token}`,
       },
     })
       .then((res) => res.json())

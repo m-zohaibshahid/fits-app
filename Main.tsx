@@ -58,6 +58,7 @@ import TrainerVerification from "./src/Screens/TrainerScreens/TrainerVerificatio
 import UpdateProfessioninfo from "./src/Screens/AuthScreens/UpdateProfessioninfo";
 import EnterChatforTrainee from "./src/Screens/TraineeScreens/EnterChatforTrainee";
 import { url } from "./src/constants/url";
+import { useSelector } from "react-redux";
 
 export const MainContext = createContext();
 
@@ -65,35 +66,35 @@ const AuthContext = createContext();
 
 const Stack = createStackNavigator();
 
-function LogoutNow({ navigation }: any) {
+function LogoutNow() {
   const { signOut }: any = useContext(AuthContext);
   return <View>{signOut()}</View>;
 }
 
-function LoginNow({ navigation }: any) {
+function LoginNow() {
   const { Loginx }: any = useContext(AuthContext);
   return <View>{Loginx()}</View>;
 }
 function App() {
   const [unReadMessages, setUnReadMessages] = useState(0);
-  const [token, setToken] = useState();
   const timerRef = useRef<any>(null);
   const delay = 1000; // 1 second delay
-
+  const token: string = useSelector((state: { token: string }) => state.token);
+  
   const [state, dispatch] = useReducer(
     (prevState: any, action: any) => {
       switch (action.type) {
         case "RESTORE_TOKEN":
           return {
             ...prevState,
-            userToken: action.token,
+            userToken: token,
             isLoading: false,
           };
         case "SIGN_IN":
           return {
             ...prevState,
             isSignout: false,
-            userToken: action.token,
+            userToken: token,
           };
         case "SIGN_OUT":
           return {
@@ -110,17 +111,10 @@ function App() {
     }
   );
 
-  const getUserInfo = async () => {
-    const userData: any = await AsyncStorage.getItem("userData");
-    let userDatax = await JSON.parse(userData);
-    setToken(userDatax?.access_token);
-  };
+  
 
   const getAllRomms = async () => {
-    console.log(
-      { token },
-      "=||||||||||||||||||||||||||=||||||||||||||||||||||||||=||||||||||||||||||||||||||=||||||||||||||||||||||||||=||||||||||||||||||||||||||=||||||||||||||||||||||||||=||||||||||||||||||||||||||=||||||||||||||||||||||||||=||||||||||||||||||||||||||=||||||||||||||||||||||||||=||||||||||||||||||||||||||=||||||||||||||||||||||||||=||||||||||||||||||||||||||=||||||||||||||||||||||||||=||||||||||||||||||||||||||=||||||||||||||||||||||||||=||||||||||||||||||||||||||=||||||||||||||||||||||||||=||||||||||||||||||||||||||=||||||||||||||||||||||||||=||||||||||||||||||||||||||=||||||||||||||||||||||||||=||||||||||||||||||||||||||=||||||||||||||||||||||||||=||||||||||||||||||||||||||=||||||||||||||||||||||||||=||||||||||||||||||||||||||=||||||||||||||||||||||||||=||||||||||||||||||||||||||=||||||||||||||||||||||||||=||||||||||||||||||||||||||=||||||||||||||||||||||||||=||||||||||||||||||||||||||=||||||||||||||||||||||||||=||||||||||||||||||||||||||=||||||||||||||||||||||||||"
-    );
+    
     await fetch(`${url}/chat/rooms`, {
       method: "POST",
       headers: {
@@ -145,7 +139,6 @@ function App() {
   };
 
   useEffect(() => {
-    getUserInfo();
     let interval = setTimeout(() => {
       getAllRomms();
     }, 500);
@@ -155,9 +148,6 @@ function App() {
   useEffect(() => {
     timerRef.current = setTimeout(() => {
       // Code to run after delay
-      console.log(
-        "useEffect ran after 1 secondddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd"
-      );
       getAllRomms();
     }, delay);
 
@@ -165,7 +155,7 @@ function App() {
     return () => clearTimeout(timerRef.current);
   }, []);
 
-  useEffect(async () => {
+  useEffect(() => {
     const bootstrapAsync = async () => {
       let userToken;
       try {
@@ -184,7 +174,7 @@ function App() {
         dispatch({ type: "SIGN_IN", token: "dummy-auth-token" });
       },
       signOut: () => dispatch({ type: "SIGN_OUT" }),
-      signUp: async (data) => {
+      signUp: async () => {
         dispatch({ type: "SIGN_IN", token: "dummy-auth-token" });
       },
     }),
