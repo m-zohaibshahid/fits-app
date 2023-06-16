@@ -2,7 +2,6 @@ import React, { useState, useEffect } from "react";
 import {
   Text,
   View,
-  ImageBackground,
   Pressable,
   StyleSheet,
   TextInput,
@@ -21,7 +20,6 @@ import Ionicons from "react-native-vector-icons/Ionicons";
 import {  RFValue } from "react-native-responsive-fontsize";
 import * as Images from "../../constants/Images";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { url } from "../../constants/url";
 import FastImage from "react-native-fast-image";
 import { useGetUserMeQuery, useUpdatePasswordMutation } from "../../slice/FitsApi.slice";
 import { getUserAsyncStroage } from "../../common/AsyncStorage";
@@ -41,7 +39,7 @@ const Account = ({ navigation }) => {
 
   const [userData, setUserData] = useState("");
 
-  const [load, setLoad] = useState("");
+  const [load, setLoad] = useState(false);
   const [loadx, setLoadx] = useState("");
   const [userDatax, setUserDatax] = useState();
 
@@ -104,18 +102,7 @@ const Account = ({ navigation }) => {
     } else {
       setLoad(true);
 
-      // await fetch(`${url}/profile/edit/password/${id}`, {
-      //   method: "PUT",
-      //   headers: {
-      //     Accept: "application/json",
-      //     "Content-Type": "application/json",
-      //     Authorization: `Bearer ${token}`,
-      //   },
-      //   body: JSON.stringify({
-      //     oldPassword: oldPassword,
-      //     password: newPassword,
-      //   }),
-      // })
+     
       const body = {
         oldPassword: oldPassword,
         password: newPassword,
@@ -370,33 +357,7 @@ const Account = ({ navigation }) => {
                         </Text>
                       </View>
                     </View>
-                    {/* <View
-                    style={{
-                      marginTop: 10,
-                      width: '100%',
-                      flexDirection: 'row',
-                    }}>
-                    <View style={{width: '50%'}}>
-                      <Text
-                        style={{
-                          color: '#fff',
-                          fontSize: RFValue(15, 580),
-                          fontFamily: 'Poppins-Regular',
-                        }}>
-                        Username
-                      </Text>
-                    </View>
-                    <View style={{width: '50%', alignItems: 'flex-end'}}>
-                      <Text
-                        style={{
-                          color: '#fff',
-                          fontSize: RFValue(12, 580),
-                          fontFamily: 'Poppins-Regular',
-                        }}>
-                        Saif908
-                      </Text>
-                    </View>
-                  </View> */}
+                    
                     <View
                       style={{
                         marginTop: 10,
@@ -545,21 +506,7 @@ const Account = ({ navigation }) => {
                           {userData?.personal_info?.gender}
                         </Text>
                       </View>
-                      {/* <Pressable
-                      onPress={() => {
-                        setGender(!gender);
-                        setModalVisible(true);
-                      }}
-                      style={{width: '50%', alignItems: 'flex-end'}}>
-                      <Text
-                        style={{
-                          color: '#fff',
-                          fontSize: RFValue(12, 580),
-                          fontFamily: 'Poppins-Regular',
-                        }}>
-                        <Entypo name={gender ? 'chevron-down' : 'down'} /> Male
-                      </Text>
-                    </Pressable> */}
+                     
                     </View>
                     <View
                       style={{

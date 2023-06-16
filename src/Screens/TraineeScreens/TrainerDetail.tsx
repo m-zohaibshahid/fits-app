@@ -2,12 +2,10 @@ import React, { useState, useEffect } from "react";
 import {
   Text,
   View,
-  ImageBackground,
   TouchableOpacity,
   StyleSheet,
   TextInput,
   Modal,
-  Image,
   ToastAndroid,
   ActivityIndicator,
   Platform,
@@ -16,20 +14,20 @@ import { ScrollView } from "react-native-gesture-handler";
 import AntDesign from "react-native-vector-icons/AntDesign";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
-import { RFPercentage, RFValue } from "react-native-responsive-fontsize";
+import {  RFValue } from "react-native-responsive-fontsize";
 import About from "./About";
 import Videos2 from "./Videos2";
 import Ratings from "./Ratings";
 import Schedule from "./Schedule";
-import * as Images from "../../constants/Images";
-import Header from "../../Components/Header";
-import Button from "../../Components/Button";
 import { url } from "../../constants/url";
 import { useRoute } from "@react-navigation/native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import FastImage from "react-native-fast-image";
 import Entypo from "react-native-vector-icons/Entypo";
 import Pressable from "react-native/Libraries/Components/Pressable/Pressable";
+import { useSelector } from "react-redux";
+import { UserDetailInfoInterface } from "../../interfaces";
+import { useGetUserMeQuery } from "../../slice/FitsApi.slice";
 
 const TrainerDetail = ({ navigation }) => {
   const [modalVisiblex, setModalVisiblex] = useState(false);
@@ -39,12 +37,13 @@ const TrainerDetail = ({ navigation }) => {
   const [video, setVideo] = useState(false);
   const [ratings, setRatings] = useState(false);
 
+
   const GoBack = () => {
     navigation.goBack();
   };
   const NextScreen = () => {
     navigation.navigate("Chat", {
-      TRAINERID: route.params.trainerId,
+      TRAINERID: route?.params?.trainerId,
     });
   };
   const Api = () => {
@@ -75,38 +74,25 @@ const TrainerDetail = ({ navigation }) => {
     setRatings(true);
   };
 
-  const [loadxx, setLoadxx] = useState(false);
 
   const [loade, setLoade] = useState(false);
-
   const [load, setLoad] = useState(false);
-
   const [data, setData] = useState(false);
-
   const [id, setId] = useState("");
   const [token, setToken] = React.useState("");
-
-  const [sessionId, setSessionId] = useState("");
   const [trainerId, setTrainerId] = useState("");
-
   const [mesage, setMesage] = useState("");
 
+  const { userInfo } = useSelector((state: Partial<UserDetailInfoInterface>) => state.fitsStore)
+  const { data:userMeData, isLoading, error, isSuccess } = useGetUserMeQuery({ id: userInfo?._id });
   useEffect(() => {
     navigation.addListener("focus", () => {
-      setSessionId(route?.params?.sessionId);
       setTrainerId(route?.params?.trainerId);
-      getUserInfo();
       userMe();
-      // ChatRoom();
     });
-  }, [getUserInfo]);
+  }, []);
 
-  const getUserInfo = async () => {
-    const userData = await AsyncStorage.getItem("userData");
-    let userDatax = JSON.parse(userData);
-    setToken(userDatax?.access_token);
-    setId(userDatax?.data?._id);
-  };
+  
 
   const chatRoomCreate = async () => {
     const userData = await AsyncStorage.getItem("userData");
@@ -151,7 +137,7 @@ const TrainerDetail = ({ navigation }) => {
         headers: {
           Accept: "application/json",
           "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
+          Authorization: `Bearer ${userInfo.access_token}`,
         },
         body: JSON.stringify({
           message: mesage,
@@ -177,29 +163,12 @@ const TrainerDetail = ({ navigation }) => {
     }
   };
   const userMe = async () => {
-    const userData = await AsyncStorage.getItem("userData");
-    let userDatax = JSON.parse(userData);
-    await fetch(`${url}/user/me/${userDatax?.data?._id}`, {
-      method: "GET",
-      headers: {
-        Accept: "application/json",
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${userDatax?.access_token}`,
-      },
-    })
-      .then((res) => res.json())
-      .then((res2) => {
-        console.log(res2.message);
-        if (res2.success === true) {
-          setData(res2);
+        if (userMeData.success === true) {
+          setData(userMeData);
         } else {
-          ToastAndroid.show(res2.message, ToastAndroid.LONG);
+          ToastAndroid.show(userMeData.message, ToastAndroid.LONG);
         }
-      })
-      .catch((error) => {
-        alert("Something Went Wrong");
-        console.log(error);
-      });
+      
   };
   return (
     <View style={styles.container}>
@@ -446,15 +415,15 @@ const TrainerDetail = ({ navigation }) => {
           </View>
         </View>
         {/*Start Navigation Screen*/}
-        {about ? <About navigation={navigation} token={token} id={id} /> : null}
+        {about ? <About navigation={navigation} token={userInfo.access_token} id={userInfo._id} /> : null}
         {schedule ? (
-          <Schedule navigation={navigation} token={token} id={id} />
+          <Schedule navigation={navigation}  />
         ) : null}
         {video ? (
-          <Videos2 navigation={navigation} token={token} id={id} />
+          <Videos2 navigation={navigation} token={userInfo.access_token} id={userInfo._id} />
         ) : null}
         {ratings ? (
-          <Ratings navigation={navigation} token={token} id={id} />
+          <Ratings navigation={navigation} token={userInfo.access_token} id={id} />
         ) : null}
         {/*End Navigation Screen*/}
         <View style={{ paddingVertical: 10 }} />
@@ -645,8 +614,7 @@ const styles = StyleSheet.create({
     elevation: 5,
     height: 42,
     justifyContent: "center",
-    // paddingHorizontal: wp(5),
-    // marginVertical: hp(0.5),
+   
     paddingHorizontal: 5,
     marginVertical: 0.5,
   },

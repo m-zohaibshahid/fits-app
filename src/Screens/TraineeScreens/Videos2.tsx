@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Text,
   View,
@@ -22,7 +22,7 @@ const Videos2 = ({ navigation }) => {
   const [subscribedVideos, setSubscribedVideos] = useState([]);
   const route = useRoute();
 
-  const getSubscribedVideo = async (id) => {
+  const getSubscribedVideo = async () => {
     const userData = await AsyncStorage.getItem("userData");
     let userDatax = JSON.parse(userData);
     JSON.stringify(setSubscribedVideos([]));
@@ -175,9 +175,6 @@ const Videos2 = ({ navigation }) => {
                     <Text style={styles.destTextStyles}>
                       {item.video_details}{" "}
                     </Text>
-                    {
-                      console.log("'''''''''''yyyyyy''''''''''''''''", subscribedVideos.includes(item.video_links[0]) ? true : false, typeof item.video_links[0])
-                    }
                     {subscribedVideos?.length > 0 && subscribedVideos.includes(item?.video_links[0]) ?
                       <View style={styles.btnBook} >
                         <Button label="Book Now" onPress={() => setModalVisible(true)} />

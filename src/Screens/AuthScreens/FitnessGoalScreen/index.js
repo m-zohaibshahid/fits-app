@@ -183,7 +183,6 @@ const FitnessGoalScreen = ({ navigation }) => {
       })
       .catch((error) => {
         setLoadx(false);
-        //alert('Something Went Wrong');
         console.log(error);
       });
   };

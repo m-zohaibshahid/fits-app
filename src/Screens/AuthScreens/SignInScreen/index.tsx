@@ -7,6 +7,7 @@ import {
   ScrollView,
   ToastAndroid,
   Modal,
+  Platform,
 } from "react-native";
 import Ionicons from "react-native-vector-icons/Ionicons";
 import Header from "../../../Components/Header";

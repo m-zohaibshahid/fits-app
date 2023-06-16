@@ -24,7 +24,6 @@ const AddAccountTrainee = ({ navigation }) => {
   const [expiryMonth, setExpiryMonth] = useState("");
   const [expiryYear, setExpiryYear] = useState("");
   const [cvc, setCvc] = useState("");
-  const [space, setSpace] = useState(" ");
   const [userDatax, setUserDatax] = useState();
 
   const { data: userMeData, isLoading, error, isSuccess } = useGetUserMeQuery({ id: userDatax?.data._id });

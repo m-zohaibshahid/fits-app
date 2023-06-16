@@ -15,7 +15,7 @@ import {  RFValue } from "react-native-responsive-fontsize";
 import Header from "../../Components/Header";
 import { url } from "../../constants/url";
 import Button from "../../Components/Button";
-import { useRoute } from "@react-navigation/native";
+import { useNavigation, useRoute } from "@react-navigation/native";
 
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Toast } from "react-native-toast-message/lib/src/Toast";
@@ -23,16 +23,16 @@ import { useSelector } from "react-redux";
 import { UserDetailInfoInterface } from "../../interfaces";
 import { useGetUserMeQuery } from "../../slice/FitsApi.slice";
 
-const BookSessionPayment = ({ navigation }) => {
+const BookSessionPayment = () => {
+  const navigation = useNavigation();
   const [details, setDetails] = useState(false);
   const [load, setLoad] = useState(false);
   const [cardData, setCardData] = useState();
   const [senderId, setSenderId] = useState();
   const route = useRoute();
 
-  const reciverId = route.params?.data.userData.item?.user.cus_id;
+ const reciverId = route.params?.data.userData.item?.user.cus_id;
 
-  const token: string = useSelector((state: { token: string }) => state.token)
   const { userInfo } = useSelector((state: Partial<UserDetailInfoInterface>) => state.fitsStore)
   
   const { data, isLoading, error, isSuccess } = useGetUserMeQuery({ id: userInfo?._id });
@@ -42,9 +42,6 @@ const BookSessionPayment = ({ navigation }) => {
 
   const userMe = async () => {
     setLoad(true);
-    
-     
-        
           if (data?.success) {
             getStripeCard(data?.stripe?.card?.customer.id);
             setSenderId(data?.stripe?.card?.customer.id);
@@ -81,14 +78,13 @@ const BookSessionPayment = ({ navigation }) => {
     }
   };
   const BookASession = async () => {
-    const userData = await AsyncStorage.getItem("userData");
-    let userDatax = JSON.parse(userData);
+  
     await fetch(`${url}/book-a-session`, {
       method: "POST",
       headers: {
         Accept: "application/json",
         "Content-Type": "application/json",
-        Authorization: `Bearer ${userDatax?.access_token}`,
+        Authorization: `Bearer ${userInfo?.access_token}`,
       },
       body: JSON.stringify({
         sessionId: route?.params?.data?.sessionId,
@@ -277,8 +273,7 @@ const BookSessionPayment = ({ navigation }) => {
                           <Text style={styles.textstyle}>
                             Type:{"\n"}{" "}
                             {
-                              route.params?.data.userData.item?.session_type
-                                .type
+                              route.params?.data.userData.item?.session_type.type
                             }
                           </Text>
                         </View>

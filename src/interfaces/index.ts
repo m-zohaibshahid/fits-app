@@ -1,5 +1,7 @@
+import { ReactNode } from "react";
+
 /* eslint-disable prettier/prettier */
-export interface SelectStatusesDataInterface {
+export interface SelectStatusesUserDataInterfaceInterface {
   id: number;
   content: string;
   title: string;
@@ -7,14 +9,19 @@ export interface SelectStatusesDataInterface {
 
 export interface UserDetailInfoInterface {
   access_token: string;
-  user: Data;
+  user: UserDataInterface;
   login: boolean;
   message: string;
   profile_completed: boolean;
   profile_status?: ProfileStatus;
 }
 
-export interface Data {
+export interface UserDataInterface {
+  user: any;
+  image: any;
+  price: ReactNode;
+  class_title: ReactNode;
+  session_type: any;
   _id: string;
   accountVerified: string;
   amount: number;
@@ -75,3 +82,6 @@ export interface UserInterface {
   trainerVerified: string
 }
 
+export interface UserDetail {
+  userInfo: UserDataInterface
+}

@@ -20,13 +20,16 @@ const Sorts = [
     Name: "Highest rating",
   },
 ];
-const Sort = (props, { navigation }) => {
+const Sort = (props: { ClassSorts: any; }) => {
+  
   const { ClassSorts } = props;
-  const detailsInfoCall = (item) => {
+
+  const detailsInfoCall = (item: string) => {
     if (item !== "") {
       ClassSorts(item);
     }
   };
+
   return (
     <ScrollView style={styles.marginView}>
       <Text style={styles.SortText}>Sort </Text>

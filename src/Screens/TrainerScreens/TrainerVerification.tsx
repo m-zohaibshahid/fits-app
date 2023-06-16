@@ -2,7 +2,6 @@ import React, { useState, useEffect } from "react";
 import {
   Text,
   View,
-  ImageBackground,
   Pressable,
   StyleSheet,
   TextInput,
@@ -11,19 +10,13 @@ import {
   ActivityIndicator,
   Platform,
   Image,
-  Modal,
 } from "react-native";
-import Colors from "../../constants/Colors";
 import ImagePicker from "react-native-image-crop-picker";
 import {
   widthPercentageToDP as wp,
   heightPercentageToDP as hp,
 } from "react-native-responsive-screen";
-import AntDesign from "react-native-vector-icons/AntDesign";
-import FontAwesome from "react-native-vector-icons/FontAwesome";
-import Octicons from "react-native-vector-icons/Octicons";
-import { RFPercentage, RFValue } from "react-native-responsive-fontsize";
-import { heightPercentageToDP } from "react-native-responsive-screen";
+import {  RFValue } from "react-native-responsive-fontsize";
 import * as Images from "../../constants/Images";
 import Header from "../../Components/Header";
 import Button from "../../Components/Button";
@@ -40,7 +33,7 @@ const TrainerVerification = ({ navigation }) => {
     navigation.addListener("focus", () => {
       getUserInfo();
     });
-  }, [getUserInfo]);
+  }, []);
 
   const [token, setToken] = useState("");
   const [id, setId] = useState("");
@@ -65,8 +58,6 @@ const TrainerVerification = ({ navigation }) => {
           uri: file.path,
           type: "image/png",
           name: `image.png`,
-          //type: `test/${file.path.split(".")[1]}`,
-          //name: `test.${file.path.split(".")[1]}`,
         };
         uploadImageOnCloud(newFile);
         setImage(file.path);
@@ -373,7 +364,6 @@ const styles = StyleSheet.create({
     height: 100,
     width: "100%",
     justifyContent: "center",
-    // alignItems: 'center',
   },
   TopView: {
     width: "100%",

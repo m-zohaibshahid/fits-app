@@ -1,38 +1,31 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import {
   Text,
   View,
-  ImageBackground,
   Pressable,
   StyleSheet,
   TextInput,
-  Modal,
   Image,
   ScrollView,
   ToastAndroid,
   ActivityIndicator,
-  Platform,
 } from "react-native";
 import AntDesign from "react-native-vector-icons/AntDesign";
 import Entypo from "react-native-vector-icons/Entypo";
-import { RFPercentage, RFValue } from "react-native-responsive-fontsize";
+import {  RFValue } from "react-native-responsive-fontsize";
 
-import * as Images from "../../constants/Images";
-import Header from "../../Components/Header";
-import Button from "../../Components/Button";
 import { url } from "../../constants/url";
-import { useRoute } from "@react-navigation/native";
-import AsyncStorage from "@react-native-async-storage/async-storage";
+import { ParamListBase, RouteProp, useRoute } from "@react-navigation/native";
 
 const Ratings = ({ navigation, token, id }) => {
-  const route = useRoute();
+  const route:RouteProp<ParamListBase> = useRoute();
 
   const [details, setDetails] = useState(false);
-  const [one, setOne] = useState("");
-  const [two, setTwo] = useState("");
-  const [three, setThree] = useState("");
-  const [four, setFour] = useState("");
-  const [five, setFive] = useState("");
+  const [one, setOne] = useState(false);
+  const [two, setTwo] = useState(false);
+  const [three, setThree] = useState(false);
+  const [four, setFour] = useState(false);
+  const [five, setFive] = useState(false);
 
   const oneInfo = async () => {
     setOne(true);

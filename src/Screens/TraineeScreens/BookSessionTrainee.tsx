@@ -2,37 +2,24 @@ import React, { useState } from "react";
 import {
   Text,
   View,
-  ImageBackground,
   TouchableOpacity,
   StyleSheet,
   TextInput,
-  Modal,
-  Image,
   ScrollView,
 } from "react-native";
 import AntDesign from "react-native-vector-icons/AntDesign";
-import FontAwesome from "react-native-vector-icons/FontAwesome";
-import { RFPercentage, RFValue } from "react-native-responsive-fontsize";
+import {  RFValue } from "react-native-responsive-fontsize";
 import {
-  Calendar,
-  CalendarList,
-  Agenda,
-  ExpandableCalendar,
-  Timeline,
-  CalendarProvider,
+  Calendar
 } from "react-native-calendars";
-import * as Images from "../../constants/Images";
 import Header from "../../Components/Header";
-import Button from "../../Components/Button";
 
 const BookSessionTrainee = ({ navigation }) => {
-  const [currentDate, setCurrentDate] = useState();
+  const [currentDate, setCurrentDate] = useState<any>();
   const GoBack = () => {
     navigation.goBack();
   };
-  const NextScreen = () => {
-    navigation.navigate("");
-  };
+  
   return (
     <View style={styles.container}>
       <View style={styles.header}>
@@ -64,11 +51,11 @@ const BookSessionTrainee = ({ navigation }) => {
                 </View>
               </View>
               {/*end Already booked*/}
-              <View style={styles.CalendarView}>
+              <View>
                 <Calendar
                   markingType={"custom"}
-                  onDayPress={(day) => {
-                    setCurrentDate(day.dateString);
+                  onDayPress={(day:{dateString:any}) => {
+                    setCurrentDate(day?.dateString);
                   }}
                   firstDay={1}
                   markedDates={{

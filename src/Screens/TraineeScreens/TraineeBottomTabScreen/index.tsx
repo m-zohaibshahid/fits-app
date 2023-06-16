@@ -16,7 +16,7 @@ import { Platform } from "react-native";
 
 const Tab = createBottomTabNavigator();
 
-const TraineeBottomTabScreen = ({ navigation }) => {
+const TraineeBottomTabScreen = () => {
   return (
     <Tab.Navigator
       screenOptions={({ route }) => {

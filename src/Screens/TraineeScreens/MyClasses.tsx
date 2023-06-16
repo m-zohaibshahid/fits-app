@@ -22,12 +22,6 @@ const MyClasses = ({ navigation }) => {
     setScheduledClasses(false);
     setVideos(true);
   };
-  const GoBack = () => {
-    navigation.goBack();
-  };
-  const NextScreen = () => {
-    navigation.navigate("");
-  };
 
   return (
     <View style={styles.container}>

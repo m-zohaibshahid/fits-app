@@ -5,25 +5,18 @@ import {
   ImageBackground,
   Pressable,
   StyleSheet,
-  TextInput,
-  Modal,
-  Image,
+
   ScrollView,
   ToastAndroid,
 } from "react-native";
-import Entypo from "react-native-vector-icons/Entypo";
 import AntDesign from "react-native-vector-icons/AntDesign";
 import EvilIcons from "react-native-vector-icons/EvilIcons";
-import { RFPercentage, RFValue } from "react-native-responsive-fontsize";
-import * as Images from "../../constants/Images";
-import Header from "../../Components/Header";
-import Button from "../../Components/Button";
+import {  RFValue } from "react-native-responsive-fontsize";
 import { url } from "../../constants/url";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { getDistance, getPreciseDistance } from "geolib";
+import { getDistance } from "geolib";
 
 const Recommended = ({ navigation, superLong, superLat }) => {
-  const [distance, setDistance] = useState([]);
   const [data, setData] = useState([]);
   const [personalInfoData, setPersonalInfoData] = useState([]);
   const [professionalData, setProfessionalData] = useState([]);

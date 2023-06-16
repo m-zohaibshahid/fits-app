@@ -14,12 +14,7 @@ import moment from "moment";
 
 const About = ({ navigation }:any) => {
   const route = useRoute();
-  const GoBack = () => {
-    navigation.goBack();
-  };
-  const NextScreen = () => {
-    navigation.navigate("");
-  };
+
   return (
     <View style={styles.container}>
       {/*Start BoxView*/}

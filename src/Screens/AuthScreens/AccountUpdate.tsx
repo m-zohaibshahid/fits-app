@@ -2,9 +2,7 @@ import React, { useState, useEffect } from "react";
 import {
   Text,
   View,
-  ImageBackground,
   Pressable,
-  StyleSheet,
   TextInput,
   Modal,
   Image,
@@ -12,19 +10,12 @@ import {
   ToastAndroid,
   ActivityIndicator,
   TouchableOpacity,
-  Platform,
 } from "react-native";
-import {
-  CodeField,
-  Cursor,
-  useBlurOnFulfill,
-  useClearByFocusCell,
-} from "react-native-confirmation-code-field";
 import FastImage from "react-native-fast-image";
 import CountryPicker from "react-native-country-picker-modal";
 import ImagePicker from "react-native-image-crop-picker";
 import moment from "moment";
-import { RFPercentage, RFValue } from "react-native-responsive-fontsize";
+import { RFValue } from "react-native-responsive-fontsize";
 import Entypo from "react-native-vector-icons/Entypo";
 import DatePicker from "react-native-date-picker";
 import * as Images from "../../constants/Images";
@@ -32,12 +23,20 @@ import Header from "../../Components/Header";
 import Colors from "../../constants/Colors";
 import Button from "../../Components/Button";
 import { url } from "../../constants/url";
-import { useRoute } from "@react-navigation/native";
+import { useNavigation } from "@react-navigation/native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useGetUserMeQuery } from "../../slice/FitsApi.slice";
 import { getUserAsyncStroage } from "../../common/AsyncStorage";
+import { UserDetail } from "../../interfaces";
+import { useSelector } from "react-redux";
+import styles from "./SplashScreen/style";
 
-const AccountUpdate = ({ navigation }) => {
+
+
+
+const AccountUpdate = () => {
+  const navigation = useNavigation()
+  const { userInfo } = useSelector((state:{ fitsStore:Partial<UserDetail>}) => state.fitsStore)
   const [modalVisible, setModalVisible] = useState(false);
   const [modalVisibleDate, setModalVisibleDate] = useState(false);
   const [data, setData] = useState(true);
@@ -57,7 +56,7 @@ const AccountUpdate = ({ navigation }) => {
   const [userDatax, setUserDatax] = useState();
 
   const [isCountryVisible, setIsCountryVisible] = React.useState(false);
-  const { data:userMeData, isLoading, error, isSuccess } = useGetUserMeQuery({ id: userDatax?.data._id });
+  const { data:userMeData } = useGetUserMeQuery({ id: userInfo?._id });
 
   const [load, setLoad] = useState(false);
   const [loadx, setLoadx] = useState(false);
@@ -77,7 +76,6 @@ const AccountUpdate = ({ navigation }) => {
     setUserDatax(userData)
     
     setToken(userData?.access_token);
-    setId(userData?.data?._id);
   };
 
   const onPressFlag = () => {
@@ -85,8 +83,7 @@ const AccountUpdate = ({ navigation }) => {
   };
 
   const CELL_COUNT = 5;
-  const [value, setValue] = useState("");
-  const ref = useBlurOnFulfill({ value, cellCount: CELL_COUNT });
+  const value = "";
   const GoBack = () => {
     navigation.goBack();
   };
@@ -94,7 +91,7 @@ const AccountUpdate = ({ navigation }) => {
     await AsyncStorage.setItem("userPersonalInfo", JSON.stringify(data));
     userMe();
   };
-  // update account
+
   const accountUpdate = async () => {
     setLoad(true);
     await fetch(`${url}/personal/${userId}`, {
@@ -112,7 +109,6 @@ const AccountUpdate = ({ navigation }) => {
         city: city,
         phoneNumber: phoneNumber,
         gender: gender,
-        phoneNumber: phoneNumber,
         profileImage: cloudImageUrl,
       }),
     })
@@ -126,7 +122,7 @@ const AccountUpdate = ({ navigation }) => {
           ToastAndroid.show(res2.message, ToastAndroid.LONG);
         }
       })
-      .catch((error) => {
+      .catch(() => {
         setLoad(false);
         alert("Something Went Wrong");
       });
@@ -192,7 +188,6 @@ const AccountUpdate = ({ navigation }) => {
           setDate(userMeData?.personal_info?.date_of_birth);
           setImage(userMeData?.personal_info?.profileImage);
           setCloudImageUrl(userMeData?.personal_info?.profileImage);
-          setData(userMeData);
         } else {
           alert(userMeData.errors);
         }
@@ -273,7 +268,7 @@ const AccountUpdate = ({ navigation }) => {
                   <Text style={styles.inputnameText}>Fullname</Text>
                 </View>
                 <View style={styles.textinputView}>
-                  <TextInput
+                   <TextInput
                     style={styles.inputEmail}
                     placeholder="Enter Full name"
                     placeholderTextColor="white"
@@ -554,7 +549,6 @@ const AccountUpdate = ({ navigation }) => {
                         <Pressable
                           onPress={() => {
                             setModalVisibleDate(false);
-                            setData(false);
                           }}
                           style={styles.canceldoneView}
                         >

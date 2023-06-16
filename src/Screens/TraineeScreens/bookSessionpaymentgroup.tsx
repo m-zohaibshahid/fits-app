@@ -2,19 +2,14 @@ import React, {useState} from 'react';
 import {
   Text,
   View,
-  ImageBackground,
-  TouchableOpacity,
   StyleSheet,
-  TextInput,
-  Modal,
-  Image,
   ScrollView,
   Pressable,
+  Platform,
 } from 'react-native';
 import AntDesign from 'react-native-vector-icons/AntDesign';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
-import {RFPercentage, RFValue} from 'react-native-responsive-fontsize';
-import * as Images from '../../constants/Images';
+import { RFValue} from 'react-native-responsive-fontsize';
 import Header from '../../Components/Header';
 import Button from '../../Components/Button';
 

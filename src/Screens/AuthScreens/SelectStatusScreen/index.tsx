@@ -5,13 +5,17 @@ import SelectStatusCard from "../../../Organisms/SelectStatusCard";
 import { selectStatusesData } from "../../../constants/utilities";
 import Button from "../../../Components/Button";
 import styles from "./styles";
+import { NavigationSwitchProp } from "react-navigation";
+interface Props {
+  navigation: NavigationSwitchProp;
+} 
 
-const SelectStatusScreen = ({ navigation }) => {
+const SelectStatusScreen:React.FC<Props> = ({ navigation }) => {
   // Hooks
 
   const [selectedIndex, setSelectedIndex] = useState();
   const [disable, setDisable] = useState(false);
-  const [selectedItem, setSelectedItem] = useState();
+  const [selectedItem, setSelectedItem] = useState<{title:string}>();
 
   // Functions
   const goNext = () => {
@@ -33,7 +37,7 @@ const SelectStatusScreen = ({ navigation }) => {
     }
   };
 
-  const selectItem = (i, item) => {
+  const selectItem = (i: React.SetStateAction<undefined>, item: React.SetStateAction<{ title: string; } | undefined>) => {
     setSelectedItem(item);
     setSelectedIndex(i);
     setDisable(true);

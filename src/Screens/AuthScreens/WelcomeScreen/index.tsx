@@ -5,7 +5,13 @@ import * as Images from '../../../constants/Images';
 import Button from '../../../Components/Button';
 import styles from './styles';
 
-const WelcomeScreen = ({navigation}: any) => {
+import { NavigationSwitchProp } from 'react-navigation';
+
+interface Props {
+  navigation: NavigationSwitchProp;
+}
+
+const WelcomeScreen:React.FC<Props> = ({navigation}) => {
   // Functions
   const goToNext = () => {
     return navigation.navigate('SelectStatusScreen');

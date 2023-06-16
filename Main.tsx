@@ -58,12 +58,11 @@ import TrainerVerification from "./src/Screens/TrainerScreens/TrainerVerificatio
 import UpdateProfessioninfo from "./src/Screens/AuthScreens/UpdateProfessioninfo";
 import EnterChatforTrainee from "./src/Screens/TraineeScreens/EnterChatforTrainee";
 import { url } from "./src/constants/url";
-import { useSelector } from "react-redux";
+import {  useSelector } from "react-redux";
 
 export const MainContext = createContext();
 
 const AuthContext = createContext();
-
 const Stack = createStackNavigator();
 
 function LogoutNow() {
@@ -165,6 +164,7 @@ function App() {
       }
       dispatch({ type: "RESTORE_TOKEN", token: userToken });
     };
+
     bootstrapAsync();
   }, []);
 

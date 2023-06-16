@@ -16,13 +16,14 @@ import {
 import {RFValue} from 'react-native-responsive-fontsize';
 import Header from '../../../Components/Header';
 import Button from '../../../Components/Button';
-import {useRoute} from '@react-navigation/native';
+import {useNavigation, useRoute} from '@react-navigation/native';
 import {url} from '../../../constants/url';
 import styles from './styles';
 import {Toast} from 'react-native-toast-message/lib/src/Toast';
 
-const ForgotCode = ({navigation}) => {
+const ForgotCode = () => {
   const route: any = useRoute();
+  const navigation = useNavigation()
   const [load, setLoad] = useState(false);
   const [code, setCode] = useState('0000');
   const [loadx, setLoadx] = useState(false);

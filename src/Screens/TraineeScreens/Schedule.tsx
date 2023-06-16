@@ -22,16 +22,13 @@ const Schedule = ({ navigation }) => {
   const route = useRoute();
   const [details, setDetails] = useState(false);
   const [currentDate, setCurrentDate] = useState();
-  const GoBack = () => {
-    navigation.goBack();
-  };
+  
   const goToNextScreen = () => {
     navigation.navigate("BookSessionPayment", {
       data: route?.params,
     });
   };
 
-  const [loadxx, setLoadxx] = useState(false);
   const [card, setCard] = useState("");
   const [sessionId, setSessionId] = useState("");
   const [trainerId, setTrainerId] = useState("");

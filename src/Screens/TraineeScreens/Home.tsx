@@ -34,9 +34,9 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import Geolocation from "react-native-geolocation-service";
 import Geocoder from "react-native-geocoder";
 import FastImage from "react-native-fast-image";
-import { useConnectAccountLinkQuery, useGetUserMeQuery, useSessionsQuery, useStripeCustomerMutation, useUpdateFilterMutation } from "../../slice/FitsApi.slice";
+import {  useGetUserMeQuery,  useStripeCustomerMutation, useUpdateFilterMutation } from "../../slice/FitsApi.slice";
 import { useSelector } from "react-redux";
-import { UserDetailInfoInterface } from "../../interfaces";
+import { UserDataInterface, UserDetail, UserDetailInfoInterface } from "../../interfaces";
 
 const Home = ({ navigation }:any) => {
   // states
@@ -61,18 +61,14 @@ const Home = ({ navigation }:any) => {
   const [m, setM] = useState("");
 
   const token:string  = useSelector((state: {token:string}) => state.token)
-  const { userInfo } = useSelector((state: Partial<UserDetailInfoInterface>) => state.fitsStore)
+  const { userInfo } = useSelector((state: {fitsStore:Partial<UserDetail>}) => state.fitsStore)
   
-  const { data, isLoading, error, isSuccess } = useGetUserMeQuery({ id: userInfo?._id });
+  const { data, error, isSuccess } = useGetUserMeQuery({ id: userInfo?._id });
   
-  const { data: session, isLoading: isLoading2, error: error2, isSuccess: isSuccess2 } = useSessionsQuery({});
-
-  const { data: connectAccountLink, isLoading: isLoading3, error: error3, isSuccess: isSuccess3 } = useConnectAccountLinkQuery({});
+  const [stripeCustomer] = useStripeCustomerMutation({});
   
-  const [stripeCustomer, { data: stripeCustomerData, isLoading: isLoading4, error: error4, isSuccess: isSuccess4 }] = useStripeCustomerMutation({});
-  
-  const [updateFilter,{ data:updateFilterData, isLoading:isLoading5, error:error5,isSuccess:isSuccess5 } ]= useUpdateFilterMutation({});
- 
+  const [updateFilter,{data:filter}]= useUpdateFilterMutation({});
+ console.log("first,filter",filter)
   // filter data User define functions
   const handleSportsData = (item: { name: React.SetStateAction<null>; }) => {
     setModalVisible(false);
@@ -92,6 +88,7 @@ const Home = ({ navigation }:any) => {
   };
   const classSorts = (item: { Name: React.SetStateAction<null>; }) => {
     setModalVisible(false);
+    console.log("item?.Name",item?.Name)
     setClasssort(item?.Name);
   };
 
@@ -110,6 +107,8 @@ const Home = ({ navigation }:any) => {
       sort_by: classsort,
     }).unwrap()
       .then((res2) => {
+        console.log("res2?.data?.result",res2)
+
         if (res2.success) {
           setFilterData(res2?.data?.result);
           ToastAndroid.show(res2.message, ToastAndroid.SHORT);
@@ -117,7 +116,7 @@ const Home = ({ navigation }:any) => {
           ToastAndroid.show(res2.message, ToastAndroid.SHORT);
         }
       })
-      .catch((error) => {
+      .catch(() => {
       });
   };
   //states
@@ -139,8 +138,6 @@ const Home = ({ navigation }:any) => {
   const [superLat, setSuperLat] = useState(21.4735);
 
   const getPersonalInfo = async () => {
-    const userData = await AsyncStorage.getItem("userPersonalInfo");
-    let userDataPersonal = JSON.parse(userData);
   };
 
   const setUserLocation = async (data: string) => {
@@ -186,7 +183,7 @@ const Home = ({ navigation }:any) => {
               })
               .catch((error: any) => alert(error));
           },
-          (error) => {
+          () => {
             // See error code charts below.
           },
           { enableHighAccuracy: true, timeout: 15000, maximumAge: 10000 }
@@ -327,7 +324,7 @@ const Home = ({ navigation }:any) => {
           alert(res2.errors);
         }
       })
-    if(isError){
+    if(error){
       
         setLoad(false);
         console.log("book session error", error);
@@ -348,7 +345,7 @@ const Home = ({ navigation }:any) => {
   };
   const getDistanceFunction = (data: any) => {
     let dummy = [...data];
-    dummy.map((item, i) => {
+    dummy.map((item) => {
       var dis = getDistanceGoogle(item.session_type.lat, item.session_type.lng);
       item.session_type.distance = dis;
     });
@@ -468,7 +465,7 @@ const Home = ({ navigation }:any) => {
       <ScrollView showsVerticalScrollIndicator={false} style={styles.main}>
         {nearyou && load ? (
           <ActivityIndicator size="large" color="red" />
-        ) : filterData !== [] ? (
+        ) : filterData ? (
           <>
             <ScrollView
               horizontal={true}
@@ -476,7 +473,7 @@ const Home = ({ navigation }:any) => {
               style={styles.main}
             >
               {/*start image box view*/}
-              {filterData.map((item, i) => (
+              {filterData.map((item: UserDataInterface, i:number) => (
                 <Pressable
                   onPress={() => dummyData(item?.user?._id, item)}
                   style={styles.boxview}
@@ -646,12 +643,11 @@ const Home = ({ navigation }:any) => {
 
                       {/*Start Navigation Screen*/}
                       <ScrollView showsVerticalScrollIndicator={false}>
-                        {sort ? (
+                        {sort && (
                           <Sort
-                            navigation={navigation}
                             ClassSorts={classSorts}
                           />
-                        ) : null}
+                        )}
                         {sports ? (
                           <Sports
                             navigation={navigation}

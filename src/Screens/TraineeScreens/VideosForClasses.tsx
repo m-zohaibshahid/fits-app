@@ -6,67 +6,49 @@ import {
   StyleSheet,
   ToastAndroid,
   ActivityIndicator,
+  Platform,
+  Pressable,
 } from "react-native";
 import AntDesign from "react-native-vector-icons/AntDesign";
 import FontAwesome from "react-native-vector-icons/FontAwesome";
 import {  RFValue } from "react-native-responsive-fontsize";
 import VideoPlayer from "react-native-video-player";
 import { url } from "../../constants/url";
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import Pressable from "react-native/Libraries/Components/Pressable/Pressable";
 import Colors from "../../constants/Colors";
 import { getUserAsyncStroage } from "../../common/AsyncStorage";
-
-const VideosForClasses = ({ navigation }) => {
+import { NavigationSwitchProp } from "react-navigation";
+import { useSelector } from "react-redux";
+import { useGetUserMeQuery } from "../../slice/FitsApi.slice";
+import { UserDetail, UserDetailInfoInterface } from "../../interfaces";
+interface Props{
+  navigation: NavigationSwitchProp;
+}
+const VideosForClasses:React.FC<Props> = ({ navigation }) => {
   
-  const [userDatax, setUserDatax] = useState();
-
-
+const token = useSelector((state:{token:string})=>state.token);
+const {userInfo} = useSelector((state:{fitsStore:Partial<UserDetail>})=>state.fitsStore);
+const {data:userMeData}=useGetUserMeQuery({id:userInfo?._id})
   useEffect(() => {
     navigation.addListener("focus", () => {
-      getUserInfo();
       userMe();
     });
   }, []);
 
-  const [token, setToken] = useState("");
 
-  const getUserInfo = async () => {
-    const userData=await getUserAsyncStroage()
-    setUserDatax(userData)
-    setToken(userDatax?.access_token);
-  };
   const userMe = async () => {
     setLoadx(true);
-    const userData = await AsyncStorage.getItem("userData");
-    let userDatax = JSON.parse(userData);
-    await fetch(`${url}/user/me/${userDatax?.data?._id}`, {
-      method: "GET",
-      headers: {
-        Accept: "application/json",
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${userDatax?.access_token}`,
-      },
-    })
-      .then((res) => res.json())
-      .then((res2) => {
         setLoadx(false);
-        if (res2.success === true) {
-          setId(res2?.user?._id);
+        if (userMeData.success === true) {
+          setId(userMeData?.user?._id);
         } else {
-          ToastAndroid.show(res2.message, ToastAndroid.LONG);
+          ToastAndroid.show(userMeData.message, ToastAndroid.LONG);
         }
-      })
-      .catch((error) => {
-        setLoadx(false);
-        ToastAndroid.show(error, ToastAndroid.LONG);
-      });
   };
-  const [one, setOne] = useState("");
-  const [two, setTwo] = useState("");
-  const [three, setThree] = useState("");
-  const [four, setFour] = useState("");
-  const [five, setFive] = useState("");
+  const [one, setOne] = useState(false);
+  const [two, setTwo] = useState(false);
+  const [three, setThree] = useState(false);
+  const [four, setFour] = useState(false);
+  const [five, setFive] = useState(false);
 
   const oneInfo = async () => {
     setOne(true);
@@ -131,7 +113,7 @@ const VideosForClasses = ({ navigation }) => {
           headers: {
             Accept: "application/json",
             "Content-Type": "application/json",
-            Authorization: `Bearer ${userDatax?.access_token}`,
+            Authorization: `Bearer ${token}`,
           },
           body: JSON.stringify({
             videoId: videoId,
@@ -221,7 +203,7 @@ const VideosForClasses = ({ navigation }) => {
           </View>
         ) : (
           <View>
-            {data.map((item, i) => (
+                {data.map((item: { video_links: Array<[]>, video_details: string, price: number, video_category: string, topic:string,_id:string}, i) => (
               <View key={i} style={styles.TopeView}>
                 <View style={styles.topView}>
                   <View style={styles.VideoView}>
@@ -416,7 +398,7 @@ const VideosForClasses = ({ navigation }) => {
                     {/*start join class Btn*/}
                     <View style={styles.TopView}>
                       <View style={styles.topView}>
-                        <View style={styles.rowView}>
+                        <View >
                           <View style={styles.mainbtnView}>
                             <TouchableOpacity
                               onPress={() => {

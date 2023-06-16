@@ -16,7 +16,7 @@ import { Platform } from "react-native/Libraries/Utilities/Platform";
 
 const Tab = createBottomTabNavigator();
 
-const Tabbs = ({ navigation }) => {
+const Tabbs = () => {
   return (
     <Tab.Navigator
       screenOptions={({ route }) => ({

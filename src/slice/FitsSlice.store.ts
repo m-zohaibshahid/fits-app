@@ -1,8 +1,10 @@
-import {createSlice} from '@reduxjs/toolkit';
+import { createSlice } from '@reduxjs/toolkit';
+import { UserDetailInfoInterface } from '../interfaces';
 
 interface CounterState {
   isLoading: boolean;
-  userInfo: object;
+  userInfo: Partial<UserDetailInfoInterface>
+  ;
 }
 
 const initialState: CounterState = {
@@ -22,6 +24,6 @@ const fitsSlice = createSlice({
   },
 });
 
-export const {setIsLoading, setUserInfo} = fitsSlice.actions;
+export const { setIsLoading, setUserInfo } = fitsSlice.actions;
 
 export default fitsSlice.reducer;

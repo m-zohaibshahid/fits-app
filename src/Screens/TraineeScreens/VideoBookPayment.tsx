@@ -2,17 +2,13 @@ import React, {useState} from 'react';
 import {
   Text,
   View,
-  ImageBackground,
-  TouchableOpacity,
   StyleSheet,
-  TextInput,
-  Modal,
-  Image,
   ScrollView,
+  Platform,
 } from 'react-native';
 import AntDesign from 'react-native-vector-icons/AntDesign';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
-import {RFPercentage, RFValue} from 'react-native-responsive-fontsize';
+import { RFValue} from 'react-native-responsive-fontsize';
 import VideoPlayer from 'react-native-video-player';
 import * as Images from '../../constants/Images';
 import Header from '../../Components/Header';
