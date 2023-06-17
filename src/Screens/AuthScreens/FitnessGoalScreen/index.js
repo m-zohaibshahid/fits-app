@@ -80,7 +80,6 @@ const FitnessGoalScreen = ({ navigation }) => {
       .then((res) => res.json())
       .then((res2) => {
         setLoad(false);
-        console.log(res2.message);
         if (res2.message === "your fitness info updated successfully") {
           Toast.show({
             type: "success",
@@ -130,7 +129,6 @@ const FitnessGoalScreen = ({ navigation }) => {
         .then((res) => res.json())
         .then((res2) => {
           setLoade(false);
-          console.log(res2.message);
           if (res2.message === "created successfully") {
             getGoals();
             ModalFalse();

@@ -7,25 +7,29 @@ import {
   ScrollView,
   Alert,
   PermissionsAndroid,
-  TextInput,
   ToastAndroid,
 } from "react-native";
 import { widthPercentageToDP as wp } from "react-native-responsive-screen";
-import { RFValue } from "react-native-responsive-fontsize";
 import AntDesign from "react-native-vector-icons/AntDesign";
 import * as Images from "../../../constants/Images";
 import Classes from "../ClassesScreen";
 import Reviews from "../Reviews";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import EvilIcons from "react-native-vector-icons/EvilIcons";
 import Geolocation from "react-native-geolocation-service";
 import Geocoder from "react-native-geocoder";
 import FastImage from "react-native-fast-image";
-import { url } from "../../../constants/url";
 import styles from "./styles";
 import { Toast } from "react-native-toast-message/lib/src/Toast";
+import { useGetUserMeQuery, useSessionDelMutation, useStripeCustomerMutation, useTrainerSessionQuery } from "../../../slice/FitsApi.slice";
+import { useSelector } from "react-redux";
+import { UserDetail } from "../../../interfaces";
+import { NavigationSwitchProp } from "react-navigation";
 
-const Home = ({ navigation }) => {
+interface Props{
+    navigation: NavigationSwitchProp;
+}
+
+const Home:React.FC<Props> = ({ navigation }) => {
   // Hooks
   const [classes, setClasses] = useState(true);
   const [reviews, setReviews] = useState(false);
@@ -37,57 +41,35 @@ const Home = ({ navigation }) => {
   const [loadx, setLoadx] = useState(false);
   const [dumdata, setDumData] = useState([]);
   const [classesData, setClassesData] = useState([]);
-
+  const {userInfo}  = useSelector((state: {fitsStore:Partial<UserDetail>}) => state.fitsStore)
+  const token:string  = useSelector((state: {token:string}) => state.token)
+  const { data:userMeData } = useGetUserMeQuery({ id: userInfo?._id });
+  const { data:trainerSession } = useTrainerSessionQuery({ id: userInfo?._id });
+  const [sessionDel,{ data: sessionDelete }] = useSessionDelMutation();
+  const [stripeCustomer,{ data: stripeCustomerData }] = useStripeCustomerMutation();
+  
   // Functions
   const userMe = async () => {
-    const userData = await AsyncStorage.getItem("userData");
-    let userDatax = JSON.parse(userData);
-    await fetch(`${url}/user/me/${userDatax?.data?._id}`, {
-      method: "GET",
-      headers: {
-        Accept: "application/json",
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${userDatax?.access_token}`,
-      },
-    })
-      .then((res) => res.json())
-      .then((res2) => {
-        if (res2?.success) {
-          setUserData(res2);
-          console.log("<//////////////////////////>", res2, "</////////////////////////>")
+        if (userMeData?.success) {
+          setUserData(userMeData);
           getAllClasses();
-          createStripeAccount(res2);
+          createStripeAccount(userMeData);
         } else {
-          ToastAndroid.show(res2?.message, ToastAndroid.LONG);
-        }
-      })
-      .catch((error) => {
-        console.log(error?.message);
-      });
+          ToastAndroid.show(userMeData?.message, ToastAndroid.LONG);
+        }   
   };
 
-  const setForCareateStripeCall = async (data) => {
+  const setForCareateStripeCall = async (data: any) => {
     await AsyncStorage.setItem("createStripeData", JSON.stringify(data));
   };
 
-  const createStripeAccount = async (data) => {
+  const createStripeAccount = async (data: { personal_info: { name: any; phoneNumber: any; }; user: { email: any; }; }) => {
     setLoad(true);
-    const userDatas = await AsyncStorage.getItem("userData");
-    let userDataxx = JSON.parse(userDatas);
-    await fetch(`${url}/stripe/customer`, {
-      method: "POST",
-      headers: {
-        Accept: "application/json",
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${userDataxx?.access_token}`,
-      },
-      body: JSON.stringify({
-        name: data?.personal_info?.name,
-        email: data?.user?.email,
-        phone: data?.personal_info?.phoneNumber,
-      }),
-    })
-      .then((res) => res.json())
+    stripeCustomer({
+      name: data?.personal_info?.name,
+      email: data?.user?.email,
+      phone: data?.personal_info?.phoneNumber,
+    }).unwrap()
       .then((res2) => {
         if (
           res2?.message === "success" ||
@@ -101,7 +83,7 @@ const Home = ({ navigation }) => {
       });
   };
 
-  const find = (t) => {
+  const find = (t: React.SetStateAction<string>) => {
     const words = [...classesData];
     setSearch(t);
     if (t === "") {
@@ -116,20 +98,10 @@ const Home = ({ navigation }) => {
     }
   };
 
-  const deleteClass = async (item) => {
-    const userData = await AsyncStorage.getItem("userData");
-    let userDatax = JSON.parse(userData);
+  const deleteClass = async (item: { _id: number; }) => {
+   
     setLoadx(true);
-
-    await fetch(`${url}/session/${item._id}`, {
-      method: "DELETE",
-      headers: {
-        Accept: "application/json",
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${userDatax?.access_token}`,
-      },
-    })
-      .then((res) => res.json())
+    sessionDel(item._id).unwrap()
       .then((res2) => {
         setLoadx(false);
         if (res2.succes === true) {
@@ -145,7 +117,7 @@ const Home = ({ navigation }) => {
       });
   };
 
-  const detailsInfoCall = (item, i) => {
+  const detailsInfoCall = (item: any, i: string | number) => {
     let dummy = [...classesData];
     if (dummy[i].status == true) {
       dummy.forEach((item) => (item.status = false));
@@ -166,7 +138,7 @@ const Home = ({ navigation }) => {
     setReviews(true);
   };
 
-  const setUserLocation = async (data) => {
+  const setUserLocation = async (data: string) => {
     await AsyncStorage.setItem("userLocation", JSON.stringify(data));
   };
 
@@ -189,8 +161,13 @@ const Home = ({ navigation }) => {
               lat: position?.coords?.latitude,
               lng: position?.coords?.longitude,
             };
+            
             Geocoder.geocodePosition(pos)
-              .then((res) => {
+              .then((res: {
+                subLocality: string;
+                locality: string;
+                adminArea: string; country: string; 
+}[]) => {
                 setUserLocation(
                   res[0].subLocality +
                   " " +
@@ -201,7 +178,7 @@ const Home = ({ navigation }) => {
                   res[0].country
                 );
               })
-              .catch((error) => console.log(error));
+              .catch((error: any) => console.log(error));
           },
           (error) => {
             console.log(error.code, error?.message);
@@ -219,52 +196,28 @@ const Home = ({ navigation }) => {
   };
 
   const getAllClasses = async () => {
-    const userData = await AsyncStorage.getItem("userData");
-    let userDatax = JSON.parse(userData);
-    setLoad(true);
-    await fetch(`${url}/session/trainer/${userDatax?.data?._id}`, {
-      method: "GET",
-      headers: {
-        Accept: "application/json",
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${userDatax?.access_token}`,
-      },
-    })
-      .then((res) => res.json())
-      .then((res2) => {
-        setLoad(false);
-        if (res2.success) {
-          setDumData(res2?.data?.session);
-          setClassesData(res2?.data?.session);
+        if (trainerSession.success) {
+          setDumData(trainerSession?.data?.session);
+          setClassesData(trainerSession?.data?.session);
         } else {
-          console.log(res2.errors);
         }
-      })
-      .catch((error) => {
-        setLoad(false);
-        console.log(error?.message);
-      });
+     
   };
 
   // Effects
-  useEffect(() => {
-    navigation.addListener("focus", () => {
-      requestLocationPermission();
-    });
-  }, [requestLocationPermission]);
 
   useEffect(() => {
-    navigation.addListener("focus", () => {
-      userMe();
-    });
-  }, [userMe]);
-
-  useEffect(() => {
+    requestLocationPermission()
     Toast.show({
       type: "success",
       text1: "Welcome",
     });
+    navigation.addListener("focus", () => {
+      userMe();
+    });
   }, []);
+
+  
   return (
     <View style={styles.mainContainer}>
       {/*Header rect start*/}
@@ -309,13 +262,13 @@ const Home = ({ navigation }) => {
             {classes ? <View style={styles.borderView}></View> : null}
           </TouchableOpacity>
           <TouchableOpacity
-            onPress={() => reviewstrueState(true)}
+            onPress={() => reviewstrueState()}
             style={styles.mainclassesview}
           >
             <Text style={[reviews ? styles.titleText : styles.activeTitleText]}>
               Reviews
             </Text>
-            {reviews ? <View style={styles.borderView}></View> : null}
+            {reviews && <View style={styles.borderView}></View> }
           </TouchableOpacity>
         </View>
 
@@ -323,7 +276,7 @@ const Home = ({ navigation }) => {
       {/*Header rect end*/}
       <ScrollView showsVerticalScrollIndicator={false}>
         <View style={styles.mainBody}>
-          {classes ? (
+          {classes && (
             <Classes
               deleteClass={deleteClass}
               detailsInfoCall={detailsInfoCall}
@@ -331,10 +284,10 @@ const Home = ({ navigation }) => {
               load={load}
               data={classesData}
             />
-          ) : null}
-          {reviews ? (
+          ) }
+          {reviews && (
             <Reviews load={load} data={classesData} navigation={navigation} />
-          ) : null}
+          ) }
         </View>
         <View style={{ marginVertical: 60 }}></View>
       </ScrollView>

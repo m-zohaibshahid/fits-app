@@ -6,13 +6,15 @@ import {
   StyleSheet,
   ActivityIndicator,
   TouchableOpacity,
+  TouchableOpacityProps,
+  ViewStyle,
 } from 'react-native';
 import {RFValue} from 'react-native-responsive-fontsize';
 import Colors from '../constants/Colors';
 
-const Button = ({label, navigation, onPress, loader, disabled}: any) => {
+const Button = ({ label, onPress, loader, disabled, style }: ButtonProps) => {
   return (
-    <View style={styles.MainResponsevieView}>
+    <View style={[styles.MainResponsevieView, style]}>
       <TouchableOpacity
         activeOpacity={0.8}
         style={[disabled ? styles.diableBtn : styles.btn]}
@@ -33,7 +35,7 @@ export default Button;
 
 const styles = StyleSheet.create({
   btn: {
-    width: '90%',
+    width: '100%',
     height: 58,
     borderRadius: 12,
     color: Colors.infos,
@@ -42,7 +44,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   diableBtn: {
-    width: '90%',
+    width: '100%',
     height: 58,
     borderRadius: 12,
     color: Colors.infos,
@@ -54,6 +56,8 @@ const styles = StyleSheet.create({
     color: Colors.white,
     fontSize: RFValue(14, 580),
     fontFamily: 'Poppins-SemiBold',
+    fontWeight: 'bold',
+    letterSpacing: 1
   },
   MainResponsevieView: {
     width: '100%',
@@ -61,3 +65,12 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
   },
 });
+
+
+interface ButtonProps extends TouchableOpacityProps {
+  label: string;
+  onPress: () => void;
+  loader?: boolean;
+  disabled?: boolean;
+  style?: ViewStyle;
+}

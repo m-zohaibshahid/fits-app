@@ -36,31 +36,15 @@ const styles = StyleSheet.create({
     alignItems: 'flex-end',
   },
   forgottext: {
-    color: Colors.lightGray,
-    fontFamily: 'Poppins-SemiBold',
     textDecorationLine: 'underline',
+    marginBottom: 15,
   },
   termsTextRect: {
-    width: '90%',
-    alignSelf: 'center',
-    marginTop: 20,
-    alignItems: 'flex-start',
     paddingHorizontal: 20,
   },
-
-  signingtest: {
-    color: Colors.black,
-    fontSize: Platform.OS === 'ios' ? RFValue(11, 580) : RFValue(12, 580),
-    fontFamily: 'Poppins-Regular',
-    textAlign: 'center',
-  },
   underlinetext: {
-    color: Colors.bgRedBtn,
-    fontSize: Platform.OS === 'ios' ? RFValue(11, 580) : RFValue(12, 580),
-    fontFamily: 'Poppins-Regular',
     textDecorationLine: 'underline',
   },
-
   footerMainView: {
     width: '100%',
     flexDirection: 'row',

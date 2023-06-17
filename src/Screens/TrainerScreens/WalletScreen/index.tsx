@@ -42,7 +42,6 @@ const WalletScreen = ({ navigation }) => {
             getStripeCard(res2?.stripe?.customer.id);
             setEmail(res2?.user?.email);
           } else {
-            console.log(res2?.message);
           }
         })
         .catch((error) => {
@@ -71,7 +70,6 @@ const WalletScreen = ({ navigation }) => {
           if (res2?.message === "Stripe Customer Found Successfully!") {
             setCardData(res2?.data);
           } else {
-            console.log("mesage==>", res2?.message);
           }
         })
         .catch((error) => {

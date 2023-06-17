@@ -1,29 +1,32 @@
 /* eslint-disable prettier/prettier */
 import * as React from 'react';
-import {View, Text} from 'react-native';
+import {View, Text, ViewStyle, TextStyle} from 'react-native';
 import AntDesign from 'react-native-vector-icons/AntDesign';
 import {RFValue} from 'react-native-responsive-fontsize';
 import styles from './styles';
 import Colors from '../../constants/Colors';
+import { useNavigation } from '@react-navigation/native';
+import Typography from '../typography/text';
+
+interface HeaderProps {
+  label: string;
+  subLabel?: string;
+  lableStyle?: TextStyle | ViewStyle
+}
 
 const Header = ({
   label,
   subLabel,
-  navigation,
-  doubleHeader,
-  rightLabelStatus,
-  rightLabel,
-}: any) => {
+  lableStyle
+}: HeaderProps) => {
+  const navigation = useNavigation()
+
   const goBack = () => {
     navigation.goBack();
   };
   return (
-    <View
-      style={[
-        doubleHeader ? styles.mainHeaderRectForDouble : styles.mainHeaderRect,
-      ]}>
+    <View>
       <View style={styles.firstArrowHeaderRect1}>
-        <View style={styles.widthView}>
           <AntDesign
             onPress={() => goBack()}
             name="arrowleft"
@@ -32,49 +35,22 @@ const Header = ({
               color: '#130F26',
             }}
           />
-        </View>
       </View>
-      {rightLabelStatus ? (
         <View
-          style={[
-            doubleHeader
-              ? styles.bottomHeaderRect2ForDoubleRow
-              : styles.bottomHeaderRect2,
-          ]}>
-          <View style={styles.col1}>
-            <Text
+          style={[lableStyle, styles.label]}>
+            <Typography
+              size='pageTitle'
+              weight='700'
               style={{
-                fontSize: RFValue(24, 580),
-                fontFamily: 'Poppins-Bold',
-                color: Colors.black,
                 marginTop: 10,
+                marginBottom: subLabel ? 18 : 40
               }}>
               {label}
-            </Text>
-            <Text style={styles.secondText}>{subLabel}</Text>
-          </View>
-
-          <View style={styles.col2}>{rightLabel}</View>
+            </Typography>
+            {subLabel ? <Typography size="pageSubTitle"  style={{
+                marginBottom: 50
+              }} weight='500' color='blackishGray' >{subLabel}</Typography> : null}
         </View>
-      ) : (
-        <View
-          style={[
-            doubleHeader
-              ? styles.bottomHeaderRect2ForDouble
-              : styles.bottomHeaderRect2,
-          ]}>
-          <Text
-            style={{
-              fontSize: RFValue(24, 580),
-              fontFamily: 'Poppins-Bold',
-              color: Colors.black,
-              marginTop: 10,
-            }}>
-            {label}
-          </Text>
-          <Text style={styles.secondText}>{subLabel}</Text>
-        </View>
-      )}
     </View>
   );
 };

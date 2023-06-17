@@ -15,7 +15,6 @@ import VideoPlayer from 'react-native-video-player';
 import Colors from '../../../constants/Colors';
 
 const MyVideos = ({navigation, data, load}: any) => {
-  console.log('loaddata==>', load, data);
   return (
     <View style={styles.container}>
       {/*All videos*/}

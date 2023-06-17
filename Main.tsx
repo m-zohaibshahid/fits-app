@@ -7,14 +7,11 @@ import React, {
   useRef,
   useState,
 } from "react";
-import { View } from "react-native";
+import { SafeAreaView, View } from "react-native";
 import { LogBox } from "react-native";
 import { NavigationContainer } from "@react-navigation/native";
 import { createStackNavigator } from "@react-navigation/stack";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-{
-  // Auth Screens
-}
 import Splash from "./src/Screens/AuthScreens/SplashScreen";
 import Welcome from "./src/Screens/AuthScreens/WelcomeScreen/";
 import SelectStatusScreen from "./src/Screens/AuthScreens/SelectStatusScreen";
@@ -43,9 +40,6 @@ import TrainerPayment from "./src/Screens/TrainerScreens/TrainerPaymentScreen";
 import TrainerWallet from "./src/Screens/TrainerScreens/WalletScreen";
 import TrainerCreateCard from "./src/Screens/TrainerScreens/CreateCardScreen";
 
-{
-  /*Start Trainee Screen*/
-}
 import TraineeTabb from "./src/Screens/TraineeScreens/TraineeBottomTabScreen";
 import TrainerDetail from "./src/Screens/TraineeScreens/TrainerDetail";
 import BookSessionPayment from "./src/Screens/TraineeScreens/BookSessionPayment";
@@ -58,11 +52,12 @@ import TrainerVerification from "./src/Screens/TrainerScreens/TrainerVerificatio
 import UpdateProfessioninfo from "./src/Screens/AuthScreens/UpdateProfessioninfo";
 import EnterChatforTrainee from "./src/Screens/TraineeScreens/EnterChatforTrainee";
 import { url } from "./src/constants/url";
-import {  useSelector } from "react-redux";
+import { useSelector } from "react-redux";
+import { styles } from "./style";
 
-export const MainContext = createContext();
+export const MainContext = createContext({});
 
-const AuthContext = createContext();
+const AuthContext = createContext({});
 const Stack = createStackNavigator();
 
 function LogoutNow() {
@@ -182,7 +177,7 @@ function App() {
   );
 
   return (
-    <>
+    <SafeAreaView style={styles.container}>
       <AuthContext.Provider value={authContext}>
         <NavigationContainer>
           {state.isLoading ? (
@@ -193,7 +188,7 @@ function App() {
                 options={{ headerShown: false }}
               />
             </Stack.Navigator>
-          ) : state.userToken == null ? (
+          ) : !state.userToken ? (
             <Stack.Navigator>
               <Stack.Screen
                 name="Welcome"
@@ -369,7 +364,7 @@ function App() {
         </NavigationContainer>
       </AuthContext.Provider>
       <Toast config={toastConfig} position="bottom" bottomOffset={50} />
-    </>
+    </SafeAreaView>
   );
 }
 LogBox.ignoreLogs([

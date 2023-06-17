@@ -113,7 +113,6 @@ const AccountScreen = ({navigation}) => {
         password: newPassword,
       }
       setLoad(true);
-      console.log("body",body)
       
       await updatePassword({ id, ...body })
       .unwrap()

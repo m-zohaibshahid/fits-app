@@ -27,7 +27,7 @@ const Videos2 = () => {
           {/*start image Box*/}
           <View style={styles.TopView}>
             <View style={styles.topView}>
-            <View style={styles.VideoView}>
+            {/* <View style={styles.VideoView}>
                   <VideoPlayer
                     video={{
                       uri: 'http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4',
@@ -38,7 +38,7 @@ const Videos2 = () => {
                     thumbnail={Images.videoImage}
                     style={{borderTopRightRadius:16,borderTopLeftRadius:16}}
                   />
-                </View>
+                </View> */}
               <View style={styles.boxView}>
                 <View style={styles.TopView}>
                 <View style={styles.topView}>

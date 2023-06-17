@@ -25,6 +25,7 @@ const Colors = {
   lightGray: '#414143',
   white: '#FFFFFF',
   lightWhite: '#FCFCFC',
+  whiteRegular: '#f8f8f8',
 
   // color variations
   gray: '#535453',
@@ -49,6 +50,7 @@ const Colors = {
   chatUserDesc: 'rgba(58, 45, 19, 0.5)',
   chatDate: '#A2A5AA',
   bgRedBtn: '#FF0000',
+  redColor: '#e40b0b',
   lightbule: '#130F26',
 };
 

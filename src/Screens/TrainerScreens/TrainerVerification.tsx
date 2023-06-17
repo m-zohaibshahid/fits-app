@@ -238,7 +238,7 @@ const TrainerVerification = ({ navigation }) => {
                 borderTopLeftRadius: 16,
               }}
             >
-              {console.log("image", image)}
+                
               <Image
                 style={{
                   width: "90%",

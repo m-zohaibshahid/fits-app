@@ -33,24 +33,16 @@ const styles = StyleSheet.create({
     width: '100%',
     alignItems: 'center',
   },
-  topView: {
-    width: '90%',
-  },
-  selectedBox: {
-    width: '90%',
+  box: {
     marginTop: 20,
-    borderRadius: 10,
+    borderRadius: 28,
     backgroundColor: Colors.black,
-    height: hp('26%'),
+    height: hp('24%'),
+    padding: 20,
+  },
+  redBorder: {
     borderWidth: 2,
     borderColor: '#ff0000',
-  },
-  unSelectedBox: {
-    width: '90%',
-    marginTop: 20,
-    borderRadius: 10,
-    backgroundColor: Colors.black,
-    height: hp('26%'),
   },
 });
 export default styles;

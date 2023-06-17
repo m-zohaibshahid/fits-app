@@ -102,6 +102,13 @@ export const fitsApi = createApi({
       }),
     }),
 
+    sessionDel: builder.mutation<void, number>({
+      query: id => ({
+        url: `/session/${id}`,
+        method: 'DELETE',
+      }),
+    }),
+
     //updatePassword
     updatePassword: builder.mutation<void, Partial<any>>({
       query: ({ id, ...data }) => ({
@@ -121,7 +128,17 @@ export const fitsApi = createApi({
       query: () => '/stripe/connect/accountLink'
     }),
 
-  }),
+    // }),
+
+
+    //trainer screen api
+
+    trainerSession: builder.query<any, Partial<any>>({
+      query: id => `/session/trainer/${id}`,
+    }),
+
+  })
+
 
 
 
@@ -143,9 +160,9 @@ export const fitsApi = createApi({
   //     body: data,
   //   }),
   // }),
-});
+  // });
 
-// });
+});
 
 // Export hooks for usage in functional components, which are
 // auto-generated based on the defined endpoints
@@ -157,6 +174,7 @@ export const {
   useLoginUserMutation,
   useUpdateUserMutation,
   useDeleteUserMutation,
+  useSessionDelMutation,
   useUpdatePasswordMutation,
   useStripeCustomerMutation,
   useUpdateFilterMutation,
@@ -164,4 +182,5 @@ export const {
   useConnectAccountLinkQuery,
   useGetUserMeQuery,
   useGetUsersQuery,
+  useTrainerSessionQuery,
 } = fitsApi;

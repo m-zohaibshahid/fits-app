@@ -5,53 +5,35 @@ import {View, Text, TouchableOpacity} from 'react-native';
 import {RFValue} from 'react-native-responsive-fontsize';
 import Colors from '../../constants/Colors';
 import styles from './styles';
-import {SelectStatusesDataInterface} from '../../interfaces';
+import {} from '../../interfaces';
+import Typography from '../../Components/typography/text';
 
-const SelectStatusCard = ({data, onPressItem, selectedIndex}: any) => {
+const StatusCard = ({data, onPressItem, selectedIndex}: any) => {
   return (
     <>
-      {data?.map((item: SelectStatusesDataInterface, i: number) => (
-        <TouchableOpacity
+      {data?.map((item: any, i: number) => {
+        const selected = selectedIndex === i
+        return <TouchableOpacity
           activeOpacity={0.8}
           key={i as number}
           onPress={() => {
             onPressItem(i, item);
           }}
-          style={[
-            selectedIndex === i ? styles.selectedBox : styles.unSelectedBox,
+          style={[styles.box, 
+            selected ? styles.redBorder : null,
           ]}>
-          <View
-            style={{
-              width: '100%',
-              alignItems: 'center',
-            }}>
-            <View style={{width: '90%', marginTop: 10}}>
-              <Text
-                style={{
-                  fontSize: RFValue(16, 580),
-                  color: Colors.white,
-                  fontFamily: 'Poppins-Bold',
-                }}>
+              <Typography color='whiteRegular' size='heading2' weight='800' bottom='mb3'>
                 {item?.title}
-              </Text>
-            </View>
-          </View>
-          <View style={{width: '100%', alignItems: 'center'}}>
-            <View style={{width: '90%'}}>
-              <Text
-                style={{
-                  fontSize: RFValue(14, 580),
-                  fontFamily: 'Poppins-Regular',
-                  color: Colors.white,
-                }}>
+              </Typography>
+          <Typography color='lightWhite' size='regularText' weight='400' style={{
+                lineHeight: 25
+              }}>
                 {item?.content}
-              </Text>
-            </View>
-          </View>
+              </Typography>
         </TouchableOpacity>
-      ))}
+      })}
     </>
   );
 };
 
-export default SelectStatusCard;
+export default StatusCard;

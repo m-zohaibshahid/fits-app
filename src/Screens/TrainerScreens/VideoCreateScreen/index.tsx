@@ -39,7 +39,6 @@ const VideoCreateScreen = ({ navigation }) => {
   const getUserInfo = async () => {
     const userData = await AsyncStorage.getItem("userData");
     let userDatax = JSON.parse(userData);
-    console.log("userDatax personalinfo==>", userDatax);
     setToken(userDatax?.access_token);
   };
 
@@ -66,7 +65,6 @@ const VideoCreateScreen = ({ navigation }) => {
       mediaType: "video",
     })
       .then((file) => {
-        console.log("file===>", file);
         let newFile = {
           uri: file.path,
           type: "video/mp4",
@@ -85,7 +83,6 @@ const VideoCreateScreen = ({ navigation }) => {
       mediaType: "photo",
     })
       .then((file) => {
-        console.log("file===>", file);
         let newFile = {
           uri: file.path,
           type: "photo/jpg",
@@ -131,7 +128,6 @@ const VideoCreateScreen = ({ navigation }) => {
       ToastAndroid.show("Please enter the Price.", ToastAndroid.SHORT);
     } else {
       setLoad(true);
-      console.log("videoLink-->", videoLink);
       await fetch(`${url}/video`, {
         method: "POST",
         headers: {
@@ -151,9 +147,7 @@ const VideoCreateScreen = ({ navigation }) => {
         .then((res) => res.json())
         .then((res2) => {
           setLoad(false);
-          console.log("ye ha upLoad video api ka response", res2);
 
-          console.log(res2.message);
           if (res2.message === "created successfully") {
             GoBack();
           } else {

@@ -1,11 +1,11 @@
 import React, { useState } from "react";
-import { View, ToastAndroid, ScrollView } from "react-native";
+import {  ToastAndroid, ScrollView } from "react-native";
 import Header from "../../../Components/Header";
-import SelectStatusCard from "../../../Organisms/SelectStatusCard";
+import StatusCard from "../../../Organisms/SelectStatusCard";
 import { selectStatusesData } from "../../../constants/utilities";
 import Button from "../../../Components/Button";
-import styles from "./styles";
 import { NavigationSwitchProp } from "react-navigation";
+import Container from "../../../Components/Container";
 interface Props {
   navigation: NavigationSwitchProp;
 } 
@@ -44,27 +44,24 @@ const SelectStatusScreen:React.FC<Props> = ({ navigation }) => {
   };
 
   return (
-    <View style={styles.mainContainer}>
-      <Header label={"Select your Status"} navigation={navigation} />
+    <Container>
+      <Header label={"Select your Status"} lableStyle={{
+        fontSize: 100
+      }} />
 
       <ScrollView showsVerticalScrollIndicator={false}>
-        <View style={styles.main}>
-          <SelectStatusCard
+          <StatusCard
             data={selectStatusesData}
             onPressItem={selectItem}
             selectedIndex={selectedIndex}
           />
-        </View>
       </ScrollView>
-      <View style={styles.footer}>
         <Button
-          navigation={navigation}
           disabled={!disable}
           label={"Next"}
           onPress={goNext}
         />
-      </View>
-    </View>
+    </Container>
   );
 };
 

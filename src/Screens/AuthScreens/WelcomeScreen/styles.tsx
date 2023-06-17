@@ -23,23 +23,21 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     position: 'absolute',
   },
-  bottomTextMainRect: {width: '90%', flexDirection: 'row'},
-  alreadyTextRect: {width: '70%', alignItems: 'flex-end'},
+  bottomTextMainRect: {
+    width: '100%',
+    justifyContent: 'center',
+    flexDirection: 'row',
+    marginVertical: 10,
+  },
+  alreadyTextRect: {
+    width: '70%',
+    alignItems: 'flex-end'
+  },
   signInTextRect: {
     width: '30%',
   },
-  textAlready: {
-    color: Colors.white,
-    marginTop: 10,
-    fontSize: RFValue(12, 580),
-    fontFamily: 'Poppins-Regular',
-  },
   signInText: {
-    color: Colors.bgRedBtn,
-    fontSize: RFValue(11.5, 580),
-    fontFamily: 'Poppins-SemiBold',
-    textDecorationLine: 'underline',
-    marginTop: 10,
+    textDecorationLine: 'none',
   },
 });
 export default styles;

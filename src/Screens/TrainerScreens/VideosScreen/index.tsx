@@ -83,7 +83,6 @@ const Videos = ({ navigation }) => {
       .then((res) => res.json())
       .then((res2) => {
         setLoad(false);
-        console.log(res2.success);
         if (res2.success === true) {
           setBookedClasses(res2?.data);
         } else {
@@ -114,7 +113,6 @@ const Videos = ({ navigation }) => {
         if (res2?.success === true) {
           getAllClasses();
         } else {
-          console.log("message===>", res2?.message);
         }
       })
       .catch((error) => {

@@ -34,9 +34,9 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import Geolocation from "react-native-geolocation-service";
 import Geocoder from "react-native-geocoder";
 import FastImage from "react-native-fast-image";
-import {  useGetUserMeQuery,  useStripeCustomerMutation, useUpdateFilterMutation } from "../../slice/FitsApi.slice";
+import {  useGetUserMeQuery,  useSessionsQuery,  useStripeCustomerMutation, useUpdateFilterMutation } from "../../slice/FitsApi.slice";
 import { useSelector } from "react-redux";
-import { UserDataInterface, UserDetail, UserDetailInfoInterface } from "../../interfaces";
+import { UserDataInterface, UserDetail } from "../../interfaces";
 
 const Home = ({ navigation }:any) => {
   // states
@@ -63,12 +63,11 @@ const Home = ({ navigation }:any) => {
   const token:string  = useSelector((state: {token:string}) => state.token)
   const { userInfo } = useSelector((state: {fitsStore:Partial<UserDetail>}) => state.fitsStore)
   
-  const { data, error, isSuccess } = useGetUserMeQuery({ id: userInfo?._id });
+  const { data:userMeData, error, isSuccess } = useGetUserMeQuery({ id: userInfo?._id });
   
   const [stripeCustomer] = useStripeCustomerMutation({});
-  
+  const {data:session} = useSessionsQuery({});
   const [updateFilter,{data:filter}]= useUpdateFilterMutation({});
- console.log("first,filter",filter)
   // filter data User define functions
   const handleSportsData = (item: { name: React.SetStateAction<null>; }) => {
     setModalVisible(false);
@@ -88,7 +87,6 @@ const Home = ({ navigation }:any) => {
   };
   const classSorts = (item: { Name: React.SetStateAction<null>; }) => {
     setModalVisible(false);
-    console.log("item?.Name",item?.Name)
     setClasssort(item?.Name);
   };
 
@@ -107,8 +105,6 @@ const Home = ({ navigation }:any) => {
       sort_by: classsort,
     }).unwrap()
       .then((res2) => {
-        console.log("res2?.data?.result",res2)
-
         if (res2.success) {
           setFilterData(res2?.data?.result);
           ToastAndroid.show(res2.message, ToastAndroid.SHORT);
@@ -201,25 +197,21 @@ const Home = ({ navigation }:any) => {
   }, []);
 
   
-  useEffect(() => {
-   
-    navigation.addListener("focus", () => {
-      bookASessioan();
-    });
-  }, []);
+  
 
   useEffect(() => {
     navigation.addListener("focus", () => {
       getPersonalInfo();
       userMe();
+      bookASessioan();
     });
   }, []);
 
   const userMe = async () => {
         setLoad(true);
         if (isSuccess) {
-          setUserData(data);
-          createStripeAccount(data);
+          setUserData(userMeData);
+          createStripeAccount(userMeData);
           setLoad(false);
         } else {
           alert(error);
@@ -233,19 +225,17 @@ const Home = ({ navigation }:any) => {
     await AsyncStorage.setItem("createStripeData", JSON.stringify(filterData));
   };
 
-  const createStripeAccount = async (filterData: { personal_info: { name: any; }; user: { email: any; }; }) => {
+  const createStripeAccount = async (filterData: { personal_info: { name: string,phoneNumber:string}; user: { email: any; }; }) => {
     setLoad(true);
     
     stripeCustomer({ name: filterData?.personal_info?.name,
       email: filterData?.user?.email,
-      phone: "03001011010"}).unwrap()
+      phone: filterData?.personal_info?.phoneNumber}).unwrap()
       .then((res2) => {
-        console.log("res2?.data",res2?.data)
         if (
           res2?.message === "success" ||
           res2?.message === "customer already exists"
         ) {
-          console.log("res2.data",res2?.data)
           setForCareateStripeCall(res2?.data);
         }
       })
@@ -301,7 +291,7 @@ const Home = ({ navigation }:any) => {
   };
   const bookASessioan = async () => {
     setLoad(true);
-   
+  
     await fetch(`${url}/session`, {
       method: "GET",
       headers: {
@@ -327,7 +317,6 @@ const Home = ({ navigation }:any) => {
     if(error){
       
         setLoad(false);
-        console.log("book session error", error);
   
   }
   };

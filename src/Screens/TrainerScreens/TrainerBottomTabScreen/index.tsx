@@ -14,7 +14,7 @@ import {
 import {Platform} from 'react-native';
 import MyVideos from '../MyVideosScreen/index';
 import AccountScreen from '../AccountScreen/index';
-import Home from '../../TraineeScreens/Home';
+import Home from '../HomeScreen';
 
 const Tab = createBottomTabNavigator();
 
@@ -24,16 +24,21 @@ function TrainerBottomTabScreen() {
       screenOptions={({route}: any) => ({
         tabBarIcon: ({focused, color}) => {
           let iconName;
-          if (route.name === 'Home') {
-            iconName = focused ? 'home-filled' : 'home-filled';
-            return <MaterialIcons name={iconName} size={wp(6)} color={color} />;
-          } else if (route.name === 'Video') {
-            iconName = focused ? 'folder-video' : 'folder-video';
-            return <Entypo name={iconName} size={wp(6)} color={color} />;
-          } else if (route.name === 'Account') {
-            iconName = focused ? 'settings' : 'settings';
-            return <Ionicons name={iconName} size={wp(6)} color={color} />;
-          }
+          
+switch (route.name) {
+  case 'Home':
+    iconName = 'home-filled';
+    return <MaterialIcons name={iconName} size={wp(6)} color={color} />;
+  case 'Video':
+    iconName = 'folder-video';
+    return <Entypo name={iconName} size={wp(6)} color={color} />;
+  case 'Account':
+    iconName = 'settings';
+    return <Ionicons name={iconName} size={wp(6)} color={color} />;
+  default:
+    return null; // or handle the case when the route name doesn't match any of the cases
+}
+
         },
         tabBarStyle: {
           height: Platform.OS === 'ios' ? 110 : 50,

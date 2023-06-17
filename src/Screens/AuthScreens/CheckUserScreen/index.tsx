@@ -30,13 +30,13 @@ const CheckUser = ({ navigation }) => {
   
       
   };
-
+console.log("userDatax?.login",userDatax?.login)
   const getUserInfo = async (profile_status: { personal_step_1: boolean; professional_step_2: boolean; service_offered_step_3: boolean; fitness_level_step_2: boolean; fitness_goal_step_3: boolean; }) => {
     if (userDatax === null) {
       ToastAndroid.show("Please Enter your email.", ToastAndroid.SHORT);
       navigation.navigate("Welcome");
     } else {
-      if (userDatax?.login === true) {
+      if (userDatax?.login) {
         if (userDatax?.data?.role === "trainer") {
           if (profile_status?.personal_step_1 === false) {
             navigation.navigate("PersonalInfo");

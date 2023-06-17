@@ -3,16 +3,14 @@ import {
   Text,
   View,
   Pressable,
-  TextInput,
   ScrollView,
   ToastAndroid,
   Modal,
   Platform,
 } from "react-native";
-import Ionicons from "react-native-vector-icons/Ionicons";
+import TextInput from '../../../Components/Input'
 import Header from "../../../Components/Header";
 import Button from "../../../Components/Button";
-import Colors from "../../../constants/Colors";
 import { url } from "../../../constants/url";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Toast } from "react-native-toast-message/lib/src/Toast";
@@ -22,9 +20,12 @@ import { useDispatch } from "react-redux";
 import { LoginInterface } from "../../../slice/store.interface";
 import { setToken } from "../../../slice/token.slice";
 import { setUserInfo } from "../../../slice/FitsSlice.store";
+import Typography from "../../../Components/typography/text";
+import Container from "../../../Components/Container";
+import { useNavigation } from "@react-navigation/native";
 
-const SignInScreen = ({ navigation }) => {
-  // Hooks
+const SignInScreen = () => {
+  const navigation = useNavigation()  
   const [hidePass, setHidePass] = useState(true);
   const [email, setEmail] = useState(""); //abbastrainer1@yopmail.com
   const [password, setPassword] = useState(""); //Abbas110@
@@ -127,66 +128,18 @@ const SignInScreen = ({ navigation }) => {
   
 
   return (
-    <View style={styles.mainContainer}>
-      <Header label={"Welcome"} navigation={navigation} />
+    <Container style={styles.mainContainer}>
+      <Header label={"Welcome"} />
 
       <ScrollView showsVerticalScrollIndicator={false}>
         <View style={styles.mainBody}>
-          <View style={styles.inputMainView}>
-            <View style={styles.inputTitleView}>
-              <Text style={styles.inputTitleText}>E-mail</Text>
-            </View>
-            <View style={styles.inputTypeMainView}>
-              <View style={styles.inputTypeView}>
-                <TextInput
-                  style={styles.inputTypeStyle}
-                  label="Email"
-                  placeholderTextColor={"#afafafe3"}
-                  placeholder="xyz@gmail.com"
-                  value={email}
-                  onChangeText={setEmail}
-                />
-              </View>
-            </View>
-          </View>
-
-          <View style={styles.inputMainView}>
-            <View style={styles.inputTitleView}>
-              <Text style={styles.inputTitleText}>Password</Text>
-            </View>
-            <View style={styles.inputTypeMainView}>
-              <View style={styles.inputTypeView}>
-                <TextInput
-                  style={styles.inputTypeStyle}
-                  label="Password"
-                  placeholder="**********"
-                  placeholderTextColor={"#afafafe3"}
-                  secureTextEntry={hidePass ? true : false}
-                  value={password}
-                  onChangeText={setPassword}
-                />
-              </View>
-              <View style={styles.hideIconView}>
-                <Ionicons
-                  name={hidePass ? "eye-off" : "eye"}
-                  onPress={() => setHidePass(!hidePass)}
-                  size={18}
-                  color={Colors.white}
-                />
-              </View>
-            </View>
-          </View>
-
-          <View style={styles.forgotPasswordRect}>
-            <View style={{ width: "48%", alignItems: "flex-end" }}>
+                <TextInput style={{marginBottom: 15}}  label={"E-mail"} placeholder={"xyz@fits.com"} value={email} onChangeText={setEmail} />
+                <TextInput style={{marginBottom: 20}} secureTextEntry label={"Password"} placeholder={"••••••••"} value={password} onChangeText={setPassword} />
               <Pressable onPress={() => navigation.navigate("ForgotPassword")}>
-                <Text style={styles.forgottext}>FORGOT PASSWORD ?</Text>
+                <Typography align="right" color="softGray" size="paragraph" style={styles.forgottext} weight="500">Forgot Password?</Typography>
               </Pressable>
-            </View>
-          </View>
 
           <Button
-            navigation={navigation}
             loader={load}
             label={"Sign In"}
             disabled={!email || !password}
@@ -195,28 +148,25 @@ const SignInScreen = ({ navigation }) => {
                 signInCall();
               }
             }}
+            style={{marginBottom: 20}}
           />
 
           <View style={styles.termsTextRect}>
-            <Text style={styles.signingtest}>
-              By signing in I agree with{" "}
-              <Text style={styles.underlinetext}>Terms of Use</Text> and{" "}
-              <Text style={styles.underlinetext}>Privacy Policy</Text>
-            </Text>
+            <Typography weight="500" align="center" style={{lineHeight: 20}}>
+              By signing in, I agree with{" "}
+              <Typography color="redColor" style={styles.underlinetext}> Terms of Use</Typography>{'\n'}and {" "}
+              <Typography color="redColor"  style={styles.underlinetext}> Privacy Policy</Typography>
+            </Typography>
           </View>
         </View>
       </ScrollView>
 
-      <View style={styles.footerMainView}>
-        <View style={{ width: "70%", alignItems: "flex-end" }}>
-          <Text style={styles.donottext}>Don’t have an account ?</Text>
-        </View>
-        <View style={{ width: "30%", marginLeft: 5 }}>
-          <Pressable onPress={() => navigation.navigate("SelectStatusScreen")}>
-            <Text style={styles.singuptext}>Sign up</Text>
+          <Pressable style={styles.footerMainView} onPress={() => navigation.navigate("SelectStatusScreen")}>
+            <Typography size="paragraph" weight="400" align="center">
+            Don’t have an account? 
+              <Typography color="redColor" size='button' weight="700"> Sign up</Typography>
+            </Typography>
           </Pressable>
-        </View>
-      </View>
 
       {/*Modal Start*/}
       <Modal
@@ -243,13 +193,10 @@ const SignInScreen = ({ navigation }) => {
               }}
             >
               <Button
-                navigation={navigation}
                 loader={loadxx}
                 label={"Go"}
                 onPress={() => {
-                  if (!loadxx) {
-                    resendCodeCall();
-                  }
+                  if (!loadxx) resendCodeCall();
                 }}
               />
             </View>
@@ -257,7 +204,7 @@ const SignInScreen = ({ navigation }) => {
         </View>
       </Modal>
       {/* Modal End*/}
-    </View>
+    </Container>
   );
 };
 export default SignInScreen;

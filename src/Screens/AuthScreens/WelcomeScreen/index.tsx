@@ -1,11 +1,12 @@
 /* eslint-disable prettier/prettier */
 import React from 'react';
-import {Text, View, ImageBackground, Pressable} from 'react-native';
+import {View, ImageBackground, Pressable} from 'react-native';
 import * as Images from '../../../constants/Images';
 import Button from '../../../Components/Button';
 import styles from './styles';
 
 import { NavigationSwitchProp } from 'react-navigation';
+import Typography from '../../../Components/typography/text';
 
 interface Props {
   navigation: NavigationSwitchProp;
@@ -24,23 +25,18 @@ const WelcomeScreen:React.FC<Props> = ({navigation}) => {
         style={styles.mainBgImage}
         source={Images.welcomeBgImage}>
         <View style={styles.mainFooterRect}>
+          <Typography size='title' align='center' color='whiteRegular' weight='800' bottom='mb7' style={{
+            lineHeight: 35,
+          }}>Find the trainer {'\n'} that FITS you</Typography>
           <Button
-            navigation={navigation}
+            style={{width: '90%'}}
             label="Create account"
             onPress={goToNext}
           />
-          {/*Footer start*/}
-          <View style={styles.bottomTextMainRect}>
-            <View style={styles.alreadyTextRect}>
-              <Text style={styles.textAlready}>Already a member? </Text>
-            </View>
-            <View style={styles.signInTextRect}>
-              <Pressable onPress={() => navigation.navigate('SignIn')}>
-                <Text style={styles.signInText}>Sign in</Text>
-              </Pressable>
-            </View>
-          </View>
-          {/*Footer End*/}
+          <Pressable style={styles.bottomTextMainRect} onPress={() => navigation.navigate('SignIn')}>
+            <Typography color={'white'} >Already a member? </Typography>
+            <Typography color='redColor' style={styles.signInText}>Sign in</Typography>
+          </Pressable>
         </View>
       </ImageBackground>
     </View>
