@@ -18,38 +18,17 @@ export const fitsApi = createApi({
       if (token?.access_token) {
         headers.set('Authorization', `Bearer ${token.access_token}`);
       }
-      // headers.set('Access-Control-Allow-Origin', '*');
-      // headers.set('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE');
-      // headers.set(
-      //   'Access-Control-Allow-Headers',
-      //   'Authorization, Content-Type',
-      // );
-
-      // headers.set('Content-Type', 'application/json');
       return headers;
     },
-    // responseHandler: async response => {
-    //   console.log('res====>>>>', response);
-    //   const data = await response.json();
-    //   if (!response.ok) {
-    //     throw new Error(data.error.message);
-    //   }
-    //   return data;
-    // },
   }),
-  // global configuration for the api
   keepUnusedDataFor: 30,
   endpoints: builder => ({
     getUsers: builder.query<any[], void>({
       query: () => 'users',
     }),
-
-    //userMe
     getUserMe: builder.query<any, Partial<any>>({
       query: id => `/user/me/${id}`,
     }),
-
-    //register User
     registerUser: builder.mutation<LoginInterface, Partial<any>>({
       query: body => ({
         url: '/register',
@@ -57,8 +36,6 @@ export const fitsApi = createApi({
         body: body,
       }),
     }),
-
-    //login User
     loginUser: builder.mutation<LoginInterface, Partial<any>>({
       query: body => ({
         url: '/login',
@@ -66,8 +43,6 @@ export const fitsApi = createApi({
         body: body,
       }),
     }),
-
-    //stripe Customer
     stripeCustomer: builder.mutation<any, Partial<any>>({
       query: body => ({
         url: '/stripe/customer',
@@ -75,8 +50,6 @@ export const fitsApi = createApi({
         body: body,
       }),
     }),
-
-    // updateUser
     updateUser: builder.mutation<any, Partial<any>>({
       query: user => ({
         url: `users/${user.id}`,
@@ -84,9 +57,6 @@ export const fitsApi = createApi({
         body: user,
       }),
     }),
-
-    //filter by price  sports,min_price,max_price,type,sort_by,
-
     updateFilter: builder.mutation<any, Partial<any>>({
       query: user => ({
         url: `/filter`,
@@ -94,7 +64,6 @@ export const fitsApi = createApi({
         body: user,
       }),
     }),
-    //delet eUser
     deleteUser: builder.mutation<void, number>({
       query: id => ({
         url: `users/${id}`,

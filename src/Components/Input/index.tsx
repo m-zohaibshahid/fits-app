@@ -36,7 +36,7 @@ const TextInput: React.FC<TextInputProps> = ({
 
   return (
     <>
-    <View style={[styles.inputMainView, style]}>
+    <View style={[styles.inputMainView, !error ? styles.marginBottom : null, style]}>
       <Typography color="white" size="small" style={{ margin: 0, transform: [{ translateY: 5 }] }}>
         {label}
       </Typography>
@@ -94,6 +94,9 @@ const styles = StyleSheet.create({
     color: '#fff',
   },
   errorMessage: {
+    marginBottom: 10,
+  },
+  marginBottom: {
     marginBottom: 10,
   },
 });
