@@ -17,6 +17,7 @@ interface TextInputProps {
   iconColor?: string;
   style?: ViewStyle;
   inputStyle?: TextStyle;
+  error?: string;
 }
 
 const TextInput: React.FC<TextInputProps> = ({
@@ -29,14 +30,18 @@ const TextInput: React.FC<TextInputProps> = ({
   onChangeText,
   style,
   inputStyle,
+  error,
 }) => {
   const [hidePass, setHidePass] = useState(true);
 
   return (
+    <>
     <View style={[styles.inputMainView, style]}>
-        <Typography color='white' size='small' style={{margin: 0, transform: [{ translateY: 5 }]}}>{label}</Typography>
+      <Typography color="white" size="small" style={{ margin: 0, transform: [{ translateY: 5 }] }}>
+        {label}
+      </Typography>
       <View>
-              <RNTextInput
+        <RNTextInput
           style={[styles.inputTypeStyle, inputStyle]}
           keyboardType={keyboard}
           placeholder={placeholder}
@@ -44,7 +49,7 @@ const TextInput: React.FC<TextInputProps> = ({
           secureTextEntry={secureTextEntry && hidePass}
           value={value}
           onChangeText={onChangeText}
-        />
+          />
         {secureTextEntry && (
           <View style={styles.hideIconView}>
             <Ionicons
@@ -52,42 +57,45 @@ const TextInput: React.FC<TextInputProps> = ({
               onPress={() => setHidePass(!hidePass)}
               size={18}
               color={Colors.white}
-            />
+              />
           </View>
         )}
       </View>
     </View>
+    {error && <Typography style={styles.errorMessage} size={'small'} weight='700' color={'error'}>{error}</Typography>}
+  </>
   );
 };
 
+
 const styles = StyleSheet.create({
-    hideIconView: {
-        position: 'absolute',
-        bottom: 8,
-        right: -2,
-        width: '10%',
-        alignItems: 'center',
-        justifyContent: 'center',
-      },
-      inputMainView: {
-        width: '100%',
-        backgroundColor: Colors.black,
-        borderRadius: 12,
-        marginTop: 5,
-        marginBottom: 12,
-          justifyContent: 'center',
-          alignSelf: 'center',
-          paddingHorizontal: 12,
-          
-      },
-    inputTypeStyle: {
-        paddingRight: 40,
-          height: 42,
-          fontSize: RFValue(12, 580),
-        fontWeight: '400',
-        color: '#fff',
-      },
-    
+  hideIconView: {
+    position: 'absolute',
+    bottom: 8,
+    right: -2,
+    width: '10%',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  inputMainView: {
+    width: '100%',
+    backgroundColor: Colors.black,
+    borderRadius: 12,
+    marginTop: 5,
+    justifyContent: 'center',
+    alignSelf: 'center',
+    paddingHorizontal: 12,
+  },
+  inputTypeStyle: {
+    paddingRight: 40,
+    height: 42,
+    fontSize: RFValue(12, 580),
+    fontWeight: '400',
+    color: '#fff',
+  },
+  errorMessage: {
+    marginBottom: 10,
+  },
 });
 
-export default TextInput
+export default TextInput;

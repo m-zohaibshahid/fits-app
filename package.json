@@ -44,7 +44,8 @@
     "react-native-video": "^5.2.1",
     "react-native-video-player": "^0.14.0",
     "react-redux": "^8.0.5",
-    "react-test-renderer": "18.1.0"
+    "react-test-renderer": "18.1.0",
+    "yup": "^1.2.0"
   },
   "devDependencies": {
     "@babel/core": "^7.20.0",
