@@ -7,7 +7,7 @@ import React, {
   useRef,
   useState,
 } from "react";
-import { SafeAreaView, View } from "react-native";
+import { Alert, SafeAreaView, View } from "react-native";
 import { LogBox } from "react-native";
 import { NavigationContainer } from "@react-navigation/native";
 import { createStackNavigator } from "@react-navigation/stack";
@@ -69,7 +69,7 @@ function LoginNow() {
   const { Loginx }: any = useContext(AuthContext);
   return <View>{Loginx()}</View>;
 }
-function App() {
+const  App = () => {
   const [unReadMessages, setUnReadMessages] = useState(0);
   const timerRef = useRef<any>(null);
   const delay = 1000; // 1 second delay
@@ -127,8 +127,7 @@ function App() {
         }
       })
       .catch((error) => {
-        alert(error.message);
-        alert(error);
+        Alert.alert(error.message);
       });
   };
 
@@ -367,12 +366,4 @@ function App() {
     </SafeAreaView>
   );
 }
-LogBox.ignoreLogs([
-  "[react-native-gesture-handler] Seems like you're using an old API with gesture components, check out new Gestures system!",
-]);
-LogBox.ignoreLogs(["new NativeEventEmitter"]); // Ignore log notification by message
-LogBox.ignoreAllLogs(); //Ignore all log notifications
 export default App;
-function alert(message: any) {
-  throw new Error("Function not implemented.");
-}
