@@ -1,16 +1,5 @@
 import React, { useState, useEffect } from "react";
-import {
-  Text,
-  View,
-  Pressable,
-  TextInput,
-  Modal,
-  Image,
-  ScrollView,
-  ToastAndroid,
-  ActivityIndicator,
-  TouchableOpacity,
-} from "react-native";
+import { Text, View, Pressable, TextInput, Modal, Image, ScrollView, ToastAndroid, ActivityIndicator, TouchableOpacity } from "react-native";
 import FastImage from "react-native-fast-image";
 import CountryPicker from "react-native-country-picker-modal";
 import ImagePicker from "react-native-image-crop-picker";
@@ -31,12 +20,9 @@ import { UserDetail } from "../../interfaces";
 import { useSelector } from "react-redux";
 import styles from "./SplashScreen/style";
 
-
-
-
 const AccountUpdate = () => {
-  const navigation = useNavigation()
-  const { userInfo } = useSelector((state:{ fitsStore:Partial<UserDetail>}) => state.fitsStore)
+  const navigation = useNavigation();
+  const { userInfo } = useSelector((state: { fitsStore: Partial<UserDetail> }) => state.fitsStore);
   const [modalVisible, setModalVisible] = useState(false);
   const [modalVisibleDate, setModalVisibleDate] = useState(false);
   const [data, setData] = useState(true);
@@ -56,7 +42,8 @@ const AccountUpdate = () => {
   const [userDatax, setUserDatax] = useState();
 
   const [isCountryVisible, setIsCountryVisible] = React.useState(false);
-  const { data:userMeData } = useGetUserMeQuery({ id: userInfo?._id });
+
+  const { data: userMeData } = useGetUserMeQuery({ id: userInfo?._id });
 
   const [load, setLoad] = useState(false);
   const [loadx, setLoadx] = useState(false);
@@ -72,9 +59,9 @@ const AccountUpdate = () => {
   }, []);
 
   const getUserInfo = async () => {
-    const userData=await getUserAsyncStroage()
-    setUserDatax(userData)
-    
+    const userData = await getUserAsyncStroage();
+    setUserDatax(userData);
+
     setToken(userData?.access_token);
   };
 
@@ -175,23 +162,21 @@ const AccountUpdate = () => {
   const userMe = async () => {
     setLoadx(true);
 
-    
-        setLoadx(false);
-        if (userMeData.success) {
-          setFullName(userMeData?.personal_info?.name);
-          setCountry(userMeData?.personal_info?.country);
-          setState(userMeData?.personal_info?.state);
-          setCity(userMeData?.personal_info?.city);
-          setGender(userMeData?.personal_info?.gender);
-          setUserId(userMeData?.personal_info?._id);
-          setPhoneNumber(userMeData?.personal_info?.phoneNumber);
-          setDate(userMeData?.personal_info?.date_of_birth);
-          setImage(userMeData?.personal_info?.profileImage);
-          setCloudImageUrl(userMeData?.personal_info?.profileImage);
-        } else {
-          alert(userMeData.errors);
-        }
-      
+    setLoadx(false);
+    if (userMeData.success) {
+      setFullName(userMeData?.personal_info?.name);
+      setCountry(userMeData?.personal_info?.country);
+      setState(userMeData?.personal_info?.state);
+      setCity(userMeData?.personal_info?.city);
+      setGender(userMeData?.personal_info?.gender);
+      setUserId(userMeData?.personal_info?._id);
+      setPhoneNumber(userMeData?.personal_info?.phoneNumber);
+      setDate(userMeData?.personal_info?.date_of_birth);
+      setImage(userMeData?.personal_info?.profileImage);
+      setCloudImageUrl(userMeData?.personal_info?.profileImage);
+    } else {
+      alert(userMeData.errors);
+    }
   };
   return (
     <View style={styles.container}>
@@ -268,22 +253,13 @@ const AccountUpdate = () => {
                   <Text style={styles.inputnameText}>Fullname</Text>
                 </View>
                 <View style={styles.textinputView}>
-                   <TextInput
-                    style={styles.inputEmail}
-                    placeholder="Enter Full name"
-                    placeholderTextColor="white"
-                    value={fullName}
-                    onChangeText={setFullName}
-                  />
+                  <TextInput style={styles.inputEmail} placeholder="Enter Full name" placeholderTextColor="white" value={fullName} onChangeText={setFullName} />
                 </View>
               </View>
             </View>
 
             <View style={styles.inputTopView}>
-              <Pressable
-                onPress={() => setModalVisibleDate(true)}
-                style={styles.inputtopviews}
-              >
+              <Pressable onPress={() => setModalVisibleDate(true)} style={styles.inputtopviews}>
                 <View style={styles.inputnameView}>
                   <Text style={styles.inputnameText}>Date of birth</Text>
                 </View>
@@ -295,9 +271,7 @@ const AccountUpdate = () => {
                     height: 40,
                   }}
                 >
-                  <Text style={styles.DateText}>
-                    {moment(date).format("DD-MM-YYYY")}
-                  </Text>
+                  <Text style={styles.DateText}>{moment(date).format("DD-MM-YYYY")}</Text>
                 </View>
               </Pressable>
             </View>
@@ -333,13 +307,7 @@ const AccountUpdate = () => {
                   <Text style={styles.inputnameText}>State</Text>
                 </View>
                 <View style={styles.textinputView}>
-                  <TextInput
-                    style={styles.inputEmail}
-                    placeholder="Enter State"
-                    placeholderTextColor="white"
-                    value={state}
-                    onChangeText={setState}
-                  />
+                  <TextInput style={styles.inputEmail} placeholder="Enter State" placeholderTextColor="white" value={state} onChangeText={setState} />
                 </View>
               </View>
             </View>
@@ -349,13 +317,7 @@ const AccountUpdate = () => {
                   <Text style={styles.inputnameText}>City</Text>
                 </View>
                 <View style={styles.textinputView}>
-                  <TextInput
-                    style={styles.inputEmail}
-                    placeholder="Enter City"
-                    placeholderTextColor="white"
-                    value={city}
-                    onChangeText={setCity}
-                  />
+                  <TextInput style={styles.inputEmail} placeholder="Enter City" placeholderTextColor="white" value={city} onChangeText={setCity} />
                 </View>
               </View>
             </View>
@@ -434,9 +396,7 @@ const AccountUpdate = () => {
                           >
                             <Text style={styles.Gendertexts}>
                               Gender
-                              <Text style={styles.genderonetext}>
-                                (Select one)
-                              </Text>
+                              <Text style={styles.genderonetext}>(Select one)</Text>
                             </Text>
                           </View>
                         </View>
@@ -452,11 +412,7 @@ const AccountUpdate = () => {
                             setStatusThree(false);
                           }}
                         >
-                          <View
-                            style={[
-                              statusOne ? styles.BoxViewBoder : styles.inner,
-                            ]}
-                          >
+                          <View style={[statusOne ? styles.BoxViewBoder : styles.inner]}>
                             <Image source={Images.Vector} />
                             <Text style={styles.maletext}>Male</Text>
                           </View>
@@ -472,11 +428,7 @@ const AccountUpdate = () => {
                             setStatusThree(false);
                           }}
                         >
-                          <View
-                            style={[
-                              statusTwo ? styles.BoxViewBoder : styles.inner,
-                            ]}
-                          >
+                          <View style={[statusTwo ? styles.BoxViewBoder : styles.inner]}>
                             <Image source={Images.Vector2} />
                             <Text style={styles.maletext}>Female</Text>
                           </View>
@@ -499,13 +451,7 @@ const AccountUpdate = () => {
                             setStatusThree(true);
                           }}
                         >
-                          <View
-                            style={[
-                              statusThree
-                                ? styles.oternameviewBorder
-                                : styles.oternameview,
-                            ]}
-                          >
+                          <View style={[statusThree ? styles.oternameviewBorder : styles.oternameview]}>
                             <Text style={styles.otherText}>Other</Text>
                           </View>
                         </Pressable>
@@ -537,10 +483,7 @@ const AccountUpdate = () => {
                       }}
                     >
                       <View style={styles.cancelView}>
-                        <Pressable
-                          onPress={() => setModalVisibleDate(false)}
-                          style={styles.canceldoneView}
-                        >
+                        <Pressable onPress={() => setModalVisibleDate(false)} style={styles.canceldoneView}>
                           <Text style={styles.TextCancelDone}>Cancel</Text>
                         </Pressable>
                         <View style={styles.DOBView}>
@@ -557,13 +500,7 @@ const AccountUpdate = () => {
                       </View>
 
                       <View style={styles.topView}>
-                        <DatePicker
-                          mode="date"
-                          textColor="#000"
-                          date={date}
-                          style={styles.DatePicker}
-                          onDateChange={setDate}
-                        />
+                        <DatePicker mode="date" textColor="#000" date={date} style={styles.DatePicker} onDateChange={setDate} />
                       </View>
                     </View>
                   </ScrollView>
@@ -575,13 +512,7 @@ const AccountUpdate = () => {
           <View style={{ paddingVertical: 10, alignItems: "center" }}>
             <Button
               navigation={navigation}
-              label={
-                load === true ? (
-                  <ActivityIndicator size="small" color="#fff" />
-                ) : (
-                  "NEXT"
-                )
-              }
+              label={load === true ? <ActivityIndicator size="small" color="#fff" /> : "NEXT"}
               onPress={() => {
                 if (load === true) {
                 } else {

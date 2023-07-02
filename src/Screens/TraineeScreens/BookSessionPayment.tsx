@@ -1,17 +1,9 @@
 import React, { useState, useEffect } from "react";
-import {
-  Text,
-  View,
-  StyleSheet,
-  ScrollView,
-  Pressable,
-  ActivityIndicator,
-  Platform,
-} from "react-native";
+import { Text, View, StyleSheet, ScrollView, Pressable, ActivityIndicator, Platform } from "react-native";
 import moment from "moment";
 import AntDesign from "react-native-vector-icons/AntDesign";
 import FontAwesome from "react-native-vector-icons/FontAwesome";
-import {  RFValue } from "react-native-responsive-fontsize";
+import { RFValue } from "react-native-responsive-fontsize";
 import Header from "../../Components/Header";
 import { url } from "../../constants/url";
 import Button from "../../Components/Button";
@@ -31,27 +23,21 @@ const BookSessionPayment = () => {
   const [senderId, setSenderId] = useState();
   const route = useRoute();
 
- const reciverId = route.params?.data.userData.item?.user.cus_id;
+  const reciverId = route.params?.data.userData.item?.user.cus_id;
 
-  const { userInfo } = useSelector((state: Partial<UserDetailInfoInterface>) => state.fitsStore)
-  
+  const { userInfo } = useSelector((state: Partial<UserDetailInfoInterface>) => state.fitsStore);
+
   const { data, isLoading, error, isSuccess } = useGetUserMeQuery({ id: userInfo?._id });
-
-
-
 
   const userMe = async () => {
     setLoad(true);
-          if (data?.success) {
-            getStripeCard(data?.stripe?.card?.customer.id);
-            setSenderId(data?.stripe?.card?.customer.id);
-          } else {
-          }
-       
+    if (data?.success) {
+      getStripeCard(data?.stripe?.card?.customer.id);
+      setSenderId(data?.stripe?.card?.customer.id);
     }
-  
+  };
 
-  const getStripeCard = async (id) => {
+  const getStripeCard = async (id: string) => {
     setLoad(true);
     const userData = await AsyncStorage.getItem("userData");
     let userDatax = JSON.parse(userData);
@@ -69,7 +55,6 @@ const BookSessionPayment = () => {
           setLoad(false);
           if (res2?.success) {
             setCardData(res2?.data);
-          } else {
           }
         })
         .catch(() => {
@@ -78,7 +63,6 @@ const BookSessionPayment = () => {
     }
   };
   const BookASession = async () => {
-  
     await fetch(`${url}/book-a-session`, {
       method: "POST",
       headers: {
@@ -162,12 +146,7 @@ const BookSessionPayment = () => {
   let balance = Number(wallet - cost);
   return (
     <View style={styles.container}>
-      <Header
-        label={"Payment"}
-        subLabel={"Pay before the class starts"}
-        navigation={navigation}
-        doubleHeader={true}
-      />
+      <Header label={"Payment"} subLabel={"Pay before the class starts"} navigation={navigation} doubleHeader={true} />
       <ScrollView showsVerticalScrollIndicator={false} style={styles.main}>
         {/*start Totale */}
         {load ? (
@@ -181,12 +160,8 @@ const BookSessionPayment = () => {
                 <View style={styles.marchmainview2}>
                   <View style={{ width: "25%", alignItems: "center" }}>
                     <Text style={styles.marchtext}>
-                      {moment(
-                        route.params?.data.userData.item?.select_date
-                      ).format("DD ")}
-                      {moment(
-                        route.params?.data.userData.item?.select_date
-                      ).format("MMMM")}
+                      {moment(route.params?.data.userData.item?.select_date).format("DD ")}
+                      {moment(route.params?.data.userData.item?.select_date).format("MMMM")}
                     </Text>
                   </View>
                   <View
@@ -204,9 +179,7 @@ const BookSessionPayment = () => {
                     ></View>
                   </View>
                   <View style={{ width: "35%", flexDirection: "column" }}>
-                    <Text style={styles.marchtext}>
-                      {route.params?.data.userData.item?.category}
-                    </Text>
+                    <Text style={styles.marchtext}>{route.params?.data.userData.item?.category}</Text>
                     <Text
                       style={{
                         color: "#fff",
@@ -214,10 +187,7 @@ const BookSessionPayment = () => {
                         fontFamily: "Poppins-Regular",
                       }}
                     >
-                      {route.params?.data.userData.item?.class_time.slice(
-                        0,
-                        10
-                      )}
+                      {route.params?.data.userData.item?.class_time.slice(0, 10)}
                     </Text>
                   </View>
                   <Pressable
@@ -250,11 +220,7 @@ const BookSessionPayment = () => {
                           Details
                         </Text>
                       </View>
-                      <AntDesign
-                        name={details ? "up" : "down"}
-                        size={15}
-                        color={"#fff"}
-                      />
+                      <AntDesign name={details ? "up" : "down"} size={15} color={"#fff"} />
                     </View>
                   </Pressable>
                 </View>
@@ -264,40 +230,27 @@ const BookSessionPayment = () => {
                     <View style={{ width: "90%" }}>
                       <View style={styles.dotmainview}>
                         <View style={styles.dotview}>
-                          <FontAwesome
-                            name="circle"
-                            style={{ color: "#979797" }}
-                          />
+                          <FontAwesome name="circle" style={{ color: "#979797" }} />
                         </View>
                         <View style={{ width: "90%" }}>
                           <Text style={styles.textstyle}>
-                            Type:{"\n"}{" "}
-                            {
-                              route.params?.data.userData.item?.session_type.type
-                            }
+                            Type:{"\n"} {route.params?.data.userData.item?.session_type.type}
                           </Text>
                         </View>
                       </View>
                       <View style={styles.dotmainview}>
                         <View style={styles.dotview}>
-                          <FontAwesome
-                            name="circle"
-                            style={{ color: "#979797" }}
-                          />
+                          <FontAwesome name="circle" style={{ color: "#979797" }} />
                         </View>
                         <View style={{ width: "90%" }}>
                           <Text style={styles.textstyle}>
-                            Cost: {"\n"}${" "}
-                            {route.params?.data.userData.item?.price}
+                            Cost: {"\n"}$ {route.params?.data.userData.item?.price}
                           </Text>
                         </View>
                       </View>
                       <View style={styles.dotmainview}>
                         <View style={styles.dotview}>
-                          <FontAwesome
-                            name="circle"
-                            style={{ color: "#979797" }}
-                          />
+                          <FontAwesome name="circle" style={{ color: "#979797" }} />
                         </View>
                         <View style={{ width: "90%" }}>
                           <Text style={styles.textstyle}>
@@ -308,10 +261,7 @@ const BookSessionPayment = () => {
                       </View>
                       <View style={styles.dotmainview}>
                         <View style={styles.dotview}>
-                          <FontAwesome
-                            name="circle"
-                            style={{ color: "#979797" }}
-                          />
+                          <FontAwesome name="circle" style={{ color: "#979797" }} />
                         </View>
                         <View style={{ width: "90%" }}>
                           <Text style={styles.textstyle}>
@@ -335,9 +285,7 @@ const BookSessionPayment = () => {
                     <Text style={styles.totalText}>Total Cost</Text>
                   </View>
                   <View style={styles.$10View}>
-                    <Text style={styles.totalText}>
-                      $ {route.params?.data.userData.item?.price}
-                    </Text>
+                    <Text style={styles.totalText}>$ {route.params?.data.userData.item?.price}</Text>
                   </View>
                 </View>
                 {/*end pay*/}

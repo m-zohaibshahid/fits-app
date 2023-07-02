@@ -1,12 +1,5 @@
 import React, { useState } from "react";
-import {
-  Text,
-  View,
-  TextInput,
-  ScrollView,
-  ToastAndroid,
-  TouchableOpacity,
-} from "react-native";
+import { Text, View, TextInput, ScrollView, ToastAndroid, TouchableOpacity } from "react-native";
 import Header from "../../../Components/Header";
 import Button from "../../../Components/Button";
 import { url } from "../../../constants/url";
@@ -14,10 +7,14 @@ import DateTimePickerModal from "react-native-modal-datetime-picker";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import styles from "./styles";
 import moment from "moment";
-import { LinearProgress } from "@rneui/themed";
 import { Toast } from "react-native-toast-message/lib/src/Toast";
+import { NavigationSwitchProp } from "react-navigation";
 
-const CreateCardScreen = ({ navigation }) => {
+interface Props {
+  navigation: NavigationSwitchProp;
+}
+
+const CreateCardScreen: React.FC<Props> = ({ navigation }) => {
   // Hooks
   const [cardNumber, setCardNumber] = useState("");
   const [expDate, setExpDate] = useState("");
@@ -36,7 +33,7 @@ const CreateCardScreen = ({ navigation }) => {
     setDatePickerVisibility(false);
   };
 
-  const handleConfirm = (date) => {
+  const handleConfirm = (date: moment.MomentInput) => {
     setExpDate(moment(date).format("DD-MM-YYYY"));
     setExpMonth(moment(date).format("MM"));
     setExpYear(moment(date).format("YYYY"));
@@ -136,25 +133,14 @@ const CreateCardScreen = ({ navigation }) => {
             </View>
           </View>
 
-          <TouchableOpacity
-            activeOpacity={0.8}
-            onPress={() => showDatePicker()}
-          >
+          <TouchableOpacity activeOpacity={0.8} onPress={() => showDatePicker()}>
             <View style={styles.inputMainView}>
               <View style={styles.inputTitleView}>
                 <Text style={styles.inputTitleText}>Select Expiry Date</Text>
               </View>
               <View style={styles.inputTypeMainView}>
                 <View style={styles.inputTypeView}>
-                  <TextInput
-                    style={styles.inputTypeStyle}
-                    label="Exp Date"
-                    placeholderTextColor={"#fff"}
-                    placeholder="08-12-2022"
-                    value={expDate}
-                    editable={false}
-                    onChangeText={setExpDate}
-                  />
+                  <TextInput style={styles.inputTypeStyle} label="Exp Date" placeholderTextColor={"#fff"} placeholder="08-12-2022" value={expDate} editable={false} onChangeText={setExpDate} />
                 </View>
               </View>
             </View>
@@ -192,12 +178,7 @@ const CreateCardScreen = ({ navigation }) => {
           }
         }}
       />
-      <DateTimePickerModal
-        isVisible={isDatePickerVisible}
-        mode="date"
-        onConfirm={handleConfirm}
-        onCancel={hideDatePicker}
-      />
+      <DateTimePickerModal isVisible={isDatePickerVisible} mode="date" onConfirm={handleConfirm} onCancel={hideDatePicker} />
     </View>
   );
 };

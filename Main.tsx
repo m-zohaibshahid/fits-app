@@ -1,14 +1,5 @@
-import React, {
-  createContext,
-  useContext,
-  useEffect,
-  useMemo,
-  useReducer,
-  useRef,
-  useState,
-} from "react";
+import React, { createContext, useContext, useEffect, useMemo, useReducer, useRef, useState } from "react";
 import { Alert, SafeAreaView, View } from "react-native";
-import { LogBox } from "react-native";
 import { NavigationContainer } from "@react-navigation/native";
 import { createStackNavigator } from "@react-navigation/stack";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -54,27 +45,29 @@ import EnterChatforTrainee from "./src/Screens/TraineeScreens/EnterChatforTraine
 import { url } from "./src/constants/url";
 import { useSelector } from "react-redux";
 import { styles } from "./style";
+import { UnauthenticatedStack } from "./src/stacks/unauthenticated.stack";
+import AuthenticatedStack from "./src/stacks/authenticated.stack";
 
 export const MainContext = createContext({});
 
 const AuthContext = createContext({});
 const Stack = createStackNavigator();
 
-function LogoutNow() {
+export function LogoutNow() {
   const { signOut }: any = useContext(AuthContext);
   return <View>{signOut()}</View>;
 }
 
-function LoginNow() {
+export function LoginNow() {
   const { Loginx }: any = useContext(AuthContext);
   return <View>{Loginx()}</View>;
 }
-const  App = () => {
+const App = () => {
   const [unReadMessages, setUnReadMessages] = useState(0);
   const timerRef = useRef<any>(null);
   const delay = 1000; // 1 second delay
   const token: string = useSelector((state: { token: string }) => state.token);
-  
+
   const [state, dispatch] = useReducer(
     (prevState: any, action: any) => {
       switch (action.type) {
@@ -105,10 +98,7 @@ const  App = () => {
     }
   );
 
-  
-
   const getAllRomms = async () => {
-    
     await fetch(`${url}/chat/rooms`, {
       method: "POST",
       headers: {
@@ -181,189 +171,17 @@ const  App = () => {
         <NavigationContainer>
           {state.isLoading ? (
             <Stack.Navigator>
-              <Stack.Screen
-                name="Splash"
-                component={Splash}
-                options={{ headerShown: false }}
-              />
+              <Stack.Screen name="Splash" component={Splash} options={{ headerShown: false }} />
             </Stack.Navigator>
           ) : !state.userToken ? (
-            <Stack.Navigator>
-              <Stack.Screen
-                name="Welcome"
-                component={Welcome}
-                options={{ headerShown: false }}
-              />
-              <Stack.Screen
-                name="SelectStatusScreen"
-                component={SelectStatusScreen}
-                options={{ headerShown: false }}
-              />
-              <Stack.Screen
-                name="SignUp"
-                component={SignUp}
-                options={{ headerShown: false }}
-              />
-              <Stack.Screen
-                name="SignIn"
-                component={SignIn}
-                options={{ headerShown: false }}
-              />
-              <Stack.Screen
-                name="ForgotPassword"
-                component={ForgotPassword}
-                options={{ headerShown: false }}
-              />
-              <Stack.Screen
-                name="ForgotCode"
-                component={ForgotCode}
-                options={{ headerShown: false }}
-              />
-              <Stack.Screen
-                name="GeneratePassword"
-                component={GeneratePassword}
-                options={{ headerShown: false }}
-              />
-              <Stack.Screen
-                name="Verification"
-                component={Verification}
-                options={{ headerShown: false }}
-              />
-              <Stack.Screen
-                name="LoginNow"
-                component={LoginNow}
-                options={{ headerShown: false }}
-              />
-            </Stack.Navigator>
+            <UnauthenticatedStack />
           ) : (
-            <Stack.Navigator>
-              <Stack.Screen
-                name="CheckUser"
-                component={CheckUser}
-                options={{ headerShown: false }}
-              />
-              <Stack.Screen
-                name="PersonalInfo"
-                component={PersonalInfo}
-                options={{ headerShown: false }}
-              />
-              <Stack.Screen
-                name="ProfessionalInfo"
-                component={ProfessionalInfo}
-                options={{ headerShown: false }}
-              />
-              <Stack.Screen
-                name="ServicesOffered"
-                component={ServicesOffered}
-                options={{ headerShown: false }}
-              />
-              <Stack.Screen
-                name="TrainerVerification"
-                component={TrainerVerification}
-                options={{ headerShown: false }}
-              />
-              <Stack.Screen
-                name="UpdateProfessioninfo"
-                component={UpdateProfessioninfo}
-                options={{ headerShown: false }}
-              />
-              <Stack.Screen
-                name="FitnessLevel"
-                component={FitnessLevel}
-                options={{ headerShown: false }}
-              />
-              <Stack.Screen
-                name="FitnessGoal"
-                component={FitnessGoal}
-                options={{ headerShown: false }}
-              />
-              <Stack.Screen
-                name="TrainerTabb"
-                component={TrainerTabb}
-                initialParams={{ unReadMessages }}
-                options={{ headerShown: false }}
-              />
-              <Stack.Screen
-                name="AccountUpdate"
-                component={AccountUpdate}
-                options={{ headerShown: false }}
-              />
-              <Stack.Screen
-                name="CreateBookSession"
-                component={CreateBookSession}
-                options={{ headerShown: false }}
-              />
-              <Stack.Screen
-                name="CreateRecorderClass"
-                component={CreateRecorderClass}
-                options={{ headerShown: false }}
-              />
-              <Stack.Screen
-                name="TrainerPayment"
-                component={TrainerPayment}
-                options={{ headerShown: false }}
-              />
-              <Stack.Screen
-                name="VideoCreate"
-                component={VideoCreate}
-                options={{ headerShown: false }}
-              />
-              <Stack.Screen
-                name="EnterChatTrainer"
-                component={EnterChatTrainer}
-                options={{ headerShown: false }}
-              />
-              <Stack.Screen
-                name="EnterChatforTrainee"
-                component={EnterChatforTrainee}
-                options={{ headerShown: false }}
-              />
-              <Stack.Screen
-                name="TrainerWallet"
-                component={TrainerWallet}
-                options={{ headerShown: false }}
-              />
-              <Stack.Screen
-                name="TrainerCreateCard"
-                component={TrainerCreateCard}
-                options={{ headerShown: false }}
-              />
-              <Stack.Screen
-                name="TraineeTabb"
-                component={TraineeTabb}
-                options={{ headerShown: false }}
-              />
-              <Stack.Screen
-                name="TrainerDetail"
-                component={TrainerDetail}
-                options={{ headerShown: false }}
-              />
-              <Stack.Screen
-                name="BookSessionPayment"
-                component={BookSessionPayment}
-                options={{ headerShown: false }}
-              />
-              <Stack.Screen
-                name="WalletForTrainee"
-                component={WalletForTrainee}
-                options={{ headerShown: false }}
-              />
-              <Stack.Screen
-                name="CreateCardTrainee"
-                component={CreateCardTrainee}
-                options={{ headerShown: false }}
-              />
-              <Stack.Screen
-                name="logoutNow"
-                component={LogoutNow}
-                options={{ headerShown: false }}
-              />
-            </Stack.Navigator>
+            <AuthenticatedStack />
           )}
         </NavigationContainer>
       </AuthContext.Provider>
       <Toast config={toastConfig} position="bottom" bottomOffset={50} />
     </SafeAreaView>
   );
-}
+};
 export default App;

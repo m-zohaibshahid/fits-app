@@ -1,77 +1,44 @@
 import React, { useState, useEffect } from "react";
-import {
-  Text,
-  View,
-  ImageBackground,
-  TouchableOpacity,
-  StyleSheet,
-  TextInput,
-  Modal,
-  Image,
-  ScrollView,
-  ToastAndroid,
-  ActivityIndicator,
-  Platform,
-} from "react-native";
-import AntDesign from "react-native-vector-icons/AntDesign";
-import EvilIcons from "react-native-vector-icons/EvilIcons";
-import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
-import Entypo from "react-native-vector-icons/Entypo";
-import Fontisto from "react-native-vector-icons/Fontisto";
-import Ionicons from "react-native-vector-icons/Ionicons";
-import FontAwesome from "react-native-vector-icons/FontAwesome";
-import { RFPercentage, RFValue } from "react-native-responsive-fontsize";
-import * as Images from "../../constants/Images";
+import { Text, View, TouchableOpacity, StyleSheet, ScrollView, ActivityIndicator, Platform } from "react-native";
+import { RFValue } from "react-native-responsive-fontsize";
 import Header from "../../Components/Header";
-import Button from "../../Components/Button";
 import { url } from "../../constants/url";
-import { useRoute } from "@react-navigation/native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Toast } from "react-native-toast-message/lib/src/Toast";
+import { NavigationSwitchProp } from "react-navigation";
+import { useSelector } from "react-redux";
+import { UserDetailInfoInterface } from "../../interfaces";
+import { useGetUserMeQuery } from "../../slice/FitsApi.slice";
 
-const WalletForTrainee = ({ navigation }) => {
+interface Props {
+  navigation: NavigationSwitchProp;
+}
+
+const WalletForTrainee: React.FC<Props> = ({ navigation }) => {
   // Hooks
   const [load, setLoad] = useState(false);
   const [cardData, setCardData] = useState();
   const [addBalance, setAddBalance] = useState();
+  const { userInfo } = useSelector((state: Partial<UserDetailInfoInterface>) => state.fitsStore);
+  const { data, isLoading, error, isSuccess } = useGetUserMeQuery({ id: userInfo?._id });
+
   // Functions
 
   const userMe = async () => {
     setLoad(true);
-    const userData = await AsyncStorage.getItem("userData");
-    let userDatax = JSON.parse(userData);
-    if (userDatax) {
-      await fetch(`${url}/user/me/${userDatax?.data?._id}`, {
-        method: "GET",
-        headers: {
-          Accept: "application/json",
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${userDatax?.access_token}`,
-        },
-      })
-        .then((res) => res.json())
-        .then((res2) => {
-          if (res2?.success) {
-            getStripeCard(res2?.stripe?.card?.customer);
-            setAddBalance(res2?.stripe?.card);
-          } else {
-            Toast.show({
-              type: "error",
-              text1: "Something went wrong!",
-            });
-          }
-        })
-        .catch(() => {
-          setLoad(false);
-          Toast.show({
-            type: "error",
-            text1: "Something went wrong!",
-          });
-        });
+
+    if (data?.success) {
+      getStripeCard(data?.stripe?.card?.customer);
+      setAddBalance(data?.stripe?.card);
+    } else {
+      Toast.show({
+        type: "error",
+        text1: "Something went wrong!",
+      });
     }
   };
 
-  const getStripeCard = async (id) => {
+  const getStripeCard = async (id: string) => {
     setLoad(true);
     const userData = await AsyncStorage.getItem("userData");
     let userDatax = JSON.parse(userData);
@@ -88,11 +55,6 @@ const WalletForTrainee = ({ navigation }) => {
         .then((res2) => {
           setLoad(false);
 
-          console.log(
-            "================================================",
-            res2,
-            "================================================"
-          );
           if (res2?.message === "Stripe Customer Found Successfully!") {
             Toast.show({
               type: "success",
@@ -116,7 +78,7 @@ const WalletForTrainee = ({ navigation }) => {
     }
   };
 
-  const callRecharge = async (amount) => {
+  const callRecharge = async (amount: number) => {
     setLoad(true);
     const userTokendata = await AsyncStorage.getItem("userData");
     let userTokendatax = JSON.parse(userTokendata);
@@ -158,12 +120,7 @@ const WalletForTrainee = ({ navigation }) => {
   }, []);
   return (
     <View style={styles.container}>
-      <Header
-        label={"Wallet"}
-        subLabel={"Add cash to your account by selecting any plan."}
-        navigation={navigation}
-        doubleHeader={true}
-      />
+      <Header label={"Wallet"} subLabel={"Add cash to your account by selecting any plan."} navigation={navigation} doubleHeader={true} />
 
       {/*End Header*/}
       <ScrollView showsVerticalScrollIndicator={false} style={styles.main}>

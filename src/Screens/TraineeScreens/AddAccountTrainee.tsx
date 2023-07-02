@@ -1,25 +1,17 @@
 import React, { useState, useEffect } from "react";
-import {
-  Text,
-  View,
-  StyleSheet,
-  TextInput,
-  ScrollView,
-  ToastAndroid,
-  ActivityIndicator,
-  TouchableOpacity,
-  Platform,
-} from "react-native";
+import { Text, View, StyleSheet, TextInput, ScrollView, ToastAndroid, ActivityIndicator, TouchableOpacity, Platform } from "react-native";
 import { RFValue } from "react-native-responsive-fontsize";
 import Header from "../../Components/Header";
 import Colors from "../../constants/Colors";
 import Button from "../../Components/Button";
 import { url } from "../../constants/url";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useGetUserMeQuery } from "../../slice/FitsApi.slice";
 import { getUserAsyncStroage } from "../../common/AsyncStorage";
-
-const AddAccountTrainee = ({ navigation }) => {
+import { NavigationSwitchProp } from "react-navigation";
+interface Props {
+  navigation: NavigationSwitchProp;
+}
+const AddAccountTrainee: React.FC<Props> = ({ navigation }) => {
   const [cardNumber, setCardNumber] = useState("");
   const [expiryMonth, setExpiryMonth] = useState("");
   const [expiryYear, setExpiryYear] = useState("");
@@ -27,7 +19,7 @@ const AddAccountTrainee = ({ navigation }) => {
   const [userDatax, setUserDatax] = useState();
 
   const { data: userMeData, isLoading, error, isSuccess } = useGetUserMeQuery({ id: userDatax?.data._id });
-  
+
   const GoBack = () => {
     navigation.goBack();
   };
@@ -51,32 +43,24 @@ const AddAccountTrainee = ({ navigation }) => {
 
   useEffect(() => {
     if (userMeData?.success === true) {
-          setData(userMeData?.stripe?.customer?.id);
-        } else {
-          alert(userMeData.errors);
-        }
+      setData(userMeData?.stripe?.customer?.id);
+    } else {
+      alert(userMeData.errors);
+    }
   }, [userMeData]);
 
-  
-
   const userMe = async () => {
-    const userData=await getUserAsyncStroage()
-    setUserDatax(userData)
+    const userData = await getUserAsyncStroage();
+    setUserDatax(userData);
   };
 
   const UpdateCard = async () => {
     if (cardNumber === "") {
       ToastAndroid.show("Please Enter your Card Number.", ToastAndroid.SHORT);
     } else if (expiryMonth === "") {
-      ToastAndroid.show(
-        "Please Enter your Card Expiry Month.",
-        ToastAndroid.SHORT
-      );
+      ToastAndroid.show("Please Enter your Card Expiry Month.", ToastAndroid.SHORT);
     } else if (expiryYear === "") {
-      ToastAndroid.show(
-        "Please Enter your Card Expiry Year.",
-        ToastAndroid.SHORT
-      );
+      ToastAndroid.show("Please Enter your Card Expiry Year.", ToastAndroid.SHORT);
     } else if (cvc === "") {
       ToastAndroid.show("Please Enter your cvc.", ToastAndroid.SHORT);
     } else {
@@ -140,15 +124,7 @@ const AddAccountTrainee = ({ navigation }) => {
                 <Text style={styles.inputnameText}>Card Number</Text>
               </View>
               <View style={styles.textinputView}>
-                <TextInput
-                  style={styles.inputEmail}
-                  placeholder="Number"
-                  placeholderTextColor="white"
-                  keyboardType="numeric"
-                  maxLength={16}
-                  value={cardNumber}
-                  onChangeText={setCardNumber}
-                />
+                <TextInput style={styles.inputEmail} placeholder="Number" placeholderTextColor="white" keyboardType="numeric" maxLength={16} value={cardNumber} onChangeText={setCardNumber} />
               </View>
             </View>
           </View>
@@ -158,15 +134,7 @@ const AddAccountTrainee = ({ navigation }) => {
                 <Text style={styles.inputnameText}>Expiry Month</Text>
               </View>
               <View style={styles.textinputView}>
-                <TextInput
-                  style={styles.inputEmail}
-                  placeholder="Month"
-                  placeholderTextColor="white"
-                  keyboardType="numeric"
-                  maxLength={2}
-                  value={expiryMonth}
-                  onChangeText={setExpiryMonth}
-                />
+                <TextInput style={styles.inputEmail} placeholder="Month" placeholderTextColor="white" keyboardType="numeric" maxLength={2} value={expiryMonth} onChangeText={setExpiryMonth} />
               </View>
             </View>
           </View>
@@ -176,15 +144,7 @@ const AddAccountTrainee = ({ navigation }) => {
                 <Text style={styles.inputnameText}>Expiry Year</Text>
               </View>
               <View style={styles.textinputView}>
-                <TextInput
-                  style={styles.inputEmail}
-                  placeholder="Year"
-                  placeholderTextColor="white"
-                  keyboardType="numeric"
-                  maxLength={2}
-                  value={expiryYear}
-                  onChangeText={setExpiryYear}
-                />
+                <TextInput style={styles.inputEmail} placeholder="Year" placeholderTextColor="white" keyboardType="numeric" maxLength={2} value={expiryYear} onChangeText={setExpiryYear} />
               </View>
             </View>
           </View>
@@ -194,15 +154,7 @@ const AddAccountTrainee = ({ navigation }) => {
                 <Text style={styles.inputnameText}>CVC</Text>
               </View>
               <View style={styles.textinputView}>
-                <TextInput
-                  style={styles.inputEmail}
-                  placeholder="Enter cvc"
-                  placeholderTextColor="white"
-                  value={cvc}
-                  onChangeText={setCvc}
-                  keyboardType="numeric"
-                  maxLength={3}
-                />
+                <TextInput style={styles.inputEmail} placeholder="Enter cvc" placeholderTextColor="white" value={cvc} onChangeText={setCvc} keyboardType="numeric" maxLength={3} />
               </View>
             </View>
           </View>
@@ -210,13 +162,7 @@ const AddAccountTrainee = ({ navigation }) => {
         {/* modalVisibleDate End*/}
         <View style={{ paddingVertical: 10, alignItems: "center" }}>
           <Button
-            label={
-              load === true ? (
-                <ActivityIndicator size="small" color="#fff" />
-              ) : (
-                "NEXT"
-              )
-            }
+            label={load === true ? <ActivityIndicator size="small" color="#fff" /> : "NEXT"}
             onPress={() => {
               if (load === true) {
               } else {
