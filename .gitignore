@@ -22,4 +22,7 @@ Gemfile
 babel.config.js
 
 # Ignore json files
-*.json
+app.json
+package.json
+tsconfig.json
+settings.json

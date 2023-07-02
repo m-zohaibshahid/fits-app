@@ -1,0 +1,3711 @@
+{
+    "info": {
+        "_postman_id": "c82cdd17-4875-4af2-9957-4f7cea791365",
+        "name": "Fits",
+        "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+    },
+    "item": [
+        {
+            "name": "Auth",
+            "item": [
+                {
+                    "name": "Forgot Password",
+                    "item": [
+                        {
+                            "name": "otpVerify",
+                            "request": {
+                                "method": "POST",
+                                "header": [ ],
+                                "body": {
+                                    "mode": "raw",
+                                    "raw": "{\r\n    \"email\":\"hamza1234ameen@gmail.com\",\r\n    \"code\":\"19584\",\r\n    \"type\": \"forgot_password\"\r\n}",
+                                    "options": {
+                                        "raw": {
+                                            "language": "json"
+                                        }
+                                    }
+                                },
+                                "url": {
+                                    "raw": "{{base_url}}/code-verify",
+                                    "host": [
+                                        "{{base_url}}"
+                                    ],
+                                    "path": [
+                                        "code-verify"
+                                    ]
+                                }
+                            },
+                            "response": [ ]
+                        },
+                        {
+                            "name": "change Password",
+                            "request": {
+                                "method": "POST",
+                                "header": [ ],
+                                "body": {
+                                    "mode": "raw",
+                                    "raw": "{\r\n    \"email\":\"hamza1234ameen@gmail.com\",\r\n    \"password\":\"12345678910\"\r\n}",
+                                    "options": {
+                                        "raw": {
+                                            "language": "json"
+                                        }
+                                    }
+                                },
+                                "url": {
+                                    "raw": "{{base_url}}/change-password",
+                                    "host": [
+                                        "{{base_url}}"
+                                    ],
+                                    "path": [
+                                        "change-password"
+                                    ]
+                                }
+                            },
+                            "response": [ ]
+                        },
+                        {
+                            "name": "send Email",
+                            "request": {
+                                "method": "POST",
+                                "header": [ ],
+                                "body": {
+                                    "mode": "raw",
+                                    "raw": "{\r\n    \"email\":\"hamza1234ameen@gmail.com\"\r\n}",
+                                    "options": {
+                                        "raw": {
+                                            "language": "json"
+                                        }
+                                    }
+                                },
+                                "url": {
+                                    "raw": "{{base_url}}/email-send",
+                                    "host": [
+                                        "{{base_url}}"
+                                    ],
+                                    "path": [
+                                        "email-send"
+                                    ]
+                                }
+                            },
+                            "response": [ ]
+                        }
+                    ]
+                },
+                {
+                    "name": "Account Verification",
+                    "item": [
+                        {
+                            "name": "account verify",
+                            "request": {
+                                "auth": {
+                                    "type": "bearer",
+                                    "bearer": [
+                                        {
+                                            "key": "token",
+                                            "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2M2MwMTIwNmRjZWQ5MzAwMWY2OTM4ZGQiLCJyb2xlIjoidHJhaW5lciIsImlhdCI6MTY3MzUzMTkxMSwiZXhwIjoxNjczNjE4MzExfQ.VEXVR1Rt9T8OfEKJJHgcwXKsiqv_j2BWO9R0wFyynr4",
+                                            "type": "string"
+                                        }
+                                    ]
+                                },
+                                "method": "POST",
+                                "header": [ ],
+                                "body": {
+                                    "mode": "raw",
+                                    "raw": "{\r\n    \"email\":\"mzh175667@gmail.com\",\r\n    \"code\":\"93443\",\r\n    \"type\": \"verification\"\r\n}",
+                                    "options": {
+                                        "raw": {
+                                            "language": "json"
+                                        }
+                                    }
+                                },
+                                "url": {
+                                    "raw": "{{base_url}}/code-verify",
+                                    "host": [
+                                        "{{base_url}}"
+                                    ],
+                                    "path": [
+                                        "code-verify"
+                                    ]
+                                }
+                            },
+                            "response": [ ]
+                        }
+                    ]
+                },
+                {
+                    "name": "register",
+                    "request": {
+                        "method": "POST",
+                        "header": [ ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\r\n    \"email\":\"mzh175667@gmail.com\",\r\n    \"password\":\"12345@@@\",\r\n    \"role\":\"trainee\"  \r\n}",
+                            "options": {
+                                "raw": {
+                                    "language": "json"
+                                }
+                            }
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/register",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "register"
+                            ]
+                        }
+                    },
+                    "response": [ ]
+                },
+                {
+                    "name": "Login",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2Mzc3ODFkMTk2NmQ1ZjAwMTYwNzg2MGEiLCJyb2xlIjoidHJhaW5lZSIsImlhdCI6MTY2OTcyMjQ4NiwiZXhwIjoxNjY5ODA4ODg2fQ.ythgqgW4t1RNPmcfNJrDSEQVq-404ONwGv3hqbXMORk",
+                                "type": "text",
+                                "disabled": true
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\r\n    \"email\":\"hamza@gmail.com\",\r\n    \"password\":\"12345@@@\"\r\n}",
+                            "options": {
+                                "raw": {
+                                    "language": "json"
+                                }
+                            }
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/login",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "login"
+                            ]
+                        }
+                    },
+                    "response": [ ]
+                },
+                {
+                    "name": "update Role",
+                    "request": {
+                        "auth": {
+                            "type": "bearer",
+                            "bearer": [
+                                {
+                                    "key": "token",
+                                    "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2M2M3ZTM4ZjJiM2M0NzBiZjAxM2UwNjQiLCJyb2xlIjoidHJhaW5lciIsImlhdCI6MTY3NDA0NDM0MCwiZXhwIjoxNjc0MTMwNzQwfQ.iT-phWHVM2pJjyrvsG8mPX00V7bzCVQk3BPipSpOXo0",
+                                    "type": "string"
+                                }
+                            ]
+                        },
+                        "method": "PUT",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2MjNhZjljM2U4YWYxMTFhMGM1ZWExZjAiLCJyb2xlIjoidHJhaW5lZSIsImlhdCI6MTY0ODI4NjM5NCwiZXhwIjoxNjQ4MzcyNzk0fQ.qSbwSAJlChUr0fMRrjAPedVViGe6h1F5DSXvymbiK4M",
+                                "type": "text"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\r\n    \"role\":\"trainee\"\r\n}",
+                            "options": {
+                                "raw": {
+                                    "language": "json"
+                                }
+                            }
+                        },
+                        "url": {
+                            "raw": "{{live_url}}/user/role/update/63c80e5f39dacc13d0cef957",
+                            "host": [
+                                "{{live_url}}"
+                            ],
+                            "path": [
+                                "user",
+                                "role",
+                                "update",
+                                "63c80e5f39dacc13d0cef957"
+                            ]
+                        }
+                    },
+                    "response": [ ]
+                },
+                {
+                    "name": "suspend account",
+                    "request": {
+                        "auth": {
+                            "type": "bearer",
+                            "bearer": [
+                                {
+                                    "key": "token",
+                                    "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2Mzg0ZGIzODc1MmFlNDI3MGM1ZjljN2QiLCJyb2xlIjoiYWRtaW4iLCJpYXQiOjE2NzM1MzM3MDQsImV4cCI6MTY3MzYyMDEwNH0.E_l3tIyWSvVmFA53p_NqD9pr-DiNHPWyMHG9C_MotRs",
+                                    "type": "string"
+                                }
+                            ]
+                        },
+                        "method": "PUT",
+                        "header": [ ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\r\n    \"suspended\": false\r\n}",
+                            "options": {
+                                "raw": {
+                                    "language": "json"
+                                }
+                            }
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/user/suspended/63c01d61dced93001f693a7b",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "user",
+                                "suspended",
+                                "63c01d61dced93001f693a7b"
+                            ]
+                        }
+                    },
+                    "response": [ ]
+                }
+            ]
+        },
+        {
+            "name": "Account",
+            "item": [
+                {
+                    "name": "Update Password",
+                    "request": {
+                        "method": "PUT",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2MmI1YjIzYzc0MzZhMzAwMTY2MTEzOTIiLCJyb2xlIjoidHJhaW5lciIsImlhdCI6MTY1NjQ5Njk1OSwiZXhwIjoxNjU2NTgzMzU5fQ.Nhq5HnvvejNPggi4XQFxHl5bwmXg66cQGZAiNfyMFcc",
+                                "type": "text"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\r\n    \"oldPassword\": \"123456\",\r\n    \"password\": \"Zuhair966\"\r\n}",
+                            "options": {
+                                "raw": {
+                                    "language": "json"
+                                }
+                            }
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/profile/edit/password/63bfd98adced93001f69345b",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "profile",
+                                "edit",
+                                "password",
+                                "63bfd98adced93001f69345b"
+                            ]
+                        }
+                    },
+                    "response": [ ]
+                }
+            ]
+        },
+        {
+            "name": "Personal Info",
+            "item": [
+                {
+                    "name": "create",
+                    "request": {
+                        "auth": {
+                            "type": "bearer",
+                            "bearer": [
+                                {
+                                    "key": "token",
+                                    "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2M2NhOWUxNWY5NTY0ZTNjMWM0MmUwOGQiLCJyb2xlIjoiYWRtaW4iLCJpYXQiOjE2NzUyNTI2MjUsImV4cCI6MTY3NTMzOTAyNX0.irlhCp9uAvt70KiR2W28MqiSpFPP8MH-bJwy5D2qeec",
+                                    "type": "string"
+                                }
+                            ]
+                        },
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2Mzc3NjhlYWQ2MTUwOTFlNzAxNTY4MmQiLCJyb2xlIjoidHJhaW5lciIsImlhdCI6MTY3MDgzNDM5NiwiZXhwIjoxNjcwOTIwNzk2fQ.1KmU6d56FkIDWw0rBwPHDlK8sIkVqwJBmTEJzdF5FSo",
+                                "type": "text"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\r\n    \"name\":\"zulqarnain\",\r\n    \"date_of_birth\":\"12/5/2021\",\r\n    \"country\":\"canada\",\r\n    \"state\":\"punjab\",\r\n    \"city\":\"multan\",\r\n    \"gender\":\"male\",\r\n    \"profileImage\":\"https://cvbay.com/wp-content/uploads/2017/03/dummy-image.jpg\",\r\n    \"phoneNumber\":\"0123\"\r\n}",
+                            "options": {
+                                "raw": {
+                                    "language": "json"
+                                }
+                            }
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/personal",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "personal"
+                            ],
+                            "query": [
+                                {
+                                    "key": "profileImage",
+                                    "value": "",
+                                    "disabled": true
+                                }
+                            ]
+                        }
+                    },
+                    "response": [ ]
+                },
+                {
+                    "name": "update",
+                    "request": {
+                        "auth": {
+                            "type": "bearer",
+                            "bearer": [
+                                {
+                                    "key": "token",
+                                    "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2Mzc3NjhlYWQ2MTUwOTFlNzAxNTY4MmQiLCJyb2xlIjoidHJhaW5lciIsImlhdCI6MTY3MzUxMjEwNywiZXhwIjoxNjczNTk4NTA3fQ._4MrwCPIJ4ULkVFXeFKI-YPoD_N5zYwGRXNkTYYCNic",
+                                    "type": "string"
+                                }
+                            ]
+                        },
+                        "method": "PUT",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2Mzc3NjhlYWQ2MTUwOTFlNzAxNTY4MmQiLCJyb2xlIjoidHJhaW5lciIsImlhdCI6MTY3MDgzNTg1NywiZXhwIjoxNjcwOTIyMjU3fQ.O9tiXxPqQ6nnEHMBYantXHwpK5TwTJR41yV2goL-OgA",
+                                "type": "text"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\r\n    \"name\":\"sss\",\r\n    \"date_of_birth\":\"12/5/2021\",\r\n    \"country\":\"sss\",\r\n    \"state\":\"ee\",\r\n    \"city\":\"sss\",\r\n    \"gender\":\"femail\",\r\n     \"profileImage\":\"https://cvbay.com/wp-content/uploads/2017/03/dummy-image.jpg\",\r\n     \"phoneNumber\":\"0123456789\"\r\n}",
+                            "options": {
+                                "raw": {
+                                    "language": "json"
+                                }
+                            }
+                        },
+                        "url": {
+                            "raw": "{{live_url}}/personal/6396f3d8e72f7b09584fb17d",
+                            "host": [
+                                "{{live_url}}"
+                            ],
+                            "path": [
+                                "personal",
+                                "6396f3d8e72f7b09584fb17d"
+                            ]
+                        }
+                    },
+                    "response": [ ]
+                },
+                {
+                    "name": "get personal Info",
+                    "request": {
+                        "auth": {
+                            "type": "bearer",
+                            "bearer": [
+                                {
+                                    "key": "token",
+                                    "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2Mzg0ZGIzODc1MmFlNDI3MGM1ZjljN2QiLCJyb2xlIjoiYWRtaW4iLCJpYXQiOjE2NzM1MDkwNzcsImV4cCI6MTY3MzU5NTQ3N30.AgXuYYCdOPPA3gNCBMtg5HOD-cxKVctHB38TwS1mEdA",
+                                    "type": "string"
+                                }
+                            ]
+                        },
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2MzI0NGMxZWI1MDIxOTI2NGNlODUzNDciLCJyb2xlIjoiYWRtaW4iLCJpYXQiOjE2NjMzODI0NjksImV4cCI6MTY2MzQ2ODg2OX0.rQgXcH0Jw7dTdZGv8DRxYizAwmbrJtSVSw_Ebn6YNDU",
+                                "type": "text"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{live_url}}/personal/63c015fadced93001f693a00",
+                            "host": [
+                                "{{live_url}}"
+                            ],
+                            "path": [
+                                "personal",
+                                "63c015fadced93001f693a00"
+                            ]
+                        }
+                    },
+                    "response": [ ]
+                }
+            ]
+        },
+        {
+            "name": "Profession Info",
+            "item": [
+                {
+                    "name": "create",
+                    "request": {
+                        "auth": {
+                            "type": "bearer",
+                            "bearer": [
+                                {
+                                    "key": "token",
+                                    "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2M2NhODRkZjJhMzdlMTA3ZDRlZjMwNzgiLCJyb2xlIjoidHJhaW5lciIsImlhdCI6MTY3NDIxNjY5NiwiZXhwIjoxNjc0MzAzMDk2fQ.YAGS_6mxLWE3Pig8hWlB7p9TjVHbwN1ZWNi1y0Cjny0",
+                                    "type": "string"
+                                }
+                            ]
+                        },
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2MjNhZjljM2U4YWYxMTFhMGM1ZWExZjAiLCJyb2xlIjoidHJhaW5lciIsImlhdCI6MTY1MTA2MzM5NCwiZXhwIjoxNjUxMTQ5Nzk0fQ.JFwotXeyR_TQOu86jG0ayNYjM4Sss5LWuYPOYfEW9XQ",
+                                "type": "text"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\r\n    \"experience_year\":\"2025\",\r\n    \"experience_note\":\"asjdfhjkweuhjdl,\",\r\n    \"qualification\":[\r\n        {\r\n            \"id\":1,\r\n            \"degree\":\"BS\",\r\n            \"degree_note\":\"sdfkjs\"\r\n        },\r\n        {\r\n            \"id\":2,\r\n            \"degree\":\"BS\",\r\n            \"degree_note\":\"sdfkjs\"\r\n        }\r\n    ]\r\n}",
+                            "options": {
+                                "raw": {
+                                    "language": "json"
+                                }
+                            }
+                        },
+                        "url": {
+                            "raw": "{{live_url}}/profession",
+                            "host": [
+                                "{{live_url}}"
+                            ],
+                            "path": [
+                                "profession"
+                            ]
+                        }
+                    },
+                    "response": [ ]
+                },
+                {
+                    "name": "update",
+                    "request": {
+                        "auth": {
+                            "type": "bearer",
+                            "bearer": [
+                                {
+                                    "key": "token",
+                                    "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2Mzc3NjhlYWQ2MTUwOTFlNzAxNTY4MmQiLCJyb2xlIjoidHJhaW5lciIsImlhdCI6MTY3MzUxMjEwNywiZXhwIjoxNjczNTk4NTA3fQ._4MrwCPIJ4ULkVFXeFKI-YPoD_N5zYwGRXNkTYYCNic",
+                                    "type": "string"
+                                }
+                            ]
+                        },
+                        "method": "PUT",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2MjNhZjljM2U4YWYxMTFhMGM1ZWExZjAiLCJyb2xlIjoidHJhaW5lciIsImlhdCI6MTY1MTIxMjY5MCwiZXhwIjoxNjUxMjk5MDkwfQ.lNmzG0KvpW65Gr7XLmEKGTUotHzJpMj0Yn2JqMl9H3Y",
+                                "type": "text"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\r\n    \"experience_year\":\"2022\",\r\n    \"experience_note\":\"c,md,\",\r\n    \"qualification\":[\r\n        {\r\n            \"id\":1,\r\n            \"degree\":\"BSsssC\",\r\n            \"degree_note\":\"js\"\r\n        },\r\n        {\r\n            \"id\":2,\r\n            \"degree\":\"BCS\",\r\n            \"degree_note\":\"js\"\r\n        }\r\n    ]\r\n}",
+                            "options": {
+                                "raw": {
+                                    "language": "json"
+                                }
+                            }
+                        },
+                        "url": {
+                            "raw": "{{live_url}}/profession/63bfdaaadced93001f6934ad",
+                            "host": [
+                                "{{live_url}}"
+                            ],
+                            "path": [
+                                "profession",
+                                "63bfdaaadced93001f6934ad"
+                            ]
+                        }
+                    },
+                    "response": [ ]
+                },
+                {
+                    "name": "get profession Info",
+                    "request": {
+                        "auth": {
+                            "type": "bearer",
+                            "bearer": [
+                                {
+                                    "key": "token",
+                                    "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2Mzc3NjhlYWQ2MTUwOTFlNzAxNTY4MmQiLCJyb2xlIjoidHJhaW5lciIsImlhdCI6MTY3MzUxMjEwNywiZXhwIjoxNjczNTk4NTA3fQ._4MrwCPIJ4ULkVFXeFKI-YPoD_N5zYwGRXNkTYYCNic",
+                                    "type": "string"
+                                }
+                            ]
+                        },
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2MjNhZjljM2U4YWYxMTFhMGM1ZWExZjAiLCJyb2xlIjoidHJhaW5lciIsImlhdCI6MTY1MTA2MzM5NCwiZXhwIjoxNjUxMTQ5Nzk0fQ.JFwotXeyR_TQOu86jG0ayNYjM4Sss5LWuYPOYfEW9XQ",
+                                "type": "text"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{live_url}}/profession/63c015fadced93001f693a00",
+                            "host": [
+                                "{{live_url}}"
+                            ],
+                            "path": [
+                                "profession",
+                                "63c015fadced93001f693a00"
+                            ]
+                        }
+                    },
+                    "response": [ ]
+                }
+            ]
+        },
+        {
+            "name": "Fitness Properties",
+            "item": [
+                {
+                    "name": "create",
+                    "request": {
+                        "auth": {
+                            "type": "bearer",
+                            "bearer": [
+                                {
+                                    "key": "token",
+                                    "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2M2NhODRkZjJhMzdlMTA3ZDRlZjMwNzgiLCJyb2xlIjoidHJhaW5lciIsImlhdCI6MTY3NDIxNjY5NiwiZXhwIjoxNjc0MzAzMDk2fQ.YAGS_6mxLWE3Pig8hWlB7p9TjVHbwN1ZWNi1y0Cjny0",
+                                    "type": "string"
+                                }
+                            ]
+                        },
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2MjNhZjljM2U4YWYxMTFhMGM1ZWExZjAiLCJyb2xlIjoidHJhaW5lZSIsImlhdCI6MTY0ODAzMjE5NiwiZXhwIjoxNjQ4MTE4NTk2fQ.2TfLfBlN1rrFY2FR7uavhOMGBj5BMF0XTwUuKYqV97A",
+                                "type": "text"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\r\n    \"fitness_level\":[{\r\n        \"id\":1,\r\n        \"value\":4\r\n    },\r\n    {\r\n        \"id\":2,\r\n        \"value\":8\r\n    }],\r\n    \"fitness_goal\":[{\r\n        \"id\":1,\r\n        \"value\":\"Maintain Body\"\r\n    },\r\n    {\r\n        \"id\":2,\r\n        \"value\":\"askdfjwer\"\r\n    }],\r\n    \"services_offered\":[{\r\n        \"id\":1,\r\n        \"value\":\"Coach\"\r\n    },\r\n    {\r\n        \"id\":2,\r\n        \"value\":\"Coach\"\r\n    }]\r\n}",
+                            "options": {
+                                "raw": {
+                                    "language": "json"
+                                }
+                            }
+                        },
+                        "url": {
+                            "raw": "{{live_url}}/fitness",
+                            "host": [
+                                "{{live_url}}"
+                            ],
+                            "path": [
+                                "fitness"
+                            ]
+                        }
+                    },
+                    "response": [ ]
+                },
+                {
+                    "name": "update",
+                    "request": {
+                        "auth": {
+                            "type": "bearer",
+                            "bearer": [
+                                {
+                                    "key": "token",
+                                    "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2Mzc3NjhlYWQ2MTUwOTFlNzAxNTY4MmQiLCJyb2xlIjoidHJhaW5lciIsImlhdCI6MTY3MzUxMjEwNywiZXhwIjoxNjczNTk4NTA3fQ._4MrwCPIJ4ULkVFXeFKI-YPoD_N5zYwGRXNkTYYCNic",
+                                    "type": "string"
+                                }
+                            ]
+                        },
+                        "method": "PUT",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2MzI0NGMxZWI1MDIxOTI2NGNlODUzNDciLCJyb2xlIjoiYWRtaW4iLCJpYXQiOjE2Njc5MzAzODAsImV4cCI6MTY2ODAxNjc4MH0.f8isff5N1iVKjQd_PdbREkWRoVP-J3SKrwfbSlQs3fM",
+                                "type": "text"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\r\n    \"fitness_level\":[{\r\n        \"id\":1,\r\n        \"value\":5\r\n    },\r\n    {\r\n        \"id\":2,\r\n        \"value\":9\r\n    }],\r\n    \"fitness_goal\":[{\r\n        \"id\":1,\r\n        \"value\":\"Maintain\"\r\n    },\r\n    {\r\n        \"id\":2,\r\n        \"value\":\"as\"\r\n    }],\r\n    \"services_offered\":[{\r\n        \"id\":1,\r\n        \"value\":\"Coach\"\r\n    },\r\n    {\r\n        \"id\":2,\r\n        \"value\":\"Coac\"\r\n    }]\r\n}",
+                            "options": {
+                                "raw": {
+                                    "language": "json"
+                                }
+                            }
+                        },
+                        "url": {
+                            "raw": "{{live_url}}/fitness/637768ead615091e7015682d",
+                            "host": [
+                                "{{live_url}}"
+                            ],
+                            "path": [
+                                "fitness",
+                                "637768ead615091e7015682d"
+                            ]
+                        }
+                    },
+                    "response": [ ]
+                },
+                {
+                    "name": "choose Fitness Level And Goal",
+                    "request": {
+                        "auth": {
+                            "type": "bearer",
+                            "bearer": [
+                                {
+                                    "key": "token",
+                                    "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2Mzc3NjhlYWQ2MTUwOTFlNzAxNTY4MmQiLCJyb2xlIjoidHJhaW5lciIsImlhdCI6MTY3MzUxMjEwNywiZXhwIjoxNjczNTk4NTA3fQ._4MrwCPIJ4ULkVFXeFKI-YPoD_N5zYwGRXNkTYYCNic",
+                                    "type": "string"
+                                }
+                            ]
+                        },
+                        "method": "PUT",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2MjNhZjljM2U4YWYxMTFhMGM1ZWExZjAiLCJyb2xlIjoidHJhaW5lZSIsImlhdCI6MTY0ODAzMjE5NiwiZXhwIjoxNjQ4MTE4NTk2fQ.2TfLfBlN1rrFY2FR7uavhOMGBj5BMF0XTwUuKYqV97A",
+                                "type": "text"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\r\n    \"fitness_level\":{\"value\":9,\"key\":\"level_9\"}\r\n    \r\n    \r\n}",
+                            "options": {
+                                "raw": {
+                                    "language": "json"
+                                }
+                            }
+                        },
+                        "url": {
+                            "raw": "{{live_url}}/user/fitness/choose/637768ead615091e7015682d",
+                            "host": [
+                                "{{live_url}}"
+                            ],
+                            "path": [
+                                "user",
+                                "fitness",
+                                "choose",
+                                "637768ead615091e7015682d"
+                            ]
+                        }
+                    },
+                    "response": [ ]
+                }
+            ]
+        },
+        {
+            "name": "Session",
+            "item": [
+                {
+                    "name": "Create Session",
+                    "request": {
+                        "auth": {
+                            "type": "bearer",
+                            "bearer": [
+                                {
+                                    "key": "token",
+                                    "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2NDM4ZTNjZDJhZDJjZTAwMDhjY2QyMTAiLCJyb2xlIjoidHJhaW5lciIsImlhdCI6MTY4MTgwODIzMywiZXhwIjoxNjgxODk0NjMzfQ.anUWBBFWM-WKIrLWKGg97ws08uj0ajyTnYClbIRg-L8",
+                                    "type": "string"
+                                }
+                            ]
+                        },
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2MzI0NGMxZWI1MDIxOTI2NGNlODUzNDciLCJyb2xlIjoiYWRtaW4iLCJpYXQiOjE2NjY5MzIxNjUsImV4cCI6MTY2NzAxODU2NX0.naOS1oK3hnCWo21hyXC1yIKnzkZGrdagtYSy4JemIMI",
+                                "type": "text"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\r\n    \"session_title\":\"GYM\",\r\n    \"class_title\":\"gym\",\r\n    \"select_date\":\"25-02-2022\",\r\n    \"class_time\":\"12AM\",\r\n    \"duration\":\"50\",\r\n    \"equipment\":[\r\n        {\r\n            \"value\":\"Rasdj\"\r\n        },\r\n        {\r\n            \"value\":\"jdfsk4oe\"\r\n        }\r\n    ],\r\n    \"session_type\":{\r\n            \"type\":\"recorded\",\r\n            \"videoLink\":\"qw\",\r\n        \"recordCategory\":\"jd\",\r\n        \"videoTitle\":\"we\",\r\n        \"no_of_play\":\"ssw\",\r\n        \"desc\":\"sa\"\r\n    \r\n        },\r\n    \"sports\":\"person\",\r\n    \"details\":\"dfweirifdsklax\",\r\n    \"price\":545,\r\n    \"no_of_slots\":\"123\",\r\n    \"image\":\"dsjkjlf\"\r\n\r\n}",
+                            "options": {
+                                "raw": {
+                                    "language": "json"
+                                }
+                            }
+                        },
+                        "url": {
+                            "raw": "http://localhost:5000/api/session",
+                            "protocol": "http",
+                            "host": [
+                                "localhost"
+                            ],
+                            "port": "5000",
+                            "path": [
+                                "api",
+                                "session"
+                            ]
+                        }
+                    },
+                    "response": [ ]
+                },
+                {
+                    "name": "update  session",
+                    "request": {
+                        "auth": {
+                            "type": "bearer",
+                            "bearer": [
+                                {
+                                    "key": "token",
+                                    "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2Mzc3NjhlYWQ2MTUwOTFlNzAxNTY4MmQiLCJyb2xlIjoidHJhaW5lciIsImlhdCI6MTY3MzUxMjEwNywiZXhwIjoxNjczNTk4NTA3fQ._4MrwCPIJ4ULkVFXeFKI-YPoD_N5zYwGRXNkTYYCNic",
+                                    "type": "string"
+                                }
+                            ]
+                        },
+                        "method": "PUT",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2MjNjMzUwNTljOThhMjI0YWM0NDUyM2YiLCJyb2xlIjoiYWRtaW4iLCJpYXQiOjE2NTEwMzY0NTksImV4cCI6MTY1MTEyMjg1OX0.CgQPwcChOgs5D_8VVIwp4PQGhUKik4QdXxWT45_9woA",
+                                "type": "text"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\r\n\"session_title\":\"GYM\",\r\n\"class_title\":\"gym session\",\r\n\"select_date\":\"25-02-2022\",\r\n\"class_time\":\"12AM\",\r\n\"duration\":\"50\",\r\n\"equipment\":[{\r\n        \r\n        \"value\":\"Rasdj\"\r\n    },\r\n    {\r\n        \r\n        \"value\":\"jdfsk4oe\"\r\n    }],\r\n\"session_type\":{\r\n    \"type\":\"any\"\r\n},\r\n\"sports\":\"person\",\r\n\"category\":\"GY\",\r\n\"details\":\"dfweirifdsklax\",\r\n\"price\":545,\r\n\"no_of_slots\":\"123\",\r\n\"image\":\"image\"\r\n}",
+                            "options": {
+                                "raw": {
+                                    "language": "json"
+                                }
+                            }
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/session/637768ead615091e7015682d",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "session",
+                                "637768ead615091e7015682d"
+                            ]
+                        }
+                    },
+                    "response": [ ]
+                },
+                {
+                    "name": "del session",
+                    "request": {
+                        "auth": {
+                            "type": "bearer",
+                            "bearer": [
+                                {
+                                    "key": "token",
+                                    "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2M2M1MTBjOGRjZWQ5MzAwMWY2OTQ3NGQiLCJyb2xlIjoidHJhaW5lZSIsImlhdCI6MTY3Mzk0MzM0MiwiZXhwIjoxNjc0MDI5NzQyfQ.jVzZy-rl-qZyRGGvzoqFh7xR3PnaanjBLA1jREFmIhM",
+                                    "type": "string"
+                                }
+                            ]
+                        },
+                        "method": "DELETE",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2MjNjMzUwNTljOThhMjI0YWM0NDUyM2YiLCJyb2xlIjoiYWRtaW4iLCJpYXQiOjE2NTEwMzY0NTksImV4cCI6MTY1MTEyMjg1OX0.CgQPwcChOgs5D_8VVIwp4PQGhUKik4QdXxWT45_9woA",
+                                "type": "text"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/session/63c179cde527d60868e5b614",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "session",
+                                "63c179cde527d60868e5b614"
+                            ]
+                        }
+                    },
+                    "response": [ ]
+                },
+                {
+                    "name": "get session",
+                    "request": {
+                        "auth": {
+                            "type": "bearer",
+                            "bearer": [
+                                {
+                                    "key": "token",
+                                    "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2M2MwMmZjOGRjZWQ5MzAwMWY2OTNhYzYiLCJyb2xlIjoidHJhaW5lciIsImlhdCI6MTY3Mzk1NDk5NCwiZXhwIjoxNjc0MDQxMzk0fQ.k6g_te5JH3t9cYr7t4tKMIKxyMnhSZ3ryY0J7PY-zAM",
+                                    "type": "string"
+                                }
+                            ]
+                        },
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2Mjg1M2QxMmY3OTBkZDAwMTZiYjA4MzMiLCJyb2xlIjoidHJhaW5lZSIsImlhdCI6MTY1NDA5OTIxMywiZXhwIjoxNjU0MTg1NjEzfQ.2QF-in5ka0wxK5xCzMSfDJy-7ECltGNCiwknKmBgOdk",
+                                "type": "text"
+                            }
+                        ],
+                        "url": {
+                            "raw": "https://jeptfscmct.us-east-2.awsapprunner.com/api/session/63c01d61dced93001f693a7b",
+                            "protocol": "https",
+                            "host": [
+                                "jeptfscmct",
+                                "us-east-2",
+                                "awsapprunner",
+                                "com"
+                            ],
+                            "path": [
+                                "api",
+                                "session",
+                                "63c01d61dced93001f693a7b"
+                            ],
+                            "query": [
+                                {
+                                    "key": "",
+                                    "value": "",
+                                    "disabled": true
+                                }
+                            ]
+                        }
+                    },
+                    "response": [ ]
+                },
+                {
+                    "name": "Get Trainer's Session",
+                    "request": {
+                        "auth": {
+                            "type": "bearer",
+                            "bearer": [
+                                {
+                                    "key": "token",
+                                    "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2M2MwMmZjOGRjZWQ5MzAwMWY2OTNhYzYiLCJyb2xlIjoidHJhaW5lciIsImlhdCI6MTY3Mzk1NDk5NCwiZXhwIjoxNjc0MDQxMzk0fQ.k6g_te5JH3t9cYr7t4tKMIKxyMnhSZ3ryY0J7PY-zAM",
+                                    "type": "string"
+                                }
+                            ]
+                        },
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2MzhkYzgxMDJkNGE5ODAwMTY2ZTgzMzMiLCJyb2xlIjoidHJhaW5lciIsImlhdCI6MTY3MDk0MTQ1NywiZXhwIjoxNjcxMDI3ODU3fQ.r3B2iKD9sZqQIeM4QSnIcKNIMr7vArwkOCiJEaWWY8A",
+                                "type": "text"
+                            }
+                        ],
+                        "url": {
+                            "raw": "https://jeptfscmct.us-east-2.awsapprunner.com/api/session/trainer/63c01d61dced93001f693a7b",
+                            "protocol": "https",
+                            "host": [
+                                "jeptfscmct",
+                                "us-east-2",
+                                "awsapprunner",
+                                "com"
+                            ],
+                            "path": [
+                                "api",
+                                "session",
+                                "trainer",
+                                "63c01d61dced93001f693a7b"
+                            ]
+                        }
+                    },
+                    "response": [ ]
+                }
+            ]
+        },
+        {
+            "name": "Video",
+            "item": [
+                {
+                    "name": "subscription",
+                    "item": [
+                        {
+                            "name": "create subscribe videos",
+                            "request": {
+                                "auth": {
+                                    "type": "bearer",
+                                    "bearer": [
+                                        {
+                                            "key": "token",
+                                            "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2M2NhODRkZjJhMzdlMTA3ZDRlZjMwNzgiLCJyb2xlIjoidHJhaW5lciIsImlhdCI6MTY3NDIxNjY5NiwiZXhwIjoxNjc0MzAzMDk2fQ.YAGS_6mxLWE3Pig8hWlB7p9TjVHbwN1ZWNi1y0Cjny0",
+                                            "type": "string"
+                                        }
+                                    ]
+                                },
+                                "method": "POST",
+                                "header": [
+                                    {
+                                        "key": "Authorization",
+                                        "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2MzI0NGMxZWI1MDIxOTI2NGNlODUzNDciLCJyb2xlIjoiYWRtaW4iLCJpYXQiOjE2NjY5MzIxNjUsImV4cCI6MTY2NzAxODU2NX0.naOS1oK3hnCWo21hyXC1yIKnzkZGrdagtYSy4JemIMI",
+                                        "type": "text"
+                                    }
+                                ],
+                                "body": {
+                                    "mode": "raw",
+                                    "raw": "{\r\n    \"video_links\":\r\n               [ \r\n                \"https://www.youtube.com/watch?v=Yh5Lil03tpI\",\r\n                \"https://www.youtube.com/watch?v=cuHDQhDhvPE\"\r\n                ]\r\n}",
+                                    "options": {
+                                        "raw": {
+                                            "language": "json"
+                                        }
+                                    }
+                                },
+                                "url": {
+                                    "raw": "{{live_url}}/subscription/videos",
+                                    "host": [
+                                        "{{live_url}}"
+                                    ],
+                                    "path": [
+                                        "subscription",
+                                        "videos"
+                                    ]
+                                }
+                            },
+                            "response": [ ]
+                        },
+                        {
+                            "name": "get all subscription",
+                            "request": {
+                                "auth": {
+                                    "type": "bearer",
+                                    "bearer": [
+                                        {
+                                            "key": "token",
+                                            "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2Mzc3NjhlYWQ2MTUwOTFlNzAxNTY4MmQiLCJyb2xlIjoidHJhaW5lciIsImlhdCI6MTY3MzUxMjEwNywiZXhwIjoxNjczNTk4NTA3fQ._4MrwCPIJ4ULkVFXeFKI-YPoD_N5zYwGRXNkTYYCNic",
+                                            "type": "string"
+                                        }
+                                    ]
+                                },
+                                "method": "GET",
+                                "header": [
+                                    {
+                                        "key": "Authorization",
+                                        "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2MzI0NGMxZWI1MDIxOTI2NGNlODUzNDciLCJyb2xlIjoiYWRtaW4iLCJpYXQiOjE2NjY5MzIxNjUsImV4cCI6MTY2NzAxODU2NX0.naOS1oK3hnCWo21hyXC1yIKnzkZGrdagtYSy4JemIMI",
+                                        "type": "text"
+                                    }
+                                ],
+                                "url": {
+                                    "raw": "{{live_url}}/subscription/videos",
+                                    "host": [
+                                        "{{live_url}}"
+                                    ],
+                                    "path": [
+                                        "subscription",
+                                        "videos"
+                                    ]
+                                }
+                            },
+                            "response": [ ]
+                        },
+                        {
+                            "name": "subscription_get",
+                            "request": {
+                                "auth": {
+                                    "type": "bearer",
+                                    "bearer": [
+                                        {
+                                            "key": "token",
+                                            "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2Mzc3NjhlYWQ2MTUwOTFlNzAxNTY4MmQiLCJyb2xlIjoidHJhaW5lciIsImlhdCI6MTY3MzUxMjEwNywiZXhwIjoxNjczNTk4NTA3fQ._4MrwCPIJ4ULkVFXeFKI-YPoD_N5zYwGRXNkTYYCNic",
+                                            "type": "string"
+                                        }
+                                    ]
+                                },
+                                "method": "GET",
+                                "header": [
+                                    {
+                                        "key": "Authorization",
+                                        "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2MzI0NGMxZWI1MDIxOTI2NGNlODUzNDciLCJyb2xlIjoiYWRtaW4iLCJpYXQiOjE2NjY5MzIxNjUsImV4cCI6MTY2NzAxODU2NX0.naOS1oK3hnCWo21hyXC1yIKnzkZGrdagtYSy4JemIMI",
+                                        "type": "text"
+                                    }
+                                ],
+                                "url": {
+                                    "raw": "{{base_url}}/subscription/videos/637768ead615091e7015682d",
+                                    "host": [
+                                        "{{base_url}}"
+                                    ],
+                                    "path": [
+                                        "subscription",
+                                        "videos",
+                                        "637768ead615091e7015682d"
+                                    ],
+                                    "query": [
+                                        {
+                                            "key": "",
+                                            "value": "",
+                                            "disabled": true
+                                        }
+                                    ]
+                                }
+                            },
+                            "response": [ ]
+                        }
+                    ]
+                },
+                {
+                    "name": "create video",
+                    "request": {
+                        "auth": {
+                            "type": "bearer",
+                            "bearer": [
+                                {
+                                    "key": "token",
+                                    "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2NDM4ZTNjZDJhZDJjZTAwMDhjY2QyMTAiLCJyb2xlIjoidHJhaW5lciIsImlhdCI6MTY4MTgwODIzMywiZXhwIjoxNjgxODk0NjMzfQ.anUWBBFWM-WKIrLWKGg97ws08uj0ajyTnYClbIRg-L8",
+                                    "type": "string"
+                                }
+                            ]
+                        },
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2NDM4ZTNjZDJhZDJjZTAwMDhjY2QyMTAiLCJyb2xlIjoidHJhaW5lciIsImlhdCI6MTY4MTgwODIzMywiZXhwIjoxNjgxODk0NjMzfQ.anUWBBFWM-WKIrLWKGg97ws08uj0ajyTnYClbIRg-L8",
+                                "type": "text"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\r\n    \"topic\":\"GYM Traning\",\r\n    \"video_links\":[\"https://www.youtube.com/watch?v=Yh5Lil03tpI\",\"https://www.youtube.com/watch?v=cuHDQhDhvPE\"],\r\n    \"video_category\":\"GYM Base\",\r\n    \"video_details\":\"kjwaerijfsdkflehfsldflsdaklfasdlfjsdsdfk\",\r\n    \"price\":32,\r\n    \"video_thumbnail\":\"https://www.google.com/imgres?imgurl=https%3A%2F%2Fwave.video%2Fblog%2Fwp-content%2Fuploads%2F2019%2F04%2Fwhat-is-video-thumbnail-1024x643.png&tbnid=bPbuII9ABJ4ICM&vet=12ahUKEwj5iPeTh7P-AhVHsCcCHXX3DLEQMygGegUIARDqAQ..i&imgrefurl=https%3A%2F%2Fwave.video%2Fblog%2Fvideo-thumbnails%2F&docid=JNhzCKso2x8m5M&w=1024&h=643&q=video%20thumbnail&ved=2ahUKEwj5iPeTh7P-AhVHsCcCHXX3DLEQMygGegUIARDqAQ\"\r\n\r\n\r\n}",
+                            "options": {
+                                "raw": {
+                                    "language": "json"
+                                }
+                            }
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/video",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "video"
+                            ]
+                        }
+                    },
+                    "response": [ ]
+                },
+                {
+                    "name": "update video",
+                    "request": {
+                        "method": "PUT",
+                        "header": [ ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\r\n    \"topic\":\"GYM Traning4\",\r\n    \"video_links\":[\"https://www.youtube.com/watch?v=Yh5Lil03tpI\",\"https://www.youtube.com/watch?v=cuHDQhDhvPE\"],\r\n    \"video_category\":\"GYM Base\",\r\n    \"video_details\":\"kjwaerijfsdkflehfsldflsdaklfasdlfjsdsdfk\",\r\n    \"price\":32,\r\n    \"video_thumbnail\":\"https://www.google.com/imgres?imgurl=https%3A%2F%2Fwave.video%2Fblog%2Fwp-content%2Fuploads%2F2019%2F04%2Fwhat-is-video-thumbnail-1024x643.png&tbnid=bPbuII9ABJ4ICM&vet=12ahUKEwj5iPeTh7P-AhVHsCcCHXX3DLEQMygGegUIARDqAQ..i&imgrefurl=https%3A%2F%2Fwave.video%2Fblog%2Fvideo-thumbnails%2F&docid=JNhzCKso2x8m5M&w=1024&h=643&q=video%20thumbnail&ved=2ahUKEwj5iPeTh7P-AhVHsCcCHXX3DLEQMygGegUIARDqAQ\"\r\n\r\n\r\n}",
+                            "options": {
+                                "raw": {
+                                    "language": "json"
+                                }
+                            }
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/video/643e6899b5593d2570a7de93",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "video",
+                                "643e6899b5593d2570a7de93"
+                            ]
+                        }
+                    },
+                    "response": [ ]
+                },
+                {
+                    "name": "delete video By Id",
+                    "request": {
+                        "method": "DELETE",
+                        "header": [ ],
+                        "url": {
+                            "raw": "{{base_url}}/video/643e6899b5593d2570a7de93",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "video",
+                                "643e6899b5593d2570a7de93"
+                            ]
+                        }
+                    },
+                    "response": [ ]
+                }
+            ]
+        },
+        {
+            "name": "Review",
+            "item": [
+                {
+                    "name": "user review",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2MjNlYzZiNTA1ODcyMDBiYTQ3MTZjNDYiLCJyb2xlIjoidHJhaW5lZSIsImlhdCI6MTY0ODI4NzMwNSwiZXhwIjoxNjQ4MzczNzA1fQ._2S3efS2bWsmdOb24GAawbnjfOehqjybKITHeCUrMEg",
+                                "type": "text"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\r\n    \"trainer\":\"63caa487dced93001f6b2893\",\r\n    \"reviews\":[\r\n        {\r\n    \"rating\":5,\r\n    \"comment\":\"Not bad Mandgfghjkl;\",\r\n    \"user\":\"63cfda3b7149aa14586f1d4c\"\r\n    }\r\n    ]\r\n}",
+                            "options": {
+                                "raw": {
+                                    "language": "json"
+                                }
+                            }
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/review",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "review"
+                            ]
+                        }
+                    },
+                    "response": [ ]
+                },
+                {
+                    "name": "user review get",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2MjNhZjljM2U4YWYxMTFhMGM1ZWExZjAiLCJyb2xlIjoidHJhaW5lciIsImlhdCI6MTY0ODI4Njc3NiwiZXhwIjoxNjQ4MzczMTc2fQ.m1o6WLHzTJqfyCeEUiEh5gCOlYoewpiHovefxC9Pmk4",
+                                "type": "text"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/review/6438e3cd2ad2ce0008ccd210",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "review",
+                                "6438e3cd2ad2ce0008ccd210"
+                            ]
+                        }
+                    },
+                    "response": [ ]
+                }
+            ]
+        },
+        {
+            "name": "Strip",
+            "item": [
+                {
+                    "name": "customer",
+                    "item": [
+                        {
+                            "name": "create_user",
+                            "request": {
+                                "auth": {
+                                    "type": "bearer",
+                                    "bearer": [
+                                        {
+                                            "key": "token",
+                                            "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2M2NhODRkZjJhMzdlMTA3ZDRlZjMwNzgiLCJyb2xlIjoidHJhaW5lciIsImlhdCI6MTY3NDIxNjY5NiwiZXhwIjoxNjc0MzAzMDk2fQ.YAGS_6mxLWE3Pig8hWlB7p9TjVHbwN1ZWNi1y0Cjny0",
+                                            "type": "string"
+                                        }
+                                    ]
+                                },
+                                "method": "POST",
+                                "header": [
+                                    {
+                                        "key": "Authorization",
+                                        "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2Mzc3NjhlYWQ2MTUwOTFlNzAxNTY4MmQiLCJyb2xlIjoidHJhaW5lciIsImlhdCI6MTY2OTg3OTY2OCwiZXhwIjoxNjY5OTY2MDY4fQ.PFjNfKfqABQ_ClTnmGat5bsowqO_mBNgJlmY7IDMexE",
+                                        "type": "text"
+                                    }
+                                ],
+                                "body": {
+                                    "mode": "raw",
+                                    "raw": "{\r\n    \"name\":\"hamza1\",\r\n    \"email\":\"hamza@gmail.com\",\r\n    \"phone\":\"1234\"\r\n}",
+                                    "options": {
+                                        "raw": {
+                                            "language": "json"
+                                        }
+                                    }
+                                },
+                                "url": {
+                                    "raw": "{{base_url}}/stripe/customer",
+                                    "host": [
+                                        "{{base_url}}"
+                                    ],
+                                    "path": [
+                                        "stripe",
+                                        "customer"
+                                    ]
+                                }
+                            },
+                            "response": [ ]
+                        },
+                        {
+                            "name": "user_update",
+                            "request": {
+                                "method": "PUT",
+                                "header": [
+                                    {
+                                        "key": "Authorization",
+                                        "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2MjNjMzUwNTljOThhMjI0YWM0NDUyM2YiLCJyb2xlIjoiYWRtaW4iLCJpYXQiOjE2NTA1MzU4MDgsImV4cCI6MTY1MDYyMjIwOH0.JHDnZh55EPF5Ir-V7ftbHsi17Z2bEHypvBndRcojWBk",
+                                        "type": "text"
+                                    }
+                                ],
+                                "body": {
+                                    "mode": "raw",
+                                    "raw": "{\r\n    \"balance\":\"5000\"\r\n\r\n}",
+                                    "options": {
+                                        "raw": {
+                                            "language": "json"
+                                        }
+                                    }
+                                },
+                                "url": {
+                                    "raw": "{{base_url}}/admin/stripe/customer/cus_LWs7d8wGZXTfDn",
+                                    "host": [
+                                        "{{base_url}}"
+                                    ],
+                                    "path": [
+                                        "admin",
+                                        "stripe",
+                                        "customer",
+                                        "cus_LWs7d8wGZXTfDn"
+                                    ]
+                                }
+                            },
+                            "response": [ ]
+                        },
+                        {
+                            "name": "user_del",
+                            "request": {
+                                "method": "DELETE",
+                                "header": [
+                                    {
+                                        "key": "Authorization",
+                                        "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2MjNjMzUwNTljOThhMjI0YWM0NDUyM2YiLCJyb2xlIjoiYWRtaW4iLCJpYXQiOjE2NTA1MzU4MDgsImV4cCI6MTY1MDYyMjIwOH0.JHDnZh55EPF5Ir-V7ftbHsi17Z2bEHypvBndRcojWBk",
+                                        "type": "text"
+                                    }
+                                ],
+                                "url": {
+                                    "raw": "{{base_url}}/admin/stripe/customer/cus_LYPS8VZQbrK5JL",
+                                    "host": [
+                                        "{{base_url}}"
+                                    ],
+                                    "path": [
+                                        "admin",
+                                        "stripe",
+                                        "customer",
+                                        "cus_LYPS8VZQbrK5JL"
+                                    ]
+                                }
+                            },
+                            "response": [ ]
+                        },
+                        {
+                            "name": "user_get",
+                            "request": {
+                                "method": "GET",
+                                "header": [
+                                    {
+                                        "key": "Authorization",
+                                        "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2MjNjMzUwNTljOThhMjI0YWM0NDUyM2YiLCJyb2xlIjoiYWRtaW4iLCJpYXQiOjE2NTA1MzU4MDgsImV4cCI6MTY1MDYyMjIwOH0.JHDnZh55EPF5Ir-V7ftbHsi17Z2bEHypvBndRcojWBk",
+                                        "type": "text"
+                                    }
+                                ],
+                                "url": {
+                                    "raw": "{{base_url}}/admin/stripe/customer/cus_LWs7d8wGZXTfDn",
+                                    "host": [
+                                        "{{base_url}}"
+                                    ],
+                                    "path": [
+                                        "admin",
+                                        "stripe",
+                                        "customer",
+                                        "cus_LWs7d8wGZXTfDn"
+                                    ]
+                                }
+                            },
+                            "response": [ ]
+                        },
+                        {
+                            "name": "get all users",
+                            "request": {
+                                "method": "GET",
+                                "header": [
+                                    {
+                                        "key": "Authorization",
+                                        "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2MjNjMzUwNTljOThhMjI0YWM0NDUyM2YiLCJyb2xlIjoiYWRtaW4iLCJpYXQiOjE2NTA1MzU4MDgsImV4cCI6MTY1MDYyMjIwOH0.JHDnZh55EPF5Ir-V7ftbHsi17Z2bEHypvBndRcojWBk",
+                                        "type": "text"
+                                    }
+                                ],
+                                "url": {
+                                    "raw": "{{base_url}}/admin/stripe/customer",
+                                    "host": [
+                                        "{{base_url}}"
+                                    ],
+                                    "path": [
+                                        "admin",
+                                        "stripe",
+                                        "customer"
+                                    ]
+                                }
+                            },
+                            "response": [ ]
+                        }
+                    ]
+                },
+                {
+                    "name": "customer_card",
+                    "item": [
+                        {
+                            "name": "create_card",
+                            "request": {
+                                "auth": {
+                                    "type": "bearer",
+                                    "bearer": [
+                                        {
+                                            "key": "token",
+                                            "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2M2NhODRkZjJhMzdlMTA3ZDRlZjMwNzgiLCJyb2xlIjoidHJhaW5lciIsImlhdCI6MTY3NDIxNzUxNywiZXhwIjoxNjc0MzAzOTE3fQ.gN8UjLTPu0jnq7e_9wOpYAet800VPfpCuT1_kAHxRhw",
+                                            "type": "string"
+                                        }
+                                    ]
+                                },
+                                "method": "POST",
+                                "header": [
+                                    {
+                                        "key": "Authorization",
+                                        "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2Mzc3NjhlYWQ2MTUwOTFlNzAxNTY4MmQiLCJyb2xlIjoidHJhaW5lciIsImlhdCI6MTY2OTg3OTY2OCwiZXhwIjoxNjY5OTY2MDY4fQ.PFjNfKfqABQ_ClTnmGat5bsowqO_mBNgJlmY7IDMexE",
+                                        "type": "text"
+                                    }
+                                ],
+                                "body": {
+                                    "mode": "raw",
+                                    "raw": "{\r\n   \"card_number\":\"4242424242424242\",\r\n   \"exp_month\":\"12\",\r\n   \"exp_year\":\"2025\",\r\n   \"cvc\":\"123\"\r\n}",
+                                    "options": {
+                                        "raw": {
+                                            "language": "json"
+                                        }
+                                    }
+                                },
+                                "url": {
+                                    "raw": "{{live_url}}/stripe/card/cus_NCiv3WqknGDqm1",
+                                    "host": [
+                                        "{{live_url}}"
+                                    ],
+                                    "path": [
+                                        "stripe",
+                                        "card",
+                                        "cus_NCiv3WqknGDqm1"
+                                    ]
+                                }
+                            },
+                            "response": [ ]
+                        },
+                        {
+                            "name": "get_card",
+                            "protocolProfileBehavior": {
+                                "disableBodyPruning": true
+                            },
+                            "request": {
+                                "auth": {
+                                    "type": "bearer",
+                                    "bearer": [
+                                        {
+                                            "key": "token",
+                                            "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2M2E0NzI4YzRjZmRlMTNkYWNlNDFiMTEiLCJyb2xlIjoidHJhaW5lciIsImlhdCI6MTY3MTcyMTkzMSwiZXhwIjoxNjcxODA4MzMxfQ.LKAcG1XRLO4Xf1ae7ne49jYnyKn7CsVtpr9UcEfoDac",
+                                            "type": "string"
+                                        }
+                                    ]
+                                },
+                                "method": "GET",
+                                "header": [
+                                    {
+                                        "key": "Authorization",
+                                        "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2MjNjMzUwNTljOThhMjI0YWM0NDUyM2YiLCJyb2xlIjoiYWRtaW4iLCJpYXQiOjE2NTA2MjMxNTYsImV4cCI6MTY1MDcwOTU1Nn0.iXNjkTRzH28dp5SBji2lWmjc5sTgIs7ztI1xtrNKYy8",
+                                        "type": "text"
+                                    }
+                                ],
+                                "body": {
+                                    "mode": "raw",
+                                    "raw": "{\r\n    \"card_id\":\"card_1MI7tMHjHBX7BsTLNfeDnRZT\"\r\n}",
+                                    "options": {
+                                        "raw": {
+                                            "language": "json"
+                                        }
+                                    }
+                                },
+                                "url": {
+                                    "raw": "{{base_url}}/stripe/card/cus_N1uGjvGIXy3m5g",
+                                    "host": [
+                                        "{{base_url}}"
+                                    ],
+                                    "path": [
+                                        "stripe",
+                                        "card",
+                                        "cus_N1uGjvGIXy3m5g"
+                                    ]
+                                }
+                            },
+                            "response": [ ]
+                        },
+                        {
+                            "name": "update_card",
+                            "request": {
+                                "method": "PUT",
+                                "header": [
+                                    {
+                                        "key": "Authorization",
+                                        "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2MjNjMzUwNTljOThhMjI0YWM0NDUyM2YiLCJyb2xlIjoiYWRtaW4iLCJpYXQiOjE2NTA2MjMxNTYsImV4cCI6MTY1MDcwOTU1Nn0.iXNjkTRzH28dp5SBji2lWmjc5sTgIs7ztI1xtrNKYy8",
+                                        "type": "text"
+                                    }
+                                ],
+                                "body": {
+                                    "mode": "raw",
+                                    "raw": "{\r\n    \"card_id\":\"card_1KrJkcHjHBX7BsTLwfHaB5rj\",\r\n    \"card_number\":\"Multan_Pakista\"\r\n}",
+                                    "options": {
+                                        "raw": {
+                                            "language": "json"
+                                        }
+                                    }
+                                },
+                                "url": {
+                                    "raw": "{{base_url}}/stripe/card/cus_LWs7d8wGZXTfDn",
+                                    "host": [
+                                        "{{base_url}}"
+                                    ],
+                                    "path": [
+                                        "stripe",
+                                        "card",
+                                        "cus_LWs7d8wGZXTfDn"
+                                    ]
+                                }
+                            },
+                            "response": [ ]
+                        },
+                        {
+                            "name": "delete_card",
+                            "request": {
+                                "method": "DELETE",
+                                "header": [
+                                    {
+                                        "key": "Authorization",
+                                        "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2MjNjMzUwNTljOThhMjI0YWM0NDUyM2YiLCJyb2xlIjoiYWRtaW4iLCJpYXQiOjE2NTA2MjMxNTYsImV4cCI6MTY1MDcwOTU1Nn0.iXNjkTRzH28dp5SBji2lWmjc5sTgIs7ztI1xtrNKYy8",
+                                        "type": "text"
+                                    }
+                                ],
+                                "body": {
+                                    "mode": "raw",
+                                    "raw": "",
+                                    "options": {
+                                        "raw": {
+                                            "language": "json"
+                                        }
+                                    }
+                                },
+                                "url": {
+                                    "raw": "{{base_url}}/stripe/card/cus_LWs7d8wGZXTfDn",
+                                    "host": [
+                                        "{{base_url}}"
+                                    ],
+                                    "path": [
+                                        "stripe",
+                                        "card",
+                                        "cus_LWs7d8wGZXTfDn"
+                                    ]
+                                }
+                            },
+                            "response": [ ]
+                        }
+                    ]
+                },
+                {
+                    "name": "customer_account",
+                    "item": [
+                        {
+                            "name": "create_account",
+                            "request": {
+                                "method": "POST",
+                                "header": [
+                                    {
+                                        "key": "Authorization",
+                                        "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2MmYzY2E0NTZiMmM5MzFmZDRkNDI4ZTEiLCJyb2xlIjoidHJhaW5lciIsImlhdCI6MTY2ODQwNjczNCwiZXhwIjoxNjY4NDkzMTM0fQ.l4S4gJTAI7AyHpWVGth9pFiOS2Vr4_xpusO_64ygi38",
+                                        "type": "text"
+                                    }
+                                ],
+                                "body": {
+                                    "mode": "raw",
+                                    "raw": "{\r\n    \"routing_number\":\"110000000\",\r\n    \"account_holder_type\":\"individual\",\r\n    \"account_number\":\"000123456789\",\r\n    \"account_holder_name\":\"Hamza\",\r\n    \"currency\":\"usd\",\r\n    \"country\":\"US\"\r\n\r\n}",
+                                    "options": {
+                                        "raw": {
+                                            "language": "json"
+                                        }
+                                    }
+                                },
+                                "url": {
+                                    "raw": "{{base_url}}/stripe/bank_account/cus_MmTv9AdfRkLikz",
+                                    "host": [
+                                        "{{base_url}}"
+                                    ],
+                                    "path": [
+                                        "stripe",
+                                        "bank_account",
+                                        "cus_MmTv9AdfRkLikz"
+                                    ]
+                                }
+                            },
+                            "response": [ ]
+                        },
+                        {
+                            "name": "get_account",
+                            "protocolProfileBehavior": {
+                                "disableBodyPruning": true
+                            },
+                            "request": {
+                                "method": "GET",
+                                "header": [ ],
+                                "body": {
+                                    "mode": "raw",
+                                    "raw": "{\r\n    \"bankAccount_id\":\"ba_1KndbxHjHBX7BsTLok1vOOON\"\r\n}",
+                                    "options": {
+                                        "raw": {
+                                            "language": "json"
+                                        }
+                                    }
+                                },
+                                "url": {
+                                    "raw": "{{base_url}}/stripe/bank_account/cus_LUcrQvxSXUmbtw",
+                                    "host": [
+                                        "{{base_url}}"
+                                    ],
+                                    "path": [
+                                        "stripe",
+                                        "bank_account",
+                                        "cus_LUcrQvxSXUmbtw"
+                                    ]
+                                }
+                            },
+                            "response": [ ]
+                        },
+                        {
+                            "name": "update_account",
+                            "request": {
+                                "method": "PUT",
+                                "header": [ ],
+                                "body": {
+                                    "mode": "raw",
+                                    "raw": "{\r\n    \"bankAccount_id\":\"ba_1KndbxHjHBX7BsTLok1vOOON\",\r\n    \"order_id\":\"12345\"\r\n}",
+                                    "options": {
+                                        "raw": {
+                                            "language": "json"
+                                        }
+                                    }
+                                },
+                                "url": {
+                                    "raw": "{{base_url}}/stripe/bank_account/cus_LUcrQvxSXUmbtw",
+                                    "host": [
+                                        "{{base_url}}"
+                                    ],
+                                    "path": [
+                                        "stripe",
+                                        "bank_account",
+                                        "cus_LUcrQvxSXUmbtw"
+                                    ]
+                                }
+                            },
+                            "response": [ ]
+                        },
+                        {
+                            "name": "amount_charge",
+                            "request": {
+                                "method": "POST",
+                                "header": [
+                                    {
+                                        "key": "Authorization",
+                                        "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2MmYzY2E0NTZiMmM5MzFmZDRkNDI4ZTEiLCJyb2xlIjoidHJhaW5lciIsImlhdCI6MTY2ODQwNjczNCwiZXhwIjoxNjY4NDkzMTM0fQ.l4S4gJTAI7AyHpWVGth9pFiOS2Vr4_xpusO_64ygi38",
+                                        "type": "text"
+                                    }
+                                ],
+                                "body": {
+                                    "mode": "raw",
+                                    "raw": "{\r\n   \"amount\":\"1000\",\r\n   \"currency\":\"usd\",\r\n   \"customer_id\":\"cus_MnX5NGVul0AVaz\",\r\n   \"description\":\"Hello\" \r\n}",
+                                    "options": {
+                                        "raw": {
+                                            "language": "json"
+                                        }
+                                    }
+                                },
+                                "url": {
+                                    "raw": "{{base_url}}/stripe/recharge/cus_MnX5NGVul0AVaz",
+                                    "host": [
+                                        "{{base_url}}"
+                                    ],
+                                    "path": [
+                                        "stripe",
+                                        "recharge",
+                                        "cus_MnX5NGVul0AVaz"
+                                    ]
+                                }
+                            },
+                            "response": [ ]
+                        },
+                        {
+                            "name": "transaction_check_all",
+                            "request": {
+                                "method": "GET",
+                                "header": [
+                                    {
+                                        "key": "Authorization",
+                                        "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2Mzc3NjhlYWQ2MTUwOTFlNzAxNTY4MmQiLCJyb2xlIjoidHJhaW5lciIsImlhdCI6MTY3MTUyOTc0OSwiZXhwIjoxNjcxNjE2MTQ5fQ.YMT-QzXLMOInF-KrM_kRHWPms0Nha78avVLSFx3yrkc",
+                                        "type": "text"
+                                    }
+                                ],
+                                "url": {
+                                    "raw": "http://localhost:5000/api/stripe/customer/checkBalanceTransactions/cus_MtxhxQ2NwabIi0",
+                                    "protocol": "http",
+                                    "host": [
+                                        "localhost"
+                                    ],
+                                    "port": "5000",
+                                    "path": [
+                                        "api",
+                                        "stripe",
+                                        "customer",
+                                        "checkBalanceTransactions",
+                                        "cus_MtxhxQ2NwabIi0"
+                                    ],
+                                    "query": [
+                                        {
+                                            "key": "",
+                                            "value": "",
+                                            "disabled": true
+                                        }
+                                    ]
+                                }
+                            },
+                            "response": [ ]
+                        }
+                    ]
+                },
+                {
+                    "name": "recharge",
+                    "item": [
+                        {
+                            "name": "recharge_create",
+                            "request": {
+                                "auth": {
+                                    "type": "bearer",
+                                    "bearer": [
+                                        {
+                                            "key": "token",
+                                            "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2M2NhODRkZjJhMzdlMTA3ZDRlZjMwNzgiLCJyb2xlIjoidHJhaW5lciIsImlhdCI6MTY3NDIxNzUxNywiZXhwIjoxNjc0MzAzOTE3fQ.gN8UjLTPu0jnq7e_9wOpYAet800VPfpCuT1_kAHxRhw",
+                                            "type": "string"
+                                        }
+                                    ]
+                                },
+                                "method": "POST",
+                                "header": [
+                                    {
+                                        "key": "Authorization",
+                                        "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2Mzc3NjhlYWQ2MTUwOTFlNzAxNTY4MmQiLCJyb2xlIjoidHJhaW5lciIsImlhdCI6MTY3MDIyNzQ2OCwiZXhwIjoxNjcwMzEzODY4fQ.sW_Qhxlq1eN5I1W8R0HoIitAILemlaPLHcfeyA3boAU",
+                                        "type": "text"
+                                    }
+                                ],
+                                "body": {
+                                    "mode": "raw",
+                                    "raw": "{\r\n  \"amount\":1000,\r\n  \"currency\":\"USD\",\r\n  \"source\":\"card_1MSJgCHjHBX7BsTLpmbkrrhk\",\r\n  \"description\":\"recharge\"\r\n}",
+                                    "options": {
+                                        "raw": {
+                                            "language": "json"
+                                        }
+                                    }
+                                },
+                                "url": {
+                                    "raw": "http://localhost:5000/api/stripe/recharge/cus_NCiv3WqknGDqm1",
+                                    "protocol": "http",
+                                    "host": [
+                                        "localhost"
+                                    ],
+                                    "port": "5000",
+                                    "path": [
+                                        "api",
+                                        "stripe",
+                                        "recharge",
+                                        "cus_NCiv3WqknGDqm1"
+                                    ]
+                                }
+                            },
+                            "response": [ ]
+                        }
+                    ]
+                },
+                {
+                    "name": "transfer stripe payment",
+                    "item": [
+                        {
+                            "name": "user transfer payment",
+                            "request": {
+                                "auth": {
+                                    "type": "bearer",
+                                    "bearer": [
+                                        {
+                                            "key": "token",
+                                            "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2M2M3YTk4YmQ5MmRiYzE3ODRkODJkZWEiLCJyb2xlIjoidHJhaW5lZSIsImlhdCI6MTY3NDAyOTQ5MiwiZXhwIjoxNjc0MTE1ODkyfQ.uUU3ozSU6iBo3WGRMtLUOLggoOg1l7K1Dp2WfkhXTXo",
+                                            "type": "string"
+                                        }
+                                    ]
+                                },
+                                "method": "POST",
+                                "header": [
+                                    {
+                                        "key": "Authorization",
+                                        "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2MjNjMzUwNTljOThhMjI0YWM0NDUyM2YiLCJyb2xlIjoiYWRtaW4iLCJpYXQiOjE2NTA2NDAzNDksImV4cCI6MTY1MDcyNjc0OX0.PBYECChLQLATcDs3Ng2xUH41nxWoVh4_uKLxzYmprSI",
+                                        "type": "text"
+                                    }
+                                ],
+                                "body": {
+                                    "mode": "raw",
+                                    "raw": "{\r\n    \"sender\":\"cus_NBuh3jpq719118\",\r\n    \"reciver\":\"cus_NBuaK6bd4VlipW\",\r\n    \"currency\":\"usd\",\r\n    \"amount\":\"-1\",\r\n    \"subamount\":\"1\"\r\n}",
+                                    "options": {
+                                        "raw": {
+                                            "language": "json"
+                                        }
+                                    }
+                                },
+                                "url": {
+                                    "raw": "{{base_url}}/stripe/transfer",
+                                    "host": [
+                                        "{{base_url}}"
+                                    ],
+                                    "path": [
+                                        "stripe",
+                                        "transfer"
+                                    ]
+                                }
+                            },
+                            "response": [ ]
+                        },
+                        {
+                            "name": "stripe payout",
+                            "request": {
+                                "method": "GET",
+                                "header": [ ],
+                                "url": {
+                                    "raw": ""
+                                }
+                            },
+                            "response": [ ]
+                        }
+                    ]
+                },
+                {
+                    "name": "Connect",
+                    "item": [
+                        {
+                            "name": "express account Link",
+                            "request": {
+                                "auth": {
+                                    "type": "bearer",
+                                    "bearer": [
+                                        {
+                                            "key": "token",
+                                            "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2M2NmZGEzYjcxNDlhYTE0NTg2ZjFkNGMiLCJyb2xlIjoidHJhaW5lZSIsImlhdCI6MTY3NDY0NzQxMSwiZXhwIjoxNjc0NzMzODExfQ.L-6E__lM0Q4e3E5ObapsjAsMZSlD_ZBNH-jclppaXRA",
+                                            "type": "string"
+                                        }
+                                    ]
+                                },
+                                "method": "POST",
+                                "header": [
+                                    {
+                                        "key": "Authorization",
+                                        "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2MzhkYzgxMDJkNGE5ODAwMTY2ZTgzMzMiLCJyb2xlIjoidHJhaW5lciIsImlhdCI6MTY3MTAxMzQyMywiZXhwIjoxNjcxMDk5ODIzfQ.JL1z8M50sfOHwXP0CumjDE6ZLHV1-glzDGsuDEYV49A",
+                                        "type": "text"
+                                    }
+                                ],
+                                "body": {
+                                    "mode": "raw",
+                                    "raw": "{\r\n    \"email\":\"hamza@gmail.com\"\r\n}",
+                                    "options": {
+                                        "raw": {
+                                            "language": "json"
+                                        }
+                                    }
+                                },
+                                "url": {
+                                    "raw": "{{base_url}}/stripe/connect/accountLink",
+                                    "host": [
+                                        "{{base_url}}"
+                                    ],
+                                    "path": [
+                                        "stripe",
+                                        "connect",
+                                        "accountLink"
+                                    ]
+                                }
+                            },
+                            "response": [ ]
+                        }
+                    ]
+                },
+                {
+                    "name": "checkBalance",
+                    "item": [
+                        {
+                            "name": "get-balance",
+                            "request": {
+                                "method": "GET",
+                                "header": [ ],
+                                "url": {
+                                    "raw": "{{base_url}}/stripe/balance/cus_MtxhxQ2NwabIi0",
+                                    "host": [
+                                        "{{base_url}}"
+                                    ],
+                                    "path": [
+                                        "stripe",
+                                        "balance",
+                                        "cus_MtxhxQ2NwabIi0"
+                                    ]
+                                }
+                            },
+                            "response": [ ]
+                        },
+                        {
+                            "name": "check_transfer_history",
+                            "request": {
+                                "method": "GET",
+                                "header": [ ],
+                                "url": {
+                                    "raw": "{{base_url}}/stripe/balance/cus_MtxhxQ2NwabIi0",
+                                    "host": [
+                                        "{{base_url}}"
+                                    ],
+                                    "path": [
+                                        "stripe",
+                                        "balance",
+                                        "cus_MtxhxQ2NwabIi0"
+                                    ]
+                                }
+                            },
+                            "response": [ ]
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "name": "Strip Copy",
+            "item": [
+                {
+                    "name": "customer",
+                    "item": [
+                        {
+                            "name": "create_user",
+                            "request": {
+                                "method": "POST",
+                                "header": [
+                                    {
+                                        "key": "Authorization",
+                                        "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2MzI0NGMxZWI1MDIxOTI2NGNlODUzNDciLCJyb2xlIjoiYWRtaW4iLCJpYXQiOjE2NjY3NzkzOTksImV4cCI6MTY2Njg2NTc5OX0.DVyRYdBDnJ9HXx2WsK830zpKjGEttP_EwBAlvBhINiA",
+                                        "type": "text"
+                                    }
+                                ],
+                                "body": {
+                                    "mode": "raw",
+                                    "raw": "{\r\n    \"name\":\"Raheel\",\r\n    \"email\":\"raheel@gmail.com\",\r\n    \"phone\":\"1234\"\r\n}",
+                                    "options": {
+                                        "raw": {
+                                            "language": "json"
+                                        }
+                                    }
+                                },
+                                "url": {
+                                    "raw": "{{base_url}}/stripe/customer",
+                                    "host": [
+                                        "{{base_url}}"
+                                    ],
+                                    "path": [
+                                        "stripe",
+                                        "customer"
+                                    ]
+                                }
+                            },
+                            "response": [ ]
+                        },
+                        {
+                            "name": "user_update",
+                            "request": {
+                                "method": "PUT",
+                                "header": [
+                                    {
+                                        "key": "Authorization",
+                                        "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2MjNjMzUwNTljOThhMjI0YWM0NDUyM2YiLCJyb2xlIjoiYWRtaW4iLCJpYXQiOjE2NTA1MzU4MDgsImV4cCI6MTY1MDYyMjIwOH0.JHDnZh55EPF5Ir-V7ftbHsi17Z2bEHypvBndRcojWBk",
+                                        "type": "text"
+                                    }
+                                ],
+                                "body": {
+                                    "mode": "raw",
+                                    "raw": "{\r\n    \"balance\":\"5000\"\r\n\r\n}",
+                                    "options": {
+                                        "raw": {
+                                            "language": "json"
+                                        }
+                                    }
+                                },
+                                "url": {
+                                    "raw": "{{base_url}}/admin/stripe/customer/cus_LWs7d8wGZXTfDn",
+                                    "host": [
+                                        "{{base_url}}"
+                                    ],
+                                    "path": [
+                                        "admin",
+                                        "stripe",
+                                        "customer",
+                                        "cus_LWs7d8wGZXTfDn"
+                                    ]
+                                }
+                            },
+                            "response": [ ]
+                        },
+                        {
+                            "name": "user_del",
+                            "request": {
+                                "method": "DELETE",
+                                "header": [
+                                    {
+                                        "key": "Authorization",
+                                        "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2MjNjMzUwNTljOThhMjI0YWM0NDUyM2YiLCJyb2xlIjoiYWRtaW4iLCJpYXQiOjE2NTA1MzU4MDgsImV4cCI6MTY1MDYyMjIwOH0.JHDnZh55EPF5Ir-V7ftbHsi17Z2bEHypvBndRcojWBk",
+                                        "type": "text"
+                                    }
+                                ],
+                                "url": {
+                                    "raw": "{{base_url}}/admin/stripe/customer/cus_LYPS8VZQbrK5JL",
+                                    "host": [
+                                        "{{base_url}}"
+                                    ],
+                                    "path": [
+                                        "admin",
+                                        "stripe",
+                                        "customer",
+                                        "cus_LYPS8VZQbrK5JL"
+                                    ]
+                                }
+                            },
+                            "response": [ ]
+                        },
+                        {
+                            "name": "user_get",
+                            "request": {
+                                "method": "GET",
+                                "header": [
+                                    {
+                                        "key": "Authorization",
+                                        "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2MjNjMzUwNTljOThhMjI0YWM0NDUyM2YiLCJyb2xlIjoiYWRtaW4iLCJpYXQiOjE2NTA1MzU4MDgsImV4cCI6MTY1MDYyMjIwOH0.JHDnZh55EPF5Ir-V7ftbHsi17Z2bEHypvBndRcojWBk",
+                                        "type": "text"
+                                    }
+                                ],
+                                "url": {
+                                    "raw": "{{base_url}}/admin/stripe/customer/cus_LWs7d8wGZXTfDn",
+                                    "host": [
+                                        "{{base_url}}"
+                                    ],
+                                    "path": [
+                                        "admin",
+                                        "stripe",
+                                        "customer",
+                                        "cus_LWs7d8wGZXTfDn"
+                                    ]
+                                }
+                            },
+                            "response": [ ]
+                        },
+                        {
+                            "name": "get all users",
+                            "request": {
+                                "method": "GET",
+                                "header": [
+                                    {
+                                        "key": "Authorization",
+                                        "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2MjNjMzUwNTljOThhMjI0YWM0NDUyM2YiLCJyb2xlIjoiYWRtaW4iLCJpYXQiOjE2NTA1MzU4MDgsImV4cCI6MTY1MDYyMjIwOH0.JHDnZh55EPF5Ir-V7ftbHsi17Z2bEHypvBndRcojWBk",
+                                        "type": "text"
+                                    }
+                                ],
+                                "url": {
+                                    "raw": "{{base_url}}/admin/stripe/customer",
+                                    "host": [
+                                        "{{base_url}}"
+                                    ],
+                                    "path": [
+                                        "admin",
+                                        "stripe",
+                                        "customer"
+                                    ]
+                                }
+                            },
+                            "response": [ ]
+                        }
+                    ]
+                },
+                {
+                    "name": "customer_card",
+                    "item": [
+                        {
+                            "name": "create_card",
+                            "request": {
+                                "method": "POST",
+                                "header": [
+                                    {
+                                        "key": "Authorization",
+                                        "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2MjNjMzUwNTljOThhMjI0YWM0NDUyM2YiLCJyb2xlIjoiYWRtaW4iLCJpYXQiOjE2NTA2MjMxNTYsImV4cCI6MTY1MDcwOTU1Nn0.iXNjkTRzH28dp5SBji2lWmjc5sTgIs7ztI1xtrNKYy8",
+                                        "type": "text"
+                                    }
+                                ],
+                                "body": {
+                                    "mode": "raw",
+                                    "raw": "{\r\n   \"card_number\":\"4242424242424242\",\r\n   \"exp_month\":\"12\",\r\n   \"exp_year\":\"2025\",\r\n   \"cvc\":\"123\"\r\n}",
+                                    "options": {
+                                        "raw": {
+                                            "language": "json"
+                                        }
+                                    }
+                                },
+                                "url": {
+                                    "raw": "{{base_url}}/admin/stripe/customer/card/cus_LWs7d8wGZXTfDn",
+                                    "host": [
+                                        "{{base_url}}"
+                                    ],
+                                    "path": [
+                                        "admin",
+                                        "stripe",
+                                        "customer",
+                                        "card",
+                                        "cus_LWs7d8wGZXTfDn"
+                                    ]
+                                }
+                            },
+                            "response": [ ]
+                        },
+                        {
+                            "name": "get_card",
+                            "protocolProfileBehavior": {
+                                "disableBodyPruning": true
+                            },
+                            "request": {
+                                "method": "GET",
+                                "header": [
+                                    {
+                                        "key": "Authorization",
+                                        "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2MjNjMzUwNTljOThhMjI0YWM0NDUyM2YiLCJyb2xlIjoiYWRtaW4iLCJpYXQiOjE2NTA2MjMxNTYsImV4cCI6MTY1MDcwOTU1Nn0.iXNjkTRzH28dp5SBji2lWmjc5sTgIs7ztI1xtrNKYy8",
+                                        "type": "text"
+                                    }
+                                ],
+                                "body": {
+                                    "mode": "raw",
+                                    "raw": "{\r\n    \"card_id\":\"card_1KrJkcHjHBX7BsTLwfHaB5rj\"\r\n}",
+                                    "options": {
+                                        "raw": {
+                                            "language": "json"
+                                        }
+                                    }
+                                },
+                                "url": {
+                                    "raw": "{{base_url}}/stripe/card/cus_LWs7d8wGZXTfDn",
+                                    "host": [
+                                        "{{base_url}}"
+                                    ],
+                                    "path": [
+                                        "stripe",
+                                        "card",
+                                        "cus_LWs7d8wGZXTfDn"
+                                    ]
+                                }
+                            },
+                            "response": [ ]
+                        },
+                        {
+                            "name": "update_card",
+                            "request": {
+                                "method": "PUT",
+                                "header": [
+                                    {
+                                        "key": "Authorization",
+                                        "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2MjNjMzUwNTljOThhMjI0YWM0NDUyM2YiLCJyb2xlIjoiYWRtaW4iLCJpYXQiOjE2NTA2MjMxNTYsImV4cCI6MTY1MDcwOTU1Nn0.iXNjkTRzH28dp5SBji2lWmjc5sTgIs7ztI1xtrNKYy8",
+                                        "type": "text"
+                                    }
+                                ],
+                                "body": {
+                                    "mode": "raw",
+                                    "raw": "{\r\n    \"card_id\":\"card_1KrJkcHjHBX7BsTLwfHaB5rj\",\r\n    \"card_number\":\"Multan_Pakista\"\r\n}",
+                                    "options": {
+                                        "raw": {
+                                            "language": "json"
+                                        }
+                                    }
+                                },
+                                "url": {
+                                    "raw": "{{base_url}}/stripe/card/cus_LWs7d8wGZXTfDn",
+                                    "host": [
+                                        "{{base_url}}"
+                                    ],
+                                    "path": [
+                                        "stripe",
+                                        "card",
+                                        "cus_LWs7d8wGZXTfDn"
+                                    ]
+                                }
+                            },
+                            "response": [ ]
+                        },
+                        {
+                            "name": "delete_card",
+                            "request": {
+                                "method": "DELETE",
+                                "header": [
+                                    {
+                                        "key": "Authorization",
+                                        "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2MjNjMzUwNTljOThhMjI0YWM0NDUyM2YiLCJyb2xlIjoiYWRtaW4iLCJpYXQiOjE2NTA2MjMxNTYsImV4cCI6MTY1MDcwOTU1Nn0.iXNjkTRzH28dp5SBji2lWmjc5sTgIs7ztI1xtrNKYy8",
+                                        "type": "text"
+                                    }
+                                ],
+                                "body": {
+                                    "mode": "raw",
+                                    "raw": "",
+                                    "options": {
+                                        "raw": {
+                                            "language": "json"
+                                        }
+                                    }
+                                },
+                                "url": {
+                                    "raw": "{{base_url}}/stripe/card/cus_LWs7d8wGZXTfDn",
+                                    "host": [
+                                        "{{base_url}}"
+                                    ],
+                                    "path": [
+                                        "stripe",
+                                        "card",
+                                        "cus_LWs7d8wGZXTfDn"
+                                    ]
+                                }
+                            },
+                            "response": [ ]
+                        }
+                    ]
+                },
+                {
+                    "name": "customer_account",
+                    "item": [
+                        {
+                            "name": "create_account",
+                            "request": {
+                                "method": "POST",
+                                "header": [
+                                    {
+                                        "key": "Authorization",
+                                        "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2MzI0NGMxZWI1MDIxOTI2NGNlODUzNDciLCJyb2xlIjoiYWRtaW4iLCJpYXQiOjE2NjY3NzkzOTksImV4cCI6MTY2Njg2NTc5OX0.DVyRYdBDnJ9HXx2WsK830zpKjGEttP_EwBAlvBhINiA",
+                                        "type": "text"
+                                    }
+                                ],
+                                "body": {
+                                    "mode": "raw",
+                                    "raw": "{\r\n    \"routing_number\":\"110000000\",\r\n    \"account_holder_type\":\"individual\",\r\n    \"account_number\":\"000123456789\",\r\n    \"account_holder_name\":\"Hamza\",\r\n    \"currency\":\"usd\",\r\n    \"country\":\"US\"\r\n\r\n}",
+                                    "options": {
+                                        "raw": {
+                                            "language": "json"
+                                        }
+                                    }
+                                },
+                                "url": {
+                                    "raw": "{{base_url}}/stripe/bank_account/cus_MgTc4s91gkGO7K",
+                                    "host": [
+                                        "{{base_url}}"
+                                    ],
+                                    "path": [
+                                        "stripe",
+                                        "bank_account",
+                                        "cus_MgTc4s91gkGO7K"
+                                    ]
+                                }
+                            },
+                            "response": [ ]
+                        },
+                        {
+                            "name": "get_account",
+                            "protocolProfileBehavior": {
+                                "disableBodyPruning": true
+                            },
+                            "request": {
+                                "method": "GET",
+                                "header": [ ],
+                                "body": {
+                                    "mode": "raw",
+                                    "raw": "{\r\n    \"bankAccount_id\":\"ba_1KndbxHjHBX7BsTLok1vOOON\"\r\n}",
+                                    "options": {
+                                        "raw": {
+                                            "language": "json"
+                                        }
+                                    }
+                                },
+                                "url": {
+                                    "raw": "{{base_url}}/stripe/bank_account/cus_LUcrQvxSXUmbtw",
+                                    "host": [
+                                        "{{base_url}}"
+                                    ],
+                                    "path": [
+                                        "stripe",
+                                        "bank_account",
+                                        "cus_LUcrQvxSXUmbtw"
+                                    ]
+                                }
+                            },
+                            "response": [ ]
+                        },
+                        {
+                            "name": "update_account",
+                            "request": {
+                                "method": "PUT",
+                                "header": [ ],
+                                "body": {
+                                    "mode": "raw",
+                                    "raw": "{\r\n    \"bankAccount_id\":\"ba_1KndbxHjHBX7BsTLok1vOOON\",\r\n    \"order_id\":\"12345\"\r\n}",
+                                    "options": {
+                                        "raw": {
+                                            "language": "json"
+                                        }
+                                    }
+                                },
+                                "url": {
+                                    "raw": "{{base_url}}/stripe/bank_account/cus_LUcrQvxSXUmbtw",
+                                    "host": [
+                                        "{{base_url}}"
+                                    ],
+                                    "path": [
+                                        "stripe",
+                                        "bank_account",
+                                        "cus_LUcrQvxSXUmbtw"
+                                    ]
+                                }
+                            },
+                            "response": [ ]
+                        },
+                        {
+                            "name": "amount_charge",
+                            "request": {
+                                "method": "POST",
+                                "header": [
+                                    {
+                                        "key": "Authorization",
+                                        "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2MzI0NGMxZWI1MDIxOTI2NGNlODUzNDciLCJyb2xlIjoiYWRtaW4iLCJpYXQiOjE2NjY3NzkzOTksImV4cCI6MTY2Njg2NTc5OX0.DVyRYdBDnJ9HXx2WsK830zpKjGEttP_EwBAlvBhINiA",
+                                        "type": "text"
+                                    }
+                                ],
+                                "body": {
+                                    "mode": "raw",
+                                    "raw": "{\r\n   \"amount\":\"1000\",\r\n   \"currency\":\"usd\",\r\n   \"customer_id\":\"cus_MgTc4s91gkGO7K\",\r\n   \"description\":\"Hello\" \r\n}",
+                                    "options": {
+                                        "raw": {
+                                            "language": "json"
+                                        }
+                                    }
+                                },
+                                "url": {
+                                    "raw": "{{base_url}}/stripe/recharge/cus_MgTc4s91gkGO7K",
+                                    "host": [
+                                        "{{base_url}}"
+                                    ],
+                                    "path": [
+                                        "stripe",
+                                        "recharge",
+                                        "cus_MgTc4s91gkGO7K"
+                                    ]
+                                }
+                            },
+                            "response": [ ]
+                        },
+                        {
+                            "name": "transfer_amount",
+                            "request": {
+                                "method": "GET",
+                                "header": [ ],
+                                "url": {
+                                    "raw": ""
+                                }
+                            },
+                            "response": [ ]
+                        }
+                    ]
+                },
+                {
+                    "name": "recharge",
+                    "item": [
+                        {
+                            "name": "recharge_create",
+                            "request": {
+                                "method": "POST",
+                                "header": [ ],
+                                "url": {
+                                    "raw": "{{base_url}}/stripe/recharge",
+                                    "host": [
+                                        "{{base_url}}"
+                                    ],
+                                    "path": [
+                                        "stripe",
+                                        "recharge"
+                                    ]
+                                }
+                            },
+                            "response": [ ]
+                        }
+                    ]
+                },
+                {
+                    "name": "transfer stripe payment",
+                    "item": [
+                        {
+                            "name": "user transfer payment",
+                            "request": {
+                                "method": "POST",
+                                "header": [
+                                    {
+                                        "key": "Authorization",
+                                        "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2MjNjMzUwNTljOThhMjI0YWM0NDUyM2YiLCJyb2xlIjoiYWRtaW4iLCJpYXQiOjE2NTA2NDAzNDksImV4cCI6MTY1MDcyNjc0OX0.PBYECChLQLATcDs3Ng2xUH41nxWoVh4_uKLxzYmprSI",
+                                        "type": "text"
+                                    }
+                                ],
+                                "body": {
+                                    "mode": "raw",
+                                    "raw": "{\r\n    \"sender\":\"cus_LWqzDaL4sCTnED\",\r\n    \"reciver\":\"cus_LYV0fPrV2WwzIj\",\r\n    \"currency\":\"usd\",\r\n    \"amount\":\"-10000\",\r\n    \"subamount\":\"10000\"\r\n}",
+                                    "options": {
+                                        "raw": {
+                                            "language": "json"
+                                        }
+                                    }
+                                },
+                                "url": {
+                                    "raw": "{{base_url}}/stripe/transfer",
+                                    "host": [
+                                        "{{base_url}}"
+                                    ],
+                                    "path": [
+                                        "stripe",
+                                        "transfer"
+                                    ]
+                                }
+                            },
+                            "response": [ ]
+                        },
+                        {
+                            "name": "stripe payout",
+                            "request": {
+                                "method": "GET",
+                                "header": [ ],
+                                "url": {
+                                    "raw": ""
+                                }
+                            },
+                            "response": [ ]
+                        }
+                    ]
+                },
+                {
+                    "name": "Connect",
+                    "item": [
+                        {
+                            "name": "express account",
+                            "request": {
+                                "method": "POST",
+                                "header": [ ],
+                                "body": {
+                                    "mode": "raw",
+                                    "raw": "",
+                                    "options": {
+                                        "raw": {
+                                            "language": "json"
+                                        }
+                                    }
+                                },
+                                "url": {
+                                    "raw": "{{base_url}}/stripe/connect/account/6359091d8cbd043f2ce16984",
+                                    "host": [
+                                        "{{base_url}}"
+                                    ],
+                                    "path": [
+                                        "stripe",
+                                        "connect",
+                                        "account",
+                                        "6359091d8cbd043f2ce16984"
+                                    ]
+                                }
+                            },
+                            "response": [ ]
+                        },
+                        {
+                            "name": "express fetch account",
+                            "request": {
+                                "method": "GET",
+                                "header": [ ],
+                                "url": {
+                                    "raw": "{{base_url}}/stripe/fetch/account/acct_1LwL4SHJWs71RNcx",
+                                    "host": [
+                                        "{{base_url}}"
+                                    ],
+                                    "path": [
+                                        "stripe",
+                                        "fetch",
+                                        "account",
+                                        "acct_1LwL4SHJWs71RNcx"
+                                    ]
+                                }
+                            },
+                            "response": [ ]
+                        },
+                        {
+                            "name": "express account Link",
+                            "request": {
+                                "method": "GET",
+                                "header": [ ],
+                                "url": {
+                                    "raw": "{{base_url}}/stripe/connect/accountLink/6359091d8cbd043f2ce16984",
+                                    "host": [
+                                        "{{base_url}}"
+                                    ],
+                                    "path": [
+                                        "stripe",
+                                        "connect",
+                                        "accountLink",
+                                        "6359091d8cbd043f2ce16984"
+                                    ]
+                                }
+                            },
+                            "response": [ ]
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "name": "Admin",
+            "item": [
+                {
+                    "name": "Users",
+                    "item": [
+                        {
+                            "name": "get all trainer and trainees",
+                            "request": {
+                                "auth": {
+                                    "type": "bearer",
+                                    "bearer": [
+                                        {
+                                            "key": "token",
+                                            "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2Mzg0ZGIzODc1MmFlNDI3MGM1ZjljN2QiLCJyb2xlIjoiYWRtaW4iLCJpYXQiOjE2NzM4MDAwMzksImV4cCI6MTY3Mzg4NjQzOX0.FmVDals_iDI76jisYp0XzAE1LaS1mCHczpD_Sqpo04k",
+                                            "type": "string"
+                                        }
+                                    ]
+                                },
+                                "method": "GET",
+                                "header": [
+                                    {
+                                        "key": "Authorization",
+                                        "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2MjNjMzUwNTljOThhMjI0YWM0NDUyM2YiLCJyb2xlIjoiYWRtaW4iLCJpYXQiOjE2NTA1MzU4MDgsImV4cCI6MTY1MDYyMjIwOH0.JHDnZh55EPF5Ir-V7ftbHsi17Z2bEHypvBndRcojWBk",
+                                        "type": "text"
+                                    }
+                                ],
+                                "url": {
+                                    "raw": "{{base_url}}/admin/users",
+                                    "host": [
+                                        "{{base_url}}"
+                                    ],
+                                    "path": [
+                                        "admin",
+                                        "users"
+                                    ]
+                                }
+                            },
+                            "response": [ ]
+                        },
+                        {
+                            "name": "update accountVerified status",
+                            "request": {
+                                "auth": {
+                                    "type": "bearer",
+                                    "bearer": [
+                                        {
+                                            "key": "token",
+                                            "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2Mzg0ZGIzODc1MmFlNDI3MGM1ZjljN2QiLCJyb2xlIjoiYWRtaW4iLCJpYXQiOjE2NzM1MDkwNzcsImV4cCI6MTY3MzU5NTQ3N30.AgXuYYCdOPPA3gNCBMtg5HOD-cxKVctHB38TwS1mEdA",
+                                            "type": "string"
+                                        }
+                                    ]
+                                },
+                                "method": "PUT",
+                                "header": [
+                                    {
+                                        "key": "Authorization",
+                                        "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2MjNjMzUwNTljOThhMjI0YWM0NDUyM2YiLCJyb2xlIjoiYWRtaW4iLCJpYXQiOjE2NTA1MzU4MDgsImV4cCI6MTY1MDYyMjIwOH0.JHDnZh55EPF5Ir-V7ftbHsi17Z2bEHypvBndRcojWBk",
+                                        "type": "text"
+                                    }
+                                ],
+                                "body": {
+                                    "mode": "raw",
+                                    "raw": "{\r\n    \"accountVerified\":\"approved\"\r\n}",
+                                    "options": {
+                                        "raw": {
+                                            "language": "json"
+                                        }
+                                    }
+                                },
+                                "url": {
+                                    "raw": "{{base_url}}/admin/user/63b546d868dcd4001f965d52",
+                                    "host": [
+                                        "{{base_url}}"
+                                    ],
+                                    "path": [
+                                        "admin",
+                                        "user",
+                                        "63b546d868dcd4001f965d52"
+                                    ]
+                                }
+                            },
+                            "response": [ ]
+                        },
+                        {
+                            "name": "updateTrainerStatus",
+                            "request": {
+                                "auth": {
+                                    "type": "bearer",
+                                    "bearer": [
+                                        {
+                                            "key": "token",
+                                            "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2Mzg0ZGIzODc1MmFlNDI3MGM1ZjljN2QiLCJyb2xlIjoiYWRtaW4iLCJpYXQiOjE2NzM1MDkwNzcsImV4cCI6MTY3MzU5NTQ3N30.AgXuYYCdOPPA3gNCBMtg5HOD-cxKVctHB38TwS1mEdA",
+                                            "type": "string"
+                                        }
+                                    ]
+                                },
+                                "method": "PUT",
+                                "header": [
+                                    {
+                                        "key": "Authorization",
+                                        "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2MjNjMzUwNTljOThhMjI0YWM0NDUyM2YiLCJyb2xlIjoiYWRtaW4iLCJpYXQiOjE2NTEwMzY0NTksImV4cCI6MTY1MTEyMjg1OX0.CgQPwcChOgs5D_8VVIwp4PQGhUKik4QdXxWT45_9woA",
+                                        "type": "text"
+                                    }
+                                ],
+                                "body": {
+                                    "mode": "raw",
+                                    "raw": "{\r\n    \"trainerVerified\":\"approved\"\r\n}",
+                                    "options": {
+                                        "raw": {
+                                            "language": "json"
+                                        }
+                                    }
+                                },
+                                "url": {
+                                    "raw": "{{base_url}}/admin/trainer/status/63c01206dced93001f6938dd",
+                                    "host": [
+                                        "{{base_url}}"
+                                    ],
+                                    "path": [
+                                        "admin",
+                                        "trainer",
+                                        "status",
+                                        "63c01206dced93001f6938dd"
+                                    ]
+                                }
+                            },
+                            "response": [ ]
+                        },
+                        {
+                            "name": "updateUserVerification",
+                            "request": {
+                                "auth": {
+                                    "type": "bearer",
+                                    "bearer": [
+                                        {
+                                            "key": "token",
+                                            "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2Mzg0ZGIzODc1MmFlNDI3MGM1ZjljN2QiLCJyb2xlIjoiYWRtaW4iLCJpYXQiOjE2NzMzNTc4NzcsImV4cCI6MTY3MzQ0NDI3N30.lX1BP_0wVEvswbvK_Mz_80F_7SNvwQ5BtJzM3L6XKG0",
+                                            "type": "string"
+                                        }
+                                    ]
+                                },
+                                "method": "PUT",
+                                "header": [ ],
+                                "body": {
+                                    "mode": "raw",
+                                    "raw": "{\r\n    \"emailVerified\":false\r\n}",
+                                    "options": {
+                                        "raw": {
+                                            "language": "json"
+                                        }
+                                    }
+                                },
+                                "url": {
+                                    "raw": "{{base_url}}/user/status/63b6c7e1f724d703b0a033ec",
+                                    "host": [
+                                        "{{base_url}}"
+                                    ],
+                                    "path": [
+                                        "user",
+                                        "status",
+                                        "63b6c7e1f724d703b0a033ec"
+                                    ]
+                                }
+                            },
+                            "response": [ ]
+                        },
+                        {
+                            "name": "get user detail by id",
+                            "request": {
+                                "auth": {
+                                    "type": "bearer",
+                                    "bearer": [
+                                        {
+                                            "key": "token",
+                                            "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2M2MwMTVmYWRjZWQ5MzAwMWY2OTNhMDAiLCJyb2xlIjoidHJhaW5lciIsImlhdCI6MTY3MzUzMjk0MiwiZXhwIjoxNjczNjE5MzQyfQ.BO8MN40aZLVdHvFh3apHihKpwHr4CKFacWp_HVr_WEI",
+                                            "type": "string"
+                                        }
+                                    ]
+                                },
+                                "method": "GET",
+                                "header": [ ],
+                                "url": {
+                                    "raw": "{{base_url}}/user/63c00cd1dced93001f693816",
+                                    "host": [
+                                        "{{base_url}}"
+                                    ],
+                                    "path": [
+                                        "user",
+                                        "63c00cd1dced93001f693816"
+                                    ]
+                                }
+                            },
+                            "response": [ ]
+                        },
+                        {
+                            "name": "update user password",
+                            "request": {
+                                "auth": {
+                                    "type": "bearer",
+                                    "bearer": [
+                                        {
+                                            "key": "token",
+                                            "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2Mzg0ZGIzODc1MmFlNDI3MGM1ZjljN2QiLCJyb2xlIjoiYWRtaW4iLCJpYXQiOjE2NzM4MDAwMzksImV4cCI6MTY3Mzg4NjQzOX0.FmVDals_iDI76jisYp0XzAE1LaS1mCHczpD_Sqpo04k",
+                                            "type": "string"
+                                        }
+                                    ]
+                                },
+                                "method": "PUT",
+                                "header": [ ],
+                                "body": {
+                                    "mode": "raw",
+                                    "raw": "{\r\n    \"password\":\"123456788\"\r\n}",
+                                    "options": {
+                                        "raw": {
+                                            "language": "json"
+                                        }
+                                    }
+                                },
+                                "url": {
+                                    "raw": "{{base_url}}/admin/update/user/password/63c01d61dced93001f693a7b",
+                                    "host": [
+                                        "{{base_url}}"
+                                    ],
+                                    "path": [
+                                        "admin",
+                                        "update",
+                                        "user",
+                                        "password",
+                                        "63c01d61dced93001f693a7b"
+                                    ]
+                                }
+                            },
+                            "response": [ ]
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "name": "Classes",
+            "item": [
+                {
+                    "name": "create classes",
+                    "request": {
+                        "auth": {
+                            "type": "bearer",
+                            "bearer": [
+                                {
+                                    "key": "token",
+                                    "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2M2MwMWQ2MWRjZWQ5MzAwMWY2OTNhN2IiLCJyb2xlIjoidHJhaW5lciIsImlhdCI6MTY3MzYwMDAwMywiZXhwIjoxNjczNjg2NDAzfQ.ZL-pfxYvhFUJ2R_OS_HeT01984nW0dAQTB6Fb2DFPZ0",
+                                    "type": "string"
+                                }
+                            ]
+                        },
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2MjNjMzUwNTljOThhMjI0YWM0NDUyM2YiLCJyb2xlIjoiYWRtaW4iLCJpYXQiOjE2NTEwMzY0NTksImV4cCI6MTY1MTEyMjg1OX0.CgQPwcChOgs5D_8VVIwp4PQGhUKik4QdXxWT45_9woA",
+                                "type": "text"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\r\n    \"class_name\":\"exercise\",\r\n    \"class_des\":\"here is some description\",\r\n    \"class_format\":\"formate of the video\",\r\n    \"class_links\":\"linksofthevideo786\",\r\n    \"class_type\":\"type of the video\"\r\n}",
+                            "options": {
+                                "raw": {
+                                    "language": "json"
+                                }
+                            }
+                        },
+                        "url": {
+                            "raw": "{{live_url}}/admin/classes",
+                            "host": [
+                                "{{live_url}}"
+                            ],
+                            "path": [
+                                "admin",
+                                "classes"
+                            ]
+                        }
+                    },
+                    "response": [ ]
+                },
+                {
+                    "name": "get classes",
+                    "protocolProfileBehavior": {
+                        "disableBodyPruning": true
+                    },
+                    "request": {
+                        "auth": {
+                            "type": "bearer",
+                            "bearer": [
+                                {
+                                    "key": "token",
+                                    "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2M2MwMTIwNmRjZWQ5MzAwMWY2OTM4ZGQiLCJyb2xlIjoidHJhaW5lciIsImlhdCI6MTY3MzUzMTkxMSwiZXhwIjoxNjczNjE4MzExfQ.VEXVR1Rt9T8OfEKJJHgcwXKsiqv_j2BWO9R0wFyynr4",
+                                    "type": "string"
+                                }
+                            ]
+                        },
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2MjNjMzUwNTljOThhMjI0YWM0NDUyM2YiLCJyb2xlIjoiYWRtaW4iLCJpYXQiOjE2NTEwMzY0NTksImV4cCI6MTY1MTEyMjg1OX0.CgQPwcChOgs5D_8VVIwp4PQGhUKik4QdXxWT45_9woA",
+                                "type": "text"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "",
+                            "options": {
+                                "raw": {
+                                    "language": "json"
+                                }
+                            }
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/admin/classes/63c01661dced93001f693a2d",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "admin",
+                                "classes",
+                                "63c01661dced93001f693a2d"
+                            ],
+                            "query": [
+                                {
+                                    "key": "",
+                                    "value": "",
+                                    "disabled": true
+                                }
+                            ]
+                        }
+                    },
+                    "response": [ ]
+                },
+                {
+                    "name": "get all classes",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2MjNjMzUwNTljOThhMjI0YWM0NDUyM2YiLCJyb2xlIjoiYWRtaW4iLCJpYXQiOjE2NTEwMzY0NTksImV4cCI6MTY1MTEyMjg1OX0.CgQPwcChOgs5D_8VVIwp4PQGhUKik4QdXxWT45_9woA",
+                                "type": "text",
+                                "disabled": true
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/admin/classes",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "admin",
+                                "classes"
+                            ],
+                            "query": [
+                                {
+                                    "key": "",
+                                    "value": "",
+                                    "disabled": true
+                                }
+                            ]
+                        }
+                    },
+                    "response": [ ]
+                },
+                {
+                    "name": "del classes",
+                    "request": {
+                        "auth": {
+                            "type": "bearer",
+                            "bearer": [
+                                {
+                                    "key": "token",
+                                    "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2M2MwMWQ2MWRjZWQ5MzAwMWY2OTNhN2IiLCJyb2xlIjoidHJhaW5lciIsImlhdCI6MTY3MzYwMDAwMywiZXhwIjoxNjczNjg2NDAzfQ.ZL-pfxYvhFUJ2R_OS_HeT01984nW0dAQTB6Fb2DFPZ0",
+                                    "type": "string"
+                                }
+                            ]
+                        },
+                        "method": "DELETE",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2MjNjMzUwNTljOThhMjI0YWM0NDUyM2YiLCJyb2xlIjoiYWRtaW4iLCJpYXQiOjE2NTEwMzY0NTksImV4cCI6MTY1MTEyMjg1OX0.CgQPwcChOgs5D_8VVIwp4PQGhUKik4QdXxWT45_9woA",
+                                "type": "text"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/admin/classes/63c11c21dced93001f693ad8",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "admin",
+                                "classes",
+                                "63c11c21dced93001f693ad8"
+                            ]
+                        }
+                    },
+                    "response": [ ]
+                },
+                {
+                    "name": "update classes",
+                    "request": {
+                        "auth": {
+                            "type": "bearer",
+                            "bearer": [
+                                {
+                                    "key": "token",
+                                    "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2Mzg0ZGIzODc1MmFlNDI3MGM1ZjljN2QiLCJyb2xlIjoiYWRtaW4iLCJpYXQiOjE2NzM1MDkwNzcsImV4cCI6MTY3MzU5NTQ3N30.AgXuYYCdOPPA3gNCBMtg5HOD-cxKVctHB38TwS1mEdA",
+                                    "type": "string"
+                                }
+                            ]
+                        },
+                        "method": "PUT",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2MjNjMzUwNTljOThhMjI0YWM0NDUyM2YiLCJyb2xlIjoiYWRtaW4iLCJpYXQiOjE2NTEwMzY0NTksImV4cCI6MTY1MTEyMjg1OX0.CgQPwcChOgs5D_8VVIwp4PQGhUKik4QdXxWT45_9woA",
+                                "type": "text"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\r\n        \"class_name\": \"GY\",\r\n        \"class_des\": \"a\",\r\n        \"class_format\": \"wwe\",\r\n        \"class_links\": \"asd\" \r\n}",
+                            "options": {
+                                "raw": {
+                                    "language": "json"
+                                }
+                            }
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/admin/classes/63beab9e4d5fc03cf0bd9155",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "admin",
+                                "classes",
+                                "63beab9e4d5fc03cf0bd9155"
+                            ]
+                        }
+                    },
+                    "response": [ ]
+                }
+            ]
+        },
+        {
+            "name": "Service",
+            "item": [
+                {
+                    "name": "create service",
+                    "request": {
+                        "auth": {
+                            "type": "bearer",
+                            "bearer": [
+                                {
+                                    "key": "token",
+                                    "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2M2NhODRkZjJhMzdlMTA3ZDRlZjMwNzgiLCJyb2xlIjoidHJhaW5lciIsImlhdCI6MTY3NDIxNjY5NiwiZXhwIjoxNjc0MzAzMDk2fQ.YAGS_6mxLWE3Pig8hWlB7p9TjVHbwN1ZWNi1y0Cjny0",
+                                    "type": "string"
+                                }
+                            ]
+                        },
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2MjNjMzUwNTljOThhMjI0YWM0NDUyM2YiLCJyb2xlIjoiYWRtaW4iLCJpYXQiOjE2NTEwMzY0NTksImV4cCI6MTY1MTEyMjg1OX0.CgQPwcChOgs5D_8VVIwp4PQGhUKik4QdXxWT45_9woA",
+                                "type": "text"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\r\n    \"service_name\": \"goal and fitness\",\r\n    \"user\": \"63c01d61dced93001f693a7b\"\r\n}",
+                            "options": {
+                                "raw": {
+                                    "language": "json"
+                                }
+                            }
+                        },
+                        "url": {
+                            "raw": "{{live_url}}/services",
+                            "host": [
+                                "{{live_url}}"
+                            ],
+                            "path": [
+                                "services"
+                            ]
+                        }
+                    },
+                    "response": [ ]
+                },
+                {
+                    "name": "get all services",
+                    "request": {
+                        "auth": {
+                            "type": "bearer",
+                            "bearer": [
+                                {
+                                    "key": "token",
+                                    "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2M2MwMTIwNmRjZWQ5MzAwMWY2OTM4ZGQiLCJyb2xlIjoidHJhaW5lciIsImlhdCI6MTY3MzUzMTkxMSwiZXhwIjoxNjczNjE4MzExfQ.VEXVR1Rt9T8OfEKJJHgcwXKsiqv_j2BWO9R0wFyynr4",
+                                    "type": "string"
+                                }
+                            ]
+                        },
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2MjNjMzUwNTljOThhMjI0YWM0NDUyM2YiLCJyb2xlIjoiYWRtaW4iLCJpYXQiOjE2NTEwMzY0NTksImV4cCI6MTY1MTEyMjg1OX0.CgQPwcChOgs5D_8VVIwp4PQGhUKik4QdXxWT45_9woA",
+                                "type": "text"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{live_url}}/services",
+                            "host": [
+                                "{{live_url}}"
+                            ],
+                            "path": [
+                                "services"
+                            ]
+                        }
+                    },
+                    "response": [ ]
+                },
+                {
+                    "name": "get service with trainer",
+                    "request": {
+                        "auth": {
+                            "type": "bearer",
+                            "bearer": [
+                                {
+                                    "key": "token",
+                                    "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2M2MwMTVmYWRjZWQ5MzAwMWY2OTNhMDAiLCJyb2xlIjoidHJhaW5lciIsImlhdCI6MTY3MzUzMjk0MiwiZXhwIjoxNjczNjE5MzQyfQ.BO8MN40aZLVdHvFh3apHihKpwHr4CKFacWp_HVr_WEI",
+                                    "type": "string"
+                                }
+                            ]
+                        },
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2MjNjMzUwNTljOThhMjI0YWM0NDUyM2YiLCJyb2xlIjoiYWRtaW4iLCJpYXQiOjE2NTEwMzY0NTksImV4cCI6MTY1MTEyMjg1OX0.CgQPwcChOgs5D_8VVIwp4PQGhUKik4QdXxWT45_9woA",
+                                "type": "text"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{live_url}}/services/63c015fadced93001f693a00",
+                            "host": [
+                                "{{live_url}}"
+                            ],
+                            "path": [
+                                "services",
+                                "63c015fadced93001f693a00"
+                            ]
+                        }
+                    },
+                    "response": [ ]
+                },
+                {
+                    "name": "update service",
+                    "request": {
+                        "auth": {
+                            "type": "bearer",
+                            "bearer": [
+                                {
+                                    "key": "token",
+                                    "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2Mzc3NjhlYWQ2MTUwOTFlNzAxNTY4MmQiLCJyb2xlIjoidHJhaW5lciIsImlhdCI6MTY3MzUxMjEwNywiZXhwIjoxNjczNTk4NTA3fQ._4MrwCPIJ4ULkVFXeFKI-YPoD_N5zYwGRXNkTYYCNic",
+                                    "type": "string"
+                                }
+                            ]
+                        },
+                        "method": "PUT",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2MjNjMzUwNTljOThhMjI0YWM0NDUyM2YiLCJyb2xlIjoiYWRtaW4iLCJpYXQiOjE2NTEwMzY0NTksImV4cCI6MTY1MTEyMjg1OX0.CgQPwcChOgs5D_8VVIwp4PQGhUKik4QdXxWT45_9woA",
+                                "type": "text"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\r\n    \"service_name\":\"kjsdf\"\r\n}",
+                            "options": {
+                                "raw": {
+                                    "language": "json"
+                                }
+                            }
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/services/6385f7e9bf1c8f0c548e0ec5",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "services",
+                                "6385f7e9bf1c8f0c548e0ec5"
+                            ]
+                        }
+                    },
+                    "response": [ ]
+                }
+            ]
+        },
+        {
+            "name": "user me",
+            "item": [
+                {
+                    "name": "get user detail",
+                    "protocolProfileBehavior": {
+                        "disableBodyPruning": true
+                    },
+                    "request": {
+                        "auth": {
+                            "type": "bearer",
+                            "bearer": [
+                                {
+                                    "key": "token",
+                                    "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2M2NmZGEzYjcxNDlhYTE0NTg2ZjFkNGMiLCJyb2xlIjoidHJhaW5lZSIsImlhdCI6MTY3NDU2NjI0MCwiZXhwIjoxNjc0NjUyNjQwfQ.DkpIY_z0SJNYEEpx-zCbG164PghqxlQYk-1foQyLzMY",
+                                    "type": "string"
+                                }
+                            ]
+                        },
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2MzhkZGI4NTJkNGE5ODAwMTY2ZTgzOTEiLCJyb2xlIjoidHJhaW5lZSIsImlhdCI6MTY3MDI0MjMwNiwiZXhwIjoxNjcwMzI4NzA2fQ.l0q3r-GbzWIxnsgOsev5kHtdunrbv9PJCh86VXpHC9s",
+                                "type": "text"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "",
+                            "options": {
+                                "raw": {
+                                    "language": "json"
+                                }
+                            }
+                        },
+                        "url": {
+                            "raw": "{{live_url}}/user/me/63cfda3b7149aa14586f1d4c",
+                            "host": [
+                                "{{live_url}}"
+                            ],
+                            "path": [
+                                "user",
+                                "me",
+                                "63cfda3b7149aa14586f1d4c"
+                            ]
+                        }
+                    },
+                    "response": [ ]
+                },
+                {
+                    "name": "del user",
+                    "request": {
+                        "auth": {
+                            "type": "bearer",
+                            "bearer": [
+                                {
+                                    "key": "token",
+                                    "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2M2MwMTVmYWRjZWQ5MzAwMWY2OTNhMDAiLCJyb2xlIjoidHJhaW5lciIsImlhdCI6MTY3MzUzMjk0MiwiZXhwIjoxNjczNjE5MzQyfQ.BO8MN40aZLVdHvFh3apHihKpwHr4CKFacWp_HVr_WEI",
+                                    "type": "string"
+                                }
+                            ]
+                        },
+                        "method": "DELETE",
+                        "header": [ ],
+                        "url": {
+                            "raw": "http://localhost:5000/api/user/63c00cd1dced93001f693816",
+                            "protocol": "http",
+                            "host": [
+                                "localhost"
+                            ],
+                            "port": "5000",
+                            "path": [
+                                "api",
+                                "user",
+                                "63c00cd1dced93001f693816"
+                            ]
+                        }
+                    },
+                    "response": [ ]
+                }
+            ]
+        },
+        {
+            "name": "Goal",
+            "item": [
+                {
+                    "name": "create goals",
+                    "request": {
+                        "auth": {
+                            "type": "bearer",
+                            "bearer": [
+                                {
+                                    "key": "token",
+                                    "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2Mzc3NjhlYWQ2MTUwOTFlNzAxNTY4MmQiLCJyb2xlIjoidHJhaW5lciIsImlhdCI6MTY3MzUxMjEwNywiZXhwIjoxNjczNTk4NTA3fQ._4MrwCPIJ4ULkVFXeFKI-YPoD_N5zYwGRXNkTYYCNic",
+                                    "type": "string"
+                                }
+                            ]
+                        },
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2Mjg1M2QxMmY3OTBkZDAwMTZiYjA4MzMiLCJyb2xlIjoidHJhaW5lZSIsImlhdCI6MTY1NDA5OTIxMywiZXhwIjoxNjU0MTg1NjEzfQ.2QF-in5ka0wxK5xCzMSfDJy-7ECltGNCiwknKmBgOdk",
+                                "type": "text"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\r\n    \"goal_name\": \"goal and fitness\",\r\n    \"user\": \"62853d12f790dd0016bb0833\"\r\n}",
+                            "options": {
+                                "raw": {
+                                    "language": "json"
+                                }
+                            }
+                        },
+                        "url": {
+                            "raw": "{{live_url}}/goals",
+                            "host": [
+                                "{{live_url}}"
+                            ],
+                            "path": [
+                                "goals"
+                            ]
+                        }
+                    },
+                    "response": [ ]
+                },
+                {
+                    "name": "get goal with trainee id",
+                    "request": {
+                        "auth": {
+                            "type": "bearer",
+                            "bearer": [
+                                {
+                                    "key": "token",
+                                    "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2Mzc3NjhlYWQ2MTUwOTFlNzAxNTY4MmQiLCJyb2xlIjoidHJhaW5lciIsImlhdCI6MTY3MzUxMjEwNywiZXhwIjoxNjczNTk4NTA3fQ._4MrwCPIJ4ULkVFXeFKI-YPoD_N5zYwGRXNkTYYCNic",
+                                    "type": "string"
+                                }
+                            ]
+                        },
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2Mjg1M2QxMmY3OTBkZDAwMTZiYjA4MzMiLCJyb2xlIjoidHJhaW5lZSIsImlhdCI6MTY1NDA5OTIxMywiZXhwIjoxNjU0MTg1NjEzfQ.2QF-in5ka0wxK5xCzMSfDJy-7ECltGNCiwknKmBgOdk",
+                                "type": "text"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{live_url}}/goals/62853d12f790dd0016bb0833",
+                            "host": [
+                                "{{live_url}}"
+                            ],
+                            "path": [
+                                "goals",
+                                "62853d12f790dd0016bb0833"
+                            ]
+                        }
+                    },
+                    "response": [ ]
+                }
+            ]
+        },
+        {
+            "name": "Booking",
+            "item": [
+                {
+                    "name": "Book a Session",
+                    "request": {
+                        "auth": {
+                            "type": "bearer",
+                            "bearer": [
+                                {
+                                    "key": "token",
+                                    "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2M2NhODQzMTJhMzdlMTA3ZDRlZjMwNjMiLCJyb2xlIjoidHJhaW5lZSIsImlhdCI6MTY3NDIxNzI4NywiZXhwIjoxNjc0MzAzNjg3fQ.vIZfRE5k1DyYghM2p4aHfGMchcdxM1_Npd4UbsA9CgQ",
+                                    "type": "string"
+                                }
+                            ]
+                        },
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2MjlmNWVlZDFjY2Y4ZjAwMTZlOTMyMmUiLCJyb2xlIjoidHJhaW5lciIsImlhdCI6MTY1NDYxMTY5MywiZXhwIjoxNjU0Njk4MDkzfQ.iG1CxsS3FXB-kMwxEz9WVloy9kfp4BKFen93h0BbpJk",
+                                "type": "text"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\r\n    \"sender\": \"cus_NCirOYqtzc5A1A\",\r\n    \"receiver\": \"cus_NCiv3WqknGDqm1\",\r\n    \"currency\": \"usd\",\r\n    \"amount\": -10,\r\n    \"subamount\": 10,\r\n    \"sessionId\": \"63ca85412a37e107d4ef3083\",\r\n    \"trainerId\": \"63ca84df2a37e107d4ef3078\"\r\n}",
+                            "options": {
+                                "raw": {
+                                    "language": "json"
+                                }
+                            }
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/book-a-session",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "book-a-session"
+                            ]
+                        }
+                    },
+                    "response": [ ]
+                },
+                {
+                    "name": "Get Session Booked by Internee",
+                    "request": {
+                        "auth": {
+                            "type": "bearer",
+                            "bearer": [
+                                {
+                                    "key": "token",
+                                    "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2Mzg0ZGIzODc1MmFlNDI3MGM1ZjljN2QiLCJyb2xlIjoiYWRtaW4iLCJpYXQiOjE2NzM4MDAwMzksImV4cCI6MTY3Mzg4NjQzOX0.FmVDals_iDI76jisYp0XzAE1LaS1mCHczpD_Sqpo04k",
+                                    "type": "string"
+                                }
+                            ]
+                        },
+                        "method": "GET",
+                        "header": [ ],
+                        "url": {
+                            "raw": "{{base_url}}/book-a-session",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "book-a-session"
+                            ]
+                        }
+                    },
+                    "response": [ ]
+                },
+                {
+                    "name": "Get Trainer Booked Sessions",
+                    "request": {
+                        "auth": {
+                            "type": "bearer",
+                            "bearer": [
+                                {
+                                    "key": "token",
+                                    "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2M2MwMmZjOGRjZWQ5MzAwMWY2OTNhYzYiLCJyb2xlIjoidHJhaW5lciIsImlhdCI6MTY3Mzk1NDk5NCwiZXhwIjoxNjc0MDQxMzk0fQ.k6g_te5JH3t9cYr7t4tKMIKxyMnhSZ3ryY0J7PY-zAM",
+                                    "type": "string"
+                                }
+                            ]
+                        },
+                        "method": "GET",
+                        "header": [ ],
+                        "url": {
+                            "raw": "{{base_url}}/book-a-session/trainer/63c01d61dced93001f693a7b",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "book-a-session",
+                                "trainer",
+                                "63c01d61dced93001f693a7b"
+                            ]
+                        }
+                    },
+                    "response": [ ]
+                },
+                {
+                    "name": "book a Session Delete",
+                    "request": {
+                        "auth": {
+                            "type": "bearer",
+                            "bearer": [
+                                {
+                                    "key": "token",
+                                    "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2M2M4MGU1ZjM5ZGFjYzEzZDBjZWY5NTciLCJyb2xlIjoidHJhaW5lciIsImlhdCI6MTY3NDIxMjcwOCwiZXhwIjoxNjc0Mjk5MTA4fQ.PFmTSqARC-pfFAoC91Z_xUtXNad5VVUbNX08ydTuR58",
+                                    "type": "string"
+                                }
+                            ]
+                        },
+                        "method": "DELETE",
+                        "header": [ ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "",
+                            "options": {
+                                "raw": {
+                                    "language": "json"
+                                }
+                            }
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/book-a-session/trainee/63ca8e745eb3ad079094698d",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "book-a-session",
+                                "trainee",
+                                "63ca8e745eb3ad079094698d"
+                            ]
+                        }
+                    },
+                    "response": [ ]
+                },
+                {
+                    "name": "get all booked session by admin",
+                    "request": {
+                        "auth": {
+                            "type": "bearer",
+                            "bearer": [
+                                {
+                                    "key": "token",
+                                    "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2Mzg0ZGIzODc1MmFlNDI3MGM1ZjljN2QiLCJyb2xlIjoiYWRtaW4iLCJpYXQiOjE2NzM4MDAwMzksImV4cCI6MTY3Mzg4NjQzOX0.FmVDals_iDI76jisYp0XzAE1LaS1mCHczpD_Sqpo04k",
+                                    "type": "string"
+                                }
+                            ]
+                        },
+                        "method": "GET",
+                        "header": [ ],
+                        "url": {
+                            "raw": "{{base_url}}/book-a-session",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "book-a-session"
+                            ]
+                        }
+                    },
+                    "response": [ ]
+                },
+                {
+                    "name": "recommended the booked session",
+                    "request": {
+                        "auth": {
+                            "type": "bearer",
+                            "bearer": [
+                                {
+                                    "key": "token",
+                                    "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2Mzg0ZGIzODc1MmFlNDI3MGM1ZjljN2QiLCJyb2xlIjoiYWRtaW4iLCJpYXQiOjE2NzM4NzI3MTAsImV4cCI6MTY3Mzk1OTExMH0.tnI5UMVKmxM7NBq6cIUMkLbQuWsCSIZ7Yb-X4UcNMoE",
+                                    "type": "string"
+                                }
+                            ]
+                        },
+                        "method": "PUT",
+                        "header": [ ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\r\n    \"recommended\": true\r\n}",
+                            "options": {
+                                "raw": {
+                                    "language": "json"
+                                }
+                            }
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/book-a-session/recommended/63c02fc8dced93001f693ac6",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "book-a-session",
+                                "recommended",
+                                "63c02fc8dced93001f693ac6"
+                            ]
+                        }
+                    },
+                    "response": [ ]
+                }
+            ]
+        },
+        {
+            "name": "Chat",
+            "item": [
+                {
+                    "name": "Create Room",
+                    "request": {
+                        "method": "POST",
+                        "header": [ ],
+                        "url": {
+                            "raw": "http://localhost:4000/api/chat/room/create",
+                            "protocol": "http",
+                            "host": [
+                                "localhost"
+                            ],
+                            "port": "4000",
+                            "path": [
+                                "api",
+                                "chat",
+                                "room",
+                                "create"
+                            ]
+                        }
+                    },
+                    "response": [ ]
+                },
+                {
+                    "name": "All Room Create",
+                    "request": {
+                        "method": "POST",
+                        "header": [ ],
+                        "url": {
+                            "raw": "http://localhost:4000/api/chat/rooms",
+                            "protocol": "http",
+                            "host": [
+                                "localhost"
+                            ],
+                            "port": "4000",
+                            "path": [
+                                "api",
+                                "chat",
+                                "rooms"
+                            ]
+                        }
+                    },
+                    "response": [ ]
+                },
+                {
+                    "name": "Chat Message",
+                    "event": [
+                        {
+                            "listen": "prerequest",
+                            "script": {
+                                "exec": [
+                                    ""
+                                ],
+                                "type": "text/javascript"
+                            }
+                        }
+                    ],
+                    "request": {
+                        "method": "POST",
+                        "header": [ ],
+                        "url": {
+                            "raw": "http://localhost:4000/api/chat/message/create",
+                            "protocol": "http",
+                            "host": [
+                                "localhost"
+                            ],
+                            "port": "4000",
+                            "path": [
+                                "api",
+                                "chat",
+                                "message",
+                                "create"
+                            ]
+                        }
+                    },
+                    "response": [ ]
+                },
+                {
+                    "name": "Message Room Id",
+                    "request": {
+                        "method": "GET",
+                        "header": [ ],
+                        "url": {
+                            "raw": "{{base_url}}/chat/message/",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "chat",
+                                "message",
+                                ""
+                            ]
+                        }
+                    },
+                    "response": [ ]
+                }
+            ]
+        },
+        {
+            "name": "all user fetch strip",
+            "request": {
+                "method": "POST",
+                "header": [
+                    {
+                        "key": "Authorization",
+                        "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2M2NhODRkZjJhMzdlMTA3ZDRlZjMwNzgiLCJyb2xlIjoidHJhaW5lciIsImlhdCI6MTY3NDU1MTU5NCwiZXhwIjoxNjc0NjM3OTk0fQ.duvM7BYsWQlLJSdEXa2RqCZ4rA3hpNdR1rii6blrMwk",
+                        "type": "text"
+                    }
+                ],
+                "body": {
+                    "mode": "raw",
+                    "raw": "{\r\n    \"limit\":3\r\n    \r\n    }",
+                    "options": {
+                        "raw": {
+                            "language": "json"
+                        }
+                    }
+                },
+                "url": {
+                    "raw": "{{base_url}}/stripe/customer/checkBalanceTransactions/cus_NCiv3WqknGDqm1",
+                    "host": [
+                        "{{base_url}}"
+                    ],
+                    "path": [
+                        "stripe",
+                        "customer",
+                        "checkBalanceTransactions",
+                        "cus_NCiv3WqknGDqm1"
+                    ]
+                }
+            },
+            "response": [ ]
+        },
+        {
+            "name": "chat",
+            "request": {
+                "auth": {
+                    "type": "bearer",
+                    "bearer": [
+                        {
+                            "key": "token",
+                            "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2M2M5MjViMDdmNGRlZTI2NzQ5YjFkNGQiLCJyb2xlIjoidHJhaW5lZSIsImlhdCI6MTY3NDEyNjc5NCwiZXhwIjoxNjc0MjEzMTk0fQ.qIve9xLj3V3lrqkhHQzDfqbHjyVLOlfMu2t5LCDSRSY",
+                            "type": "string"
+                        }
+                    ]
+                },
+                "method": "POST",
+                "header": [ ],
+                "body": {
+                    "mode": "raw",
+                    "raw": "{\r\n    \"rid\":\"63c80e5f39dacc13d0cef957\",\r\n    \"message\":\"hlo bro\"\r\n}",
+                    "options": {
+                        "raw": {
+                            "language": "json"
+                        }
+                    }
+                },
+                "url": {
+                    "raw": "{{base_url}}/chat/room/create",
+                    "host": [
+                        "{{base_url}}"
+                    ],
+                    "path": [
+                        "chat",
+                        "room",
+                        "create"
+                    ]
+                }
+            },
+            "response": [ ]
+        },
+        {
+            "name": "get customer by id",
+            "request": {
+                "auth": {
+                    "type": "bearer",
+                    "bearer": [
+                        {
+                            "key": "token",
+                            "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2M2NhODRkZjJhMzdlMTA3ZDRlZjMwNzgiLCJyb2xlIjoidHJhaW5lciIsImlhdCI6MTY3NDU1NzA1MSwiZXhwIjoxNjc0NjQzNDUxfQ.525rboiDZ40I-FPjIDBcoQnZAVNFNDIgo_bUorEzOIA",
+                            "type": "string"
+                        }
+                    ]
+                },
+                "method": "GET",
+                "header": [ ],
+                "url": {
+                    "raw": "{{base_url}}/stripe/customer/cus_NCirOYqtzc5A1A",
+                    "host": [
+                        "{{base_url}}"
+                    ],
+                    "path": [
+                        "stripe",
+                        "customer",
+                        "cus_NCirOYqtzc5A1A"
+                    ]
+                }
+            },
+            "response": [ ]
+        }
+    ],
+    "auth": {
+        "type": "bearer",
+        "bearer": [
+            {
+                "key": "token",
+                "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2NDhjODI4MWY1MDdlYjAwMDhmOGM4YWUiLCJyb2xlIjoidHJhaW5lZSIsImlhdCI6MTY4NjkzMDMwNiwiZXhwIjoxNjg3MDE2NzA2fQ.3XPmiXy7s69sqH2gVZeGXYKWUrypIW2blQ1Yw56yVWQ",
+                "type": "string"
+            }
+        ]
+    },
+    "event": [
+        {
+            "listen": "prerequest",
+            "script": {
+                "type": "text/javascript",
+                "exec": [
+                    ""
+                ]
+            }
+        },
+        {
+            "listen": "test",
+            "script": {
+                "type": "text/javascript",
+                "exec": [
+                    ""
+                ]
+            }
+        }
+    ],
+    "variable": [
+        {
+            "key": "base_url",
+            "value": "https://fits-backend-git-main-protechgiant.vercel.app/api/"
+        },
+        {
+            "key": "fits base url",
+            "value": "base_url"
+        }
+    ]
+}

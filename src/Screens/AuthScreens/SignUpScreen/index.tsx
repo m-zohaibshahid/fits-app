@@ -8,19 +8,21 @@ import { useRoute } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Toast } from 'react-native-toast-message/lib/src/Toast';
 import Container from '../../../Components/Container';
+import * as Yup from 'yup'
 import Model from '../../../Components/model';
-import { SignUpFormValidationErrors, SignUpFormValidationResult, SignUpFormValues } from '../../../utils/types';
+import { SignUpFormValidationErrors, SignUpFormValidationResult, SignUpFormValues } from '../types';
 import { validateForm } from '../../../utils/validation';
+import { useRegisterUserMutation } from '../../../slice/FitsApi.slice';
 
 const SignUpScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
   const route = useRoute();
-  const [hidePass, setHidePass] = useState(true);
   const [email, setEmail] = useState<string>('');
   const [password, setPassword] = useState<string>('');
   const [confirmPassword, setConfirmPassword] = useState<string>('');
   const [load, setLoad] = useState<boolean>(false);
   const [isModalVisible, setIsModalVisible] = useState<boolean>(false);
   const [validationErrors, setValidationErrors] = useState<SignUpFormValidationErrors>({});
+  const [registerUser, { isLoading, isError, error, data }] = useRegisterUserMutation();
 
   const storeUserData = async (userData: any) => {
     try {
@@ -40,22 +42,21 @@ const SignUpScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
       role: route?.params?.role,
     };
 
-    const { isValid, errors }: SignUpFormValidationResult = await validateForm(formValues);
+    const { isValid, errors }: SignUpFormValidationResult = await validateForm(formValues, validationSchema);
     setValidationErrors(errors);
 
     if (isValid) {
-      setLoad(true);
-      fetch(`${url}/register`, {
-        method: 'POST',
-        headers: {
-          Accept: 'application/json',
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(formValues),
-      })
-        .then((res) => res.json())
+        /* try {
+          // Handle successful registration
+          console.log(result.data);
+        } catch (e) {
+          console.error(e);
+        } */
+      const result = await registerUser(formValues);
+      console.log(result);
+      
+        /* .then((res) => res.json())
         .then((res2) => {
-          setLoad(false);
           if (res2.message === 'success') {
             Toast.show({
               type: 'success',
@@ -81,7 +82,7 @@ const SignUpScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
             type: 'error',
             text1: 'You already have an account, please sign in.',
           });
-        });
+        }); */
     }
   };
 
@@ -106,26 +107,26 @@ const SignUpScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
           error={validationErrors.email}
         />
         <TextInput
-          label="Password"
           placeholder="••••••••••"
           value={password}
+          label="Password"
           onChangeText={setPassword}
-          secureTextEntry={hidePass}
           error={validationErrors.password}
+          secureTextEntry
         />
         <TextInput
           onChangeText={setConfirmPassword}
           value={confirmPassword}
           label="Confirm Password"
           placeholder="••••••••••"
-          secureTextEntry={hidePass}
           error={validationErrors.confirmPassword}
+          secureTextEntry
         />
       </ScrollView>
       <View style={{ paddingVertical: 20, height: '20%', justifyContent: 'center' }}>
         <Button
           loader={load}
-          disabled={!email || !password || !confirmPassword}
+          disabled={!email || password.length <= 8 || !confirmPassword}
           label={'NEXT'}
           onPress={signupCall}
         />
@@ -136,3 +137,14 @@ const SignUpScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
 };
 
 export default SignUpScreen;
+
+
+
+export const validationSchema = Yup.object().shape({
+  email: Yup.string().email('Invalid email'),
+  password: Yup.string().matches(
+    /^(?=.*[@$!%*?&\d])[A-Za-z\d@$!%*?&]+$/,
+    'Mmust contain special character'
+  ),
+  confirmPassword: Yup.string().oneOf([Yup.ref('password')], 'Passwords must match')
+});

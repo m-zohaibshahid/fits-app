@@ -107,38 +107,9 @@ export const fitsApi = createApi({
     }),
 
   })
-
-
-
-
-
-  // getPokemonByName: builder.query<any, string>({
-  //   query: name => `pokemon/${name}`,
-  // }),
-  // createData: builder.mutation({
-  //   query: data => ({
-  //     url: '/data',
-  //     method: 'POST',
-  //     body: data,
-  //   }),
-  // }),
-  // RegisterUser: builder.mutation({
-  //   query: data => ({
-  //     url: '/register',
-  //     method: 'POST',
-  //     body: data,
-  //   }),
-  // }),
-  // });
-
 });
 
-// Export hooks for usage in functional components, which are
-// auto-generated based on the defined endpoints
-// export const {useGetPokemonByNameQuery} = fitsApi;
-// Export the generated hooks for using the endpoints
 export const {
-
   useRegisterUserMutation,
   useLoginUserMutation,
   useUpdateUserMutation,
