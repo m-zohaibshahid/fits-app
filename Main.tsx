@@ -8,7 +8,6 @@ import React, {
   useState,
 } from "react";
 import { Alert, SafeAreaView, View } from "react-native";
-import { LogBox } from "react-native";
 import { NavigationContainer } from "@react-navigation/native";
 import { createStackNavigator } from "@react-navigation/stack";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -20,7 +19,6 @@ import SignIn from "./src/Screens/AuthScreens/SignInScreen";
 import ForgotPassword from "./src/Screens/AuthScreens/ForgotPasswordScreen";
 import ForgotCode from "./src/Screens/AuthScreens/ForgotCodeScreen";
 import GeneratePassword from "./src/Screens/AuthScreens/GeneratePasswordScreen";
-import Verification from "./src/Screens/AuthScreens/VerificationScreen";
 import CheckUser from "./src/Screens/AuthScreens/CheckUserScreen";
 import PersonalInfo from "./src/Screens/AuthScreens/PersonalInfoScreen";
 import ProfessionalInfo from "./src/Screens/AuthScreens/ProfessionalInfoScreen";
@@ -222,11 +220,6 @@ const  App = () => {
               <Stack.Screen
                 name="GeneratePassword"
                 component={GeneratePassword}
-                options={{ headerShown: false }}
-              />
-              <Stack.Screen
-                name="Verification"
-                component={Verification}
                 options={{ headerShown: false }}
               />
               <Stack.Screen

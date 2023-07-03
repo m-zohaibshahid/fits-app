@@ -13,7 +13,6 @@ interface Props {
 }
 
 const WelcomeScreen:React.FC<Props> = ({navigation}) => {
-  // Functions
   const goToNext = () => {
     return navigation.navigate('SelectStatusScreen');
   };

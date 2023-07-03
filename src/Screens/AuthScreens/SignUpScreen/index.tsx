@@ -1,37 +1,31 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { View, ScrollView } from 'react-native';
 import TextInput from '../../../Components/Input';
 import Header from '../../../Components/Header';
 import Button from '../../../Components/Button';
-import { url } from '../../../constants/url';
 import { useRoute } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { Toast } from 'react-native-toast-message/lib/src/Toast';
 import Container from '../../../Components/Container';
 import * as Yup from 'yup'
-import Model from '../../../Components/model';
+import AlertModal from '../../../Components/Alert-modal';
 import { SignUpFormValidationErrors, SignUpFormValidationResult, SignUpFormValues } from '../types';
 import { validateForm } from '../../../utils/validation';
 import { useRegisterUserMutation } from '../../../slice/FitsApi.slice';
+import { errorToast, successToast } from '../../../utils/toast';
+import VarificationModal from '../../../Components/VerificationModal';
 
 const SignUpScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
   const route = useRoute();
   const [email, setEmail] = useState<string>('');
   const [password, setPassword] = useState<string>('');
   const [confirmPassword, setConfirmPassword] = useState<string>('');
-  const [load, setLoad] = useState<boolean>(false);
-  const [isModalVisible, setIsModalVisible] = useState<boolean>(false);
+  const [isAlertModalVisible, setIsAlertModalVisible] = useState<boolean>(false);
   const [validationErrors, setValidationErrors] = useState<SignUpFormValidationErrors>({});
+  const [isVarificationModalVisible,setIsVarificationModalVisible] = useState<boolean>(false);
   const [registerUser, { isLoading, isError, error, data }] = useRegisterUserMutation();
 
-  const storeUserData = async (userData: any) => {
-    try {
-      setLoad(false);
-      await AsyncStorage.setItem('userData', JSON.stringify(userData));
-      navigation.navigate('Verification');
-    } catch (e) {
-      console.log(e);
-    }
+  const storeUserData = async (userData: string) => {
+      await AsyncStorage.setItem('userData', userData);
   };
 
   const signupCall = async () => {
@@ -46,53 +40,27 @@ const SignUpScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
     setValidationErrors(errors);
 
     if (isValid) {
-        /* try {
-          // Handle successful registration
-          console.log(result.data);
-        } catch (e) {
-          console.error(e);
-        } */
-      const result = await registerUser(formValues);
-      console.log(result);
-      
-        /* .then((res) => res.json())
-        .then((res2) => {
-          if (res2.message === 'success') {
-            Toast.show({
-              type: 'success',
-              text1: 'OTP sent to your email',
-            });
-            storeUserData(res2);
-          } else if (res2.message === 'Already Have An Account, Please SignIn!') {
-            Toast.show({
-              type: 'error',
-              text1: res2?.message,
-            });
-            setIsModalVisible(true);
-          } else {
-            Toast.show({
-              type: 'success',
-              text1: res2?.message,
-            });
-          }
-        })
-        .catch(() => {
-          setLoad(false);
-          Toast.show({
-            type: 'error',
-            text1: 'You already have an account, please sign in.',
-          });
-        }); */
+      delete formValues.confirmPassword;
+      const result = await registerUser(formValues) as any
+      if (result?.data?.message === 'success') { 
+        storeUserData(JSON.stringify(result));
+        setIsVarificationModalVisible(true)
+      } else if (result?.error?.data?.message === 'Already Have An Account, Please SignIn!'){
+        errorToast(result?.error?.data?.message)
+        setIsAlertModalVisible(true);
+      }
     }
-  };
+  }
 
+  useEffect(() => {
+    if (isError) {
+      errorToast(error?.data?.message)
+    }
+  }, [isError])
+      
   const handleModelButtonClick = () => {
-    setIsModalVisible(false);
+    setIsAlertModalVisible(false);
     navigation.navigate('SignIn');
-  };
-
-  const handleOnModelCloseRequest = () => {
-    setIsModalVisible(false);
   };
 
   return (
@@ -125,13 +93,15 @@ const SignUpScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
       </ScrollView>
       <View style={{ paddingVertical: 20, height: '20%', justifyContent: 'center' }}>
         <Button
-          loader={load}
-          disabled={!email || password.length <= 8 || !confirmPassword}
+          loader={isLoading}
+          disabled={isLoading}
           label={'NEXT'}
           onPress={signupCall}
         />
       </View>
-      <Model visible={isModalVisible} onClick={handleModelButtonClick} onRequestClose={handleOnModelCloseRequest} />
+      
+      <AlertModal visible={isAlertModalVisible} onClick={handleModelButtonClick} onRequestClose={() => setIsAlertModalVisible(false)} title={'Title here'} message={'Already have an account? Please sign in!'} />
+      <VarificationModal isVisible={isVarificationModalVisible} onClose={() => setIsVarificationModalVisible} />
     </Container>
   );
 };
@@ -142,9 +112,9 @@ export default SignUpScreen;
 
 export const validationSchema = Yup.object().shape({
   email: Yup.string().email('Invalid email'),
-  password: Yup.string().matches(
-    /^(?=.*[@$!%*?&\d])[A-Za-z\d@$!%*?&]+$/,
-    'Mmust contain special character'
+  password: Yup.string().min(8, 'Must be at least 8 characters long').matches(
+    /^(?=.*[@$!%*?&])(?=.*[A-Z])(?=.*[a-z])(?=.*\d).+$/,
+    'Must Contain A-Z, a-z, special sharacters and numbers'
   ),
   confirmPassword: Yup.string().oneOf([Yup.ref('password')], 'Passwords must match')
 });

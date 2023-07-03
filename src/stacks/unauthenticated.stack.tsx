@@ -7,7 +7,7 @@ import SignInScreen from '../Screens/AuthScreens/SignInScreen';
 import ForgotPassword from '../Screens/AuthScreens/ForgotPasswordScreen';
 import ForgotCode from '../Screens/AuthScreens/ForgotCodeScreen';
 import GeneratePassword from '../Screens/AuthScreens/GeneratePasswordScreen';
-import VerificationScreen from '../Screens/AuthScreens/VerificationScreen';
+import VerificationScreen from '../Screens/AuthScreens/VerificationModal';
 
 const Stack = createStackNavigator();
 

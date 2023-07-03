@@ -45,6 +45,7 @@
     "react-native-video-player": "^0.14.0",
     "react-redux": "^8.0.5",
     "react-test-renderer": "18.1.0",
+    "socket.io-client": "^4.7.1",
     "yup": "^1.2.0"
   },
   "devDependencies": {
