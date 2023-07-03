@@ -1,14 +1,14 @@
 import React, { useState, useEffect } from 'react';
-import { View, Pressable, StyleSheet, Platform, Modal, Dimensions } from 'react-native';
+import { View, Pressable, StyleSheet, Platform, Modal, ToastAndroid } from 'react-native';
 import { CodeField, Cursor, useBlurOnFulfill, useClearByFocusCell } from 'react-native-confirmation-code-field';
 import Button from '../Button';
 import {  useNavigation, useRoute } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Typography from '../typography/text';
 import { RFValue } from 'react-native-responsive-fontsize';
-import Header from '../Header';
 import { url } from '../../constants/url';
 import Colors from '../../constants/Colors';
+import Toast from 'react-native-toast-message';
 
 interface VerificationScreenProps {
   isVisible: boolean;
