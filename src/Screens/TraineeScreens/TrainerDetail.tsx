@@ -1,20 +1,10 @@
 import React, { useState, useEffect } from "react";
-import {
-  Text,
-  View,
-  TouchableOpacity,
-  StyleSheet,
-  TextInput,
-  Modal,
-  ToastAndroid,
-  ActivityIndicator,
-  Platform,
-} from "react-native";
+import { Text, View, TouchableOpacity, StyleSheet, TextInput, Modal, ToastAndroid, ActivityIndicator, Platform } from "react-native";
 import { ScrollView } from "react-native-gesture-handler";
 import AntDesign from "react-native-vector-icons/AntDesign";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
-import {  RFValue } from "react-native-responsive-fontsize";
+import { RFValue } from "react-native-responsive-fontsize";
 import About from "./About";
 import Videos2 from "./Videos2";
 import Ratings from "./Ratings";
@@ -36,7 +26,6 @@ const TrainerDetail = ({ navigation }) => {
   const [schedule, setSchedule] = useState(true);
   const [video, setVideo] = useState(false);
   const [ratings, setRatings] = useState(false);
-
 
   const GoBack = () => {
     navigation.goBack();
@@ -74,7 +63,6 @@ const TrainerDetail = ({ navigation }) => {
     setRatings(true);
   };
 
-
   const [loade, setLoade] = useState(false);
   const [load, setLoad] = useState(false);
   const [data, setData] = useState(false);
@@ -83,16 +71,14 @@ const TrainerDetail = ({ navigation }) => {
   const [trainerId, setTrainerId] = useState("");
   const [mesage, setMesage] = useState("");
 
-  const { userInfo } = useSelector((state: Partial<UserDetailInfoInterface>) => state.fitsStore)
-  const { data:userMeData, isLoading, error, isSuccess } = useGetUserMeQuery({ id: userInfo?._id });
+  const { userInfo } = useSelector((state: Partial<UserDetailInfoInterface>) => state.fitsStore);
+  const { data: userMeData, isLoading, error, isSuccess } = useGetUserMeQuery({ id: userInfo?._id });
   useEffect(() => {
     navigation.addListener("focus", () => {
       setTrainerId(route?.params?.trainerId);
       userMe();
     });
   }, []);
-
-  
 
   const chatRoomCreate = async () => {
     const userData = await AsyncStorage.getItem("userData");
@@ -157,18 +143,17 @@ const TrainerDetail = ({ navigation }) => {
         })
         .catch((error) => {
           setLoad(false);
-          alert("Something Went Wrong");
+          Alert.alert("Something Went Wrong");
           console.log(error);
         });
     }
   };
   const userMe = async () => {
-        if (userMeData.success === true) {
-          setData(userMeData);
-        } else {
-          ToastAndroid.show(userMeData.message, ToastAndroid.LONG);
-        }
-      
+    if (userMeData.success === true) {
+      setData(userMeData);
+    } else {
+      ToastAndroid.show(userMeData.message, ToastAndroid.LONG);
+    }
   };
   return (
     <View style={styles.container}>
@@ -183,9 +168,7 @@ const TrainerDetail = ({ navigation }) => {
           resizeMode={FastImage.resizeMode.cover}
         >
           <View style={{ width: "100%" }}>
-            <View
-              style={{ width: "90%", alignSelf: "center", marginVertical: 10 }}
-            >
+            <View style={{ width: "90%", alignSelf: "center", marginVertical: 10 }}>
               <View style={{ width: "100%", flexDirection: "row" }}>
                 <View style={{ width: "20%" }}>
                   <Pressable onPress={GoBack}>
@@ -219,8 +202,7 @@ const TrainerDetail = ({ navigation }) => {
                         flexDirection: "row",
                       }}
                     >
-                      {route?.params?.professionalData?.checkx
-                        ?.verification_status === "verified" ? (
+                      {route?.params?.professionalData?.checkx?.verification_status === "verified" ? (
                         <Text
                           style={{
                             fontFamily: "Poppins-Regular",
@@ -243,11 +225,7 @@ const TrainerDetail = ({ navigation }) => {
                           Not Verified{"  "}
                         </Text>
                       )}
-                      <AntDesign
-                        name="checksquare"
-                        size={18}
-                        color={"rgba(255, 0, 0, 1)"}
-                      />
+                      <AntDesign name="checksquare" size={18} color={"rgba(255, 0, 0, 1)"} />
                     </View>
                   </View>
                 </View>
@@ -261,23 +239,18 @@ const TrainerDetail = ({ navigation }) => {
           <View style={styles.TopView}>
             <View style={styles.topView1}>
               {/*start James Name*/}
-              <Text style={styles.NameText}>
-                {route.params.personalData.check.name}
-              </Text>
+              <Text style={styles.NameText}>{route.params.personalData.check.name}</Text>
               <View style={styles.BtnmainrowView}>
                 <View style={styles.BtnviewView}>
                   <Text style={styles.sessionText}>
-                    <Text style={styles.Boldtextstyle}>
-                      {route.params.userData.item.price}$
-                    </Text>
+                    <Text style={styles.Boldtextstyle}>{route.params.userData.item.price}$</Text>
                     /session
                   </Text>
                 </View>
                 <View style={styles.Btnmain2View}>
                   <Text style={styles.sessionText}>
                     <Text style={styles.Boldtextstyle}>
-                      {route?.params?.userData?.item?.averageRating?.toFixed(1)}{" "}
-                      <AntDesign name="star" color={"#000"} size={15} />
+                      {route?.params?.userData?.item?.averageRating?.toFixed(1)} <AntDesign name="star" color={"#000"} size={15} />
                     </Text>
                     ({route?.params?.userData?.item?.numReviews} Reviews)
                   </Text>
@@ -295,24 +268,14 @@ const TrainerDetail = ({ navigation }) => {
                   }}
                   style={styles.BtnView}
                 >
-                  <Text style={styles.contactText}>
-                    {loade === true ? (
-                      <ActivityIndicator size="small" color="#fff" />
-                    ) : (
-                      "Contact"
-                    )}
-                  </Text>
+                  <Text style={styles.contactText}>{loade === true ? <ActivityIndicator size="small" color="#fff" /> : "Contact"}</Text>
                 </TouchableOpacity>
               </View>
             </View>
             {/*end contact Btn*/}
             {/* Modal  */}
             <View style={styles.centeredView}>
-              <Modal
-                animationType="fade"
-                transparent={true}
-                visible={modalVisiblex}
-              >
+              <Modal animationType="fade" transparent={true} visible={modalVisiblex}>
                 <View style={styles.centeredViewx}>
                   <View style={styles.modalViewx}>
                     <View style={styles.MoadalMainContainer}>
@@ -320,14 +283,8 @@ const TrainerDetail = ({ navigation }) => {
                       <View style={{ flexDirection: "row", width: "100%" }}>
                         <View style={{ width: "80%" }} />
                         <View style={{ width: "20%", alignItems: "flex-end" }}>
-                          <TouchableOpacity
-                            onPress={() => setModalVisiblex(false)}
-                          >
-                            <MaterialIcons
-                              name="cancel"
-                              size={20}
-                              color="black"
-                            />
+                          <TouchableOpacity onPress={() => setModalVisiblex(false)}>
+                            <MaterialIcons name="cancel" size={20} color="black" />
                           </TouchableOpacity>
                         </View>
                       </View>
@@ -336,13 +293,7 @@ const TrainerDetail = ({ navigation }) => {
                       {/*Load Measure*/}
                       <View style={styles.parkingtyperow}>
                         <View style={{ width: "85%" }}>
-                          <TextInput
-                            style={styles.input}
-                            placeholderTextColor="black"
-                            placeholder="Message here..."
-                            value={mesage}
-                            onChangeText={setMesage}
-                          />
+                          <TextInput style={styles.input} placeholderTextColor="black" placeholder="Message here..." value={mesage} onChangeText={setMesage} />
                         </View>
                         <View style={styles.parkingType}>
                           <TouchableOpacity
@@ -354,11 +305,7 @@ const TrainerDetail = ({ navigation }) => {
                               }
                             }}
                           >
-                            <MaterialCommunityIcons
-                              name="send-circle"
-                              size={35}
-                              color="#FF0000"
-                            />
+                            <MaterialCommunityIcons name="send-circle" size={35} color="#FF0000" />
                           </TouchableOpacity>
                         </View>
                       </View>
@@ -370,44 +317,20 @@ const TrainerDetail = ({ navigation }) => {
             {/* Modal ends here  */}
             {/*start navigation*/}
             <View style={styles.toptabmainview}>
-              <TouchableOpacity
-                style={styles.mainclassesview}
-                onPress={() => aboutTrueState()}
-              >
-                <Text style={[about ? styles.topbartext : styles.topbartext1]}>
-                  About
-                </Text>
+              <TouchableOpacity style={styles.mainclassesview} onPress={() => aboutTrueState()}>
+                <Text style={[about ? styles.topbartext : styles.topbartext1]}>About</Text>
                 {about ? <View style={styles.borderView} /> : null}
               </TouchableOpacity>
-              <TouchableOpacity
-                style={styles.mainclassesview}
-                onPress={() => scheduleTrueState()}
-              >
-                <Text
-                  style={[schedule ? styles.topbartext : styles.topbartext1]}
-                >
-                  Schedule
-                </Text>
+              <TouchableOpacity style={styles.mainclassesview} onPress={() => scheduleTrueState()}>
+                <Text style={[schedule ? styles.topbartext : styles.topbartext1]}>Schedule</Text>
                 {schedule ? <View style={styles.borderView} /> : null}
               </TouchableOpacity>
-              <TouchableOpacity
-                onPress={() => videotrueState()}
-                style={styles.mainclassesview}
-              >
-                <Text style={[video ? styles.topbartext : styles.topbartext1]}>
-                  Video
-                </Text>
+              <TouchableOpacity onPress={() => videotrueState()} style={styles.mainclassesview}>
+                <Text style={[video ? styles.topbartext : styles.topbartext1]}>Video</Text>
                 {video ? <View style={styles.borderView} /> : null}
               </TouchableOpacity>
-              <TouchableOpacity
-                onPress={() => ratingstrueState(true)}
-                style={styles.mainclassesview}
-              >
-                <Text
-                  style={[ratings ? styles.topbartext : styles.topbartext1]}
-                >
-                  Ratings
-                </Text>
+              <TouchableOpacity onPress={() => ratingstrueState(true)} style={styles.mainclassesview}>
+                <Text style={[ratings ? styles.topbartext : styles.topbartext1]}>Ratings</Text>
                 {ratings ? <View style={styles.borderView} /> : null}
               </TouchableOpacity>
             </View>
@@ -416,15 +339,9 @@ const TrainerDetail = ({ navigation }) => {
         </View>
         {/*Start Navigation Screen*/}
         {about ? <About navigation={navigation} token={userInfo.access_token} id={userInfo._id} /> : null}
-        {schedule ? (
-          <Schedule navigation={navigation}  />
-        ) : null}
-        {video ? (
-          <Videos2 navigation={navigation} token={userInfo.access_token} id={userInfo._id} />
-        ) : null}
-        {ratings ? (
-          <Ratings navigation={navigation} token={userInfo.access_token} id={id} />
-        ) : null}
+        {schedule ? <Schedule navigation={navigation} /> : null}
+        {video ? <Videos2 navigation={navigation} token={userInfo.access_token} id={userInfo._id} /> : null}
+        {ratings ? <Ratings navigation={navigation} token={userInfo.access_token} id={id} /> : null}
         {/*End Navigation Screen*/}
         <View style={{ paddingVertical: 10 }} />
 
@@ -614,7 +531,7 @@ const styles = StyleSheet.create({
     elevation: 5,
     height: 42,
     justifyContent: "center",
-   
+
     paddingHorizontal: 5,
     marginVertical: 0.5,
   },

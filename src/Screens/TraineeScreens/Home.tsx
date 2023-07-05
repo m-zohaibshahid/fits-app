@@ -91,8 +91,6 @@ const Home = ({ navigation }: any) => {
       sort_by: classSort,
     };
     updateFilter(data)
-      // refetch()
-      // .unwrap()
       .then(async (res: any) => {
         if (res?.data?.success) {
           setFilterData(res.data?.data?.result);
@@ -157,7 +155,7 @@ const Home = ({ navigation }: any) => {
                   setUserLocation(res[0].subLocality + " " + res[0].locality + " ," + res[0].adminArea + "-" + res[0].country);
                 }
               )
-              .catch((error: any) => alert(error));
+              .catch((error: any) => Alert.alert(error));
           },
           () => {
             // See error code charts below.
@@ -189,13 +187,11 @@ const Home = ({ navigation }: any) => {
       createStripeAccount(userMeData);
       setLoad(false);
     } else {
-      alert(error);
+      Alert.alert(error);
     }
   };
 
   const setForCareateStripeCall = async (filterData: any) => {
-    // await AsyncStorage.setItem("createStripeData", JSON.stringify(filterData));
-
     dispatch(setCreateStripeData(filterData));
   };
 
@@ -279,7 +275,7 @@ const Home = ({ navigation }: any) => {
           setDumData(classes);
           getDistanceFunction(classes);
         } else {
-          alert(res2.errors);
+          Alert.alert(res2.errors);
         }
       });
     if (error) {

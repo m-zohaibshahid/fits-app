@@ -1,9 +1,8 @@
-import React from 'react';
-import { View, Text, Modal, Platform, StyleSheet } from 'react-native';
-import Button from '../Button';
-import Colors from '../../constants/Colors';
-import { TextStyle, ViewStyle } from 'react-native';
-import Typography from '../typography/text';
+import React from "react";
+import { View, Modal, StyleSheet } from "react-native";
+import Button from "../Button";
+import Colors from "../../constants/Colors";
+import Typography from "../typography/text";
 
 interface ModelProps {
   visible: boolean;
@@ -13,12 +12,7 @@ interface ModelProps {
 
 const Model: React.FC<ModelProps> = ({ visible, onClick, onRequestClose }) => {
   return (
-    <Modal
-      animationType="slide"
-      transparent={true}
-      visible={visible}
-      onRequestClose={onRequestClose}
-    >
+    <Modal animationType="slide" transparent={true} visible={visible} onRequestClose={onRequestClose}>
       <View style={styles.centeredView}>
         <View style={styles.modalView}>
           <Typography weight="700" size="heading2" align="center" style={styles.title}>
@@ -41,7 +35,7 @@ const Model: React.FC<ModelProps> = ({ visible, onClick, onRequestClose }) => {
 const styles = StyleSheet.create({
   centeredView: {
     flex: 1,
-    justifyContent: 'flex-end',
+    justifyContent: "flex-end",
     backgroundColor: Colors.lightGray,
     opacity: 0.9,
   },
@@ -49,8 +43,8 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.white,
     borderRadius: 10,
     padding: 24,
-    marginHorizontal: '10%',
-    marginBottom: '30%',
+    marginHorizontal: "10%",
+    marginBottom: "30%",
     shadowColor: Colors.black,
     shadowOffset: {
       width: 0,
@@ -68,7 +62,7 @@ const styles = StyleSheet.create({
   },
   buttonContainer: {
     marginTop: 10,
-    width: '100%',
+    width: "100%",
   },
 });
 

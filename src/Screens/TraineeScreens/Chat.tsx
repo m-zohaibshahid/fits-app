@@ -1,15 +1,5 @@
 import React, { useState, useEffect } from "react";
-import {
-  Text,
-  View,
-  TouchableOpacity,
-  StyleSheet,
-  TextInput,
-  ScrollView,
-  Image,
-  ActivityIndicator,
-  Platform,
-} from "react-native";
+import { Text, View, TouchableOpacity, StyleSheet, TextInput, ScrollView, Image, ActivityIndicator, Platform } from "react-native";
 import EvilIcons from "react-native-vector-icons/EvilIcons";
 import { RFValue } from "react-native-responsive-fontsize";
 import { url } from "../../constants/url";
@@ -77,12 +67,12 @@ const Chat = ({ navigation }) => {
           setData(res2?.data?.rooms);
           setDumData(res2?.data?.rooms);
         } else {
-          //alert(res2.errors);
+          //Alert.alert(res2.errors);
         }
       })
       .catch((error) => {
         setLoad(false);
-        alert("Something Went Wrong");
+        Alert.alert("Something Went Wrong");
         console.log(error);
       });
   };
@@ -208,15 +198,10 @@ const Chat = ({ navigation }) => {
                           }}
                         />
                       </View>
-                      <TouchableOpacity
-                        onPress={() => NextScreen(item)}
-                        style={styles.touchview}
-                      >
+                      <TouchableOpacity onPress={() => NextScreen(item)} style={styles.touchview}>
                         <Text style={styles.nametext}>{item.receiverName}</Text>
 
-                        <Text style={styles.inertextstyles}>
-                          {item.lastMessage}
-                        </Text>
+                        <Text style={styles.inertextstyles}>{item.lastMessage}</Text>
                       </TouchableOpacity>
                     </View>
                   </View>

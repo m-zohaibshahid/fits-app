@@ -1,24 +1,14 @@
 import React, { useState } from "react";
-import {
-  Text,
-  View,
-  Pressable,
-  StyleSheet,
-  TextInput,
-  Image,
-  ScrollView,
-  ToastAndroid,
-  ActivityIndicator,
-} from "react-native";
+import { Text, View, Pressable, StyleSheet, TextInput, Image, ScrollView, ToastAndroid, ActivityIndicator } from "react-native";
 import AntDesign from "react-native-vector-icons/AntDesign";
 import Entypo from "react-native-vector-icons/Entypo";
-import {  RFValue } from "react-native-responsive-fontsize";
+import { RFValue } from "react-native-responsive-fontsize";
 
 import { url } from "../../constants/url";
 import { ParamListBase, RouteProp, useRoute } from "@react-navigation/native";
 
 const Ratings = ({ navigation, token, id }) => {
-  const route:RouteProp<ParamListBase> = useRoute();
+  const route: RouteProp<ParamListBase> = useRoute();
 
   const [details, setDetails] = useState(false);
   const [one, setOne] = useState(false);
@@ -112,11 +102,7 @@ const Ratings = ({ navigation, token, id }) => {
           .then((res2) => {
             setLoadxx(false);
             if (res2.success) {
-              console.log(
-                "|--------------------------------------------------|",
-                res2,
-                "|--------------------------------------------------|"
-              );
+              console.log("|--------------------------------------------------|", res2, "|--------------------------------------------------|");
               ToastAndroid.show("Confirmed your reviews", ToastAndroid.LONG);
               NextScreen();
             } else {
@@ -125,7 +111,7 @@ const Ratings = ({ navigation, token, id }) => {
           })
           .catch((error) => {
             setLoadxx(false);
-            alert("Something Went Wrong");
+            Alert.alert("Something Went Wrong");
             console.log(error);
           });
     }
@@ -137,38 +123,14 @@ const Ratings = ({ navigation, token, id }) => {
           <View style={styles.topView}>
             <View style={styles.totleratingView}>
               <Text style={styles.totaleratingtext}>Total Rating</Text>
-              <Text style={styles.totalerating40text}>
-                {route?.params?.userData?.item?.averageRating?.toFixed(1)}
-              </Text>
-              <Text style={styles.reviewText}>
-                ({route?.params?.userData?.item?.numReviews} Reviews)
-              </Text>
+              <Text style={styles.totalerating40text}>{route?.params?.userData?.item?.averageRating?.toFixed(1)}</Text>
+              <Text style={styles.reviewText}>({route?.params?.userData?.item?.numReviews} Reviews)</Text>
               <View style={styles.starrowview}>
                 <AntDesign name="star" size={18} color={"#000"} />
-                <AntDesign
-                  name="star"
-                  size={18}
-                  color={"#000"}
-                  style={{ marginLeft: 5 }}
-                />
-                <AntDesign
-                  name="star"
-                  size={18}
-                  color={"#000"}
-                  style={{ marginLeft: 5 }}
-                />
-                <AntDesign
-                  name="star"
-                  size={18}
-                  color={"#000"}
-                  style={{ marginLeft: 5 }}
-                />
-                <AntDesign
-                  name="star"
-                  size={18}
-                  color={"#000"}
-                  style={{ marginLeft: 5 }}
-                />
+                <AntDesign name="star" size={18} color={"#000"} style={{ marginLeft: 5 }} />
+                <AntDesign name="star" size={18} color={"#000"} style={{ marginLeft: 5 }} />
+                <AntDesign name="star" size={18} color={"#000"} style={{ marginLeft: 5 }} />
+                <AntDesign name="star" size={18} color={"#000"} style={{ marginLeft: 5 }} />
               </View>
             </View>
             {/*start box view*/}
@@ -182,66 +144,26 @@ const Ratings = ({ navigation, token, id }) => {
                       <Text style={styles.ratetext}>Rate this trainer</Text>
                     </View>
                     <View style={styles.rateingView1}>
-                      <Entypo
-                        onPress={() => setDetails(!details)}
-                        name={details ? "chevron-up" : "chevron-down"}
-                        size={22}
-                        color={"#fff"}
-                      />
+                      <Entypo onPress={() => setDetails(!details)} name={details ? "chevron-up" : "chevron-down"} size={22} color={"#fff"} />
                     </View>
                   </View>
                   {/*end rate view*/}
                   {/*start star view*/}
                   <View style={styles.starrow1view}>
-                    <Pressable
-                      onPress={() => oneInfo()}
-                      style={styles.startView}
-                    >
-                      <AntDesign
-                        name="star"
-                        size={25}
-                        color={one ? "#414143" : "#fff"}
-                      />
+                    <Pressable onPress={() => oneInfo()} style={styles.startView}>
+                      <AntDesign name="star" size={25} color={one ? "#414143" : "#fff"} />
                     </Pressable>
-                    <Pressable
-                      onPress={() => twoInfo()}
-                      style={styles.startView}
-                    >
-                      <AntDesign
-                        name="star"
-                        size={25}
-                        color={two ? "#414143" : "#fff"}
-                      />
+                    <Pressable onPress={() => twoInfo()} style={styles.startView}>
+                      <AntDesign name="star" size={25} color={two ? "#414143" : "#fff"} />
                     </Pressable>
-                    <Pressable
-                      onPress={() => threeInfo()}
-                      style={styles.startView}
-                    >
-                      <AntDesign
-                        name="star"
-                        size={25}
-                        color={three ? "#414143" : "#fff"}
-                      />
+                    <Pressable onPress={() => threeInfo()} style={styles.startView}>
+                      <AntDesign name="star" size={25} color={three ? "#414143" : "#fff"} />
                     </Pressable>
-                    <Pressable
-                      onPress={() => fourInfo()}
-                      style={styles.startView}
-                    >
-                      <AntDesign
-                        name="star"
-                        size={25}
-                        color={four ? "#414143" : "#fff"}
-                      />
+                    <Pressable onPress={() => fourInfo()} style={styles.startView}>
+                      <AntDesign name="star" size={25} color={four ? "#414143" : "#fff"} />
                     </Pressable>
-                    <Pressable
-                      onPress={() => fiveInfo()}
-                      style={styles.startView}
-                    >
-                      <AntDesign
-                        name="star"
-                        size={25}
-                        color={five ? "#414143" : "#fff"}
-                      />
+                    <Pressable onPress={() => fiveInfo()} style={styles.startView}>
+                      <AntDesign name="star" size={25} color={five ? "#414143" : "#fff"} />
                     </Pressable>
                   </View>
                   {/*end star view*/}
@@ -286,13 +208,7 @@ const Ratings = ({ navigation, token, id }) => {
                             }}
                             style={styles.ccbtnview}
                           >
-                            <Text style={styles.btntextstyle}>
-                              {loadxx === true ? (
-                                <ActivityIndicator size="small" color="#fff" />
-                              ) : (
-                                "Submit"
-                              )}
-                            </Text>
+                            <Text style={styles.btntextstyle}>{loadxx === true ? <ActivityIndicator size="small" color="#fff" /> : "Submit"}</Text>
                           </Pressable>
                         </View>
                       </View>
@@ -312,19 +228,14 @@ const Ratings = ({ navigation, token, id }) => {
                     uri: `${route.params.personalData.check.profileImage}`,
                   }}
                 />
+                <Text style={styles.nameTest}>{route.params.personalData.check.name}</Text>
                 <Text style={styles.nameTest}>
-                  {route.params.personalData.check.name}
-                </Text>
-                <Text style={styles.nameTest}>
-                  {route.params.userData.item.user.averageRating.toFixed(1)}{" "}
-                  <AntDesign name="star" />
+                  {route.params.userData.item.user.averageRating.toFixed(1)} <AntDesign name="star" />
                 </Text>
               </View>
               <View style={styles.lineView}></View>
               <View style={styles.TextsView}>
-                <Text style={styles.TextsStyle}>
-                  {route.params.userData.item.details}
-                </Text>
+                <Text style={styles.TextsStyle}>{route.params.userData.item.details}</Text>
               </View>
             </View>
             {/*end BoxmainView*/}

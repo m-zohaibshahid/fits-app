@@ -21,6 +21,7 @@ const WalletScreen: React.FC<Props> = ({ navigation }) => {
     setLoad(true);
     const userData = await AsyncStorage.getItem("userData");
     let userDatax = JSON.parse(userData);
+
     if (userDatax) {
       await fetch(`${url}/user/me/${userDatax?.data?._id}`, {
         method: "GET",

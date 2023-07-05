@@ -1,17 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
-import {
-  Text,
-  View,
-  Pressable,
-  StyleSheet,
-  TextInput,
-  ScrollView,
-  ToastAndroid,
-  ActivityIndicator,
-  Platform,
-  Modal,
-  Image,
-} from "react-native";
+import { Text, View, Pressable, StyleSheet, TextInput, ScrollView, ToastAndroid, ActivityIndicator, Platform, Modal, Image } from "react-native";
 import ImagePicker from "react-native-image-crop-picker";
 import AntDesign from "react-native-vector-icons/AntDesign";
 import Ionicons from "react-native-vector-icons/Ionicons";
@@ -21,10 +9,7 @@ import { RFValue } from "react-native-responsive-fontsize";
 import { Calendar } from "react-native-calendars";
 import Header from "../../Components/Header";
 import DatePicker from "react-native-modern-datepicker";
-import {
-  widthPercentageToDP as wp,
-  heightPercentageToDP as hp,
-} from "react-native-responsive-screen";
+import { widthPercentageToDP as wp, heightPercentageToDP as hp } from "react-native-responsive-screen";
 import Colors from "../../constants/Colors";
 import { url } from "../../constants/url";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -228,17 +213,11 @@ const BookSession = ({ navigation }) => {
       let session_type;
       if (type == "online") {
         if (sessionTitle === "") {
-          ToastAndroid.show(
-            "Please enter the Session title.",
-            ToastAndroid.SHORT
-          );
+          ToastAndroid.show("Please enter the Session title.", ToastAndroid.SHORT);
         }
 
         if (meetingLink === "") {
-          ToastAndroid.show(
-            "Please enter the Meeting link here.",
-            ToastAndroid.SHORT
-          );
+          ToastAndroid.show("Please enter the Meeting link here.", ToastAndroid.SHORT);
         }
 
         session_type = {
@@ -294,12 +273,12 @@ const BookSession = ({ navigation }) => {
           if (res2.message === "created successfully") {
             NextScreen();
           } else {
-            alert(res2?.errors?.email);
+            Alert.alert(res2?.errors?.email);
           }
         })
         .catch((error) => {
           setLoad(false);
-          alert("Something Went Wrong");
+          Alert.alert("Something Went Wrong");
         });
     }
   };
@@ -389,7 +368,6 @@ const BookSession = ({ navigation }) => {
     zzz.append("file", image);
     zzz.append("upload_preset", "employeeApp");
     zzz.append("cloud_name", "ZACodders");
-
 
     await fetch("https://api.cloudinary.com/v1_1/ZACodders/image/upload", {
       method: "POST",
@@ -496,13 +474,7 @@ const BookSession = ({ navigation }) => {
               <View style={styles.ClassTitle}>
                 <Text style={styles.HeadingTextstyle}>Class Title</Text>
                 <View style={styles.TextInput}>
-                  <TextInput
-                    placeholder=" Class Title "
-                    style={styles.inputEmail}
-                    placeholderTextColor={"#fff"}
-                    value={classTitle}
-                    onChangeText={setClassTitle}
-                  />
+                  <TextInput placeholder=" Class Title " style={styles.inputEmail} placeholderTextColor={"#fff"} value={classTitle} onChangeText={setClassTitle} />
                 </View>
               </View>
               {/*end class title input*/}
@@ -514,11 +486,7 @@ const BookSession = ({ navigation }) => {
                     choosePhotoFromCamera();
                   }}
                 >
-                  <Ionicons
-                    name="cloud-upload-outline"
-                    size={50}
-                    color={"#fff"}
-                  />
+                  <Ionicons name="cloud-upload-outline" size={50} color={"#fff"} />
                   <Text style={styles.uploadtext}>Upload Image</Text>
                 </Pressable>
               ) : (
@@ -537,15 +505,10 @@ const BookSession = ({ navigation }) => {
               {/*start Your previous class */}
               <View style={styles.absrowview}>
                 <View style={styles.classtimeview}>
-                  <Text style={styles.HeadingTextstyle}>
-                    Your previous class templates
-                  </Text>
+                  <Text style={styles.HeadingTextstyle}>Your previous class templates</Text>
                 </View>
                 <View style={styles.timeview}>
-                  <Pressable
-                    onPress={() => setModalVisibleTopSelect(true)}
-                    style={styles.selectBtn}
-                  >
+                  <Pressable onPress={() => setModalVisibleTopSelect(true)} style={styles.selectBtn}>
                     <Text style={styles.TopselectText}>Tap to select</Text>
                   </Pressable>
                 </View>
@@ -557,10 +520,7 @@ const BookSession = ({ navigation }) => {
                 <View style={styles.classtimeeview}>
                   <Text style={styles.HeadingTextstyle}>Class time</Text>
                 </View>
-                <Pressable
-                  onPress={() => setModalVisibleDate(true)}
-                  style={styles.timeeview}
-                >
+                <Pressable onPress={() => setModalVisibleDate(true)} style={styles.timeeview}>
                   <Text style={styles.TopselectTexte}>{time}</Text>
                 </Pressable>
               </View>
@@ -574,15 +534,7 @@ const BookSession = ({ navigation }) => {
                 </View>
                 <View style={styles.TimepulsView}>
                   <Pressable style={styles.lastBtn}>
-                    <TextInput
-                      placeholder="00"
-                      placeholderTextColor={"#fff"}
-                      value={duration}
-                      onChangeText={setDuration}
-                      keyboardType="numeric"
-                      maxLength={3}
-                      style={styles.TopselectTexte}
-                    />
+                    <TextInput placeholder="00" placeholderTextColor={"#fff"} value={duration} onChangeText={setDuration} keyboardType="numeric" maxLength={3} style={styles.TopselectTexte} />
                   </Pressable>
                 </View>
               </View>
@@ -590,17 +542,12 @@ const BookSession = ({ navigation }) => {
               {/* start Duration */}
               <View style={styles.absrowview}>
                 <View style={styles.durationView}>
-                  <Text style={styles.HeadingTextstyle}>
-                    No of slots available
-                  </Text>
+                  <Text style={styles.HeadingTextstyle}>No of slots available</Text>
                 </View>
                 <View style={styles.TimepulsView}>
                   <View style={styles.TimewidthView}>
                     <View style={styles.TimewidthchangeView}>
-                      <Pressable
-                        onPress={() => setSlots((prevState) => prevState - 1)}
-                        style={styles.minusview}
-                      >
+                      <Pressable onPress={() => setSlots((prevState) => prevState - 1)} style={styles.minusview}>
                         <AntDesign name="minus" color={"#fff"} size={20} />
                       </Pressable>
                     </View>
@@ -608,10 +555,7 @@ const BookSession = ({ navigation }) => {
                       <Text style={styles.RangeText}>{slots}</Text>
                     </View>
                     <View style={styles.TimewidthchangeView2}>
-                      <Pressable
-                        onPress={() => setSlots((prevState) => prevState + 1)}
-                        style={styles.pulsview}
-                      >
+                      <Pressable onPress={() => setSlots((prevState) => prevState + 1)} style={styles.pulsview}>
                         <AntDesign name="plus" color={"#fff"} size={20} />
                       </Pressable>
                     </View>
@@ -623,29 +567,16 @@ const BookSession = ({ navigation }) => {
               {/*start Select type of Sessions */}
               <View style={styles.selectView}>
                 <Text style={styles.selectText}>
-                  Select type of Session{" "}
-                  <Text style={styles.selectTexts}>(select one)</Text>
+                  Select type of Session <Text style={styles.selectTexts}>(select one)</Text>
                 </Text>
               </View>
               {type == "online" ? (
                 <View>
                   <View style={styles.Textinput}>
-                    <TextInput
-                      placeholder=" Enter Session title "
-                      style={styles.inputEmail}
-                      placeholderTextColor={"#fff"}
-                      value={sessionTitle}
-                      onChangeText={setSessionTitle}
-                    />
+                    <TextInput placeholder=" Enter Session title " style={styles.inputEmail} placeholderTextColor={"#fff"} value={sessionTitle} onChangeText={setSessionTitle} />
                   </View>
                   <View style={styles.Textinputa}>
-                    <TextInput
-                      placeholder=" Enter The Link "
-                      style={styles.inputEmail}
-                      placeholderTextColor={"#fff"}
-                      value={meetingLink}
-                      onChangeText={setMeetingLink}
-                    />
+                    <TextInput placeholder=" Enter The Link " style={styles.inputEmail} placeholderTextColor={"#fff"} value={meetingLink} onChangeText={setMeetingLink} />
                   </View>
                 </View>
               ) : null}
@@ -654,13 +585,7 @@ const BookSession = ({ navigation }) => {
                 {type == "physical" ? (
                   <View>
                     <View style={styles.Textinput}>
-                      <TextInput
-                        placeholder=" Enter Session title "
-                        style={styles.inputEmail}
-                        placeholderTextColor={"#fff"}
-                        value={sessionTitle}
-                        onChangeText={setSessionTitle}
-                      />
+                      <TextInput placeholder=" Enter Session title " style={styles.inputEmail} placeholderTextColor={"#fff"} value={sessionTitle} onChangeText={setSessionTitle} />
                     </View>
                     <View style={styles.mapBox}>
                       <MapView
@@ -720,11 +645,7 @@ const BookSession = ({ navigation }) => {
               <View style={styles.mainBoxView}>
                 <View style={styles.boxViews1}>
                   <Pressable
-                    style={
-                      type == "online"
-                        ? styles.boxShadowborder
-                        : styles.boxShadowView
-                    }
+                    style={type == "online" ? styles.boxShadowborder : styles.boxShadowView}
                     onPress={() => {
                       setType("online");
                     }}
@@ -737,11 +658,7 @@ const BookSession = ({ navigation }) => {
                 </View>
                 <View style={styles.boxViews2}>
                   <Pressable
-                    style={
-                      type == "physical"
-                        ? styles.boxShadowborder
-                        : styles.boxShadowView
-                    }
+                    style={type == "physical" ? styles.boxShadowborder : styles.boxShadowView}
                     onPress={() => {
                       //readyHa();
                       setType("physical");
@@ -751,14 +668,7 @@ const BookSession = ({ navigation }) => {
                   </Pressable>
                 </View>
                 <View style={styles.boxViews3}>
-                  <Pressable
-                    style={
-                      type == "recorded"
-                        ? styles.boxShadowborder
-                        : styles.boxShadowView
-                    }
-                    onPress={upLoadVideo}
-                  >
+                  <Pressable style={type == "recorded" ? styles.boxShadowborder : styles.boxShadowView} onPress={upLoadVideo}>
                     <Text style={styles.boxText}>Recorded {"\n"}Session</Text>
                   </Pressable>
                 </View>
@@ -767,16 +677,13 @@ const BookSession = ({ navigation }) => {
               {/*start Select Category */}
               <View style={styles.selectView}>
                 <Text style={styles.selectText}>
-                  Select Category{" "}
-                  <Text style={styles.selectTexts}>(Select appropriate)</Text>
+                  Select Category <Text style={styles.selectTexts}>(Select appropriate)</Text>
                 </Text>
               </View>
               <View style={styles.mainBoxView}>
                 <View style={styles.boxViews1}>
                   <Pressable
-                    style={
-                      cardio ? styles.boxShadowborder : styles.boxShadowView
-                    }
+                    style={cardio ? styles.boxShadowborder : styles.boxShadowView}
                     onPress={() => {
                       setCardio(true);
                       setValue("Cardio/Abs");
@@ -792,11 +699,7 @@ const BookSession = ({ navigation }) => {
                 </View>
                 <View style={styles.boxViews2}>
                   <Pressable
-                    style={
-                      noEquipment
-                        ? styles.boxShadowborder
-                        : styles.boxShadowView
-                    }
+                    style={noEquipment ? styles.boxShadowborder : styles.boxShadowView}
                     onPress={() => {
                       setCardio(false);
                       setNoEquipment(true);
@@ -814,9 +717,7 @@ const BookSession = ({ navigation }) => {
                 </View>
                 <View style={styles.boxViews3}>
                   <Pressable
-                    style={
-                      learn ? styles.boxShadowborder : styles.boxShadowView
-                    }
+                    style={learn ? styles.boxShadowborder : styles.boxShadowView}
                     onPress={() => {
                       setCardio(false);
                       setNoEquipment(false);
@@ -834,9 +735,7 @@ const BookSession = ({ navigation }) => {
               <View style={styles.mainBoxView}>
                 <View style={styles.boxViews1}>
                   <Pressable
-                    style={
-                      strength ? styles.boxShadowborder : styles.boxShadowView
-                    }
+                    style={strength ? styles.boxShadowborder : styles.boxShadowView}
                     onPress={() => {
                       setCardio(false);
                       setNoEquipment(false);
@@ -872,9 +771,7 @@ const BookSession = ({ navigation }) => {
                 </View>
                 <View style={styles.boxViews3}>
                   <Pressable
-                    style={
-                      mental ? styles.boxShadowborder : styles.boxShadowView
-                    }
+                    style={mental ? styles.boxShadowborder : styles.boxShadowView}
                     onPress={() => {
                       setCardio(false);
                       setNoEquipment(false);
@@ -917,10 +814,7 @@ const BookSession = ({ navigation }) => {
                       />
                     </View>
                     <View style={{ width: "20%", alignItems: "flex-end" }}>
-                      <Pressable
-                        style={styles.deleteiconview}
-                        onPress={() => delEquipment(item.value)}
-                      >
+                      <Pressable style={styles.deleteiconview} onPress={() => delEquipment(item.value)}>
                         <AntDesign
                           name="delete"
                           style={{
@@ -972,18 +866,9 @@ const BookSession = ({ navigation }) => {
               <View style={{ marginTop: hp(1) }} />
               <Text style={styles.HeadingTextstyle}>Add any Sports</Text>
               <View style={styles.searTextInput}>
-                {sport.length === 0 ? (
-                  <Text style={styles.searchInput}>Add any Sports</Text>
-                ) : (
-                  <Text style={styles.searchInput}>{sport}</Text>
-                )}
+                {sport.length === 0 ? <Text style={styles.searchInput}>Add any Sports</Text> : <Text style={styles.searchInput}>{sport}</Text>}
                 <View style={styles.UpIcon}>
-                  <Entypo
-                    onPress={() => setModalVisible(!modalVisible)}
-                    name={modalVisible ? "chevron-up" : "chevron-down"}
-                    color={"#fff"}
-                    size={25}
-                  />
+                  <Entypo onPress={() => setModalVisible(!modalVisible)} name={modalVisible ? "chevron-up" : "chevron-down"} color={"#fff"} size={25} />
                 </View>
               </View>
               {modalVisible ? (
@@ -1027,15 +912,7 @@ const BookSession = ({ navigation }) => {
               {/*start pricing */}
               <Text style={styles.HeadingTextstyle}>Total Cost</Text>
               <View style={styles.TextInput}>
-                <TextInput
-                  placeholder=" Please Enter Cost"
-                  style={styles.inputEmail}
-                  placeholderTextColor={"#fff"}
-                  value={price}
-                  keyboardType="numeric"
-                  maxLength={19}
-                  onChangeText={setPrice}
-                />
+                <TextInput placeholder=" Please Enter Cost" style={styles.inputEmail} placeholderTextColor={"#fff"} value={price} keyboardType="numeric" maxLength={19} onChangeText={setPrice} />
               </View>
               {/*end pricing */}
               {/*start btn*/}
@@ -1068,11 +945,7 @@ const BookSession = ({ navigation }) => {
                     }}
                     style={styles.profilebtnview}
                   >
-                    {load === true ? (
-                      <ActivityIndicator size="small" color="#fff" />
-                    ) : (
-                      <Text style={styles.btntextstyle}>Next</Text>
-                    )}
+                    {load === true ? <ActivityIndicator size="small" color="#fff" /> : <Text style={styles.btntextstyle}>Next</Text>}
                   </Pressable>
                 </View>
               </View>
@@ -1118,9 +991,7 @@ const BookSession = ({ navigation }) => {
                             {moment(item?.select_date).format("DD ")}
                             {moment(item?.select_date).format("MMMM")}
                           </Text>
-                          <Text style={styles.Daytext}>
-                            ({moment(item?.select_date).format("dddd")})
-                          </Text>
+                          <Text style={styles.Daytext}>({moment(item?.select_date).format("dddd")})</Text>
                         </View>
                         <View
                           style={{
@@ -1169,9 +1040,7 @@ const BookSession = ({ navigation }) => {
                               flexDirection: "row",
                             }}
                           >
-                            <View
-                              style={{ width: "80%", justifyContent: "center" }}
-                            >
+                            <View style={{ width: "80%", justifyContent: "center" }}>
                               <Text
                                 style={{
                                   color: "#fff",
@@ -1183,11 +1052,7 @@ const BookSession = ({ navigation }) => {
                                 Details
                               </Text>
                             </View>
-                            <Entypo
-                              name={item.status ? "chevron-up" : "chevron-down"}
-                              size={18}
-                              color={"#fff"}
-                            />
+                            <Entypo name={item.status ? "chevron-up" : "chevron-down"} size={18} color={"#fff"} />
                           </View>
                         </Pressable>
                       </View>
@@ -1196,10 +1061,7 @@ const BookSession = ({ navigation }) => {
                         <View style={{ width: "100%", paddingBottom: 18 }}>
                           <View style={styles.dotmainview}>
                             <View style={styles.dotview}>
-                              <FontAwesome
-                                name="circle"
-                                style={{ color: "#979797" }}
-                              />
+                              <FontAwesome name="circle" style={{ color: "#979797" }} />
                             </View>
                             <View style={{ width: "90%" }}>
                               <Text style={styles.textstyle}>
@@ -1209,10 +1071,7 @@ const BookSession = ({ navigation }) => {
                           </View>
                           <View style={styles.dotmainview}>
                             <View style={styles.dotview}>
-                              <FontAwesome
-                                name="circle"
-                                style={{ color: "#979797" }}
-                              />
+                              <FontAwesome name="circle" style={{ color: "#979797" }} />
                             </View>
                             <View style={{ width: "90%" }}>
                               <Text style={styles.textstyle}>
@@ -1222,10 +1081,7 @@ const BookSession = ({ navigation }) => {
                           </View>
                           <View style={styles.dotmainview}>
                             <View style={styles.dotview}>
-                              <FontAwesome
-                                name="circle"
-                                style={{ color: "#979797" }}
-                              />
+                              <FontAwesome name="circle" style={{ color: "#979797" }} />
                             </View>
                             <View style={{ width: "90%" }}>
                               <Text style={styles.textstyle}>
@@ -1235,25 +1091,15 @@ const BookSession = ({ navigation }) => {
                           </View>
                           <View style={styles.dotmainview}>
                             <View style={styles.dotview}>
-                              <FontAwesome
-                                name="circle"
-                                style={{ color: "#979797" }}
-                              />
+                              <FontAwesome name="circle" style={{ color: "#979797" }} />
                             </View>
                             <View style={{ width: "90%" }}>
-                              <Text style={styles.textstyle}>
-                                {item?.details}
-                              </Text>
+                              <Text style={styles.textstyle}>{item?.details}</Text>
                             </View>
                           </View>
                           <View style={styles.bookNow}>
-                            <Pressable
-                              onPress={() => UseTemplate(item)}
-                              style={styles.profilebtnview}
-                            >
-                              <Text style={styles.btntextstyle}>
-                                Use Template
-                              </Text>
+                            <Pressable onPress={() => UseTemplate(item)} style={styles.profilebtnview}>
+                              <Text style={styles.btntextstyle}>Use Template</Text>
                             </Pressable>
                           </View>
                         </View>

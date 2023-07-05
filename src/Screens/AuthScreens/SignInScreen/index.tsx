@@ -1,14 +1,6 @@
 import React, { useState } from "react";
-import {
-  Text,
-  View,
-  Pressable,
-  ScrollView,
-  ToastAndroid,
-  Modal,
-  Platform,
-} from "react-native";
-import TextInput from '../../../Components/Input'
+import { Text, View, Pressable, ScrollView, ToastAndroid, Modal, Platform } from "react-native";
+import TextInput from "../../../Components/Input";
 import Header from "../../../Components/Header";
 import Button from "../../../Components/Button";
 import { url } from "../../../constants/url";
@@ -25,7 +17,7 @@ import Container from "../../../Components/Container";
 import { useNavigation } from "@react-navigation/native";
 
 const SignInScreen = () => {
-  const navigation = useNavigation()  
+  const navigation = useNavigation();
   const [hidePass, setHidePass] = useState(true);
   const [email, setEmail] = useState(""); //abbastrainer1@yopmail.com
   const [password, setPassword] = useState(""); //Abbas110@
@@ -35,7 +27,7 @@ const SignInScreen = () => {
   const [loginUser, { data, isLoading, error }] = useLoginUserMutation();
 
   const dispatch = useDispatch();
-  
+
   // Functions
   const storeData = async (userToken: string, userData: LoginInterface) => {
     try {
@@ -68,10 +60,7 @@ const SignInScreen = () => {
       .then((res2) => {
         setLoadxx(false);
         if (res2?.code) {
-          ToastAndroid.show(
-            "OTP sent to your email, please check your email",
-            ToastAndroid.LONG
-          );
+          ToastAndroid.show("OTP sent to your email, please check your email", ToastAndroid.LONG);
           navigation.navigate("Verification", {
             email: email,
             code: res2?.code,
@@ -89,7 +78,7 @@ const SignInScreen = () => {
 
   const signInCall = async () => {
     setLoad(true);
-    
+
     if (!email.includes("@")) {
       Toast.show({
         type: "error",
@@ -109,7 +98,7 @@ const SignInScreen = () => {
             text1: "Login Successfully",
           });
           dispatch(setToken(res2?.access_token));
-          dispatch(setUserInfo(res2.data))
+          dispatch(setUserInfo(res2?.data));
           await storeData("usertoken", res2);
         } else if (res2?.message === "please verify your email first") {
           OpneModule();
@@ -125,7 +114,6 @@ const SignInScreen = () => {
         console.log(err);
       });
   };
-  
 
   return (
     <Container style={styles.mainContainer}>
@@ -133,11 +121,13 @@ const SignInScreen = () => {
 
       <ScrollView showsVerticalScrollIndicator={false}>
         <View style={styles.mainBody}>
-                <TextInput style={{marginBottom: 15}}  label={"E-mail"} placeholder={"xyz@fits.com"} value={email} onChangeText={setEmail} />
-                <TextInput style={{marginBottom: 20}} secureTextEntry label={"Password"} placeholder={"••••••••"} value={password} onChangeText={setPassword} />
-              <Pressable onPress={() => navigation.navigate("ForgotPassword")}>
-                <Typography align="right" color="softGray" size="paragraph" style={styles.forgottext} weight="500">Forgot Password?</Typography>
-              </Pressable>
+          <TextInput style={{ marginBottom: 15 }} label={"E-mail"} placeholder={"xyz@fits.com"} value={email} onChangeText={setEmail} />
+          <TextInput style={{ marginBottom: 20 }} secureTextEntry label={"Password"} placeholder={"••••••••"} value={password} onChangeText={setPassword} />
+          <Pressable onPress={() => navigation.navigate("ForgotPassword")}>
+            <Typography align="right" color="softGray" size="paragraph" style={styles.forgottext} weight="500">
+              Forgot Password?
+            </Typography>
+          </Pressable>
 
           <Button
             loader={load}
@@ -148,25 +138,35 @@ const SignInScreen = () => {
                 signInCall();
               }
             }}
-            style={{marginBottom: 20}}
+            style={{ marginBottom: 20 }}
           />
 
           <View style={styles.termsTextRect}>
-            <Typography weight="500" align="center" style={{lineHeight: 20}}>
+            <Typography weight="500" align="center" style={{ lineHeight: 20 }}>
               By signing in, I agree with{" "}
-              <Typography color="redColor" style={styles.underlinetext}> Terms of Use</Typography>{'\n'}and {" "}
-              <Typography color="redColor"  style={styles.underlinetext}> Privacy Policy</Typography>
+              <Typography color="redColor" style={styles.underlinetext}>
+                {" "}
+                Terms of Use
+              </Typography>
+              {"\n"}and{" "}
+              <Typography color="redColor" style={styles.underlinetext}>
+                {" "}
+                Privacy Policy
+              </Typography>
             </Typography>
           </View>
         </View>
       </ScrollView>
 
-          <Pressable style={styles.footerMainView} onPress={() => navigation.navigate("SelectStatusScreen")}>
-            <Typography size="paragraph" weight="400" align="center">
-            Don’t have an account? 
-              <Typography color="redColor" size='button' weight="700"> Sign up</Typography>
-            </Typography>
-          </Pressable>
+      <Pressable style={styles.footerMainView} onPress={() => navigation.navigate("SelectStatusScreen")}>
+        <Typography size="paragraph" weight="400" align="center">
+          Don’t have an account?
+          <Typography color="redColor" size="button" weight="700">
+            {" "}
+            Sign up
+          </Typography>
+        </Typography>
+      </Pressable>
 
       {/*Modal Start*/}
       <Modal
@@ -180,10 +180,7 @@ const SignInScreen = () => {
         <View style={styles.centeredView}>
           <View style={styles.modalView}>
             <View style={{ width: "90%", alignSelf: "center" }}>
-              <Text style={styles.vercodetext}>
-                Your Email isn't verified. Please go to email verification
-                screen...
-              </Text>
+              <Text style={styles.vercodetext}>Your Email isn't verified. Please go to email verification screen...</Text>
             </View>
 
             <View

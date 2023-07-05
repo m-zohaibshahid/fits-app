@@ -27,6 +27,7 @@ export const fitsApi = createApi({
       query: () => "users",
     }),
     getUserMe: builder.query<any, Partial<any>>({
+      keepUnusedDataFor: 30,
       query: (id) => `/user/me/${id}`,
     }),
 

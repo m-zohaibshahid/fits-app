@@ -1,17 +1,8 @@
 import React, { useEffect, useState } from "react";
-import {
-  Text,
-  View,
-  ImageBackground,
-  Pressable,
-  StyleSheet,
-
-  ScrollView,
-  ToastAndroid,
-} from "react-native";
+import { Text, View, ImageBackground, Pressable, StyleSheet, ScrollView, ToastAndroid } from "react-native";
 import AntDesign from "react-native-vector-icons/AntDesign";
 import EvilIcons from "react-native-vector-icons/EvilIcons";
-import {  RFValue } from "react-native-responsive-fontsize";
+import { RFValue } from "react-native-responsive-fontsize";
 import { url } from "../../constants/url";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { getDistance } from "geolib";
@@ -50,7 +41,7 @@ const Recommended = ({ navigation, superLong, superLat }) => {
           setPersonalInfoData(res2.data?.personal_info);
           setProfessionalData(res2.data?.profession_info);
         } else {
-          alert(res2.errors);
+          Alert.alert(res2.errors);
         }
       })
       .catch((error) => {
@@ -81,10 +72,7 @@ const Recommended = ({ navigation, superLong, superLat }) => {
 
   const getDistanceGoogle = (lat, lng) => {
     let dis;
-    dis = getDistance(
-      { latitude: lat, longitude: lng },
-      { latitude: superLat, longitude: superLong }
-    );
+    dis = getDistance({ latitude: lat, longitude: lng }, { latitude: superLat, longitude: superLong });
 
     let distanceInKM = dis / 1000;
 
@@ -99,20 +87,12 @@ const Recommended = ({ navigation, superLong, superLat }) => {
   };
 
   return (
-    <ScrollView
-      horizontal={true}
-      showsHorizontalScrollIndicator={false}
-      style={styles.main}
-    >
+    <ScrollView horizontal={true} showsHorizontalScrollIndicator={false} style={styles.main}>
       {/*start image box view*/}
       {data.map((item, i) => (
         <View>
           {item?.session_type?.type === "online" ? (
-            <Pressable
-              onPress={() => dummyData(item?.user?._id, item)}
-              style={styles.boxview}
-              key={i}
-            >
+            <Pressable onPress={() => dummyData(item?.user?._id, item)} style={styles.boxview} key={i}>
               <ImageBackground
                 imageStyle={{ borderRadius: 10 }}
                 style={styles.ImageBackgroundstyle}
@@ -126,16 +106,13 @@ const Recommended = ({ navigation, superLong, superLat }) => {
                       <View style={styles.inImageView}>
                         <View style={styles.BoxViews}>
                           <Text style={styles.TextStyle}>
-                            <AntDesign name="star" size={15} color={"#000"} />{" "}
-                            {item?.user?.averageRating.toFixed(1)}
+                            <AntDesign name="star" size={15} color={"#000"} /> {item?.user?.averageRating.toFixed(1)}
                           </Text>
                         </View>
                       </View>
                       <View style={styles.inImageView1}>
                         <View style={styles.BoxView1}>
-                          <Text style={styles.TextStyle}>
-                            $ {item?.price} / Session
-                          </Text>
+                          <Text style={styles.TextStyle}>$ {item?.price} / Session</Text>
                         </View>
                       </View>
                     </View>
@@ -146,9 +123,7 @@ const Recommended = ({ navigation, superLong, superLat }) => {
                 <Text style={styles.jamesnameText}>{item.class_title}</Text>
                 <View style={{ width: "100%", flexDirection: "row" }}>
                   <EvilIcons name="location" size={20} color="black" />
-                  <Text style={styles.kmtextstyle}>
-                    {item?.session_type?.distance?.toFixed(1)} km from you
-                  </Text>
+                  <Text style={styles.kmtextstyle}>{item?.session_type?.distance?.toFixed(1)} km from you</Text>
                 </View>
               </View>
             </Pressable>

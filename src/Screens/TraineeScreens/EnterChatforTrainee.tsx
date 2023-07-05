@@ -1,19 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
-import {
-  Text,
-  View,
-  Button,
-  ImageBackground,
-  TouchableOpacity,
-  StyleSheet,
-  TextInput,
-  ScrollView,
-  Image,
-  Modal,
-  ToastAndroid,
-  ActivityIndicator,
-  Platform,
-} from "react-native";
+import { Text, View, Button, ImageBackground, TouchableOpacity, StyleSheet, TextInput, ScrollView, Image, Modal, ToastAndroid, ActivityIndicator, Platform } from "react-native";
 import AntDesign from "react-native-vector-icons/AntDesign";
 import FontAwesome from "react-native-vector-icons/FontAwesome";
 import { RFPercentage, RFValue } from "react-native-responsive-fontsize";
@@ -85,7 +71,7 @@ const EnterChatforTrainee = ({ navigation }) => {
       })
       .catch((error) => {
         setLoade(false);
-        alert("Something Went Wrong");
+        Alert.alert("Something Went Wrong");
       });
   };
 
@@ -126,7 +112,7 @@ const EnterChatforTrainee = ({ navigation }) => {
         })
         .catch((error) => {
           setLoad(false);
-          alert("Something Went Wrong");
+          Alert.alert("Something Went Wrong");
         });
     }
   };
@@ -204,13 +190,7 @@ const EnterChatforTrainee = ({ navigation }) => {
       {/*End Hader*/}
       {/*start Main*/}
       <View style={styles.main}>
-        <ScrollView
-          showsVerticalScrollIndicator={false}
-          ref={scrollViewRef}
-          onContentSizeChange={() =>
-            scrollViewRef.current.scrollToEnd({ animated: true })
-          }
-        >
+        <ScrollView showsVerticalScrollIndicator={false} ref={scrollViewRef} onContentSizeChange={() => scrollViewRef.current.scrollToEnd({ animated: true })}>
           <View style={styles.TopView}>
             <View style={styles.topView1}>
               <Text>21 January 12:00</Text>
@@ -264,9 +244,7 @@ const EnterChatforTrainee = ({ navigation }) => {
                       </Text>
                       <View style={{ flexDirection: "row", width: "95%" }}>
                         <View style={{ width: "100%", alignItems: "flex-end" }}>
-                          <Text style={{ color: "white" }}>
-                            {moment(item.createdAt).format("hh:mm a")}
-                          </Text>
+                          <Text style={{ color: "white" }}>{moment(item.createdAt).format("hh:mm a")}</Text>
                         </View>
                       </View>
                     </View>
@@ -310,9 +288,7 @@ const EnterChatforTrainee = ({ navigation }) => {
                       </Text>
                       <View style={{ flexDirection: "row", width: "95%" }}>
                         <View style={{ width: "100%", alignItems: "flex-end" }}>
-                          <Text style={{ color: "white" }}>
-                            {moment(item.createdAt).format("hh:mm a")}
-                          </Text>
+                          <Text style={{ color: "white" }}>{moment(item.createdAt).format("hh:mm a")}</Text>
                         </View>
                       </View>
                     </View>
@@ -410,11 +386,7 @@ const EnterChatforTrainee = ({ navigation }) => {
                       setMesage("");
                     }}
                   >
-                    {load === true ? (
-                      <ActivityIndicator size="small" color="black" />
-                    ) : (
-                      <FontAwesome name="send" size={25} color={"#000"} />
-                    )}
+                    {load === true ? <ActivityIndicator size="small" color="black" /> : <FontAwesome name="send" size={25} color={"#000"} />}
                   </TouchableOpacity>
                 </View>
               </View>

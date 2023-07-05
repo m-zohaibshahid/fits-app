@@ -1,31 +1,10 @@
 import React, { useState, useEffect } from "react";
-import {
-  Text,
-  View,
-  ImageBackground,
-  Pressable,
-  StyleSheet,
-  TextInput,
-  ScrollView,
-  ToastAndroid,
-  ActivityIndicator,
-  Platform,
-  Image,
-  Modal,
-} from "react-native";
+import { Text, View, ImageBackground, Pressable, StyleSheet, TextInput, ScrollView, ToastAndroid, ActivityIndicator, Platform, Image, Modal } from "react-native";
 import Colors from "../../constants/Colors";
 import VideoPlayer from "react-native-video-player";
-import {
-  widthPercentageToDP as wp,
-  heightPercentageToDP as hp,
-} from "react-native-responsive-screen";
+import { widthPercentageToDP as wp, heightPercentageToDP as hp } from "react-native-responsive-screen";
 import ImagePicker from "react-native-image-crop-picker";
-import {
-  CodeField,
-  Cursor,
-  useBlurOnFulfill,
-  useClearByFocusCell,
-} from "react-native-confirmation-code-field";
+import { CodeField, Cursor, useBlurOnFulfill, useClearByFocusCell } from "react-native-confirmation-code-field";
 import AntDesign from "react-native-vector-icons/AntDesign";
 import FontAwesome from "react-native-vector-icons/FontAwesome";
 import Octicons from "react-native-vector-icons/Octicons";
@@ -144,12 +123,12 @@ const UploadVideo2 = ({ navigation }) => {
           if (res2.message === "created successfully") {
             GoBack();
           } else {
-            alert(res2?.errors?.email);
+            Alert.alert(res2?.errors?.email);
           }
         })
         .catch((error) => {
           setLoad(false);
-          alert("Something Went Wrong");
+          Alert.alert("Something Went Wrong");
           console.log(error);
         });
     }
@@ -198,9 +177,7 @@ const UploadVideo2 = ({ navigation }) => {
                     justifyContent: "center",
                   }}
                 >
-                  <Text style={{ fontSize: RFValue(15, 580) }}>
-                    yogavideo.mp4
-                  </Text>
+                  <Text style={{ fontSize: RFValue(15, 580) }}>yogavideo.mp4</Text>
                   <Image source={Images.Mp4} marginTop={15} />
 
                   <Pressable
@@ -317,11 +294,7 @@ const UploadVideo2 = ({ navigation }) => {
             <View style={{ width: "90%", flexDirection: "row" }}>
               <View style={styles.BoxviewWidth1}>
                 <Pressable
-                  style={
-                    statusOne
-                      ? styles.BoxShadowView
-                      : styles.BoxShadowViewBorder
-                  }
+                  style={statusOne ? styles.BoxShadowView : styles.BoxShadowViewBorder}
                   onPress={() => {
                     setStatusOne(true);
                     setValue("Cardio/Abs");
@@ -337,11 +310,7 @@ const UploadVideo2 = ({ navigation }) => {
               </View>
               <View style={styles.BoxviewWidth2}>
                 <Pressable
-                  style={
-                    statusTwo
-                      ? styles.BoxShadowView
-                      : styles.BoxShadowViewBorder
-                  }
+                  style={statusTwo ? styles.BoxShadowView : styles.BoxShadowViewBorder}
                   onPress={() => {
                     setStatusOne(false);
                     setValue("No Equipment Home Exercise");
@@ -359,11 +328,7 @@ const UploadVideo2 = ({ navigation }) => {
               </View>
               <View style={styles.BoxviewWidth3}>
                 <Pressable
-                  style={
-                    statusThree
-                      ? styles.BoxShadowView
-                      : styles.BoxShadowViewBorder
-                  }
+                  style={statusThree ? styles.BoxShadowView : styles.BoxShadowViewBorder}
                   onPress={() => {
                     setStatusOne(false);
                     setValue("Learn Technique");
@@ -383,11 +348,7 @@ const UploadVideo2 = ({ navigation }) => {
             <View style={{ width: "90%", flexDirection: "row" }}>
               <View style={styles.BoxviewWidth1}>
                 <Pressable
-                  style={
-                    statusFour
-                      ? styles.BoxShadowView
-                      : styles.BoxShadowViewBorder
-                  }
+                  style={statusFour ? styles.BoxShadowView : styles.BoxShadowViewBorder}
                   onPress={() => {
                     setStatusOne(false);
                     setValue("Strength Building Workout");
@@ -405,11 +366,7 @@ const UploadVideo2 = ({ navigation }) => {
               </View>
               <View style={styles.BoxviewWidth2}>
                 <Pressable
-                  style={
-                    statusFive
-                      ? styles.BoxShadowView
-                      : styles.BoxShadowViewBorder
-                  }
+                  style={statusFive ? styles.BoxShadowView : styles.BoxShadowViewBorder}
                   onPress={() => {
                     setStatusOne(false);
                     setValue("Fat Burning Workout");
@@ -427,11 +384,7 @@ const UploadVideo2 = ({ navigation }) => {
               </View>
               <View style={styles.BoxviewWidth3}>
                 <Pressable
-                  style={
-                    statusSix
-                      ? styles.BoxShadowView
-                      : styles.BoxShadowViewBorder
-                  }
+                  style={statusSix ? styles.BoxShadowView : styles.BoxShadowViewBorder}
                   onPress={() => {
                     setStatusOne(false);
                     setValue("Mental Health & Nutritiion");
@@ -451,9 +404,7 @@ const UploadVideo2 = ({ navigation }) => {
           </View>
           <View style={{ width: "100%", alignItems: "center", marginTop: 40 }}>
             <View style={{ width: "90%" }}>
-              <Text style={{ fontSize: RFValue(18, 580), color: "#000" }}>
-                Any specific details
-              </Text>
+              <Text style={{ fontSize: RFValue(18, 580), color: "#000" }}>Any specific details</Text>
             </View>
           </View>
           <View
@@ -540,13 +491,7 @@ const UploadVideo2 = ({ navigation }) => {
           >
             <Button
               navigation={navigation}
-              label={
-                load === true ? (
-                  <ActivityIndicator size="small" color="#fff" />
-                ) : (
-                  "Done"
-                )
-              }
+              label={load === true ? <ActivityIndicator size="small" color="#fff" /> : "Done"}
               onPress={() => {
                 if (load === true) {
                 } else {

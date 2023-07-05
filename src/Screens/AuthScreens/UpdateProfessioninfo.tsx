@@ -1,28 +1,7 @@
 import React, { useState, useEffect } from "react";
-import {
-  Text,
-  View,
-  ImageBackground,
-  Pressable,
-  StyleSheet,
-  TextInput,
-  Modal,
-  Image,
-  ScrollView,
-  ToastAndroid,
-  ActivityIndicator,
-  Platform,
-} from "react-native";
-import {
-  CodeField,
-  Cursor,
-  useBlurOnFulfill,
-  useClearByFocusCell,
-} from "react-native-confirmation-code-field";
-import {
-  widthPercentageToDP as wp,
-  heightPercentageToDP as hp,
-} from "react-native-responsive-screen";
+import { Text, View, ImageBackground, Pressable, StyleSheet, TextInput, Modal, Image, ScrollView, ToastAndroid, ActivityIndicator, Platform } from "react-native";
+import { CodeField, Cursor, useBlurOnFulfill, useClearByFocusCell } from "react-native-confirmation-code-field";
+import { widthPercentageToDP as wp, heightPercentageToDP as hp } from "react-native-responsive-screen";
 import { RFPercentage, RFValue } from "react-native-responsive-fontsize";
 import Ionicons from "react-native-vector-icons/Ionicons";
 import AntDesign from "react-native-vector-icons/AntDesign";
@@ -65,8 +44,6 @@ const UpdateProfessioninfo = ({ navigation }) => {
     });
   }, [getUserInfo]);
 
-
-
   const getUserInfo = async () => {
     const userData = await AsyncStorage.getItem("userData");
     let userDatax = JSON.parse(userData);
@@ -75,17 +52,11 @@ const UpdateProfessioninfo = ({ navigation }) => {
 
   const UpdateProfessionallInfo = async () => {
     if (experienceYear === "") {
-      ToastAndroid.show(
-        "Please Enter your Experience year.",
-        ToastAndroid.SHORT
-      );
+      ToastAndroid.show("Please Enter your Experience year.", ToastAndroid.SHORT);
       return;
     }
     if (experienceNote === "") {
-      ToastAndroid.show(
-        "Please Enter your experienceNote.",
-        ToastAndroid.SHORT
-      );
+      ToastAndroid.show("Please Enter your experienceNote.", ToastAndroid.SHORT);
       return;
     }
     if (qualification.degree === "") {
@@ -97,7 +68,6 @@ const UpdateProfessioninfo = ({ navigation }) => {
       return;
     } else {
       setLoad(true);
-
 
       await fetch(`${url}/profession/${route.params.Id}`, {
         method: "PUT",
@@ -123,7 +93,7 @@ const UpdateProfessioninfo = ({ navigation }) => {
         })
         .catch((error) => {
           setLoad(false);
-          alert("Something Went Wrong");
+          Alert.alert("Something Went Wrong");
           console.log(error);
         });
     }
@@ -180,13 +150,7 @@ const UpdateProfessioninfo = ({ navigation }) => {
               </View>
               <View style={styles.textinputView}>
                 <View style={styles.textinputView1}>
-                  <TextInput
-                    style={styles.inputEmail}
-                    placeholder="Enter Experience"
-                    keyboardType="number-pad"
-                    value={experienceYear}
-                    onChangeText={setExperienceYear}
-                  />
+                  <TextInput style={styles.inputEmail} placeholder="Enter Experience" keyboardType="number-pad" value={experienceYear} onChangeText={setExperienceYear} />
                 </View>
               </View>
             </View>
@@ -219,8 +183,7 @@ const UpdateProfessioninfo = ({ navigation }) => {
             <View style={{ width: "90%", flexDirection: "row" }}>
               <View style={{ width: "100%", alignItems: "flex-start" }}>
                 <Text style={styles.qualificationstext}>
-                  Qualifications{" "}
-                  <Text style={styles.uptotext}>(up to 3 degrees)</Text>
+                  Qualifications <Text style={styles.uptotext}>(up to 3 degrees)</Text>
                 </Text>
               </View>
             </View>
@@ -248,10 +211,7 @@ const UpdateProfessioninfo = ({ navigation }) => {
                   </View>
                   <View style={{ width: "4%" }}></View>
                   <View style={{ width: "15%" }}>
-                    <Pressable
-                      style={styles.deleteiconview}
-                      onPress={() => delQualification(item.id)}
-                    >
+                    <Pressable style={styles.deleteiconview} onPress={() => delQualification(item.id)}>
                       <AntDesign
                         name="delete"
                         style={{
@@ -302,9 +262,7 @@ const UpdateProfessioninfo = ({ navigation }) => {
           ))}
           {/*Qualification section end*/}
           <Pressable onPress={addQualification}>
-            <View
-              style={{ width: "100%", alignItems: "center", marginTop: 15 }}
-            >
+            <View style={{ width: "100%", alignItems: "center", marginTop: 15 }}>
               <View
                 style={{
                   width: "100%",
@@ -339,13 +297,7 @@ const UpdateProfessioninfo = ({ navigation }) => {
           <View style={{ paddingVertical: 10, width: "100%" }}>
             <Button
               navigation={navigation}
-              label={
-                load === true ? (
-                  <ActivityIndicator size="small" color="#fff" />
-                ) : (
-                  "NEXT"
-                )
-              }
+              label={load === true ? <ActivityIndicator size="small" color="#fff" /> : "NEXT"}
               onPress={() => {
                 if (load === true) {
                 } else {

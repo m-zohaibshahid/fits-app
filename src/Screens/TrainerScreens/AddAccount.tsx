@@ -1,15 +1,5 @@
 import React, { useState, useEffect } from "react";
-import {
-  Text,
-  View,
-  StyleSheet,
-  TextInput,
-  ScrollView,
-  ToastAndroid,
-  ActivityIndicator,
-  TouchableOpacity,
-  Platform,
-} from "react-native";
+import { Text, View, StyleSheet, TextInput, ScrollView, ToastAndroid, ActivityIndicator, TouchableOpacity, Platform } from "react-native";
 import { RFValue } from "react-native-responsive-fontsize";
 import Header from "../../Components/Header";
 import Colors from "../../constants/Colors";
@@ -70,12 +60,12 @@ const AddAccount = ({ navigation }) => {
         if (res2.success === true) {
           setData(res2.stripe.customer.id);
         } else {
-          alert(res2.errors);
+          Alert.alert(res2.errors);
         }
       })
       .catch((error) => {
         setLoadx(false);
-        alert("Something Went Wrong");
+        Alert.alert("Something Went Wrong");
         console.log(error);
       });
   };
@@ -84,15 +74,9 @@ const AddAccount = ({ navigation }) => {
     if (cardNumber === "") {
       ToastAndroid.show("Please Enter your Card Number.", ToastAndroid.SHORT);
     } else if (expiryMonth === "") {
-      ToastAndroid.show(
-        "Please Enter your Card Expiry Month.",
-        ToastAndroid.SHORT
-      );
+      ToastAndroid.show("Please Enter your Card Expiry Month.", ToastAndroid.SHORT);
     } else if (expiryYear === "") {
-      ToastAndroid.show(
-        "Please Enter your Card Expiry Year.",
-        ToastAndroid.SHORT
-      );
+      ToastAndroid.show("Please Enter your Card Expiry Year.", ToastAndroid.SHORT);
     } else if (cvc === "") {
       ToastAndroid.show("Please Enter your cvc.", ToastAndroid.SHORT);
     } else {
@@ -123,7 +107,7 @@ const AddAccount = ({ navigation }) => {
         })
         .catch((error) => {
           setLoad(false);
-          alert("Something Went Wrong");
+          Alert.alert("Something Went Wrong");
           console.log(error);
         });
     }
@@ -156,15 +140,7 @@ const AddAccount = ({ navigation }) => {
                 <Text style={styles.inputnameText}>Card Number</Text>
               </View>
               <View style={styles.textinputView}>
-                <TextInput
-                  style={styles.inputEmail}
-                  placeholder="Number"
-                  placeholderTextColor="white"
-                  keyboardType="numeric"
-                  maxLength={16}
-                  value={cardNumber}
-                  onChangeText={setCardNumber}
-                />
+                <TextInput style={styles.inputEmail} placeholder="Number" placeholderTextColor="white" keyboardType="numeric" maxLength={16} value={cardNumber} onChangeText={setCardNumber} />
               </View>
             </View>
           </View>
@@ -174,15 +150,7 @@ const AddAccount = ({ navigation }) => {
                 <Text style={styles.inputnameText}>Expiry Month</Text>
               </View>
               <View style={styles.textinputView}>
-                <TextInput
-                  style={styles.inputEmail}
-                  placeholder="Month"
-                  placeholderTextColor="white"
-                  keyboardType="numeric"
-                  maxLength={2}
-                  value={expiryMonth}
-                  onChangeText={setExpiryMonth}
-                />
+                <TextInput style={styles.inputEmail} placeholder="Month" placeholderTextColor="white" keyboardType="numeric" maxLength={2} value={expiryMonth} onChangeText={setExpiryMonth} />
               </View>
             </View>
           </View>
@@ -192,15 +160,7 @@ const AddAccount = ({ navigation }) => {
                 <Text style={styles.inputnameText}>Expiry Year</Text>
               </View>
               <View style={styles.textinputView}>
-                <TextInput
-                  style={styles.inputEmail}
-                  placeholder="Year"
-                  placeholderTextColor="white"
-                  keyboardType="numeric"
-                  maxLength={2}
-                  value={expiryYear}
-                  onChangeText={setExpiryYear}
-                />
+                <TextInput style={styles.inputEmail} placeholder="Year" placeholderTextColor="white" keyboardType="numeric" maxLength={2} value={expiryYear} onChangeText={setExpiryYear} />
               </View>
             </View>
           </View>
@@ -210,15 +170,7 @@ const AddAccount = ({ navigation }) => {
                 <Text style={styles.inputnameText}>CVC</Text>
               </View>
               <View style={styles.textinputView}>
-                <TextInput
-                  style={styles.inputEmail}
-                  placeholder="Enter cvc"
-                  placeholderTextColor="white"
-                  value={cvc}
-                  onChangeText={setCvc}
-                  keyboardType="numeric"
-                  maxLength={3}
-                />
+                <TextInput style={styles.inputEmail} placeholder="Enter cvc" placeholderTextColor="white" value={cvc} onChangeText={setCvc} keyboardType="numeric" maxLength={3} />
               </View>
             </View>
           </View>
@@ -226,13 +178,7 @@ const AddAccount = ({ navigation }) => {
         {/* modalVisibleDate End*/}
         <View style={{ paddingVertical: 10, alignItems: "center" }}>
           <Button
-            label={
-              load === true ? (
-                <ActivityIndicator size="small" color="#fff" />
-              ) : (
-                "NEXT"
-              )
-            }
+            label={load === true ? <ActivityIndicator size="small" color="#fff" /> : "NEXT"}
             onPress={() => {
               if (load === true) {
               } else {
