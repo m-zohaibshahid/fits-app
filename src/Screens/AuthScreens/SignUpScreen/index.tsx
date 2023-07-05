@@ -44,8 +44,9 @@ const SignUpScreen: React.FC<Props> = ({ navigation }) => {
     if (isValid) {
       delete formValues.confirmPassword;
       const result = await registerUser(formValues) as any
+      console.log({result})
       if (result.data.register) {
-        await storeUserData(result.data)
+        await storeUserData(JSON.stringify(result.data))
         setIsVarificationModalVisible(true)
       }
       if (result.error) errorToast(result.error.data.message)

@@ -9,22 +9,22 @@
 9        android:targetSdkVersion="33" />
 10
 11    <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
-11-->/Users/zohaib.shahid/Downloads/works/newFits/fits-ts/android/app/src/debug/AndroidManifest.xml:5:5-77
-11-->/Users/zohaib.shahid/Downloads/works/newFits/fits-ts/android/app/src/debug/AndroidManifest.xml:5:22-75
+11-->/Users/zohaib.shahid/Downloads/works/fits-ts/android/app/src/debug/AndroidManifest.xml:5:5-77
+11-->/Users/zohaib.shahid/Downloads/works/fits-ts/android/app/src/debug/AndroidManifest.xml:5:22-75
 12    <uses-permission android:name="android.permission.INTERNET" />
-12-->/Users/zohaib.shahid/Downloads/works/newFits/fits-ts/android/app/src/main/AndroidManifest.xml:3:5-67
-12-->/Users/zohaib.shahid/Downloads/works/newFits/fits-ts/android/app/src/main/AndroidManifest.xml:3:22-64
+12-->/Users/zohaib.shahid/Downloads/works/fits-ts/android/app/src/main/AndroidManifest.xml:3:5-67
+12-->/Users/zohaib.shahid/Downloads/works/fits-ts/android/app/src/main/AndroidManifest.xml:3:22-64
 13    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
 13-->[com.facebook.flipper:flipper:0.125.0] /Users/zohaib.shahid/.gradle/caches/transforms-3/1de5dee59d1627955e42d3d6205f726e/transformed/jetified-flipper-0.125.0/AndroidManifest.xml:16:5-76
 13-->[com.facebook.flipper:flipper:0.125.0] /Users/zohaib.shahid/.gradle/caches/transforms-3/1de5dee59d1627955e42d3d6205f726e/transformed/jetified-flipper-0.125.0/AndroidManifest.xml:16:22-73
 14
 15    <queries>
-15-->[:react-native-image-crop-picker] /Users/zohaib.shahid/Downloads/works/newFits/fits-ts/node_modules/react-native-image-crop-picker/android/build/intermediates/merged_manifest/debug/AndroidManifest.xml:9:5-13:15
+15-->[:react-native-image-crop-picker] /Users/zohaib.shahid/Downloads/works/fits-ts/node_modules/react-native-image-crop-picker/android/build/intermediates/merged_manifest/debug/AndroidManifest.xml:9:5-13:15
 16        <intent>
-16-->[:react-native-image-crop-picker] /Users/zohaib.shahid/Downloads/works/newFits/fits-ts/node_modules/react-native-image-crop-picker/android/build/intermediates/merged_manifest/debug/AndroidManifest.xml:10:9-12:18
+16-->[:react-native-image-crop-picker] /Users/zohaib.shahid/Downloads/works/fits-ts/node_modules/react-native-image-crop-picker/android/build/intermediates/merged_manifest/debug/AndroidManifest.xml:10:9-12:18
 17            <action android:name="android.media.action.IMAGE_CAPTURE" />
-17-->[:react-native-image-crop-picker] /Users/zohaib.shahid/Downloads/works/newFits/fits-ts/node_modules/react-native-image-crop-picker/android/build/intermediates/merged_manifest/debug/AndroidManifest.xml:11:13-73
-17-->[:react-native-image-crop-picker] /Users/zohaib.shahid/Downloads/works/newFits/fits-ts/node_modules/react-native-image-crop-picker/android/build/intermediates/merged_manifest/debug/AndroidManifest.xml:11:21-70
+17-->[:react-native-image-crop-picker] /Users/zohaib.shahid/Downloads/works/fits-ts/node_modules/react-native-image-crop-picker/android/build/intermediates/merged_manifest/debug/AndroidManifest.xml:11:13-73
+17-->[:react-native-image-crop-picker] /Users/zohaib.shahid/Downloads/works/fits-ts/node_modules/react-native-image-crop-picker/android/build/intermediates/merged_manifest/debug/AndroidManifest.xml:11:21-70
 18        </intent>
 19        <!-- Needs to be explicitly declared on Android R+ -->
 20        <package android:name="com.google.android.apps.maps" />
@@ -33,8 +33,8 @@
 21    </queries>
 22
 23    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
-23-->[:react-native-image-crop-picker] /Users/zohaib.shahid/Downloads/works/newFits/fits-ts/node_modules/react-native-image-crop-picker/android/build/intermediates/merged_manifest/debug/AndroidManifest.xml:15:5-81
-23-->[:react-native-image-crop-picker] /Users/zohaib.shahid/Downloads/works/newFits/fits-ts/node_modules/react-native-image-crop-picker/android/build/intermediates/merged_manifest/debug/AndroidManifest.xml:15:22-78
+23-->[:react-native-image-crop-picker] /Users/zohaib.shahid/Downloads/works/fits-ts/node_modules/react-native-image-crop-picker/android/build/intermediates/merged_manifest/debug/AndroidManifest.xml:15:5-81
+23-->[:react-native-image-crop-picker] /Users/zohaib.shahid/Downloads/works/fits-ts/node_modules/react-native-image-crop-picker/android/build/intermediates/merged_manifest/debug/AndroidManifest.xml:15:22-78
 24    <uses-permission android:name="android.permission.WAKE_LOCK" />
 24-->[androidx.work:work-runtime:2.7.1] /Users/zohaib.shahid/.gradle/caches/transforms-3/dcb624b9163c550f3a17cb4219ba2b64/transformed/work-runtime-2.7.1/AndroidManifest.xml:25:5-68
 24-->[androidx.work:work-runtime:2.7.1] /Users/zohaib.shahid/.gradle/caches/transforms-3/dcb624b9163c550f3a17cb4219ba2b64/transformed/work-runtime-2.7.1/AndroidManifest.xml:25:22-65
@@ -56,80 +56,80 @@
 31-->[com.google.android.gms:play-services-maps:18.0.2] /Users/zohaib.shahid/.gradle/caches/transforms-3/cb51dd71c8a226eb9d6f62630c536387/transformed/jetified-play-services-maps-18.0.2/AndroidManifest.xml:28:9-32
 32
 33    <application
-33-->/Users/zohaib.shahid/Downloads/works/newFits/fits-ts/android/app/src/main/AndroidManifest.xml:5:5-24:19
+33-->/Users/zohaib.shahid/Downloads/works/fits-ts/android/app/src/main/AndroidManifest.xml:5:5-24:19
 34        android:name="com.awesomeproject.MainApplication"
-34-->/Users/zohaib.shahid/Downloads/works/newFits/fits-ts/android/app/src/main/AndroidManifest.xml:6:7-38
+34-->/Users/zohaib.shahid/Downloads/works/fits-ts/android/app/src/main/AndroidManifest.xml:6:7-38
 35        android:allowBackup="false"
-35-->/Users/zohaib.shahid/Downloads/works/newFits/fits-ts/android/app/src/main/AndroidManifest.xml:10:7-34
+35-->/Users/zohaib.shahid/Downloads/works/fits-ts/android/app/src/main/AndroidManifest.xml:10:7-34
 36        android:appComponentFactory="androidx.core.app.CoreComponentFactory"
 36-->[androidx.core:core:1.7.0] /Users/zohaib.shahid/.gradle/caches/transforms-3/3994986e4b6f29f228dfe8fb9122f0d7/transformed/core-1.7.0/AndroidManifest.xml:24:18-86
 37        android:debuggable="true"
 38        android:icon="@mipmap/ic_launcher"
-38-->/Users/zohaib.shahid/Downloads/works/newFits/fits-ts/android/app/src/main/AndroidManifest.xml:8:7-41
+38-->/Users/zohaib.shahid/Downloads/works/fits-ts/android/app/src/main/AndroidManifest.xml:8:7-41
 39        android:label="@string/app_name"
-39-->/Users/zohaib.shahid/Downloads/works/newFits/fits-ts/android/app/src/main/AndroidManifest.xml:7:7-39
+39-->/Users/zohaib.shahid/Downloads/works/fits-ts/android/app/src/main/AndroidManifest.xml:7:7-39
 40        android:roundIcon="@mipmap/ic_launcher_round"
-40-->/Users/zohaib.shahid/Downloads/works/newFits/fits-ts/android/app/src/main/AndroidManifest.xml:9:7-52
+40-->/Users/zohaib.shahid/Downloads/works/fits-ts/android/app/src/main/AndroidManifest.xml:9:7-52
 41        android:theme="@style/AppTheme"
-41-->/Users/zohaib.shahid/Downloads/works/newFits/fits-ts/android/app/src/main/AndroidManifest.xml:11:7-38
+41-->/Users/zohaib.shahid/Downloads/works/fits-ts/android/app/src/main/AndroidManifest.xml:11:7-38
 42        android:usesCleartextTraffic="true" >
-42-->/Users/zohaib.shahid/Downloads/works/newFits/fits-ts/android/app/src/debug/AndroidManifest.xml:8:9-44
+42-->/Users/zohaib.shahid/Downloads/works/fits-ts/android/app/src/debug/AndroidManifest.xml:8:9-44
 43        <activity
-43-->/Users/zohaib.shahid/Downloads/works/newFits/fits-ts/android/app/src/debug/AndroidManifest.xml:11:9-111
+43-->/Users/zohaib.shahid/Downloads/works/fits-ts/android/app/src/debug/AndroidManifest.xml:11:9-111
 44            android:name="com.facebook.react.devsupport.DevSettingsActivity"
-44-->/Users/zohaib.shahid/Downloads/works/newFits/fits-ts/android/app/src/debug/AndroidManifest.xml:11:19-83
+44-->/Users/zohaib.shahid/Downloads/works/fits-ts/android/app/src/debug/AndroidManifest.xml:11:19-83
 45            android:exported="false" />
-45-->/Users/zohaib.shahid/Downloads/works/newFits/fits-ts/android/app/src/debug/AndroidManifest.xml:11:84-108
+45-->/Users/zohaib.shahid/Downloads/works/fits-ts/android/app/src/debug/AndroidManifest.xml:11:84-108
 46        <activity
-46-->/Users/zohaib.shahid/Downloads/works/newFits/fits-ts/android/app/src/main/AndroidManifest.xml:12:7-23:18
+46-->/Users/zohaib.shahid/Downloads/works/fits-ts/android/app/src/main/AndroidManifest.xml:12:7-23:18
 47            android:name="com.awesomeproject.MainActivity"
-47-->/Users/zohaib.shahid/Downloads/works/newFits/fits-ts/android/app/src/main/AndroidManifest.xml:13:9-37
+47-->/Users/zohaib.shahid/Downloads/works/fits-ts/android/app/src/main/AndroidManifest.xml:13:9-37
 48            android:configChanges="keyboard|keyboardHidden|orientation|screenLayout|screenSize|smallestScreenSize|uiMode"
-48-->/Users/zohaib.shahid/Downloads/works/newFits/fits-ts/android/app/src/main/AndroidManifest.xml:15:9-118
+48-->/Users/zohaib.shahid/Downloads/works/fits-ts/android/app/src/main/AndroidManifest.xml:15:9-118
 49            android:exported="true"
-49-->/Users/zohaib.shahid/Downloads/works/newFits/fits-ts/android/app/src/main/AndroidManifest.xml:18:9-32
+49-->/Users/zohaib.shahid/Downloads/works/fits-ts/android/app/src/main/AndroidManifest.xml:18:9-32
 50            android:label="@string/app_name"
-50-->/Users/zohaib.shahid/Downloads/works/newFits/fits-ts/android/app/src/main/AndroidManifest.xml:14:9-41
+50-->/Users/zohaib.shahid/Downloads/works/fits-ts/android/app/src/main/AndroidManifest.xml:14:9-41
 51            android:launchMode="singleTask"
-51-->/Users/zohaib.shahid/Downloads/works/newFits/fits-ts/android/app/src/main/AndroidManifest.xml:16:9-40
+51-->/Users/zohaib.shahid/Downloads/works/fits-ts/android/app/src/main/AndroidManifest.xml:16:9-40
 52            android:windowSoftInputMode="adjustResize" >
-52-->/Users/zohaib.shahid/Downloads/works/newFits/fits-ts/android/app/src/main/AndroidManifest.xml:17:9-51
+52-->/Users/zohaib.shahid/Downloads/works/fits-ts/android/app/src/main/AndroidManifest.xml:17:9-51
 53            <intent-filter>
-53-->/Users/zohaib.shahid/Downloads/works/newFits/fits-ts/android/app/src/main/AndroidManifest.xml:19:9-22:25
+53-->/Users/zohaib.shahid/Downloads/works/fits-ts/android/app/src/main/AndroidManifest.xml:19:9-22:25
 54                <action android:name="android.intent.action.MAIN" />
-54-->/Users/zohaib.shahid/Downloads/works/newFits/fits-ts/android/app/src/main/AndroidManifest.xml:20:13-65
-54-->/Users/zohaib.shahid/Downloads/works/newFits/fits-ts/android/app/src/main/AndroidManifest.xml:20:21-62
+54-->/Users/zohaib.shahid/Downloads/works/fits-ts/android/app/src/main/AndroidManifest.xml:20:13-65
+54-->/Users/zohaib.shahid/Downloads/works/fits-ts/android/app/src/main/AndroidManifest.xml:20:21-62
 55
 56                <category android:name="android.intent.category.LAUNCHER" />
-56-->/Users/zohaib.shahid/Downloads/works/newFits/fits-ts/android/app/src/main/AndroidManifest.xml:21:13-73
-56-->/Users/zohaib.shahid/Downloads/works/newFits/fits-ts/android/app/src/main/AndroidManifest.xml:21:23-70
+56-->/Users/zohaib.shahid/Downloads/works/fits-ts/android/app/src/main/AndroidManifest.xml:21:13-73
+56-->/Users/zohaib.shahid/Downloads/works/fits-ts/android/app/src/main/AndroidManifest.xml:21:23-70
 57            </intent-filter>
 58        </activity>
 59
 60        <provider
-60-->[:react-native-image-crop-picker] /Users/zohaib.shahid/Downloads/works/newFits/fits-ts/node_modules/react-native-image-crop-picker/android/build/intermediates/merged_manifest/debug/AndroidManifest.xml:18:9-26:20
+60-->[:react-native-image-crop-picker] /Users/zohaib.shahid/Downloads/works/fits-ts/node_modules/react-native-image-crop-picker/android/build/intermediates/merged_manifest/debug/AndroidManifest.xml:18:9-26:20
 61            android:name="com.reactnative.ivpusic.imagepicker.IvpusicImagePickerFileProvider"
-61-->[:react-native-image-crop-picker] /Users/zohaib.shahid/Downloads/works/newFits/fits-ts/node_modules/react-native-image-crop-picker/android/build/intermediates/merged_manifest/debug/AndroidManifest.xml:19:13-94
+61-->[:react-native-image-crop-picker] /Users/zohaib.shahid/Downloads/works/fits-ts/node_modules/react-native-image-crop-picker/android/build/intermediates/merged_manifest/debug/AndroidManifest.xml:19:13-94
 62            android:authorities="com.awesomeproject.provider"
-62-->[:react-native-image-crop-picker] /Users/zohaib.shahid/Downloads/works/newFits/fits-ts/node_modules/react-native-image-crop-picker/android/build/intermediates/merged_manifest/debug/AndroidManifest.xml:20:13-60
+62-->[:react-native-image-crop-picker] /Users/zohaib.shahid/Downloads/works/fits-ts/node_modules/react-native-image-crop-picker/android/build/intermediates/merged_manifest/debug/AndroidManifest.xml:20:13-60
 63            android:exported="false"
-63-->[:react-native-image-crop-picker] /Users/zohaib.shahid/Downloads/works/newFits/fits-ts/node_modules/react-native-image-crop-picker/android/build/intermediates/merged_manifest/debug/AndroidManifest.xml:21:13-37
+63-->[:react-native-image-crop-picker] /Users/zohaib.shahid/Downloads/works/fits-ts/node_modules/react-native-image-crop-picker/android/build/intermediates/merged_manifest/debug/AndroidManifest.xml:21:13-37
 64            android:grantUriPermissions="true" >
-64-->[:react-native-image-crop-picker] /Users/zohaib.shahid/Downloads/works/newFits/fits-ts/node_modules/react-native-image-crop-picker/android/build/intermediates/merged_manifest/debug/AndroidManifest.xml:22:13-47
+64-->[:react-native-image-crop-picker] /Users/zohaib.shahid/Downloads/works/fits-ts/node_modules/react-native-image-crop-picker/android/build/intermediates/merged_manifest/debug/AndroidManifest.xml:22:13-47
 65            <meta-data
-65-->[:react-native-image-crop-picker] /Users/zohaib.shahid/Downloads/works/newFits/fits-ts/node_modules/react-native-image-crop-picker/android/build/intermediates/merged_manifest/debug/AndroidManifest.xml:23:13-25:78
+65-->[:react-native-image-crop-picker] /Users/zohaib.shahid/Downloads/works/fits-ts/node_modules/react-native-image-crop-picker/android/build/intermediates/merged_manifest/debug/AndroidManifest.xml:23:13-25:78
 66                android:name="android.support.FILE_PROVIDER_PATHS"
-66-->[:react-native-image-crop-picker] /Users/zohaib.shahid/Downloads/works/newFits/fits-ts/node_modules/react-native-image-crop-picker/android/build/intermediates/merged_manifest/debug/AndroidManifest.xml:24:17-67
+66-->[:react-native-image-crop-picker] /Users/zohaib.shahid/Downloads/works/fits-ts/node_modules/react-native-image-crop-picker/android/build/intermediates/merged_manifest/debug/AndroidManifest.xml:24:17-67
 67                android:resource="@xml/ivpusic_imagepicker_provider_paths" />
-67-->[:react-native-image-crop-picker] /Users/zohaib.shahid/Downloads/works/newFits/fits-ts/node_modules/react-native-image-crop-picker/android/build/intermediates/merged_manifest/debug/AndroidManifest.xml:25:17-75
+67-->[:react-native-image-crop-picker] /Users/zohaib.shahid/Downloads/works/fits-ts/node_modules/react-native-image-crop-picker/android/build/intermediates/merged_manifest/debug/AndroidManifest.xml:25:17-75
 68        </provider>
 69
 70        <activity
-70-->[:react-native-image-crop-picker] /Users/zohaib.shahid/Downloads/works/newFits/fits-ts/node_modules/react-native-image-crop-picker/android/build/intermediates/merged_manifest/debug/AndroidManifest.xml:28:9-30:72
+70-->[:react-native-image-crop-picker] /Users/zohaib.shahid/Downloads/works/fits-ts/node_modules/react-native-image-crop-picker/android/build/intermediates/merged_manifest/debug/AndroidManifest.xml:28:9-30:72
 71            android:name="com.yalantis.ucrop.UCropActivity"
-71-->[:react-native-image-crop-picker] /Users/zohaib.shahid/Downloads/works/newFits/fits-ts/node_modules/react-native-image-crop-picker/android/build/intermediates/merged_manifest/debug/AndroidManifest.xml:29:13-60
+71-->[:react-native-image-crop-picker] /Users/zohaib.shahid/Downloads/works/fits-ts/node_modules/react-native-image-crop-picker/android/build/intermediates/merged_manifest/debug/AndroidManifest.xml:29:13-60
 72            android:theme="@style/Theme.AppCompat.Light.NoActionBar" />
-72-->[:react-native-image-crop-picker] /Users/zohaib.shahid/Downloads/works/newFits/fits-ts/node_modules/react-native-image-crop-picker/android/build/intermediates/merged_manifest/debug/AndroidManifest.xml:30:13-69
+72-->[:react-native-image-crop-picker] /Users/zohaib.shahid/Downloads/works/fits-ts/node_modules/react-native-image-crop-picker/android/build/intermediates/merged_manifest/debug/AndroidManifest.xml:30:13-69
 73
 74        <provider
 74-->[androidx.work:work-runtime:2.7.1] /Users/zohaib.shahid/.gradle/caches/transforms-3/dcb624b9163c550f3a17cb4219ba2b64/transformed/work-runtime-2.7.1/AndroidManifest.xml:31:9-39:20

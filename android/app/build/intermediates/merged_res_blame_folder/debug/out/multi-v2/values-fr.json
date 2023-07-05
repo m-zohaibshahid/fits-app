@@ -4,6 +4,23 @@
             "outputFile": "com.awesomeproject.app-mergeDebugResources-37:/values-fr/values-fr.xml",
             "map": [
                 {
+                    "source": "/Users/zohaib.shahid/Downloads/works/fits-ts/node_modules/react-native-date-picker/android/build/intermediates/packaged_res/debug/values-fr/values-fr.xml",
+                    "from": {
+                        "startLines": "2,3,4,5,6,7,8,9,10,11,12",
+                        "startColumns": "4,4,4,4,4,4,4,4,4,4,4",
+                        "startOffsets": "55,119,185,250,317,362,435,484,551,607,657",
+                        "endColumns": "63,65,64,66,44,72,48,66,55,49,66",
+                        "endOffsets": "114,180,245,312,357,430,479,546,602,652,719"
+                    },
+                    "to": {
+                        "startLines": "29,48,49,50,51,52,53,54,55,58,62",
+                        "startColumns": "4,4,4,4,4,4,4,4,4,4,4",
+                        "startOffsets": "2847,5313,5379,5444,5511,5556,5629,5678,5745,5989,6219",
+                        "endColumns": "63,65,64,66,44,72,48,66,55,49,66",
+                        "endOffsets": "2906,5374,5439,5506,5551,5624,5673,5740,5796,6034,6281"
+                    }
+                },
+                {
                     "source": "/Users/zohaib.shahid/.gradle/caches/transforms-3/a350750691e61e796e908b38f4d6bfee/transformed/jetified-play-services-base-18.1.0/res/values-fr/values.xml",
                     "from": {
                         "startLines": "4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20",
@@ -86,23 +103,6 @@
                         "startOffsets": "5888",
                         "endColumns": "100",
                         "endOffsets": "5984"
-                    }
-                },
-                {
-                    "source": "/Users/zohaib.shahid/Downloads/works/newFits/fits-ts/node_modules/react-native-date-picker/android/build/intermediates/packaged_res/debug/values-fr/values-fr.xml",
-                    "from": {
-                        "startLines": "2,3,4,5,6,7,8,9,10,11,12",
-                        "startColumns": "4,4,4,4,4,4,4,4,4,4,4",
-                        "startOffsets": "55,119,185,250,317,362,435,484,551,607,657",
-                        "endColumns": "63,65,64,66,44,72,48,66,55,49,66",
-                        "endOffsets": "114,180,245,312,357,430,479,546,602,652,719"
-                    },
-                    "to": {
-                        "startLines": "29,48,49,50,51,52,53,54,55,58,62",
-                        "startColumns": "4,4,4,4,4,4,4,4,4,4,4",
-                        "startOffsets": "2847,5313,5379,5444,5511,5556,5629,5678,5745,5989,6219",
-                        "endColumns": "63,65,64,66,44,72,48,66,55,49,66",
-                        "endOffsets": "2906,5374,5439,5506,5551,5624,5673,5740,5796,6034,6281"
                     }
                 }
             ]

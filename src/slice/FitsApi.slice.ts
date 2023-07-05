@@ -137,3 +137,5 @@ export const {
   useGetUsersQuery,
   useTrainerSessionQuery,
 } = fitsApi;
+
+// http://localhost:8080/api/register
