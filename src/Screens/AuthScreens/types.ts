@@ -1,7 +1,7 @@
 export interface SignUpFormValues {
     email: string;
     password: string;
-    confirmPassword: string;
+    confirmPassword?: string;
     role: string;
 }
 

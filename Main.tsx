@@ -11,7 +11,6 @@ import SignIn from "./src/Screens/AuthScreens/SignInScreen";
 import ForgotPassword from "./src/Screens/AuthScreens/ForgotPasswordScreen";
 import ForgotCode from "./src/Screens/AuthScreens/ForgotCodeScreen";
 import GeneratePassword from "./src/Screens/AuthScreens/GeneratePasswordScreen";
-import Verification from "./src/Screens/AuthScreens/VerificationScreen";
 import CheckUser from "./src/Screens/AuthScreens/CheckUserScreen";
 import PersonalInfo from "./src/Screens/AuthScreens/PersonalInfoScreen";
 import ProfessionalInfo from "./src/Screens/AuthScreens/ProfessionalInfoScreen";
