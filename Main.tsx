@@ -4,43 +4,13 @@ import { NavigationContainer } from "@react-navigation/native";
 import { createStackNavigator } from "@react-navigation/stack";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import Splash from "./src/Screens/AuthScreens/SplashScreen";
-import Welcome from "./src/Screens/AuthScreens/WelcomeScreen/";
-import SelectStatusScreen from "./src/Screens/AuthScreens/SelectStatusScreen";
-import SignUp from "./src/Screens/AuthScreens/SignUpScreen";
-import SignIn from "./src/Screens/AuthScreens/SignInScreen";
-import ForgotPassword from "./src/Screens/AuthScreens/ForgotPasswordScreen";
-import ForgotCode from "./src/Screens/AuthScreens/ForgotCodeScreen";
-import GeneratePassword from "./src/Screens/AuthScreens/GeneratePasswordScreen";
-import CheckUser from "./src/Screens/AuthScreens/CheckUserScreen";
-import PersonalInfo from "./src/Screens/AuthScreens/PersonalInfoScreen";
-import ProfessionalInfo from "./src/Screens/AuthScreens/ProfessionalInfoScreen";
-import ServicesOffered from "./src/Screens/AuthScreens/ServicesOfferedScreen";
-import FitnessLevel from "./src/Screens/AuthScreens/FitnessLevelScreen";
-import FitnessGoal from "./src/Screens/AuthScreens/FitnessGoalScreen";
 {
   /*Start Trainer Screen*/
 }
 
-import TrainerTabb from "./src/Screens/TrainerScreens/TrainerBottomTabScreen";
-import CreateBookSession from "./src/Screens/TrainerScreens/CreateBookSessionScreen";
-import CreateRecorderClass from "./src/Screens/TrainerScreens/CreateRecorderSession";
-import VideoCreate from "./src/Screens/TrainerScreens/VideoCreateScreen";
-import EnterChatTrainer from "./src/Screens/TrainerScreens/EnterChatScreen";
-import TrainerPayment from "./src/Screens/TrainerScreens/TrainerPaymentScreen";
-import TrainerWallet from "./src/Screens/TrainerScreens/WalletScreen";
-import TrainerCreateCard from "./src/Screens/TrainerScreens/CreateCardScreen";
 
-import TraineeTabb from "./src/Screens/TraineeScreens/TraineeBottomTabScreen";
-import TrainerDetail from "./src/Screens/TraineeScreens/TrainerDetail";
-import BookSessionPayment from "./src/Screens/TraineeScreens/BookSessionPayment";
-import WalletForTrainee from "./src/Screens/TraineeScreens/WalletForTrainee";
-import CreateCardTrainee from "./src/Screens/TraineeScreens/CreateCardScreen";
 import Toast from "react-native-toast-message";
 import { toastConfig } from "./src/constants/ToastConfig";
-import AccountUpdate from "./src/Screens/AuthScreens/AccountUpdate";
-import TrainerVerification from "./src/Screens/TrainerScreens/TrainerVerification";
-import UpdateProfessioninfo from "./src/Screens/AuthScreens/UpdateProfessioninfo";
-import EnterChatforTrainee from "./src/Screens/TraineeScreens/EnterChatforTrainee";
 import { url } from "./src/constants/url";
 import { useSelector } from "react-redux";
 import { styles } from "./style";

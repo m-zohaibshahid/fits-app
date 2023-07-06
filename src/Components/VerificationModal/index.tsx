@@ -1,14 +1,14 @@
-import React, { useState, useEffect } from 'react';
-import { View, Pressable, StyleSheet, Platform, Modal, Dimensions } from 'react-native';
-import { CodeField, Cursor, useBlurOnFulfill, useClearByFocusCell } from 'react-native-confirmation-code-field';
+import React, { useState, useEffect, useRef } from 'react';
+import { View, Pressable, StyleSheet, Platform, Modal, Alert } from 'react-native';
+import { CodeField, Cursor } from 'react-native-confirmation-code-field';
 import Button from '../Button';
-import {  useNavigation, useRoute } from '@react-navigation/native';
+import {  useNavigation } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Typography from '../typography/text';
 import { RFValue } from 'react-native-responsive-fontsize';
-import Header from '../Header';
-import { url } from '../../constants/url';
 import Colors from '../../constants/Colors';
+import { useCodeVerifyMutation, useResendVarificationCodeMutation } from '../../slice/FitsApi.slice';
+import { errorToast } from '../../utils/toast';
 
 interface VerificationScreenProps {
   isVisible: boolean;
@@ -18,148 +18,76 @@ interface VerificationScreenProps {
 const VarificationModal: React.FC<VerificationScreenProps> = ({ isVisible, onClose }) => {
   // Hooks
   const navigation = useNavigation()
-  const route = useRoute();
-  const [email, setEmail] = useState('');
-  const [code, setCode] = useState('');
+  const email = useRef()
+  const [varificationCode, setVarificationCode] = useState('');
   const CELL_COUNT = 5;
-  const [value, setValue] = useState('');
-  const ref = useBlurOnFulfill({ value, cellCount: CELL_COUNT });
-  const [props, getCellOnLayoutHandler] = useClearByFocusCell({ value, setValue });
-  const [loadx, setLoadx] = useState(false);
-  const [codetime, setCodeTime] = useState(true);
-  const [time, setTime] = useState(0);
-  const [canResend, setCanResend] = useState(false);
-  const [loadxx, setLoadxx] = useState(false);
+  const [inputValue, setInputValue] = useState('');
+  const [remainingTime, setRemainingTime] = useState(0);
+  const [mutateAsyncVarification, { isLoading }] = useCodeVerifyMutation();
+  const [mutateAsyncResendCode] = useResendVarificationCodeMutation();
 
   // Functions
-  const otpSent = () => {
-    setCanResend(false);
-    setTime(30);
+  
 
-    setTimeout(() => {
-      setCanResend(true);
-      setCodeTime(false);
-    }, 30 * 1000);
-
-    const timerId = setInterval(() => {
-      setTime(prevTime => prevTime - 1);
-    }, 1000);
-
-    return () => {
-      clearInterval(timerId);
-    };
-  };
+  useEffect(() => {
+    const timerId = setInterval(() => setRemainingTime(prevTime => prevTime - 1), 1000)
+    return () => clearInterval(timerId);
+  }, [])
 
   // Effect
   useEffect(() => {
-    otpSent();
+    setRemainingTime(30);
   }, []);
 
-  const getUserInfo = async () => {
-    const userData = await AsyncStorage.getItem('userData') as string;
-    const userDatax = JSON.parse(userData) as unknown;
-    setEmail(route.params?.email || userDatax?.data?.email);
-    setCode(route.params?.code || userDatax?.email_message?.code);
+  const getInitialDataFromAsyncStorage = async () => {
+    const userDataInString = await AsyncStorage.getItem('userData') as string;
+    const userData = JSON.parse(userDataInString) as any;
+    email.current = userData.data.email;
+    setVarificationCode(userData.email_message.code)
   };
 
-  const setUpdatedUserInfo = async () => {
-    const userData = await AsyncStorage.getItem('userData') as string;
-    const userDatax = JSON.parse(userData);
-    userDatax.data.emailVerified = true;
-
-    if (userDatax.data.emailVerified === true) {
-      await AsyncStorage.setItem('userData', JSON.stringify(userDatax));
-      navigation.navigate('LoginNow');
+  const handleUpdateUserInfoInAsyncStorage = async () => {
+    const userDataInString = await AsyncStorage.getItem('userData') as string;
+    const userData = JSON.parse(userDataInString) as any;
+    userData.data.emailVerified = true;
+      await AsyncStorage.setItem('userData', JSON.stringify(userData));
     }
-  };
 
-  const verifyCodeCall = async () => {
-    setLoadx(true);
-
-    try {
-      const res = await fetch(`${url}/code-verify`, {
-        method: 'POST',
-        headers: {
-          Accept: 'application/json',
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          email: email,
-          code: value,
-          type: 'verification',
-        }),
-      });
-      const res2 = await res.json();
-
-      setLoadx(false);
-
-      if (res2?.message === 'verified') {
-        setUpdatedUserInfo();
-        Toast.show({
-          type: 'success',
-          text1: 'Verified',
-        });
-      } else if (res2?.message === 'token expired') {
-        Toast.show({
-          type: 'error',
-          text1: 'Code has expired.',
-        });
-      } else {
-        Toast.show({
-          type: 'error',
-          text1: 'Something went Wrong!',
-        });
-      }
-    } catch (err) {
-      setLoadx(false);
-      Toast.show({
-        type: 'error',
-        text1: 'Code has invalid.',
-      });
-      console.log(err);
+  const handleVarification = async () => {
+    setInputValue('');
+    const body = {
+      email: email.current,
+      code: inputValue,
     }
-  };
-
-  const resendCode = async () => {
-    setLoadxx(true);
-
-    try {
-      const res = await fetch(`${url}/resend-email`, {
-        method: 'POST',
-        headers: {
-          Accept: 'application/json',
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          email: email,
-        }),
-      });
-      const res2 = await res.json();
-
-      setLoadxx(false);
-
-      if (res2?.code) {
-        Toast.show({
-          type: 'success',
-          text1: 'OTP sent to your email, check your email',
-        });
-        setCode(res2?.code);
-        setCodeTime(true);
-        otpSent();
-      } else {
-        ToastAndroid.show(res2?.message, ToastAndroid.LONG);
-      }
-    } catch (error) {
-      setLoadxx(false);
-      console.log(error);
+    const result = await mutateAsyncVarification(body) as any
+    if (result.data.message === 'verified') {
+      handleUpdateUserInfoInAsyncStorage()
+      navigation.navigate()
     }
+    
+    
+    if (!!result.error) Alert.alert(result.error.data.message)
+    
+    // setUpdatedUserInfo();
   };
+  
+  const handleResendCode = async () => {
+    setInputValue('');
+    if (remainingTime > 0) return
 
-  // Effects
+    const body = {
+      email: email.current,
+    }
+    const result = await mutateAsyncResendCode(body) as any
+    if (result.data) {
+      setVarificationCode(result.data.code)
+      setRemainingTime(30)
+    }
+    if (!!result.error) Alert.alert(result.error.data.message)
+  }
+
   useEffect(() => {
-    navigation.addListener('focus', () => {
-      getUserInfo();
-    });
+    getInitialDataFromAsyncStorage();
   }, []);
 
   return (
@@ -172,13 +100,11 @@ const VarificationModal: React.FC<VerificationScreenProps> = ({ isVisible, onClo
         <Typography variant='heading' bottom={'mb3'} size={'heading4'} weight='400' color='grayTransparent'>
           Verification code has been sent to your email address
         </Typography>
-        <Typography size={'heading3'}>Please enter this code - {code}</Typography>
+        <Typography size={'heading3'}>Please enter this code - {varificationCode}</Typography>
         <View style={{ marginTop: 20, marginBottom: 38 }}>
           <CodeField
-            ref={ref}
-            {...props}
-            value={value}
-            onChangeText={setValue}
+            value={inputValue}
+            onChangeText={setInputValue}
             cellCount={CELL_COUNT}
             rootStyle={styles.codeFieldRoot}
             keyboardType="number-pad"
@@ -195,29 +121,19 @@ const VarificationModal: React.FC<VerificationScreenProps> = ({ isVisible, onClo
 
         <Button
           label='Next'
-          loader={false}
-          disabled={value.length < 5}
-          onPress={() => {
-            if (!loadx) {
-              verifyCodeCall();
-            }
-          }}
+          loader={isLoading}
+          disabled={isLoading}
+          onPress={handleVarification}
         />
 
         <View style={styles.footerviewmain}>
           <Pressable
-            disabled={codetime}
             style={styles.bottomTextMainRect}
-            onPress={() => {
-              if (!loadxx) {
-                setValue('');
-                resendCode();
-              }
-            }}
+            onPress={handleResendCode}
           >
-            <Typography>Didn’t get verification code?</Typography>
-            <Typography style={{ marginLeft: 4 }} size='paragraph' color={codetime ? 'black' : 'redColor'}>
-              {codetime ? `00:${time}` : '  Resend email'}
+            <Typography>{remainingTime > 0 ? "Resend code in " : "Didn’t get verification code?"}</Typography>
+            <Typography style={{ marginLeft: 4 }} color={remainingTime > 0 ? 'black' : 'redColor'}>
+              {remainingTime > 0 ? `00:${remainingTime}` : '  Resend email'}
             </Typography> 
           </Pressable>
         </View>
