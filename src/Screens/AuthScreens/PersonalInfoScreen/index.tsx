@@ -1,156 +1,96 @@
-import React, { useState, useEffect } from "react";
-import {
-  Text,
-  View,
-  Pressable,
-  TextInput,
-  Modal,
-  Image,
-  ScrollView,
-  ToastAndroid,
-  ActivityIndicator,
-  TouchableOpacity,
-} from "react-native";
+import React, { useState } from "react";
+import {  Text,  View,  Pressable,  Modal,  Image,  ScrollView,  ToastAndroid,  TouchableOpacity,  StyleSheet, Platform,} from "react-native";
 import ImagePicker from "react-native-image-crop-picker";
 import moment from "moment";
 import Entypo from "react-native-vector-icons/Entypo";
 import DatePicker from "react-native-date-picker";
+import * as Yup from 'yup'
 import * as Images from "../../../constants/Images";
 import Header from "../../../Components/Header";
 import Colors from "../../../constants/Colors";
 import Button from "../../../Components/Button";
-import { url } from "../../../constants/url";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import CountryPicker from "react-native-country-picker-modal";
-import styles from "./styles";
-import { Toast } from "react-native-toast-message/lib/src/Toast";
+import { useNavigation } from "@react-navigation/native";
+import TextInput from "../../../Components/Input";
+import Container from "../../../Components/Container";
+import { RFValue } from "react-native-responsive-fontsize";
+import Typography from "../../../Components/typography/text";
+import { useSelector } from "react-redux";
+import { UserDetailInfoInterface } from "../../../interfaces";
+import { usePersonalInfoUpdateMutation } from "../../../slice/FitsApi.slice";
+import { PersonalInfoFormValidationResultInterface, PersonalInfoValidateErrorsIntarface, PersonalInfoValidateSchemaInterface } from "../types";
+import { validateForm } from "../../../utils/validation";
+import { errorToast } from "../../../utils/toast";
 
-const PersonalInfo = ({ navigation }) => {
+export const validationSchema = Yup.object().shape({
+  name: Yup.string().required('Name is required'),
+  date_of_birth: Yup.date().required('Date of birth is required'),
+  country: Yup.string().required('Country is required'),
+  phoneNumber: Yup.string().required('Phone number is required'),
+  state: Yup.string().required('State is required'),
+  city: Yup.string().required('City is required'),
+  gender: Yup.string().required('Gender is required'),
+  profileImage: Yup.string(),
+  confirmPassword: Yup.string().oneOf([Yup.ref('password')], 'Passwords must match'),
+});
+
+
+
+const PersonalInfo = () => {
+  const token: string = useSelector((state: { token: string }) => state.token);
+  const { user } = useSelector((state: {fitsStore: UserDetailInfoInterface}) => state.fitsStore);
   // Hooks
+  const navigation = useNavigation()
   const [modalVisible, setModalVisible] = useState(false);
   const [modalVisibleDate, setModalVisibleDate] = useState(false);
-  const [data, setData] = useState(true);
   const [fullName, setFullName] = useState("");
   const [phoneNumber, setPhoneNumber] = useState("");
   const [date, setDate] = useState(new Date());
   const [country, setCountry] = useState("");
+  const [validationErrors, setValidationErrors] = useState<PersonalInfoValidateErrorsIntarface>({});
   const [state, setState] = useState("");
   const [city, setCity] = useState("");
   const [gender, setGender] = useState("");
-  const [token, setToken] = useState("");
   const [statusOne, setStatusOne] = useState(false);
   const [statusTwo, setStatusTwo] = useState(false);
   const [statusThree, setStatusThree] = useState(false);
   const [image, setImage] = useState("");
   const [cloudImageUrl, setCloudImageUrl] = useState("");
   const [isCountryVisible, setIsCountryVisible] = React.useState(false);
-  const [load, setLoad] = useState(false);
-  const [loadx, setLoadx] = useState(false);
-  const [id, setId] = useState("");
+  const [mutateAsyncPersonalInfoUpdate, { isLoading }] = usePersonalInfoUpdateMutation()
 
   // Functions
   const onPressFlag = () => {
     return setIsCountryVisible(true);
   };
 
-  const getUserInfo = async () => {
-    const userData = await AsyncStorage.getItem("userData");
-    let userDatax = JSON.parse(userData);
-    setToken(userDatax?.access_token);
-    setId(userDatax?.data?._id);
-  };
-
   const TrainerFlow = async () => {
     navigation.navigate("ProfessionalInfo");
   };
+
   const TraineeFlow = async () => {
     navigation.navigate("FitnessLevel");
   };
 
   const personalInfoCall = async () => {
-    setLoad(true);
 
-    await fetch(`${url}/personal`, {
-      method: "POST",
-      headers: {
-        Accept: "application/json",
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
-      body: JSON.stringify({
-        name: fullName,
-        date_of_birth: date,
-        country: country,
-        phoneNumber: phoneNumber,
-        state: state,
-        city: city,
-        gender: gender,
-        profileImage: cloudImageUrl,
-      }),
-    })
-      .then((res) => res.json())
-      .then((res2) => {
-        setLoad(false);
-        if (res2?.message === "personal info create successfully") {
-          userMe();
-        } else {
-          Toast.show({
-            type: "error",
-            text1: "Something Went Wrong!",
-          });
-        }
-      })
-      .catch(() => {
-        setLoad(false);
-        Toast.show({
-          type: "error",
-          text1: "Something Went Wrong!",
-        });
-      });
-  };
+    const formValues: PersonalInfoValidateSchemaInterface = {
+      name: fullName,
+      date_of_birth: date,
+      country: country,
+      phoneNumber: phoneNumber,
+      state: state,
+      city: city,
+      gender: gender,
+      profileImage: cloudImageUrl,
+    };
 
-  const userMe = async () => {
-    setLoad(true);
-
-    await fetch(`${url}/user/me/${id}`, {
-      method: "GET",
-      headers: {
-        Accept: "application/json",
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
-    })
-      .then((res) => res.json())
-      .then((res2) => {
-        setLoad(false);
-        if (res2.success === true) {
-          if (res2.user.role === "trainer") {
-            Toast.show({
-              type: "success",
-              text1: "Personal info created successfully",
-            });
-            TrainerFlow();
-          } else if (res2.user.role === "trainee") {
-            Toast.show({
-              type: "success",
-              text1: "Personal info created successfully",
-            });
-            TraineeFlow();
-          }
-        } else {
-          Toast.show({
-            type: "error",
-            text1: "Something Went Wrong",
-          });
-        }
-      })
-      .catch(() => {
-        setLoad(false);
-        Toast.show({
-          type: "error",
-          text1: "Something Went Wrong",
-        });
-      });
+    const { isValid, errors }: PersonalInfoFormValidationResultInterface = await validateForm(formValues, validationSchema);
+    setValidationErrors(errors);
+    if (isValid) {
+      const result = await mutateAsyncPersonalInfoUpdate(formValues)
+      if (result?.error) errorToast(result?.error?.data?.message) 
+    }
   };
 
   const choosePhotoFromCamera = () => {
@@ -177,7 +117,6 @@ const PersonalInfo = ({ navigation }) => {
   };
 
   const uploadImageOnCloud = async (image) => {
-    setLoadx(true);
     const zzz = new FormData();
     zzz.append("file", image);
     zzz.append("upload_preset", "employeeApp");
@@ -188,178 +127,96 @@ const PersonalInfo = ({ navigation }) => {
     })
       .then((res) => res.json())
       .then((res2) => {
-        setLoadx(false);
         setCloudImageUrl(res2?.url);
       })
       .catch((error) => {
-        setLoadx(false);
         ToastAndroid.show(error, ToastAndroid.LONG);
       });
   };
 
   // Effects
-  useEffect(() => {
-    navigation.addListener("focus", () => {
-      getUserInfo();
-    });
-  }, [getUserInfo]);
+/*   useEffect(() => {
+  }, [getUserInfo]); */
 
   return (
-    <View style={styles.mainContainer}>
-      <Header
-        label={"Peronal Info"}
-        subLabel={"Fill in your details "}
-        navigation={navigation}
-        doubleHeader={true}
-        rightLabelStatus={true}
-        rightLabel={
-          <TouchableOpacity
-            onPress={() => {
-              choosePhotoFromCamera();
+    <Container>
+      <View style={{position: 'relative'}}>
+        <Header label={"Peronal Info"} subLabel={"Fill in your details "}/>
+        <TouchableOpacity
+          style={{position: 'absolute', top: 70, right: 10}}
+          onPress={choosePhotoFromCamera}>
+          {image === "" ? (
+            <Image
+            style={{
+              width: 80,
+              height: 80,
+              borderRadius: 200 / 2,
+              overflow: "hidden",
+              borderWidth: 1,
+              borderColor: "grey",
             }}
-          >
-            {image === "" ? (
-              <Image
-                style={{
-                  width: 80,
-                  height: 80,
-                  borderRadius: 200 / 2,
-                  overflow: "hidden",
-                  borderWidth: 1,
-                  borderColor: "grey",
-                }}
-                source={Images.Profile}
-              />
+            source={Images.Profile}
+            />
             ) : (
               <Image
-                style={styles.imagestyle}
-                source={{
-                  uri: image,
-                }}
+              style={styles.imagestyle}
+              source={{
+                uri: image,
+              }}
               />
-            )}
-          </TouchableOpacity>
-        }
-      />
+              )}
+        </TouchableOpacity>
+      </View>
 
-      {loadx === true ? (
-        <ActivityIndicator size="large" color="#000" />
-      ) : (
-        <ScrollView showsVerticalScrollIndicator={false}>
-          <View style={styles.mainBody}>
-            <View style={styles.inputMainView}>
-              <View style={styles.inputTitleView}>
-                <Text style={styles.inputTitleText}>Full Name</Text>
-              </View>
-              <View style={styles.inputTypeMainView}>
-                <View style={styles.inputTypeView}>
+                <ScrollView showsVerticalScrollIndicator={false}>
                   <TextInput
-                    style={styles.inputTypeStyle}
+                    error={validationErrors.name}
                     placeholder="Enter Name"
-                    placeholderTextColor={Colors.white}
+                    label="Full Name"
                     value={fullName}
                     onChangeText={setFullName}
                   />
-                </View>
-              </View>
-            </View>
-            <TouchableOpacity
-              activeOpacity={0.8}
-              onPress={() => setModalVisibleDate(true)}
-              style={styles.inputMainView}
-            >
-              <View style={styles.inputTitleView}>
-                <Text style={styles.inputTitleText}>Date of birth</Text>
-              </View>
-              <View style={styles.inputTypeMainView}>
-                <View style={styles.inputTypeView}>
                   <TextInput
-                    style={styles.inputTypeStyle}
+                    error={validationErrors.date_of_birth}
+                    handleOnPress={() => setModalVisibleDate(true)}
                     placeholder="Select Date of Birth"
-                    placeholderTextColor={Colors.white}
-                    editable={false}
-                    value={moment(date).format("DD-MM-YYYY")}
-                    onChangeText={setDate}
+                    isEditable={false}
+                    value={moment(date).format("DD-MM-YYYY")} label={"Date of birth"}
                   />
-                </View>
-              </View>
-            </TouchableOpacity>
-            <TouchableOpacity
-              activeOpacity={0.8}
-              onPress={() => onPressFlag()}
-              style={styles.inputMainView}
-            >
-              <View style={styles.inputTitleView}>
-                <Text style={styles.inputTitleText}>Country</Text>
-              </View>
-              <View style={styles.inputTypeMainView}>
-                <View style={styles.inputTypeView}>
-                  <TextInput
-                    style={styles.inputTypeStyle}
-                    placeholderTextColor={Colors.white}
+                    <TextInput
+                    error={validationErrors.country}
+                    label="Country"
                     placeholder="Select Your Country"
                     value={country}
-                    editable={false}
+                      isEditable={false}
+                      handleOnPress={onPressFlag}
                     onChangeText={setCountry}
                   />
-                </View>
-              </View>
-            </TouchableOpacity>
-            <View style={styles.inputMainView}>
-              <View style={styles.inputTitleView}>
-                <Text style={styles.inputTitleText}>Phone Number</Text>
-              </View>
-              <View style={styles.inputTypeMainView}>
-                <View style={styles.inputTypeView}>
-                  <TextInput
-                    style={styles.inputTypeStyle}
-                    keyboardType={"numeric"}
+                    <TextInput
+                      label="Phone Number"
+                    error={validationErrors.phoneNumber}
+                    keyboard={"numeric"}
                     placeholder="Enter your Number"
-                    placeholderTextColor={Colors.white}
                     value={phoneNumber}
                     onChangeText={setPhoneNumber}
                   />
-                </View>
-              </View>
-            </View>
-            <View style={styles.inputMainView}>
-              <View style={styles.inputTitleView}>
-                <Text style={styles.inputTitleText}>State</Text>
-              </View>
-              <View style={styles.inputTypeMainView}>
-                <View style={styles.inputTypeView}>
                   <TextInput
-                    style={styles.inputTypeStyle}
+                    error={validationErrors.state}
                     placeholder="Enter Your State"
-                    placeholderTextColor={Colors.white}
                     value={state}
                     onChangeText={setState}
-                  />
-                </View>
-              </View>
-            </View>
-            <View style={styles.inputMainView}>
-              <View style={styles.inputTitleView}>
-                <Text style={styles.inputTitleText}>City</Text>
-              </View>
-              <View style={styles.inputTypeMainView}>
-                <View style={styles.inputTypeView}>
+                    label={"State"} />
                   <TextInput
-                    style={styles.inputTypeStyle}
+                    error={validationErrors.city}
                     placeholder="Enter Your City"
-                    placeholderTextColor={Colors.white}
                     value={city}
-                    onChangeText={setCity}
+                    onChangeText={setCity} label={"City"}
                   />
-                </View>
-              </View>
-            </View>
-
-            <TouchableOpacity
-              onPress={() => setModalVisible(true)}
-              activeOpacity={0.8}
-              style={styles.inputMainView}
-            >
+                <TouchableOpacity
+                  onPress={() => setModalVisible(true)}
+                  activeOpacity={0.8}
+                  style={styles.inputMainView}
+                >
               <View style={styles.genderTopview}>
                 <View
                   style={{
@@ -377,7 +234,7 @@ const PersonalInfo = ({ navigation }) => {
                     justifyContent: "center",
                   }}
                 >
-                  <Text style={styles.inputnameText}>{gender}</Text>
+                  <Typography color="white" size="heading5">{gender}</Typography>
                 </View>
                 <View style={styles.iconView}>
                   <Entypo
@@ -389,18 +246,13 @@ const PersonalInfo = ({ navigation }) => {
                   />
                 </View>
               </View>
-            </TouchableOpacity>
-            <View style={{ width: "100%", marginVertical: "15%" }}></View>
-          </View>
-
+                </TouchableOpacity>
+              </ScrollView>
           {isCountryVisible && (
             <CountryPicker
               onClose={() => setIsCountryVisible(false)}
               visible={isCountryVisible}
-              onSelect={(value) => {
-                setCountry(value.name);
-              }}
-            />
+            onSelect={(value) => setCountry(value.name)} countryCode={"AF"} />
           )}
 
           {/*Modal Start*/}
@@ -409,9 +261,7 @@ const PersonalInfo = ({ navigation }) => {
               animationType="fade"
               transparent={true}
               visible={modalVisible}
-              onRequestClose={() => {
-                setModalVisible(false);
-              }}
+              onRequestClose={() => setModalVisible(false)}
             >
               <View style={styles.centeredView}>
                 <View style={styles.modalView}>
@@ -430,10 +280,10 @@ const PersonalInfo = ({ navigation }) => {
                           justifyContent: "center",
                         }}
                       >
-                        <Text style={styles.Gendertexts}>
+                        <Typography size={'heading1'}>
                           Gender
-                          <Text style={styles.genderonetext}>(Select one)</Text>
-                        </Text>
+                      <Typography size='medium'>{"  "}(Select one)</Typography>
+                        </Typography>
                       </View>
 
                       <View style={styles.opercard}>
@@ -543,10 +393,7 @@ const PersonalInfo = ({ navigation }) => {
                           <Text style={styles.TextDOB}>Date of Birth</Text>
                         </View>
                         <Pressable
-                          onPress={() => {
-                            setModalVisibleDate(false);
-                            setData(false);
-                          }}
+                          onPress={() => setModalVisibleDate(false)}
                           style={styles.canceldoneView}
                         >
                           <Text style={styles.TextCancelDone}>Done</Text>
@@ -569,35 +416,203 @@ const PersonalInfo = ({ navigation }) => {
             </Modal>
           </View>
           {/* modalVisibleDate End*/}
-        </ScrollView>
-      )}
-      <View
-        style={{
-          paddingVertical: 10,
-          marginBottom: 0,
-          bottom: 0,
-          width: "100%",
-          backgroundColor: Colors.white,
-          position: "absolute",
-          alignItems: "center",
-        }}
-      >
         <Button
-          navigation={navigation}
-          loader={load}
+          loader={isLoading}
           label={"NEXT"}
-          disabled={
-            !fullName || !country || !state || !city || !gender || !phoneNumber
-          }
-          onPress={() => {
-            if (!load) {
-              personalInfoCall();
-            }
-          }}
+          disabled={isLoading}
+          onPress={personalInfoCall}
         />
-      </View>
-    </View>
+    </Container>
   );
 };
 
 export default PersonalInfo;
+
+
+const styles = StyleSheet.create({
+  topView: { width: "90%", alignItems: "center", alignSelf: "center" },
+
+  DatePicker: {
+    height: 250,
+  },
+  opercard: {
+    width: "88%",
+    alignSelf: "center",
+    flexDirection: "row",
+  },
+  box: {
+    width: "50%",
+    alignItems: "flex-start",
+  },
+  BoxViewBoder: {
+    backgroundColor: Colors.black,
+    alignItems: "center",
+    justifyContent: "center",
+    borderWidth: 1,
+    margin: 10,
+    height: 130,
+    width: 130,
+    borderRadius: 25,
+    flexDirection: "column",
+    borderColor: "#ff0000",
+  },
+  box1: {
+    width: "50%",
+    alignItems: "flex-end",
+  },
+  centeredView: {
+    flex: 1,
+    justifyContent: "flex-end",
+    alignItems: "center",
+    opacity: 1,
+  },
+  modalView: {
+    margin: 0,
+    width: "100%",
+    height: "42%",
+    backgroundColor: Colors.white,
+    borderRadius: 7,
+    padding: 0,
+    shadowColor: Colors.black,
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 1,
+    shadowRadius: 6.84,
+    elevation: 7,
+    borderWidth: 1,
+    borderColor: "lightgrey",
+  },
+  modalViewdate: {
+    margin: 0,
+    width: "100%",
+    height: "38%",
+    backgroundColor: Colors.white,
+    borderRadius: 7,
+    padding: 0,
+    shadowColor: Colors.black,
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 1,
+    shadowRadius: 6.84,
+    elevation: 5,
+  },
+  cancelView: {
+    width: "90%",
+    flexDirection: "row",
+    alignSelf: "center",
+    marginTop: 10,
+  },
+
+  TextDOB: {
+    fontSize: RFValue(18, 580),
+    fontFamily: "Poppins-SemiBold",
+    color: Colors.black,
+  },
+  TextCancelDone: {
+    fontFamily: "poppins-Regular",
+    color: Colors.black,
+    fontSize: RFValue(12, 580),
+  },
+
+  inner: {
+    backgroundColor: Colors.black,
+    alignItems: "center",
+    justifyContent: "center",
+    borderWidth: 1,
+    margin: 10,
+    height: 130,
+    width: 130,
+    borderRadius: 25,
+    flexDirection: "column",
+  },
+
+  imagestyle: {
+    width: 80,
+    height: 80,
+    borderRadius: 200 / 2,
+  },
+  genderTopview: {
+    width: "100%",
+    backgroundColor: Colors.black,
+    borderRadius: 10,
+    height: 60,
+    flexDirection: "row",
+  },
+  genderText: {
+    fontSize: RFValue(13, 580),
+    fontFamily: "poppins-regular",
+    color: Colors.white,
+    left: 10,
+  },
+  iconView: {
+    width: "10%",
+    borderColor: "#fff",
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  maletext: {
+    color: Colors.white,
+    fontWeight: "bold",
+    fontSize: RFValue(9, 580),
+    fontFamily: "poppins-regular",
+  },
+  oternameview: {
+    padding: 15,
+    borderRadius: 14,
+    width: "80%",
+    backgroundColor: Colors.black,
+    alignItems: "center",
+    justifyContent: "center",
+    margin: 10,
+  },
+  oternameviewBorder: {
+    padding: 15,
+    borderRadius: 14,
+    width: "80%",
+    backgroundColor: Colors.black,
+    alignItems: "center",
+    justifyContent: "center",
+    margin: 10,
+    borderWidth: 2,
+    borderColor: "#ff0000",
+  },
+  otherText: {
+    color: Colors.white,
+    fontSize: RFValue(16, 580),
+    fontFamily: "poppins-regular",
+  },
+  otherView: {
+    width: "100%",
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  canceldoneView: {
+    width: "20%",
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  DOBView: {
+    width: "60%",
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  inputMainView: {
+    backgroundColor: Colors.black,
+    borderRadius: 8,
+    marginTop: "3%",
+    marginBottom: "3%",
+    justifyContent: "center",
+    alignSelf: "center",
+    height: Platform.OS === "ios" ? 60 : 60,
+  },
+});
+
+
+
+
+
+

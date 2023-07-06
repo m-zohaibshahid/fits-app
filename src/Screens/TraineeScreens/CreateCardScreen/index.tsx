@@ -24,7 +24,6 @@ const CreateCardScreen: React.FC<Props> = ({ navigation }) => {
   const [isDatePickerVisible, setDatePickerVisibility] = useState(false);
   const token: string = useSelector((state: { token: string }) => state.token);
   const { createStripeData } = useSelector((state: any) => state.fitsStore);
-  console.log("createStripeData", createStripeData);
   // Functions
   const showDatePicker = () => {
     setDatePickerVisibility(!isDatePickerVisible);
@@ -76,7 +75,6 @@ const CreateCardScreen: React.FC<Props> = ({ navigation }) => {
         })
         .catch((error) => {
           setLoad(false);
-          console.log(error.message);
         });
     }
   };

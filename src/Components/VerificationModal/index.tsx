@@ -8,19 +8,18 @@ import Typography from '../typography/text';
 import { RFValue } from 'react-native-responsive-fontsize';
 import Colors from '../../constants/Colors';
 import { useCodeVerifyMutation, useResendVarificationCodeMutation } from '../../slice/FitsApi.slice';
-import { errorToast } from '../../utils/toast';
 
 interface VerificationScreenProps {
   isVisible: boolean;
   onClose: () => void;
+  email: string;
+  code: number;
+  afterVarified: () => void;
 }
 
-const VarificationModal: React.FC<VerificationScreenProps> = ({ isVisible, onClose }) => {
-  // Hooks
-  const navigation = useNavigation()
-  const email = useRef()
-  const [varificationCode, setVarificationCode] = useState('');
+const VarificationModal: React.FC<VerificationScreenProps> = ({ isVisible, onClose, email, code, afterVarified }) => {
   const CELL_COUNT = 5;
+  const [varificationCode, setVarificationCode] = useState<number>();
   const [inputValue, setInputValue] = useState('');
   const [remainingTime, setRemainingTime] = useState(0);
   const [mutateAsyncVarification, { isLoading }] = useCodeVerifyMutation();
@@ -39,36 +38,15 @@ const VarificationModal: React.FC<VerificationScreenProps> = ({ isVisible, onClo
     setRemainingTime(30);
   }, []);
 
-  const getInitialDataFromAsyncStorage = async () => {
-    const userDataInString = await AsyncStorage.getItem('userData') as string;
-    const userData = JSON.parse(userDataInString) as any;
-    email.current = userData.data.email;
-    setVarificationCode(userData.email_message.code)
-  };
-
-  const handleUpdateUserInfoInAsyncStorage = async () => {
-    const userDataInString = await AsyncStorage.getItem('userData') as string;
-    const userData = JSON.parse(userDataInString) as any;
-    userData.data.emailVerified = true;
-      await AsyncStorage.setItem('userData', JSON.stringify(userData));
-    }
-
   const handleVarification = async () => {
     setInputValue('');
     const body = {
-      email: email.current,
+      email: email,
       code: inputValue,
     }
     const result = await mutateAsyncVarification(body) as any
-    if (result.data.message === 'verified') {
-      handleUpdateUserInfoInAsyncStorage()
-      navigation.navigate()
-    }
-    
-    
+    if (result?.data?.message === 'verified') afterVarified()
     if (!!result.error) Alert.alert(result.error.data.message)
-    
-    // setUpdatedUserInfo();
   };
   
   const handleResendCode = async () => {
@@ -76,7 +54,7 @@ const VarificationModal: React.FC<VerificationScreenProps> = ({ isVisible, onClo
     if (remainingTime > 0) return
 
     const body = {
-      email: email.current,
+      email: email,
     }
     const result = await mutateAsyncResendCode(body) as any
     if (result.data) {
@@ -87,7 +65,7 @@ const VarificationModal: React.FC<VerificationScreenProps> = ({ isVisible, onClo
   }
 
   useEffect(() => {
-    getInitialDataFromAsyncStorage();
+    setVarificationCode(code)
   }, []);
 
   return (

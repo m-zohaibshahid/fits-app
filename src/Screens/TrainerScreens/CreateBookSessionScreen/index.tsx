@@ -372,7 +372,6 @@ const BookSession = ({ navigation }) => {
         setImage(file.path);
       })
       .catch((err) => {
-        console.log(err);
       });
   };
   const uploadImageOnCloud = async (image) => {
@@ -391,7 +390,6 @@ const BookSession = ({ navigation }) => {
         setCloudImageUrl(res2?.url);
       })
       .catch((err) => {
-        console.log("error--->", err);
       });
   };
   const userMe = async () => {

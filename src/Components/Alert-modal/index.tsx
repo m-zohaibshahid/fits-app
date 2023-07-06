@@ -1,8 +1,7 @@
 import React from 'react';
-import { View, Text, Modal, Platform, StyleSheet, TouchableOpacity } from 'react-native';
+import { View, Modal, StyleSheet, TouchableOpacity } from 'react-native';
 import Button from '../Button';
 import Colors from '../../constants/Colors';
-import { TextStyle, ViewStyle } from 'react-native';
 import Typography from '../typography/text';
 
 interface ModelProps {

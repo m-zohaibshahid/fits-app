@@ -207,7 +207,6 @@ const Home = ({ navigation }: any) => {
       })
       .catch((error) => {
         setLoad(false);
-        console.log("stripe account error", error);
       });
   };
 
@@ -312,7 +311,6 @@ const Home = ({ navigation }: any) => {
         const textData = t?.toUpperCase();
         return itemData.indexOf(textData) > -1;
       });
-      console.log("first");
       setFilterData(newData);
     }
   };

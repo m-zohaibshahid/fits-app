@@ -137,7 +137,6 @@ const UploadVideo = ({ navigation }) => {
         .catch((error) => {
           setLoad(false);
           ToastAndroid.show("Something Went Wrong");
-          console.log(error);
         });
     }
   };
@@ -156,7 +155,6 @@ const UploadVideo = ({ navigation }) => {
         setVideo(file.path);
       })
       .catch((err) => {
-        console.log(err);
       });
   };
 
@@ -179,7 +177,6 @@ const UploadVideo = ({ navigation }) => {
       })
       .catch((err) => {
         setLoadx(false);
-        console.log("catch" + err);
       });
   };
 

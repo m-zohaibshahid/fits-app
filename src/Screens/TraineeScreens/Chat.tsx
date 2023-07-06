@@ -76,7 +76,6 @@ const Chat = () => {
       .catch((error) => {
         setLoad(false);
         Alert.alert("Something Went Wrong");
-        console.log(error);
       });
   };
   const find = (t) => {

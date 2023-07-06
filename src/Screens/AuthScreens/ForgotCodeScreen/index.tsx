@@ -71,7 +71,6 @@ const ForgotCode = () => {
             type: "error",
             text1: error,
           });
-          console.log(error);
         });
     }
   };
@@ -108,7 +107,6 @@ const ForgotCode = () => {
       .catch((error) => {
         setLoad(false);
         Alert.alert("Something Went Wrong");
-        console.log(error);
       });
   };
   useEffect(() => {

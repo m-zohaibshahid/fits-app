@@ -48,9 +48,6 @@ const TrainerVerification = ({ navigation }) => {
         uploadImageOnCloud(newFile);
         setImage(file.path);
       })
-      .catch((err) => {
-        console.log(err);
-      });
   };
 
   const [cloudImageUrl, setCloudImageUrl] = useState("");
@@ -68,10 +65,6 @@ const TrainerVerification = ({ navigation }) => {
       .then((res2) => {
         setCloudImageUrl(res2?.url);
       })
-      .catch((err) => {
-        //setLoadx(false);
-        console.log("error--->", err);
-      });
   };
   const upLoadVideoInfo = async () => {
     if (details === "") {
@@ -111,7 +104,6 @@ const TrainerVerification = ({ navigation }) => {
           .catch((error) => {
             setLoad(false);
             Alert.alert("Something Went Wrong");
-            console.log(error);
           });
     }
   };

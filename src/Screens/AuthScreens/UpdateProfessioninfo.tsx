@@ -94,7 +94,6 @@ const UpdateProfessioninfo = ({ navigation }) => {
         .catch((error) => {
           setLoad(false);
           Alert.alert("Something Went Wrong");
-          console.log(error);
         });
     }
   };

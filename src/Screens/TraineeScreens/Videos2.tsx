@@ -44,7 +44,6 @@ const Videos2 = ({ navigation }) => {
         })
         .catch((error) => {
           ToastAndroid("errrrror")
-          console.log(error);
         });
     }
   };
@@ -68,9 +67,6 @@ const Videos2 = ({ navigation }) => {
           ToastAndroid.show(res2.message, ToastAndroid.LONG);
         }
       })
-      .catch((error) => {
-        console.log(error);
-      });
   };
 
   const NextScreen = (price, video_links) => {

@@ -58,7 +58,6 @@ const ForgotPassword = () => {
           Toast.show({
             type: 'error'
           });
-          console.log(error);
         });
     }
   };

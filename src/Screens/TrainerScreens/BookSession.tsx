@@ -359,9 +359,6 @@ const BookSession = ({ navigation }) => {
         uploadImageOnCloud(newFile);
         setImage(file.path);
       })
-      .catch((err) => {
-        console.log(err);
-      });
   };
   const uploadImageOnCloud = async (image) => {
     const zzz = new FormData();

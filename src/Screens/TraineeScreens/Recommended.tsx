@@ -44,9 +44,6 @@ const Recommended = ({ navigation, superLong, superLat }) => {
           Alert.alert(res2.errors);
         }
       })
-      .catch((error) => {
-        console.log(error);
-      });
   };
   const dummyData = (id, item) => {
     const check = personalInfoData.find((data) => data?.user === id);

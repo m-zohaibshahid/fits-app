@@ -3,6 +3,8 @@ import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 import { url } from "../constants/url";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { LoginInterface } from "./store.interface";
+import { useSelector } from "react-redux";
+import { getUserAsyncStroageToken } from "../utils/async-storage";
 
 // Define a service using a base URL and expected endpoints
 export const fitsApi = createApi({
@@ -10,28 +12,30 @@ export const fitsApi = createApi({
   baseQuery: fetchBaseQuery({
     baseUrl: url,
     prepareHeaders: async (headers: Headers) => {
-      const userToken: string | null = await AsyncStorage.getItem("userData");
-      let token;
-      if (userToken) {
-        token = JSON.parse(userToken ?? "");
-      }
-      if (token?.access_token) {
-        headers.set("Authorization", `Bearer ${token.access_token}`);
-      }
+      const token = await getUserAsyncStroageToken()
+      headers.set("Authorization", `Bearer ${token}`);
       return headers;
     },
   }),
   // keepUnusedDataFor: 30,
   endpoints: (builder) => ({
+
     getUsers: builder.query<any[], void>({
       query: () => "users",
     }),
+
     getUserMe: builder.query<any, Partial<any>>({
       keepUnusedDataFor: 30,
-      query: (id) => `/user/me/${id}`,
+      query: (id) => {
+        if (!id) return '';
+        return {
+          url: `/user/me/${id}`,
+          method: 'GET',
+        };
+      },
     }),
 
-    registerUser: builder.mutation<LoginInterface, Partial<any>>({
+    registerUser: builder.mutation<any, Partial<any>>({
       query: (body) => ({
         url: "/register",
         method: "POST",
@@ -109,7 +113,6 @@ export const fitsApi = createApi({
       }),
     }),
 
-    //updatePassword
     updatePassword: builder.mutation<void, Partial<any>>({
       query: ({ id, ...data }) => ({
         url: `/profile/edit/password/${id}`,
@@ -118,22 +121,24 @@ export const fitsApi = createApi({
       }),
     }),
 
-    //user Me
     sessions: builder.query<void, Partial<any>>({
       query: () => "/session",
     }),
 
-    //Connect account link
     connectAccountLink: builder.query<void, Partial<any>>({
       query: () => "/stripe/connect/accountLink",
     }),
 
-    // }),
-
-    //trainer screen api
-
     trainerSession: builder.query<any, Partial<any>>({
       query: (id) => `/session/trainer/${id}`,
+    }),
+
+    personalInfoUpdate: builder.mutation<any, Partial<any>>({
+      query: (body) => ({
+        url: "/personal",
+        method: "POST",
+        body: body,
+      }),
     }),
   }),
 });
@@ -155,6 +160,5 @@ export const {
   useGetUserMeQuery,
   useGetUsersQuery,
   useTrainerSessionQuery,
+  usePersonalInfoUpdateMutation,
 } = fitsApi;
-
-// http://localhost:8080/api/register
