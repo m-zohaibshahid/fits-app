@@ -18,7 +18,6 @@ import { useNavigation } from "@react-navigation/native";
 
 const SignInScreen = () => {
   const navigation = useNavigation();
-  const [hidePass, setHidePass] = useState(true);
   const [email, setEmail] = useState(""); //abbastrainer1@yopmail.com
   const [password, setPassword] = useState(""); //Abbas110@
   const [load, setLoad] = useState(false);

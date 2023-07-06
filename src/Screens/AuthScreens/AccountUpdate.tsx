@@ -37,11 +37,11 @@ const AccountUpdate = () => {
   const [image, setImage] = useState("");
   const [cloudImageUrl, setCloudImageUrl] = useState("");
   const [userDatax, setUserDatax] = useState();
-
+  console.log("date................", date);
   const [isCountryVisible, setIsCountryVisible] = React.useState(false);
 
   const { userInfo } = useSelector((state: { fitsStore: Partial<UserDetail> }) => state.fitsStore);
-  const { data: userMeData } = useGetUserMeQuery({ id: userInfo?._id });
+  const { data: userMeData, refetch, isLoading } = useGetUserMeQuery({ id: userInfo?._id });
 
   const [load, setLoad] = useState(false);
   const [loadx, setLoadx] = useState(false);
@@ -66,8 +66,6 @@ const AccountUpdate = () => {
     setIsCountryVisible(true);
   };
 
-  const CELL_COUNT = 5;
-  const value = "";
   const GoBack = () => {
     navigation.goBack();
   };
@@ -98,12 +96,15 @@ const AccountUpdate = () => {
     })
       .then((res) => res.json())
       .then((res2) => {
-        setLoad(false);
-        if (res2.success) {
-          userApiCalling(res2.data);
-          GoBack();
-        } else {
-          ToastAndroid.show(res2.message, ToastAndroid.LONG);
+        refetch();
+        if (isLoading) {
+          setLoad(false);
+          if (res2.success) {
+            userApiCalling(res2.data);
+            GoBack();
+          } else {
+            ToastAndroid.show(res2.message, ToastAndroid.LONG);
+          }
         }
       })
       .catch(() => {
@@ -135,14 +136,14 @@ const AccountUpdate = () => {
 
   const uploadImageOnCloud = async (image: { uri: string; type: string; name: string } | undefined) => {
     setLoadx(true);
-    const zzz = new FormData();
-    zzz.append("file", image);
-    zzz.append("upload_preset", "employeeApp");
-    zzz.append("cloud_name", "ZACodders");
+    const cloudImage = new FormData();
+    cloudImage.append("file", image);
+    cloudImage.append("upload_preset", "employeeApp");
+    cloudImage.append("cloud_name", "ZACodders");
 
     await fetch("https://api.cloudinary.com/v1_1/ZACodders/image/upload", {
       method: "POST",
-      body: zzz,
+      body: cloudImage,
     })
       .then((res) => res.json())
       .then((res2) => {
@@ -154,6 +155,8 @@ const AccountUpdate = () => {
         Alert.alert(err.message);
       });
   };
+  // Assuming date is in the format "YYYY-MM-DD" e.g., "2023-07-06"
+  const validDate = moment(date, "YYYY-MM-DD");
 
   // user Me api
   const userMe = async () => {
@@ -186,9 +189,9 @@ const AccountUpdate = () => {
           <View style={styles.PersonalinfoView}>
             <View style={{ width: "60%", alignItems: "flex-start" }}>
               <TouchableOpacity
-                onPress={() => {
-                  uploadImageOnCloud();
-                }}
+              // onPress={() => {
+              //   uploadImageOnCloud();
+              // }}
               >
                 <Text style={styles.PersonalinfoText}>Personal Info</Text>
               </TouchableOpacity>
@@ -200,7 +203,7 @@ const AccountUpdate = () => {
                   choosePhotoFromCamera();
                 }}
               >
-                {image === "" ? (
+                {!image ? (
                   <Image
                     style={{
                       width: 80,
@@ -268,7 +271,7 @@ const AccountUpdate = () => {
                     height: 40,
                   }}
                 >
-                  <Text style={styles.DateText}>{moment(date).format("DD-MM-YYYY")}</Text>
+                  <Text style={styles.DateText}>{moment(validDate, "DD/MM/YYYY").format("DD-MM-YYYY")}</Text>
                 </View>
               </Pressable>
             </View>
@@ -357,8 +360,8 @@ const AccountUpdate = () => {
             <CountryPicker
               onClose={() => setIsCountryVisible(false)}
               visible={isCountryVisible}
-              onSelect={(value) => {
-                setCountry(value.name);
+              onSelect={(value: { name: string }) => {
+                setCountry(value?.name);
               }}
             />
           )}
@@ -497,7 +500,14 @@ const AccountUpdate = () => {
                       </View>
 
                       <View style={styles.topView}>
-                        <DatePicker mode="date" textColor="#000" date={date} style={styles.DatePicker} onDateChange={setDate} />
+                        {/* <DatePicker mode="date" textColor="#000" date={date ? new Date(date) : new Date()} style={styles.DatePicker} onDateChange={setDate} /> */}
+
+                        <DatePicker
+                          mode="date"
+                          date={date ? new Date(date) : new Date()}
+                          onDateChange={setDate}
+                          maximumDate={new Date(new Date().getFullYear() - 15, new Date().getMonth(), new Date().getDate())} // Set the maximum date to 18 years ago
+                        />
                       </View>
                     </View>
                   </ScrollView>

@@ -6,8 +6,13 @@ import { RFValue } from "react-native-responsive-fontsize";
 import { url } from "../../constants/url";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { getDistance } from "geolib";
-
-const Recommended = ({ navigation, superLong, superLat }) => {
+import { NavigationSwitchProp } from "react-navigation";
+interface Props {
+  navigation: NavigationSwitchProp;
+  superLong: any;
+  superLat: any;
+}
+const Recommended: React.FC<Props> = ({ navigation, superLong, superLat }) => {
   const [data, setData] = useState([]);
   const [personalInfoData, setPersonalInfoData] = useState([]);
   const [professionalData, setProfessionalData] = useState([]);
@@ -48,7 +53,7 @@ const Recommended = ({ navigation, superLong, superLat }) => {
         console.log(error);
       });
   };
-  const dummyData = (id, item) => {
+  const dummyData = (id: any, item: any) => {
     const check = personalInfoData.find((data) => data?.user === id);
     const checkx = professionalData.find((data) => data?.user === id);
     if (check === undefined) {
@@ -70,7 +75,7 @@ const Recommended = ({ navigation, superLong, superLat }) => {
   //   navigation.navigate("TrainerDetail");
   // };
 
-  const getDistanceGoogle = (lat, lng) => {
+  const getDistanceGoogle = (lat: any, lng: any) => {
     let dis;
     dis = getDistance({ latitude: lat, longitude: lng }, { latitude: superLat, longitude: superLong });
 
@@ -78,7 +83,7 @@ const Recommended = ({ navigation, superLong, superLat }) => {
 
     return distanceInKM;
   };
-  const getDistanceFunction = (data) => {
+  const getDistanceFunction = (data: any) => {
     let dummy = [...data];
     dummy.map((item, i) => {
       var dis = getDistanceGoogle(item.session_type.lat, item.session_type.lng);

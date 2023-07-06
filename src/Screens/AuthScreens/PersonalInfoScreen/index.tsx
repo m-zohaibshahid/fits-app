@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { Text, View, Pressable, TextInput, Modal, Image, ScrollView, ToastAndroid, ActivityIndicator, TouchableOpacity } from "react-native";
 import ImagePicker from "react-native-image-crop-picker";
 import moment from "moment";
@@ -113,12 +113,6 @@ const PersonalInfo: React.FC<Props> = ({ navigation }) => {
         text1: "Something Went Wrong",
       });
     }
-    // .catch(() => {
-    //   Toast.show({
-    //     type: "error",
-    //     text1: "Something Went Wrong",
-    //   });
-    // });
   };
 
   const choosePhotoFromCamera = () => {
@@ -460,7 +454,7 @@ const PersonalInfo: React.FC<Props> = ({ navigation }) => {
                       </View>
 
                       <View style={styles.topView}>
-                        <DatePicker mode="date" textColor="#000" date={date} style={styles.DatePicker} onDateChange={setDate} />
+                        <DatePicker mode="date" textColor="#000" date={date ? new Date(date) : new Date()} style={styles.DatePicker} onDateChange={setDate} />
                       </View>
                     </View>
                   </ScrollView>

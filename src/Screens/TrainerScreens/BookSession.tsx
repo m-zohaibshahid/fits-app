@@ -282,12 +282,12 @@ const BookSession = ({ navigation }) => {
         });
     }
   };
-  const upValue = (value, index) => {
+  const upValue = (value: string, index: number) => {
     let oldEquipment = [...equipment];
     oldEquipment[index].value = value;
     setEquipment(oldEquipment);
   };
-  const delEquipment = (value) => {
+  const delEquipment = (value: string) => {
     let oldEquipment = [...equipment];
     let newEquipment = oldEquipment.filter((item) => item.value !== value);
     setEquipment(newEquipment);
@@ -301,7 +301,7 @@ const BookSession = ({ navigation }) => {
 
     setEquipment(oldEquipment);
   };
-  const UseTemplate = (item) => {
+  const UseTemplate = (item: never) => {
     if (item?.session_type?.type === "recorded") {
       Recorded(item);
       setModalVisibleTopSelect("false");
@@ -313,7 +313,16 @@ const BookSession = ({ navigation }) => {
       setModalVisibleTopSelect("false");
     }
   };
-  const Physical = (item) => {
+  const Physical = (item: {
+    class_title: React.SetStateAction<string>;
+    duration: React.SetStateAction<undefined>;
+    details: React.SetStateAction<string>;
+    price: React.SetStateAction<undefined>;
+    session_title: React.SetStateAction<string>;
+    class_time: React.SetStateAction<string>;
+    no_of_slots: React.SetStateAction<number>;
+    sports: React.SetStateAction<string>;
+  }) => {
     setClassTitle(item?.class_title);
     setDuration(item?.duration);
 
@@ -325,7 +334,17 @@ const BookSession = ({ navigation }) => {
     setSlots(item?.no_of_slots);
     setSport(item?.sports);
   };
-  const Online = (item) => {
+  const Online = (item: {
+    class_title: React.SetStateAction<string>;
+    duration: React.SetStateAction<undefined>;
+    details: React.SetStateAction<string>;
+    price: React.SetStateAction<undefined>;
+    session_title: React.SetStateAction<string>;
+    session_type: { meetingLink: React.SetStateAction<string> };
+    class_time: React.SetStateAction<string>;
+    no_of_slots: React.SetStateAction<number>;
+    sports: React.SetStateAction<string>;
+  }) => {
     setClassTitle(item?.class_title);
     setDuration(item?.duration);
     setDescription(item?.details);
@@ -337,7 +356,7 @@ const BookSession = ({ navigation }) => {
     // setEquipment(item?.equipment[0]?.value);
     setSport(item?.sports);
   };
-  const Recorded = (item) => {
+  const Recorded = (item: { class_title: React.SetStateAction<string>; duration: React.SetStateAction<undefined> }) => {
     setClassTitle(item?.class_title);
     setDuration(item?.duration);
   };
@@ -363,7 +382,7 @@ const BookSession = ({ navigation }) => {
         console.log(err);
       });
   };
-  const uploadImageOnCloud = async (image) => {
+  const uploadImageOnCloud = async (image: { uri: string; type: string; name: string }) => {
     const zzz = new FormData();
     zzz.append("file", image);
     zzz.append("upload_preset", "employeeApp");
@@ -408,7 +427,7 @@ const BookSession = ({ navigation }) => {
         ToastAndroid.show(error, ToastAndroid.LONG);
       });
   };
-  const detailsInfoCall = (item, i) => {
+  const detailsInfoCall = (item: never, i: number) => {
     let dummy = [...data];
     if (dummy[i].status == true) {
       dummy.forEach((item) => (item.status = false));
@@ -1164,7 +1183,7 @@ const BookSession = ({ navigation }) => {
                         }}
                         mode="time"
                         minuteInterval={3}
-                        onTimeChange={(selectedTime) => setTime(selectedTime)}
+                        onTimeChange={(selectedTime: React.SetStateAction<string>) => setTime(selectedTime)}
                       />
                     </View>
                   </View>
