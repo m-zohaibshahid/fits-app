@@ -21,7 +21,6 @@ import { useSelector } from "react-redux";
 
 const AccountUpdate = () => {
   const navigation = useNavigation();
-  const { userInfo } = useSelector((state: { fitsStore: Partial<UserDetail> }) => state.fitsStore);
   const [modalVisible, setModalVisible] = useState(false);
   const [modalVisibleDate, setModalVisibleDate] = useState(false);
   const [fullName, setFullName] = useState("");
@@ -41,6 +40,7 @@ const AccountUpdate = () => {
 
   const [isCountryVisible, setIsCountryVisible] = React.useState(false);
 
+  const { userInfo } = useSelector((state: { fitsStore: Partial<UserDetail> }) => state.fitsStore);
   const { data: userMeData } = useGetUserMeQuery({ id: userInfo?._id });
 
   const [load, setLoad] = useState(false);
@@ -226,7 +226,7 @@ const AccountUpdate = () => {
         </View>
       </View>
       {/*Header rect end*/}
-      {loadx === true ? (
+      {loadx ? (
         <View style={{ width: "100%", marginTop: 200, alignItems: "center" }}>
           <FastImage
             style={{

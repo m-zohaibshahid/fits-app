@@ -1,8 +1,7 @@
 import React, { useState, useEffect } from "react";
-import { Text, View, ImageBackground, Pressable, StyleSheet, TextInput, Modal, Image, ScrollView, ToastAndroid, ActivityIndicator, Platform } from "react-native";
-import { CodeField, Cursor, useBlurOnFulfill, useClearByFocusCell } from "react-native-confirmation-code-field";
+import { Text, View, Pressable, StyleSheet, TextInput, ScrollView, ToastAndroid, ActivityIndicator, Platform } from "react-native";
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from "react-native-responsive-screen";
-import { RFPercentage, RFValue } from "react-native-responsive-fontsize";
+import { RFValue } from "react-native-responsive-fontsize";
 import Ionicons from "react-native-vector-icons/Ionicons";
 import AntDesign from "react-native-vector-icons/AntDesign";
 import Header from "../../Components/Header";
@@ -11,8 +10,11 @@ import Button from "../../Components/Button";
 import { url } from "../../constants/url";
 import { useRoute } from "@react-navigation/native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-
-const UpdateProfessioninfo = ({ navigation }) => {
+import { NavigationSwitchProp } from "react-navigation";
+interface Props {
+  navigation: NavigationSwitchProp;
+}
+const UpdateProfessioninfo: React.FC<Props> = ({ navigation }) => {
   const route = useRoute();
 
   const [qualification, setQualification] = useState([
@@ -32,17 +34,11 @@ const UpdateProfessioninfo = ({ navigation }) => {
     navigation.goBack();
   };
 
-  // useEffect(() => {
-  //   navigation.addListener('focus', () => {
-  //     getPersonalData();
-  //   });
-  // }, [getPersonalData]);
-
   useEffect(() => {
     navigation.addListener("focus", () => {
       getUserInfo();
     });
-  }, [getUserInfo]);
+  }, []);
 
   const getUserInfo = async () => {
     const userData = await AsyncStorage.getItem("userData");

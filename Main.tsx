@@ -12,6 +12,8 @@ import { UnauthenticatedStack } from "./src/stacks/unauthenticated.stack";
 import AuthenticatedStack from "./src/stacks/authenticated.stack";
 import { clearToken, setToken } from "./src/slice/token.slice";
 import { getUserAsyncStroage } from "./src/common/AsyncStorage";
+import WelcomeScreen from "./src/Screens/AuthScreens/WelcomeScreen";
+import { setUserInfo } from "./src/slice/FitsSlice.store";
 
 const AuthContext = createContext({});
 const Stack = createStackNavigator();
@@ -70,6 +72,7 @@ const App = () => {
       const userData = await getUserAsyncStroage();
       dispatch({ type: "RESTORE_TOKEN", token: userToken });
       userDispatch(setToken(userData?.access_token));
+      userDispatch(setUserInfo(userData?.data));
       setIsLoading(false);
     } catch (e) {
       // Restoring token failed
@@ -94,14 +97,14 @@ const App = () => {
     []
   );
   const renderNavigation = () => {
-    console.log("object,", isLoading);
-    // if (isLoading) {
-    //   return (
-    //     <Stack.Navigator>
-    //       <Stack.Screen name="Splash" component={Splash} options={{ headerShown: false }} />
-    //     </Stack.Navigator>
-    //   );
-    // }
+    if (isLoading) {
+      return (
+        <Stack.Navigator>
+          <Stack.Screen name="Splash" component={Splash} options={{ headerShown: false }} />
+        </Stack.Navigator>
+      );
+    }
+
     if (!token) {
       return <UnauthenticatedStack />;
     }

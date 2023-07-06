@@ -1,16 +1,5 @@
 import React, { useState, useEffect } from "react";
-import {
-  Text,
-  View,
-  Pressable,
-  TextInput,
-  Modal,
-  Image,
-  ScrollView,
-  ToastAndroid,
-  ActivityIndicator,
-  TouchableOpacity,
-} from "react-native";
+import { Text, View, Pressable, TextInput, Modal, Image, ScrollView, ToastAndroid, ActivityIndicator, TouchableOpacity } from "react-native";
 import ImagePicker from "react-native-image-crop-picker";
 import moment from "moment";
 import Entypo from "react-native-vector-icons/Entypo";
@@ -20,16 +9,21 @@ import Header from "../../../Components/Header";
 import Colors from "../../../constants/Colors";
 import Button from "../../../Components/Button";
 import { url } from "../../../constants/url";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import CountryPicker from "react-native-country-picker-modal";
 import styles from "./styles";
 import { Toast } from "react-native-toast-message/lib/src/Toast";
+import { useSelector } from "react-redux";
+import { useGetUserMeQuery } from "../../../slice/FitsApi.slice";
+import { UserDetail } from "../../../interfaces";
+import { NavigationSwitchProp } from "react-navigation";
+interface Props {
+  navigation: NavigationSwitchProp;
+}
 
-const PersonalInfo = ({ navigation }) => {
+const PersonalInfo: React.FC<Props> = ({ navigation }) => {
   // Hooks
   const [modalVisible, setModalVisible] = useState(false);
   const [modalVisibleDate, setModalVisibleDate] = useState(false);
-  const [data, setData] = useState(true);
   const [fullName, setFullName] = useState("");
   const [phoneNumber, setPhoneNumber] = useState("");
   const [date, setDate] = useState(new Date());
@@ -37,27 +31,20 @@ const PersonalInfo = ({ navigation }) => {
   const [state, setState] = useState("");
   const [city, setCity] = useState("");
   const [gender, setGender] = useState("");
-  const [token, setToken] = useState("");
   const [statusOne, setStatusOne] = useState(false);
   const [statusTwo, setStatusTwo] = useState(false);
   const [statusThree, setStatusThree] = useState(false);
   const [image, setImage] = useState("");
   const [cloudImageUrl, setCloudImageUrl] = useState("");
   const [isCountryVisible, setIsCountryVisible] = React.useState(false);
-  const [load, setLoad] = useState(false);
   const [loadx, setLoadx] = useState(false);
-  const [id, setId] = useState("");
 
+  const token: string = useSelector((state: { token: string }) => state.token);
+  const { userInfo } = useSelector((state: { fitsStore: Partial<UserDetail> }) => state.fitsStore);
+  const { data: userMeData, isLoading: load } = useGetUserMeQuery({ id: userInfo?._id });
   // Functions
   const onPressFlag = () => {
     return setIsCountryVisible(true);
-  };
-
-  const getUserInfo = async () => {
-    const userData = await AsyncStorage.getItem("userData");
-    let userDatax = JSON.parse(userData);
-    setToken(userDatax?.access_token);
-    setId(userDatax?.data?._id);
   };
 
   const TrainerFlow = async () => {
@@ -68,8 +55,6 @@ const PersonalInfo = ({ navigation }) => {
   };
 
   const personalInfoCall = async () => {
-    setLoad(true);
-
     await fetch(`${url}/personal`, {
       method: "POST",
       headers: {
@@ -90,7 +75,6 @@ const PersonalInfo = ({ navigation }) => {
     })
       .then((res) => res.json())
       .then((res2) => {
-        setLoad(false);
         if (res2?.message === "personal info create successfully") {
           userMe();
         } else {
@@ -101,7 +85,6 @@ const PersonalInfo = ({ navigation }) => {
         }
       })
       .catch(() => {
-        setLoad(false);
         Toast.show({
           type: "error",
           text1: "Something Went Wrong!",
@@ -110,47 +93,32 @@ const PersonalInfo = ({ navigation }) => {
   };
 
   const userMe = async () => {
-    setLoad(true);
-
-    await fetch(`${url}/user/me/${id}`, {
-      method: "GET",
-      headers: {
-        Accept: "application/json",
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
-    })
-      .then((res) => res.json())
-      .then((res2) => {
-        setLoad(false);
-        if (res2.success === true) {
-          if (res2.user.role === "trainer") {
-            Toast.show({
-              type: "success",
-              text1: "Personal info created successfully",
-            });
-            TrainerFlow();
-          } else if (res2.user.role === "trainee") {
-            Toast.show({
-              type: "success",
-              text1: "Personal info created successfully",
-            });
-            TraineeFlow();
-          }
-        } else {
-          Toast.show({
-            type: "error",
-            text1: "Something Went Wrong",
-          });
-        }
-      })
-      .catch(() => {
-        setLoad(false);
+    if (userMeData.success === true) {
+      if (userMeData.user.role === "trainer") {
         Toast.show({
-          type: "error",
-          text1: "Something Went Wrong",
+          type: "success",
+          text1: "Personal info created successfully",
         });
+        TrainerFlow();
+      } else if (userMeData.user.role === "trainee") {
+        Toast.show({
+          type: "success",
+          text1: "Personal info created successfully",
+        });
+        TraineeFlow();
+      }
+    } else {
+      Toast.show({
+        type: "error",
+        text1: "Something Went Wrong",
       });
+    }
+    // .catch(() => {
+    //   Toast.show({
+    //     type: "error",
+    //     text1: "Something Went Wrong",
+    //   });
+    // });
   };
 
   const choosePhotoFromCamera = () => {
@@ -176,15 +144,15 @@ const PersonalInfo = ({ navigation }) => {
       });
   };
 
-  const uploadImageOnCloud = async (image) => {
+  const uploadImageOnCloud = async (image: { uri: string; type: string; name: string }) => {
     setLoadx(true);
-    const zzz = new FormData();
-    zzz.append("file", image);
-    zzz.append("upload_preset", "employeeApp");
-    zzz.append("cloud_name", "ZACodders");
+    const imageUploadOnCloud = new FormData();
+    imageUploadOnCloud.append("file", image);
+    imageUploadOnCloud.append("upload_preset", "employeeApp");
+    imageUploadOnCloud.append("cloud_name", "ZACodders");
     await fetch("https://api.cloudinary.com/v1_1/ZACodders/image/upload", {
       method: "POST",
-      body: zzz,
+      body: imageUploadOnCloud,
     })
       .then((res) => res.json())
       .then((res2) => {
@@ -196,13 +164,6 @@ const PersonalInfo = ({ navigation }) => {
         ToastAndroid.show(error, ToastAndroid.LONG);
       });
   };
-
-  // Effects
-  useEffect(() => {
-    navigation.addListener("focus", () => {
-      getUserInfo();
-    });
-  }, [getUserInfo]);
 
   return (
     <View style={styles.mainContainer}>
@@ -253,21 +214,11 @@ const PersonalInfo = ({ navigation }) => {
               </View>
               <View style={styles.inputTypeMainView}>
                 <View style={styles.inputTypeView}>
-                  <TextInput
-                    style={styles.inputTypeStyle}
-                    placeholder="Enter Name"
-                    placeholderTextColor={Colors.white}
-                    value={fullName}
-                    onChangeText={setFullName}
-                  />
+                  <TextInput style={styles.inputTypeStyle} placeholder="Enter Name" placeholderTextColor={Colors.white} value={fullName} onChangeText={setFullName} />
                 </View>
               </View>
             </View>
-            <TouchableOpacity
-              activeOpacity={0.8}
-              onPress={() => setModalVisibleDate(true)}
-              style={styles.inputMainView}
-            >
+            <TouchableOpacity activeOpacity={0.8} onPress={() => setModalVisibleDate(true)} style={styles.inputMainView}>
               <View style={styles.inputTitleView}>
                 <Text style={styles.inputTitleText}>Date of birth</Text>
               </View>
@@ -284,24 +235,13 @@ const PersonalInfo = ({ navigation }) => {
                 </View>
               </View>
             </TouchableOpacity>
-            <TouchableOpacity
-              activeOpacity={0.8}
-              onPress={() => onPressFlag()}
-              style={styles.inputMainView}
-            >
+            <TouchableOpacity activeOpacity={0.8} onPress={() => onPressFlag()} style={styles.inputMainView}>
               <View style={styles.inputTitleView}>
                 <Text style={styles.inputTitleText}>Country</Text>
               </View>
               <View style={styles.inputTypeMainView}>
                 <View style={styles.inputTypeView}>
-                  <TextInput
-                    style={styles.inputTypeStyle}
-                    placeholderTextColor={Colors.white}
-                    placeholder="Select Your Country"
-                    value={country}
-                    editable={false}
-                    onChangeText={setCountry}
-                  />
+                  <TextInput style={styles.inputTypeStyle} placeholderTextColor={Colors.white} placeholder="Select Your Country" value={country} editable={false} onChangeText={setCountry} />
                 </View>
               </View>
             </TouchableOpacity>
@@ -328,13 +268,7 @@ const PersonalInfo = ({ navigation }) => {
               </View>
               <View style={styles.inputTypeMainView}>
                 <View style={styles.inputTypeView}>
-                  <TextInput
-                    style={styles.inputTypeStyle}
-                    placeholder="Enter Your State"
-                    placeholderTextColor={Colors.white}
-                    value={state}
-                    onChangeText={setState}
-                  />
+                  <TextInput style={styles.inputTypeStyle} placeholder="Enter Your State" placeholderTextColor={Colors.white} value={state} onChangeText={setState} />
                 </View>
               </View>
             </View>
@@ -344,22 +278,12 @@ const PersonalInfo = ({ navigation }) => {
               </View>
               <View style={styles.inputTypeMainView}>
                 <View style={styles.inputTypeView}>
-                  <TextInput
-                    style={styles.inputTypeStyle}
-                    placeholder="Enter Your City"
-                    placeholderTextColor={Colors.white}
-                    value={city}
-                    onChangeText={setCity}
-                  />
+                  <TextInput style={styles.inputTypeStyle} placeholder="Enter Your City" placeholderTextColor={Colors.white} value={city} onChangeText={setCity} />
                 </View>
               </View>
             </View>
 
-            <TouchableOpacity
-              onPress={() => setModalVisible(true)}
-              activeOpacity={0.8}
-              style={styles.inputMainView}
-            >
+            <TouchableOpacity onPress={() => setModalVisible(true)} activeOpacity={0.8} style={styles.inputMainView}>
               <View style={styles.genderTopview}>
                 <View
                   style={{
@@ -447,11 +371,7 @@ const PersonalInfo = ({ navigation }) => {
                             setStatusThree(false);
                           }}
                         >
-                          <View
-                            style={[
-                              statusOne ? styles.BoxViewBoder : styles.inner,
-                            ]}
-                          >
+                          <View style={[statusOne ? styles.BoxViewBoder : styles.inner]}>
                             <Image source={Images.Vector} />
                             <Text style={styles.maletext}>Male</Text>
                           </View>
@@ -467,11 +387,7 @@ const PersonalInfo = ({ navigation }) => {
                             setStatusThree(false);
                           }}
                         >
-                          <View
-                            style={[
-                              statusTwo ? styles.BoxViewBoder : styles.inner,
-                            ]}
-                          >
+                          <View style={[statusTwo ? styles.BoxViewBoder : styles.inner]}>
                             <Image source={Images.Vector2} />
                             <Text style={styles.maletext}>Female</Text>
                           </View>
@@ -494,13 +410,7 @@ const PersonalInfo = ({ navigation }) => {
                             setStatusThree(true);
                           }}
                         >
-                          <View
-                            style={[
-                              statusThree
-                                ? styles.oternameviewBorder
-                                : styles.oternameview,
-                            ]}
-                          >
+                          <View style={[statusThree ? styles.oternameviewBorder : styles.oternameview]}>
                             <Text style={styles.otherText}>Other</Text>
                           </View>
                         </Pressable>
@@ -533,10 +443,7 @@ const PersonalInfo = ({ navigation }) => {
                       }}
                     >
                       <View style={styles.cancelView}>
-                        <Pressable
-                          onPress={() => setModalVisibleDate(false)}
-                          style={styles.canceldoneView}
-                        >
+                        <Pressable onPress={() => setModalVisibleDate(false)} style={styles.canceldoneView}>
                           <Text style={styles.TextCancelDone}>Cancel</Text>
                         </Pressable>
                         <View style={styles.DOBView}>
@@ -545,7 +452,6 @@ const PersonalInfo = ({ navigation }) => {
                         <Pressable
                           onPress={() => {
                             setModalVisibleDate(false);
-                            setData(false);
                           }}
                           style={styles.canceldoneView}
                         >
@@ -554,13 +460,7 @@ const PersonalInfo = ({ navigation }) => {
                       </View>
 
                       <View style={styles.topView}>
-                        <DatePicker
-                          mode="date"
-                          textColor="#000"
-                          date={date}
-                          style={styles.DatePicker}
-                          onDateChange={setDate}
-                        />
+                        <DatePicker mode="date" textColor="#000" date={date} style={styles.DatePicker} onDateChange={setDate} />
                       </View>
                     </View>
                   </ScrollView>
@@ -583,12 +483,9 @@ const PersonalInfo = ({ navigation }) => {
         }}
       >
         <Button
-          navigation={navigation}
           loader={load}
           label={"NEXT"}
-          disabled={
-            !fullName || !country || !state || !city || !gender || !phoneNumber
-          }
+          disabled={!fullName || !country || !state || !city || !gender || !phoneNumber}
           onPress={() => {
             if (!load) {
               personalInfoCall();
