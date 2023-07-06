@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useEffect, useMemo, useReducer } from "react";
+import React, { createContext, useContext, useEffect, useMemo, useReducer, useState } from "react";
 import { SafeAreaView, View } from "react-native";
 import { NavigationContainer } from "@react-navigation/native";
 import { createStackNavigator } from "@react-navigation/stack";
@@ -10,7 +10,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { styles } from "./style";
 import { UnauthenticatedStack } from "./src/stacks/unauthenticated.stack";
 import AuthenticatedStack from "./src/stacks/authenticated.stack";
-import { setToken } from "./src/slice/token.slice";
+import { clearToken, setToken } from "./src/slice/token.slice";
 import { getUserAsyncStroage } from "./src/common/AsyncStorage";
 
 const AuthContext = createContext({});
@@ -25,6 +25,7 @@ export function LoginNow() {
   return <View>{Loginx()}</View>;
 }
 const App = () => {
+  const [isLoading, setIsLoading] = useState(false);
   const token: string = useSelector((state: { token: string }) => state.token);
   const userDispatch = useDispatch();
 
@@ -57,17 +58,19 @@ const App = () => {
       userToken: null,
     }
   );
-
+  console.log("state", state);
   useEffect(() => {
     bootstrapAsync();
   }, []);
   const bootstrapAsync = async () => {
     let userToken;
     try {
+      setIsLoading(true);
       userToken = await AsyncStorage.getItem("userToken");
       const userData = await getUserAsyncStroage();
       dispatch({ type: "RESTORE_TOKEN", token: userToken });
       userDispatch(setToken(userData?.access_token));
+      setIsLoading(false);
     } catch (e) {
       // Restoring token failed
       throw new Error("Could not retrieve user token from storage");
@@ -78,7 +81,12 @@ const App = () => {
       Loginx: () => {
         dispatch({ type: "SIGN_IN", token: "dummy-auth-token" });
       },
-      signOut: () => dispatch({ type: "SIGN_OUT" }),
+      signOut: () => {
+        userDispatch(clearToken());
+
+        dispatch({ type: "SIGN_OUT" });
+      },
+
       signUp: async () => {
         dispatch({ type: "SIGN_IN", token: "dummy-auth-token" });
       },
@@ -86,13 +94,14 @@ const App = () => {
     []
   );
   const renderNavigation = () => {
-    if (state.isLoading) {
-      return (
-        <Stack.Navigator>
-          <Stack.Screen name="Splash" component={Splash} options={{ headerShown: false }} />
-        </Stack.Navigator>
-      );
-    }
+    console.log("object,", isLoading);
+    // if (isLoading) {
+    //   return (
+    //     <Stack.Navigator>
+    //       <Stack.Screen name="Splash" component={Splash} options={{ headerShown: false }} />
+    //     </Stack.Navigator>
+    //   );
+    // }
     if (!token) {
       return <UnauthenticatedStack />;
     }

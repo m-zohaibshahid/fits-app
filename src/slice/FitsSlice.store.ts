@@ -1,6 +1,5 @@
 import { createSlice } from "@reduxjs/toolkit";
 import { UserDetailInfoInterface } from "../interfaces";
-import { string } from "yup";
 
 interface CounterState {
   isLoading: boolean;

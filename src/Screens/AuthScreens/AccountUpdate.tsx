@@ -681,7 +681,6 @@ const styles = StyleSheet.create({
     opacity: 1,
   },
   modalViewCountry: {
-    margin: 0,
     width: "95%",
     height: "60%",
     margin: 5,
