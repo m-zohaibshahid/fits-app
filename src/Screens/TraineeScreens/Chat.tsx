@@ -3,12 +3,13 @@ import { Text, View, TouchableOpacity, StyleSheet, TextInput, ScrollView, Image,
 import EvilIcons from "react-native-vector-icons/EvilIcons";
 import { RFValue } from "react-native-responsive-fontsize";
 import { url } from "../../constants/url";
-import { useRoute } from "@react-navigation/native";
+import { useNavigation, useRoute } from "@react-navigation/native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
-const Chat = ({ navigation }) => {
+const Chat = () => {
+  const navigation = useNavigation()
   const route = useRoute();
-  const NextScreen = (item) => {
+  const NextScreen = (item: any) => {
     navigation.navigate("EnterChatforTrainee", {
       roomId: item._id,
       receiverName: item.receiverName,
@@ -24,17 +25,19 @@ const Chat = ({ navigation }) => {
   const [search, setSearch] = useState("");
   const [m, setM] = useState("");
 
+
+
+  const getUserInfo = async () => {
+    const userData = await AsyncStorage.getItem("userData") as string
+    let userDatax = JSON.parse(userData);
+    setToken(userDatax?.access_token);
+  };
+
   useEffect(() => {
     navigation.addListener("focus", () => {
       getUserInfo();
     });
   }, [getUserInfo]);
-
-  const getUserInfo = async () => {
-    const userData = await AsyncStorage.getItem("userData");
-    let userDatax = JSON.parse(userData);
-    setToken(userDatax?.access_token);
-  };
 
   useEffect(() => {
     navigation.addListener("focus", () => {
@@ -83,7 +86,7 @@ const Chat = ({ navigation }) => {
       setM("");
       setData(dumdata);
     } else {
-      const newData = words.filter((item) => {
+      const newData = words.filter((item: any) => {
         const itemData = `${item?.item?.toUpperCase()} ${item?.receiverName?.toUpperCase()}`;
         const textData = t?.toUpperCase();
         return itemData.indexOf(textData) > -1;
@@ -174,7 +177,7 @@ const Chat = ({ navigation }) => {
               </View>
             ) : (
               <View>
-                {data?.map((item, i) => (
+                {data?.map((item: any, i: number) => (
                   <View
                     style={{
                       width: "100%",
@@ -183,7 +186,7 @@ const Chat = ({ navigation }) => {
                       paddingVertical: 10,
                       borderColor: "grey",
                     }}
-                    key={i}
+                    key={item._id}
                   >
                     <View style={styles.chatmainview}>
                       <View style={{ width: "20%", justifyContent: "center" }}>
