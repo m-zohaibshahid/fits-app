@@ -46,6 +46,22 @@ export const fitsApi = createApi({
       }),
     }),
 
+    codeVerify: builder.mutation<any, Partial<any>>({
+      query: (body) => ({
+        url: "/code-verify",
+        method: "POST",
+        body: body,
+      }),
+    }),
+
+    resendVarificationCode: builder.mutation<any, Partial<any>>({
+      query: (body) => ({
+        url: "/resend-email",
+        method: "POST",
+        body: body,
+      }),
+    }),
+
     stripeCustomer: builder.mutation<any, Partial<any>>({
       query: (body) => ({
         url: "/stripe/customer",
@@ -131,6 +147,8 @@ export const {
   useStripeCustomerMutation,
   useUpdateFilterMutation,
   useCreateStripeCardMutation,
+  useCodeVerifyMutation,
+  useResendVarificationCodeMutation,
   useSessionsQuery,
   useConnectAccountLinkQuery,
   useGetUserMeQuery,

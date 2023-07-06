@@ -43,6 +43,8 @@ const SignUpScreen: React.FC<Props> = ({ navigation }) => {
 
     if (isValid) {
       delete formValues.confirmPassword;
+      console.log(formValues, "{{{{{{{{{{{{{{{{{{{{{{{{{{{{");
+      
       const result = await registerUser(formValues) as any
       console.log({result})
       if (result.data.register) {
@@ -50,13 +52,6 @@ const SignUpScreen: React.FC<Props> = ({ navigation }) => {
         setIsVarificationModalVisible(true)
       }
       if (result.error) errorToast(result.error.data.message)
-      /* if (result?.data?.message === 'success') { 
-        storeUserData(JSON.stringify(result));
-        setIsVarificationModalVisible(true)
-      } else if (result?.error?.data?.message === 'Already Have An Account, Please SignIn!'){
-        errorToast(result?.error?.data?.message)
-        setIsAlertModalVisible(true);
-      } */
     }
   }
 
@@ -66,11 +61,6 @@ const SignUpScreen: React.FC<Props> = ({ navigation }) => {
     }
   }, [isError])
       
-  /* const handleModelButtonClick = () => {
-    setIsAlertModalVisible(false);
-    navigation.navigate('SignIn');
-  }; */
-
   return (
     <Container>
       <Header label={"Let's start here"} subLabel={"Fill in your details to begin"} />
@@ -89,7 +79,7 @@ const SignUpScreen: React.FC<Props> = ({ navigation }) => {
       </View>
       
       {/* <AlertModal visible={isAlertModalVisible} onClick={handleModelButtonClick} onRequestClose={() => setIsAlertModalVisible(false)} title={'Title here'} message={'Already have an account? Please sign in!'} /> */}
-      <VarificationModal isVisible={isVarificationModalVisible} onClose={() => setIsVarificationModalVisible} />
+      {isVarificationModalVisible ? <VarificationModal isVisible={isVarificationModalVisible} onClose={() => setIsVarificationModalVisible} /> : null}
     </Container>
   );
 };
