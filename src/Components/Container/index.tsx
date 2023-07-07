@@ -1,6 +1,6 @@
-import React, { ReactNode } from 'react';
-import { Platform, SafeAreaView, StyleSheet, ViewStyle, ImageBackground } from 'react-native';
-import * as Images from '../../constants/Images';
+import React, { ReactNode } from "react";
+import { Platform, SafeAreaView, StyleSheet, ViewStyle, ImageBackground } from "react-native";
+import * as Images from "../../constants/Images";
 
 interface Props {
   children: ReactNode;
@@ -13,7 +13,7 @@ const Container = ({ children, style, backgroundImage }: Props) => {
 
   if (backgroundImage) {
     return (
-      <ImageBackground source={{uri: Images.welcomeBgImage}} style={containerStyle}>
+      <ImageBackground source={{ uri: Images.welcomeBgImage }} style={containerStyle}>
         <SafeAreaView style={containerStyle}>{children}</SafeAreaView>
       </ImageBackground>
     );

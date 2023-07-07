@@ -1,21 +1,8 @@
 import React, { useState, useEffect } from "react";
-import {
-  Text,
-  View,
-  Pressable,
-  StyleSheet,
-  TextInput,
-  ScrollView,
-  ToastAndroid,
-  ActivityIndicator,
-  Platform,
-} from "react-native";
+import { Text, View, Pressable, StyleSheet, TextInput, ScrollView, ToastAndroid, ActivityIndicator, Platform } from "react-native";
 import Colors from "../../../constants/Colors";
 import VideoPlayer from "react-native-video-player";
-import {
-  widthPercentageToDP as wp,
-  heightPercentageToDP as hp,
-} from "react-native-responsive-screen";
+import { widthPercentageToDP as wp, heightPercentageToDP as hp } from "react-native-responsive-screen";
 import ImagePicker from "react-native-image-crop-picker";
 import { RFValue } from "react-native-responsive-fontsize";
 import Header from "../../../Components/Header";
@@ -73,9 +60,6 @@ const VideoCreateScreen = ({ navigation }) => {
         uploadImageOnCloud(newFile);
         setVideo(file.path);
       })
-      .catch((err) => {
-        console.log(err);
-      });
   };
 
   const chooseImageFromCamera = () => {
@@ -91,9 +75,6 @@ const VideoCreateScreen = ({ navigation }) => {
         uploadImageOnCloud(newFile);
         setImage(file.path);
       })
-      .catch((err) => {
-        console.log(err);
-      });
   };
 
   const uploadImageOnCloud = async (image) => {
@@ -114,7 +95,6 @@ const VideoCreateScreen = ({ navigation }) => {
       })
       .catch((err) => {
         setLoadx(false);
-        console.log("catch" + err);
       });
   };
   const upLoadVideoInfo = async () => {
@@ -151,12 +131,11 @@ const VideoCreateScreen = ({ navigation }) => {
           if (res2.message === "created successfully") {
             GoBack();
           } else {
-            alert(res2?.errors?.email);
+            Alert.alert(res2?.errors?.email);
           }
         })
         .catch((error) => {
           setLoad(false);
-          console.log(error);
         });
     }
   };
@@ -326,9 +305,7 @@ const VideoCreateScreen = ({ navigation }) => {
               </View>
               {/*end pricing */}
             </View>
-            <View
-              style={{ width: "100%", alignItems: "center", marginTop: 20 }}
-            >
+            <View style={{ width: "100%", alignItems: "center", marginTop: 20 }}>
               <View style={{ width: "90%" }}>
                 <View style={{ width: "100%", flexDirection: "row" }}>
                   <View style={{ width: "60%" }}>
@@ -365,11 +342,7 @@ const VideoCreateScreen = ({ navigation }) => {
               <View style={{ width: "90%", flexDirection: "row" }}>
                 <View style={styles.BoxviewWidth1}>
                   <Pressable
-                    style={
-                      statusOne
-                        ? styles.BoxShadowView
-                        : styles.BoxShadowViewBorder
-                    }
+                    style={statusOne ? styles.BoxShadowView : styles.BoxShadowViewBorder}
                     onPress={() => {
                       setStatusOne(true);
                       setValue("Cardio/Abs");
@@ -385,11 +358,7 @@ const VideoCreateScreen = ({ navigation }) => {
                 </View>
                 <View style={styles.BoxviewWidth2}>
                   <Pressable
-                    style={
-                      statusTwo
-                        ? styles.BoxShadowView
-                        : styles.BoxShadowViewBorder
-                    }
+                    style={statusTwo ? styles.BoxShadowView : styles.BoxShadowViewBorder}
                     onPress={() => {
                       setStatusOne(false);
                       setValue("No Equipment Home Exercise");
@@ -407,11 +376,7 @@ const VideoCreateScreen = ({ navigation }) => {
                 </View>
                 <View style={styles.BoxviewWidth3}>
                   <Pressable
-                    style={
-                      statusThree
-                        ? styles.BoxShadowView
-                        : styles.BoxShadowViewBorder
-                    }
+                    style={statusThree ? styles.BoxShadowView : styles.BoxShadowViewBorder}
                     onPress={() => {
                       setStatusOne(false);
                       setValue("Learn Technique");
@@ -431,11 +396,7 @@ const VideoCreateScreen = ({ navigation }) => {
               <View style={{ width: "90%", flexDirection: "row" }}>
                 <View style={styles.BoxviewWidth1}>
                   <Pressable
-                    style={
-                      statusFour
-                        ? styles.BoxShadowView
-                        : styles.BoxShadowViewBorder
-                    }
+                    style={statusFour ? styles.BoxShadowView : styles.BoxShadowViewBorder}
                     onPress={() => {
                       setStatusOne(false);
                       setValue("Strength Building Workout");
@@ -453,11 +414,7 @@ const VideoCreateScreen = ({ navigation }) => {
                 </View>
                 <View style={styles.BoxviewWidth2}>
                   <Pressable
-                    style={
-                      statusFive
-                        ? styles.BoxShadowView
-                        : styles.BoxShadowViewBorder
-                    }
+                    style={statusFive ? styles.BoxShadowView : styles.BoxShadowViewBorder}
                     onPress={() => {
                       setStatusOne(false);
                       setValue("Fat Burning Workout");
@@ -475,11 +432,7 @@ const VideoCreateScreen = ({ navigation }) => {
                 </View>
                 <View style={styles.BoxviewWidth3}>
                   <Pressable
-                    style={
-                      statusSix
-                        ? styles.BoxShadowView
-                        : styles.BoxShadowViewBorder
-                    }
+                    style={statusSix ? styles.BoxShadowView : styles.BoxShadowViewBorder}
                     onPress={() => {
                       setStatusOne(false);
                       setValue("Mental Health & Nutritiion");
@@ -497,13 +450,9 @@ const VideoCreateScreen = ({ navigation }) => {
                 </View>
               </View>
             </View>
-            <View
-              style={{ width: "100%", alignItems: "center", marginTop: 40 }}
-            >
+            <View style={{ width: "100%", alignItems: "center", marginTop: 40 }}>
               <View style={{ width: "90%" }}>
-                <Text style={{ fontSize: RFValue(18, 580), color: "#000" }}>
-                  Any specific details
-                </Text>
+                <Text style={{ fontSize: RFValue(18, 580), color: "#000" }}>Any specific details</Text>
               </View>
             </View>
             <View

@@ -1,14 +1,5 @@
 import React, { useState, useEffect } from "react";
-import {
-  Text,
-  View,
-  StyleSheet,
-  ScrollView,
-  Pressable,
-  ActivityIndicator,
-  Platform,
-  Linking,
-} from "react-native";
+import { Text, View, StyleSheet, ScrollView, Pressable, ActivityIndicator, Platform, Linking } from "react-native";
 import AntDesign from "react-native-vector-icons/AntDesign";
 import FontAwesome from "react-native-vector-icons/FontAwesome";
 import { RFValue } from "react-native-responsive-fontsize";
@@ -16,8 +7,11 @@ import Header from "../../../Components/Header";
 import Button from "../../../Components/Button";
 import { url } from "../../../constants/url";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-
-const WalletScreen = ({ navigation }) => {
+import { NavigationSwitchProp } from "react-navigation";
+interface Props {
+  navigation: NavigationSwitchProp;
+}
+const WalletScreen: React.FC<Props> = ({ navigation }) => {
   const [details, setDetails] = useState(false);
   const [load, setLoad] = useState(false);
 
@@ -27,6 +21,7 @@ const WalletScreen = ({ navigation }) => {
     setLoad(true);
     const userData = await AsyncStorage.getItem("userData");
     let userDatax = JSON.parse(userData);
+
     if (userDatax) {
       await fetch(`${url}/user/me/${userDatax?.data?._id}`, {
         method: "GET",
@@ -46,12 +41,11 @@ const WalletScreen = ({ navigation }) => {
         })
         .catch((error) => {
           setLoad(false);
-          console.log(error);
         });
     }
   };
 
-  const getStripeCard = async (id) => {
+  const getStripeCard = async (id: string) => {
     setLoad(true);
     const userData = await AsyncStorage.getItem("userData");
     let userDatax = JSON.parse(userData);
@@ -74,7 +68,6 @@ const WalletScreen = ({ navigation }) => {
         })
         .catch((error) => {
           setLoad(false);
-          console.log(error);
         });
     }
   };
@@ -101,7 +94,6 @@ const WalletScreen = ({ navigation }) => {
       })
       .catch((error) => {
         setLoad(false);
-        console.log(error);
         Toast.show({
           type: "error",
           text1: "Something went wrong",
@@ -228,11 +220,7 @@ const WalletScreen = ({ navigation }) => {
                           Details
                         </Text>
                       </View>
-                      <AntDesign
-                        name={details ? "up" : "down"}
-                        size={15}
-                        color={"#fff"}
-                      />
+                      <AntDesign name={details ? "up" : "down"} size={15} color={"#fff"} />
                     </View>
                   </Pressable>
                 </View>
@@ -241,62 +229,39 @@ const WalletScreen = ({ navigation }) => {
                   <View style={{ width: "100%", paddingBottom: 18 }}>
                     <View style={styles.dotmainview}>
                       <View style={styles.dotview}>
-                        <FontAwesome
-                          name="circle"
-                          style={{ color: "#979797" }}
-                        />
+                        <FontAwesome name="circle" style={{ color: "#979797" }} />
                       </View>
                       <View style={{ width: "90%" }}>
-                        <Text style={styles.textstyle}>
-                          Type: Online session
-                        </Text>
+                        <Text style={styles.textstyle}>Type: Online session</Text>
                       </View>
                     </View>
                     <View style={styles.dotmainview}>
                       <View style={styles.dotview}>
-                        <FontAwesome
-                          name="circle"
-                          style={{ color: "#979797" }}
-                        />
+                        <FontAwesome name="circle" style={{ color: "#979797" }} />
                       </View>
                       <View style={{ width: "90%", flexDirection: "row" }}>
-                        <Text style={styles.textstyle}>
-                          Cost: $48 (per person)
-                        </Text>
+                        <Text style={styles.textstyle}>Cost: $48 (per person)</Text>
                       </View>
                     </View>
                     <View style={styles.dotmainview}>
                       <View style={styles.dotview}>
-                        <FontAwesome
-                          name="circle"
-                          style={{ color: "#979797" }}
-                        />
+                        <FontAwesome name="circle" style={{ color: "#979797" }} />
                       </View>
                       <View style={{ width: "90%" }}>
-                        <Text style={styles.textstyle}>
-                          28 people attend this sessions
-                        </Text>
+                        <Text style={styles.textstyle}>28 people attend this sessions</Text>
                       </View>
                     </View>
                     <View style={styles.dotmainview}>
                       <View style={styles.dotview}>
-                        <FontAwesome
-                          name="circle"
-                          style={{ color: "#979797" }}
-                        />
+                        <FontAwesome name="circle" style={{ color: "#979797" }} />
                       </View>
                       <View style={{ width: "90%" }}>
-                        <Text style={styles.textstyle}>
-                          Total Income: $ 1344
-                        </Text>
+                        <Text style={styles.textstyle}>Total Income: $ 1344</Text>
                       </View>
                     </View>
                     <View style={styles.dotmainview}>
                       <View style={styles.dotview}>
-                        <FontAwesome
-                          name="circle"
-                          style={{ color: "#979797" }}
-                        />
+                        <FontAwesome name="circle" style={{ color: "#979797" }} />
                       </View>
                       <View style={{ width: "90%" }}>
                         <Text style={styles.textstyle}>App Fees: $ 150</Text>
@@ -310,14 +275,7 @@ const WalletScreen = ({ navigation }) => {
             <View style={{ marginVertical: 10 }}></View>
           </ScrollView>
           <View style={styles.footer}>
-            <View style={styles.TopView}>
-              {
-                <Button
-                  label={"Withdraw Funds"}
-                  onPress={() => navigation.navigate("WalletForTrainee")}
-                />
-              }
-            </View>
+            <View style={styles.TopView}>{<Button label={"Withdraw Funds"} onPress={() => navigation.navigate("WalletForTrainee")} />}</View>
           </View>
         </View>
       )}

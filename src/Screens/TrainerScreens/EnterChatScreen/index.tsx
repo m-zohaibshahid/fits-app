@@ -1,31 +1,29 @@
 import React, { useState, useEffect, useRef } from "react";
-import {
-  Text,
-  View,
-  Button,
-  ImageBackground,
-  TouchableOpacity,
-  StyleSheet,
-  TextInput,
-  ScrollView,
-  Image,
-  Modal,
-  ToastAndroid,
-  ActivityIndicator,
-  Platform,
-} from "react-native";
+import { Text, View, Button, ImageBackground, TouchableOpacity, StyleSheet, TextInput, ScrollView, Image, Modal, ToastAndroid, ActivityIndicator, Platform, Alert } from "react-native";
 import AntDesign from "react-native-vector-icons/AntDesign";
 import FontAwesome from "react-native-vector-icons/FontAwesome";
 import { RFValue } from "react-native-responsive-fontsize";
 import { url } from "../../../constants/url";
-import { useRoute } from "@react-navigation/native";
+import { RouteProp, useRoute } from "@react-navigation/native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import moment from "moment";
+import { NavigationSwitchProp } from "react-navigation";
+interface Props {
+  navigation: NavigationSwitchProp;
+}
+type RootStackParamList = {
+  MyScreen: MyRouteParams;
+  // Define other screens and their respective route params here
+};
 
-const EnterChatScreen = ({ navigation }) => {
+type MyRouteParams = {
+  roomId: string;
+  username: string;
+};
+const EnterChatScreen: React.FC<Props> = ({ navigation }) => {
   const scrollViewRef = useRef();
 
-  const route = useRoute();
+  const route = useRoute<RouteProp<RootStackParamList, "MyScreen">>();
 
   const [id, setId] = useState(route?.params?.roomId);
 
@@ -52,7 +50,6 @@ const EnterChatScreen = ({ navigation }) => {
       const interval = setInterval(() => {
         GetMesaage();
       }, 1000);
-      // setLoading(true);
       return () => clearInterval(interval);
     }
   }, [id]);
@@ -78,12 +75,12 @@ const EnterChatScreen = ({ navigation }) => {
         if (res2.message === "messages not found") {
           setData(res2?.data?.messages);
         } else {
-          // ToastAndroid.show(res2.message, ToastAndroid.LONG);
+          ToastAndroid.show(res2.message, ToastAndroid.LONG);
         }
       })
       .catch((error) => {
         setLoade(false);
-        alert("Something Went Wrong");
+        Alert.alert("Something Went Wrong");
       });
   };
 
@@ -124,7 +121,7 @@ const EnterChatScreen = ({ navigation }) => {
         })
         .catch((error) => {
           setLoad(false);
-          alert("Something Went Wrong");
+          Alert.alert("Something Went Wrong");
         });
     }
   };
@@ -201,13 +198,7 @@ const EnterChatScreen = ({ navigation }) => {
       {/*End Hader*/}
       {/*start Main*/}
       <View style={styles.main}>
-        <ScrollView
-          showsVerticalScrollIndicator={false}
-          ref={scrollViewRef}
-          onContentSizeChange={() =>
-            scrollViewRef.current.scrollToEnd({ animated: true })
-          }
-        >
+        <ScrollView showsVerticalScrollIndicator={false} ref={scrollViewRef} onContentSizeChange={() => scrollViewRef.current.scrollToEnd({ animated: true })}>
           {data?.map((item, i) => (
             <View key={i}>
               {/* chat Start react*/}
@@ -256,9 +247,7 @@ const EnterChatScreen = ({ navigation }) => {
                       </Text>
                       <View style={{ flexDirection: "row", width: "95%" }}>
                         <View style={{ width: "100%", alignItems: "flex-end" }}>
-                          <Text style={{ color: "white" }}>
-                            {moment(item.createdAt).format("hh:mm a")}
-                          </Text>
+                          <Text style={{ color: "white" }}>{moment(item.createdAt).format("hh:mm a")}</Text>
                         </View>
                       </View>
                     </View>
@@ -302,9 +291,7 @@ const EnterChatScreen = ({ navigation }) => {
                       </Text>
                       <View style={{ flexDirection: "row", width: "95%" }}>
                         <View style={{ width: "100%", alignItems: "flex-end" }}>
-                          <Text style={{ color: "white" }}>
-                            {moment(item.createdAt).format("hh:mm a")}
-                          </Text>
+                          <Text style={{ color: "white" }}>{moment(item.createdAt).format("hh:mm a")}</Text>
                         </View>
                       </View>
                     </View>
@@ -402,11 +389,7 @@ const EnterChatScreen = ({ navigation }) => {
                       setMesage("");
                     }}
                   >
-                    {load === true ? (
-                      <ActivityIndicator size="small" color="black" />
-                    ) : (
-                      <FontAwesome name="send" size={25} color={"#000"} />
-                    )}
+                    {load === true ? <ActivityIndicator size="small" color="black" /> : <FontAwesome name="send" size={25} color={"#000"} />}
                   </TouchableOpacity>
                 </View>
               </View>

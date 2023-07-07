@@ -1,24 +1,6 @@
 import React, { useState, useEffect } from "react";
-import {
-  Text,
-  View,
-  ImageBackground,
-  Pressable,
-  StyleSheet,
-  TextInput,
-  Modal,
-  ScrollView,
-  ToastAndroid,
-  ActivityIndicator,
-  Platform,
-} from "react-native";
-import {
-  CodeField,
-  Cursor,
-  useBlurOnFulfill,
-  useClearByFocusCell,
-} from "react-native-confirmation-code-field";
-import { RFPercentage, RFValue } from "react-native-responsive-fontsize";
+import { Text, View, Pressable, StyleSheet, TextInput, Modal, ScrollView, ToastAndroid, ActivityIndicator, Platform } from "react-native";
+import { RFValue } from "react-native-responsive-fontsize";
 import Feather from "react-native-vector-icons/Feather";
 import Header from "../../Components/Header";
 import Colors from "../../constants/Colors";
@@ -26,8 +8,12 @@ import Button from "../../Components/Button";
 import { url } from "../../constants/url";
 import { useRoute } from "@react-navigation/native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { NavigationSwitchProp } from "react-navigation";
+interface Props {
+  navigation: NavigationSwitchProp;
+}
 
-const UpdateServicesoffere = ({ navigation }) => {
+const UpdateServicesoffere: React.FC<Props> = ({ navigation }) => {
   const route = useRoute();
 
   const [value, setValue] = useState("");
@@ -71,9 +57,7 @@ const UpdateServicesoffere = ({ navigation }) => {
   };
   const changeServicesSelection = (data, i) => {
     let dummy = [...servicesData];
-    let dummy1 = dummy.map((item, index) =>
-      index == i ? { ...item, check: !item.check } : { ...item, check: false }
-    );
+    let dummy1 = dummy.map((item, index) => (index == i ? { ...item, check: !item.check } : { ...item, check: false }));
     setValue(i);
     setKey(data?.service_name);
     setServicesData(dummy1);
@@ -104,8 +88,7 @@ const UpdateServicesoffere = ({ navigation }) => {
       })
       .catch((error) => {
         setLoad(false);
-        alert("Something Went Wrong");
-        console.log(error);
+        Alert.alert("Something Went Wrong");
       });
   };
   const Services = async () => {
@@ -135,8 +118,7 @@ const UpdateServicesoffere = ({ navigation }) => {
       })
       .catch((error) => {
         setLoadx(false);
-        alert("Something Went Wrong");
-        console.log(error);
+        Alert.alert("Something Went Wrong");
       });
   };
   const addServices = async () => {
@@ -165,13 +147,12 @@ const UpdateServicesoffere = ({ navigation }) => {
             Services();
             modalFalse();
           } else {
-            alert(res2.errors);
+            Alert.alert(res2.errors);
           }
         })
         .catch((error) => {
           setLoade(false);
-          alert("Something Went Wrong");
-          console.log(error);
+          Alert.alert("Something Went Wrong");
         });
     }
   };
@@ -213,19 +194,14 @@ const UpdateServicesoffere = ({ navigation }) => {
         <View style={styles.fixeheight1}>
           <View style={styles.topView}>
             <Text style={styles.ServicesoffereText}>Services Offered</Text>
-            <Text style={{ color: Colors.lightGray }}>
-              (Select appropriate)
-            </Text>
+            <Text style={{ color: Colors.lightGray }}>(Select appropriate)</Text>
           </View>
         </View>
       </View>
       {/*start flex box*/}
       <View style={styles.main}>
         <View style={styles.topView}>
-          <Pressable
-            style={styles.flexDirectionView}
-            onPress={() => setModalVisible(true)}
-          >
+          <Pressable style={styles.flexDirectionView} onPress={() => setModalVisible(true)}>
             <View style={styles.titleView}>
               <Text style={styles.titleText}>Add new services </Text>
             </View>
@@ -253,9 +229,7 @@ const UpdateServicesoffere = ({ navigation }) => {
           </View>
         </View>
         <View style={styles.main}>
-          {loadx === "true" ? (
-            <ActivityIndicator size="small" color="#fff" />
-          ) : null}
+          {loadx === "true" ? <ActivityIndicator size="small" color="#fff" /> : null}
           {servicesData.map((item, i) => (
             <View style={styles.mainViewBox} key={i}>
               <Pressable
@@ -273,13 +247,7 @@ const UpdateServicesoffere = ({ navigation }) => {
       <View style={{ paddingVertical: 10, width: "100%" }}>
         <Button
           navigation={navigation}
-          label={
-            load === true ? (
-              <ActivityIndicator size="small" color="#fff" />
-            ) : (
-              "Done"
-            )
-          }
+          label={load === true ? <ActivityIndicator size="small" color="#fff" /> : "Done"}
           onPress={() => {
             if (load === true) {
             } else {
@@ -312,14 +280,7 @@ const UpdateServicesoffere = ({ navigation }) => {
                   </View>
                   <View style={styles.textinputView}>
                     <View style={styles.textinputView1}>
-                      <TextInput
-                        style={styles.inputEmail}
-                        label="Email"
-                        placeholder="Add Your Services"
-                        placeholderTextColor={"white"}
-                        value={serviceName}
-                        onChangeText={setServiceName}
-                      />
+                      <TextInput style={styles.inputEmail} label="Email" placeholder="Add Your Services" placeholderTextColor={"white"} value={serviceName} onChangeText={setServiceName} />
                     </View>
                   </View>
                 </View>
@@ -328,10 +289,7 @@ const UpdateServicesoffere = ({ navigation }) => {
               {/*start btn*/}
               <View style={styles.rowView}>
                 <View style={styles.mainbtnView}>
-                  <Pressable
-                    onPress={() => setModalVisible(false)}
-                    style={styles.ccbtnview}
-                  >
+                  <Pressable onPress={() => setModalVisible(false)} style={styles.ccbtnview}>
                     <Text style={styles.btntextstyle}>Cancel</Text>
                   </Pressable>
                 </View>
@@ -348,11 +306,7 @@ const UpdateServicesoffere = ({ navigation }) => {
                       }
                     }}
                   >
-                    {loade === true ? (
-                      <ActivityIndicator size="small" color="#fff" />
-                    ) : (
-                      <Text style={styles.btntextstyle1}>Create</Text>
-                    )}
+                    {loade === true ? <ActivityIndicator size="small" color="#fff" /> : <Text style={styles.btntextstyle1}>Create</Text>}
                   </Pressable>
                 </View>
               </View>

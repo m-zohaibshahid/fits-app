@@ -1,59 +1,39 @@
 import React, { useState, useEffect } from "react";
-import {
-  Text,
-  View,
-  Pressable,
-  StyleSheet,
-  TextInput,
-  Modal,
-  ToastAndroid,
-  Image,
-  ScrollView,
-  ActivityIndicator,
-} from "react-native";
+import { Text, View, Pressable, StyleSheet, TextInput, Modal, ToastAndroid, Image, ScrollView, ActivityIndicator, Platform, Alert } from "react-native";
 import AntDesign from "react-native-vector-icons/AntDesign";
 import EvilIcons from "react-native-vector-icons/EvilIcons";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import Entypo from "react-native-vector-icons/Entypo";
 import Fontisto from "react-native-vector-icons/Fontisto";
 import Ionicons from "react-native-vector-icons/Ionicons";
-import {  RFValue } from "react-native-responsive-fontsize";
+import { RFValue } from "react-native-responsive-fontsize";
 import * as Images from "../../constants/Images";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import FastImage from "react-native-fast-image";
 import { useGetUserMeQuery, useUpdatePasswordMutation } from "../../slice/FitsApi.slice";
 import { getUserAsyncStroage } from "../../common/AsyncStorage";
-
-const Account = ({ navigation }) => {
+import { useSelector } from "react-redux";
+import { UserDataInterface, UserDetail } from "../../interfaces";
+import { NavigationSwitchProp } from "react-navigation";
+import ErrorHandler from "../../Components/Alert-modal";
+interface Props {
+  navigation: NavigationSwitchProp;
+}
+const Account: React.FC<Props> = ({ navigation }) => {
   const [hidePass, setHidePass] = React.useState(true);
-
   const [ChangePassword, setChangePassword] = useState(false);
-
   const [getLink, setGetLink] = useState(false);
   const [modalVisible, setModalVisible] = useState(false);
-
-  const [gender, setGender] = useState(false);
-
-  const [token, setToken] = useState("");
   const [id, setId] = useState("");
-
-  const [userData, setUserData] = useState("");
-
-  const [load, setLoad] = useState(false);
-  const [loadx, setLoadx] = useState("");
-  const [userDatax, setUserDatax] = useState();
-
+  const [userDatax, setUserDatax] = useState<{ data: UserDataInterface }>();
   const [userCurrentLocation, setUserCurrentLocation] = useState("");
-
   const [oldPassword, setOldPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
-  
-  const { data: userMeData, isLoading:isLoading1, error:error1, isSuccess } = useGetUserMeQuery({ id: userDatax?.data._id });
-  
-  const [updatePassword, {  isLoading, error }] = useUpdatePasswordMutation();
+  const { userInfo } = useSelector((state: { fitsStore: Partial<UserDetail> }) => state.fitsStore);
 
-
+  const { data: userMeData, isLoading: isLoading1, error: error1 } = useGetUserMeQuery({ id: userDatax?.data._id });
+  const [updatePassword, { isLoading, error }] = useUpdatePasswordMutation();
 
   useEffect(() => {
     navigation.addListener("focus", () => {
@@ -61,96 +41,44 @@ const Account = ({ navigation }) => {
     });
   }, []);
 
-  useEffect(() => {
-    userMe();
-  }, [userMeData]);
-
   const getUserInfo = async () => {
-    const userData=await getUserAsyncStroage()
-    setUserDatax(userData)
-    setToken(userData?.access_token);
-    setId(userData?.userData?._id);
-    const userLoc = await AsyncStorage.getItem("userLocation");
-    let userLocx = JSON.parse(userLoc);
-    console.log(
-      userLocx
-    );
+    const userMeData = await getUserAsyncStroage();
+    setUserDatax(userMeData);
+    setId(userInfo?._id ?? "");
+    const userLoc: string | null = await AsyncStorage.getItem("userLocation");
+    let userLocx = JSON.parse(userLoc ?? "");
     setUserCurrentLocation(userLocx);
-    //setEmail(userDatax.userData.email);
   };
 
-  const userMe = async () => {
-    
-    
-        if (userMeData.success === true) {
-          setUserData(userMeData);
-        } else {
-          alert(userMeData.errors);
-        }
-      
-  };
   const UpdatePassword = async () => {
     if (oldPassword === "") {
       ToastAndroid.show("Please Enter your old Password.", ToastAndroid.SHORT);
     } else if (newPassword === "") {
       ToastAndroid.show("Please Enter your new Password.", ToastAndroid.SHORT);
     } else if (newPassword !== confirmPassword) {
-      ToastAndroid.show(
-        "Your password and confirmation password do not match.",
-        ToastAndroid.SHORT
-      );
+      ToastAndroid.show("Your password and confirmation password do not match.", ToastAndroid.SHORT);
     } else {
-      setLoad(true);
-
-     
       const body = {
         oldPassword: oldPassword,
         password: newPassword,
-      }
+      };
       await updatePassword({ id, ...body })
-      .unwrap()
+        // .unwrap()
         .then((res2) => {
-          setLoad(false);
-          if (res2.success === true) {
-            // ToastAndroid.show("Password updated", ToastAndroid.LONG);
+          if (res2?.data.success === true) {
+            ToastAndroid.show("Password updated", ToastAndroid.LONG);
           } else {
-            alert(res2?.message);
+            Alert.alert(res2?.data?.message);
           }
         })
         .catch((error) => {
-          setLoad(false);
-          alert("Something Went Wrong");
-          console.log(error);
+          Alert.alert("Something Went Wrong");
         });
     }
   };
   const logOut = async () => {
-    await AsyncStorage.setItem("personalInfoTrainer", JSON.stringify("false"));
-    await AsyncStorage.setItem(
-      "pefessionalInfoTrainer",
-      JSON.stringify("false")
-    );
-    await AsyncStorage.setItem("servicesTrainer", JSON.stringify("false"));
-    await AsyncStorage.setItem("personalInfoTrainee", JSON.stringify("false"));
-    await AsyncStorage.setItem("fitnessLevelTrainee", JSON.stringify("false"));
-    await AsyncStorage.setItem("fitnessGoalTrainee", JSON.stringify("false"));
-    await AsyncStorage.removeItem("personalInfoTrainer");
-    await AsyncStorage.removeItem("pefessionalInfoTrainer");
-    await AsyncStorage.removeItem("servicesTrainer");
-    await AsyncStorage.removeItem("personalInfoTrainee");
-    await AsyncStorage.removeItem("fitnessLevelTrainee");
-    await AsyncStorage.removeItem("fitnessGoalTrainee");
-    await AsyncStorage.removeItem("userToken");
-    await AsyncStorage.removeItem("userData");
+    await AsyncStorage.clear();
     navigation.navigate("logoutNow");
-  };
-
-  const NextScreen = (userData) => {
-    navigation.navigate("WalletForTrainee", {
-      Name: userData?.personal_info?.name,
-      Email: userData?.user?.email,
-      Token: token,
-    });
   };
 
   return (
@@ -163,6 +91,7 @@ const Account = ({ navigation }) => {
               alignItems: "center",
             }}
           >
+            <ErrorHandler error={error || error1} />
             <View style={{ width: "90%" }}>
               <Text
                 style={{
@@ -178,754 +107,781 @@ const Account = ({ navigation }) => {
           </View>
         </View>
       </View>
-      {loadx === true ? (
-        <View style={{ width: "100%", marginTop: 100, alignItems: "center" }}>
-          <FastImage
-            style={{
-              width: 50,
-              height: 50,
-            }}
-            source={{
-              uri: "https://i.gifer.com/ZZ5H.gif",
-              headers: { Authorization: "someAuthToken" },
-              priority: FastImage.priority.normal,
-            }}
-            resizeMode={FastImage.resizeMode.cover}
-          />
-        </View>
-      ) : (
-        <ScrollView showsVerticalScrollIndicator={false}>
-          <View style={styles.main}>
-            <View style={{ width: "100%", alignItems: "center" }}>
+
+      <ScrollView showsVerticalScrollIndicator={false}>
+        <View style={styles.main}>
+          <View style={{ width: "100%", alignItems: "center" }}>
+            <View
+              style={{
+                width: "90%",
+                marginTop: 15,
+                justifyContent: "center",
+                alignItems: "center",
+              }}
+            >
+              {userMeData?.personal_info?.profileImage ? (
+                <FastImage
+                  style={{
+                    width: 165,
+                    height: 165,
+                    borderRadius: 200 / 2,
+                  }}
+                  source={{
+                    uri: `${userMeData?.personal_info?.profileImage}`,
+                    headers: { Authorization: "someAuthToken" },
+                    priority: FastImage.priority.normal,
+                  }}
+                  resizeMode={FastImage.resizeMode.cover}
+                />
+              ) : (
+                <Image style={{ width: 165, height: 165, borderRadius: 200 / 2 }} source={Images.Profile} />
+              )}
+            </View>
+          </View>
+          <View style={{ width: "100%", alignItems: "center", marginTop: 10 }}>
+            <View style={{ width: "90%", alignItems: "center", marginTop: 5 }}>
+              <Text
+                style={{
+                  fontSize: RFValue(19, 580),
+                  fontFamily: "Poppins-Bold",
+                  color: "#000",
+                  textTransform: "capitalize",
+                }}
+              >
+                {userMeData?.personal_info?.name}
+              </Text>
+            </View>
+          </View>
+          <View style={{ width: "100%", alignItems: "center" }}>
+            <View
+              style={{
+                width: "90%",
+                alignItems: "center",
+                flexDirection: "row",
+              }}
+            >
               <View
                 style={{
-                  width: "90%",
-                  marginTop: 15,
+                  width: "6%",
                   justifyContent: "center",
-                  alignItems: "center",
+                  alignItems: "flex-end",
                 }}
               >
-                {userData?.personal_info?.profileImage ? (
-                  <FastImage
-                    style={{
-                      width: 165,
-                      height: 165,
-                      borderRadius: 200 / 2,
-                    }}
-                    source={{
-                      uri: `${userData?.personal_info?.profileImage}`,
-                      headers: { Authorization: "someAuthToken" },
-                      priority: FastImage.priority.normal,
-                    }}
-                    resizeMode={FastImage.resizeMode.cover}
-                  />
-                ) : (
-                  <Image
-                    style={{ width: 165, height: 165, borderRadius: 200 / 2 }}
-                    source={Images.Profile}
-                  />
-                )}
+                <EvilIcons name="location" style={{ color: "#000" }} size={25} />
+              </View>
+              <View style={{ width: "94%" }}>
+                <Text style={{ fontSize: RFValue(12, 580), color: "#000" }}> {userCurrentLocation}</Text>
               </View>
             </View>
+          </View>
+          {/*Start Profile */}
+          <View style={{ width: "100%", alignItems: "center", marginTop: 30 }}>
             <View
-              style={{ width: "100%", alignItems: "center", marginTop: 10 }}
+              style={{
+                width: "90%",
+                alignItems: "center",
+                backgroundColor: "#000",
+                borderRadius: 14,
+                paddingVertical: 10,
+              }}
             >
-              <View
-                style={{ width: "90%", alignItems: "center", marginTop: 5 }}
-              >
-                <Text
-                  style={{
-                    fontSize: RFValue(19, 580),
-                    fontFamily: "Poppins-Bold",
-                    color: "#000",
-                    textTransform: "capitalize",
-                  }}
-                >
-                  {userData?.personal_info?.name}
-                </Text>
-              </View>
-            </View>
-            <View style={{ width: "100%", alignItems: "center" }}>
-              <View
-                style={{
-                  width: "90%",
-                  alignItems: "center",
-                  flexDirection: "row",
-                }}
-              >
-                <View
-                  style={{
-                    width: "6%",
-                    justifyContent: "center",
-                    alignItems: "flex-end",
-                  }}
-                >
-                  <EvilIcons
-                    name="location"
-                    style={{ color: "#000" }}
-                    size={25}
-                  />
-                </View>
-                <View style={{ width: "94%" }}>
-                  <Text style={{ fontSize: RFValue(12, 580), color: "#000" }}>
-                    {" "}
-                    {userCurrentLocation}
-                  </Text>
-                </View>
-              </View>
-            </View>
-            {/*Start Profile */}
-            <View
-              style={{ width: "100%", alignItems: "center", marginTop: 30 }}
-            >
-              <View
-                style={{
-                  width: "90%",
-                  alignItems: "center",
-                  backgroundColor: "#000",
-                  borderRadius: 14,
-                  paddingVertical: 10,
-                }}
-              >
-                <View style={{ width: "100%", alignItems: "center" }}>
-                  <View style={{ width: "90%", alignItems: "center" }}>
-                    <View
-                      style={{
-                        marginTop: 10,
-                        width: "100%",
-                        flexDirection: "row",
-                      }}
-                    >
-                      <View style={{ width: "50%" }}>
-                        <Text
-                          style={{
-                            color: "#fff",
-                            fontSize: RFValue(15, 580),
-                            fontFamily: "Poppins-Regular",
-                          }}
-                        >
-                          Profile
-                        </Text>
-                      </View>
-                      <View style={{ width: "50%", alignItems: "flex-end" }}>
-                        <Pressable
-                          onPress={() => navigation.navigate("AccountUpdate")}
-                        >
-                          <MaterialCommunityIcons
-                            name="pencil-outline"
-                            color={"#fff"}
-                            size={25}
-                          />
-                        </Pressable>
-                      </View>
-                    </View>
-                    <View
-                      style={{
-                        borderBottomColor: "#fff",
-                        borderBottomWidth: 1,
-                        width: "100%",
-                      }}
-                    />
-                    <View
-                      style={{
-                        marginTop: 10,
-                        width: "100%",
-                        flexDirection: "row",
-                      }}
-                    >
-                      <View style={{ width: "50%" }}>
-                        <Text
-                          style={{
-                            color: "#fff",
-                            fontSize: RFValue(15, 580),
-                            fontFamily: "Poppins-Regular",
-                          }}
-                        >
-                          Full name
-                        </Text>
-                      </View>
-                      <View style={{ width: "50%", alignItems: "flex-end" }}>
-                        <Text
-                          style={{
-                            color: "#fff",
-                            fontSize: RFValue(12, 580),
-                            fontFamily: "Poppins-Regular",
-                            textTransform: "capitalize",
-                          }}
-                        >
-                          {userData?.personal_info?.name}
-                        </Text>
-                      </View>
-                    </View>
-                    
-                    <View
-                      style={{
-                        marginTop: 10,
-                        width: "100%",
-                      }}
-                    >
-                      <View style={{ width: "100%", alignItems: "flex-start" }}>
-                        <Text
-                          style={{
-                            color: "#fff",
-                            fontSize: RFValue(15, 580),
-                            fontFamily: "Poppins-Regular",
-                          }}
-                        >
-                          E-mail
-                        </Text>
-                      </View>
-                      <View style={{ width: "100%", alignItems: "flex-end" }}>
-                        <Text
-                          style={{
-                            color: "#fff",
-                            fontSize: RFValue(10, 580),
-                            fontFamily: "Poppins-Regular",
-                          }}
-                        >
-                          {userData?.user?.email}
-                        </Text>
-                      </View>
-                    </View>
-                    <View
-                      style={{
-                        marginTop: 10,
-                        width: "100%",
-                        flexDirection: "row",
-                      }}
-                    >
-                      <View style={{ width: "50%" }}>
-                        <Text
-                          style={{
-                            color: "#fff",
-                            fontSize: RFValue(15, 580),
-                            fontFamily: "Poppins-Regular",
-                          }}
-                        >
-                          Country
-                        </Text>
-                      </View>
-                      <View style={{ width: "50%", alignItems: "flex-end" }}>
-                        <Text
-                          style={{
-                            color: "#fff",
-                            fontSize: RFValue(12, 580),
-                            fontFamily: "Poppins-Regular",
-                          }}
-                        >
-                          {userData?.personal_info?.country}
-                        </Text>
-                      </View>
-                    </View>
-                    <View
-                      style={{
-                        marginTop: 10,
-                        width: "100%",
-                        flexDirection: "row",
-                      }}
-                    >
-                      <View style={{ width: "50%" }}>
-                        <Text
-                          style={{
-                            color: "#fff",
-                            fontSize: RFValue(15, 580),
-                            fontFamily: "Poppins-Regular",
-                          }}
-                        >
-                          State
-                        </Text>
-                      </View>
-                      <View style={{ width: "50%", alignItems: "flex-end" }}>
-                        <Text
-                          style={{
-                            color: "#fff",
-                            fontSize: RFValue(12, 580),
-                            fontFamily: "Poppins-Regular",
-                          }}
-                        >
-                          {userData?.personal_info?.state}
-                        </Text>
-                      </View>
-                    </View>
-                    <View
-                      style={{
-                        marginTop: 10,
-                        width: "100%",
-                        flexDirection: "row",
-                      }}
-                    >
-                      <View style={{ width: "50%" }}>
-                        <Text
-                          style={{
-                            color: "#fff",
-                            fontSize: RFValue(15, 580),
-                            fontFamily: "Poppins-Regular",
-                          }}
-                        >
-                          City
-                        </Text>
-                      </View>
-                      <View style={{ width: "50%", alignItems: "flex-end" }}>
-                        <Text
-                          style={{
-                            color: "#fff",
-                            fontSize: RFValue(12, 580),
-                            fontFamily: "Poppins-Regular",
-                          }}
-                        >
-                          {userData?.personal_info?.city}
-                        </Text>
-                      </View>
-                    </View>
-                    <View
-                      style={{
-                        marginTop: 10,
-                        width: "100%",
-                        flexDirection: "row",
-                      }}
-                    >
-                      <View style={{ width: "50%" }}>
-                        <Text
-                          style={{
-                            color: "#fff",
-                            fontSize: RFValue(15, 580),
-                            fontFamily: "Poppins-Regular",
-                          }}
-                        >
-                          Gender
-                        </Text>
-                      </View>
-                      <View style={{ width: "50%", alignItems: "flex-end" }}>
-                        <Text
-                          style={{
-                            color: "#fff",
-                            fontSize: RFValue(12, 580),
-                            fontFamily: "Poppins-Regular",
-                          }}
-                        >
-                          {userData?.personal_info?.gender}
-                        </Text>
-                      </View>
-                     
-                    </View>
-                    <View
-                      style={{
-                        marginTop: 10,
-                        width: "100%",
-                        flexDirection: "row",
-                      }}
-                    >
-                      <View style={{ width: "50%" }}>
-                        <Text
-                          style={{
-                            color: "#fff",
-                            fontSize: RFValue(15, 580),
-                            fontFamily: "Poppins-Regular",
-                          }}
-                        >
-                          Fitness level
-                        </Text>
-                      </View>
-                      <View style={{ width: "50%", alignItems: "flex-end" }}>
-                        <Text
-                          style={{
-                            color: "#fff",
-                            fontSize: RFValue(12, 580),
-                            fontFamily: "Poppins-Regular",
-                          }}
-                        >
-                          {userData?.user?.fitness_level?.key}
-                        </Text>
-                      </View>
-                    </View>
-                    <View
-                      style={{
-                        marginTop: 10,
-                        width: "100%",
-                        flexDirection: "row",
-                      }}
-                    >
-                      <View style={{ width: "50%" }}>
-                        <Text
-                          style={{
-                            color: "#fff",
-                            fontSize: RFValue(15, 580),
-                            fontFamily: "Poppins-Regular",
-                          }}
-                        >
-                          Fitness Goal
-                        </Text>
-                      </View>
-                      <View style={{ width: "50%", alignItems: "flex-end" }}>
-                        <Text
-                          style={{
-                            color: "#fff",
-                            fontSize: RFValue(12, 580),
-                            fontFamily: "Poppins-Regular",
-                          }}
-                        >
-                          {userData?.user?.fitness_goal?.key}
-                        </Text>
-                      </View>
-                    </View>
-                  </View>
-                </View>
-              </View>
-            </View>
-            {/*End Profile */}
-            {/*Start Wallet */}
-            <View
-              style={{ width: "100%", alignItems: "center", marginTop: 30 }}
-            >
-              <Pressable
-                onPress={() => {
-                  if (userData?.stripe?.card) {
-                    navigation.navigate("WalletForTrainee");
-                  } else {
-                    navigation.navigate("CreateCardTrainee");
-                  }
-                }}
-                style={{
-                  width: "90%",
-                  alignItems: "center",
-                  backgroundColor: "#000",
-                  borderRadius: 14,
-                }}
-              >
-                <View style={{ width: "100%", alignItems: "center" }}>
-                  <View style={{ width: "90%", alignItems: "center" }}>
-                    <View
-                      style={{
-                        width: "100%",
-                        height: 60,
-                        justifyContent: "center",
-                        flexDirection: "row",
-                      }}
-                    >
-                      <View style={{ width: "15%", justifyContent: "center" }}>
-                        <Fontisto name="wallet" size={25} color={"#fff"} />
-                      </View>
-                      <View style={{ width: "80%", justifyContent: "center" }}>
-                        <Text
-                          style={{
-                            color: "#fff",
-                            fontSize: RFValue(13, 580),
-                            fontFamily: "Poppins-SemiBold",
-                          }}
-                        >
-                          Wallet
-                        </Text>
-                      </View>
-                    </View>
-                  </View>
-                </View>
-              </Pressable>
-            </View>
-            {/*End Wallet */}
-            {/*Start Password */}
-            <View
-              style={{ width: "100%", alignItems: "center", marginTop: 30 }}
-            >
-              <View
-                style={{
-                  width: "90%",
-                  alignItems: "center",
-                  backgroundColor: "#000",
-                  borderRadius: 14,
-                }}
-              >
-                <View style={{ width: "100%", alignItems: "center" }}>
+              <View style={{ width: "100%", alignItems: "center" }}>
+                <View style={{ width: "90%", alignItems: "center" }}>
                   <View
                     style={{
-                      width: "90%",
-                      alignItems: "center",
+                      marginTop: 10,
+                      width: "100%",
+                      flexDirection: "row",
                     }}
                   >
-                    <View
-                      style={{
-                        width: "100%",
-                        height: 60,
-                        justifyContent: "center",
-                        flexDirection: "row",
-                      }}
-                    >
-                      <View style={{ width: "15%", justifyContent: "center" }}>
-                        <Fontisto name="key" size={25} color={"#fff"} />
-                      </View>
-                      <View style={{ width: "70%", justifyContent: "center" }}>
-                        <Text
-                          style={{
-                            color: "#fff",
-                            fontSize: RFValue(13, 580),
-                            fontFamily: "Poppins-SemiBold",
-                          }}
-                        >
-                          Change password
-                        </Text>
-                      </View>
-                      <Pressable
-                        onPress={() => setChangePassword(!ChangePassword)}
+                    <View style={{ width: "50%" }}>
+                      <Text
                         style={{
-                          width: "15%",
-                          justifyContent: "center",
-                          alignItems: "flex-end",
+                          color: "#fff",
+                          fontSize: RFValue(15, 580),
+                          fontFamily: "Poppins-Regular",
                         }}
                       >
-                        <Entypo
-                          name={ChangePassword ? "chevron-up" : "chevron-down"}
-                          size={25}
-                          color={"#fff"}
-                        />
+                        Profile
+                      </Text>
+                    </View>
+                    <View style={{ width: "50%", alignItems: "flex-end" }}>
+                      <Pressable onPress={() => navigation.navigate("AccountUpdate")}>
+                        <MaterialCommunityIcons name="pencil-outline" color={"#fff"} size={25} />
                       </Pressable>
                     </View>
                   </View>
+                  <View
+                    style={{
+                      borderBottomColor: "#fff",
+                      borderBottomWidth: 1,
+                      width: "100%",
+                    }}
+                  />
+                  <View
+                    style={{
+                      marginTop: 10,
+                      width: "100%",
+                      flexDirection: "row",
+                    }}
+                  >
+                    <View style={{ width: "50%" }}>
+                      <Text
+                        style={{
+                          color: "#fff",
+                          fontSize: RFValue(15, 580),
+                          fontFamily: "Poppins-Regular",
+                        }}
+                      >
+                        Full name
+                      </Text>
+                    </View>
+                    <View style={{ width: "50%", alignItems: "flex-end" }}>
+                      <Text
+                        style={{
+                          color: "#fff",
+                          fontSize: RFValue(12, 580),
+                          fontFamily: "Poppins-Regular",
+                          textTransform: "capitalize",
+                        }}
+                      >
+                        {userMeData?.personal_info?.name}
+                      </Text>
+                    </View>
+                  </View>
+
+                  <View
+                    style={{
+                      marginTop: 10,
+                      width: "100%",
+                    }}
+                  >
+                    <View style={{ width: "100%", alignItems: "flex-start" }}>
+                      <Text
+                        style={{
+                          color: "#fff",
+                          fontSize: RFValue(15, 580),
+                          fontFamily: "Poppins-Regular",
+                        }}
+                      >
+                        E-mail
+                      </Text>
+                    </View>
+                    <View style={{ width: "100%", alignItems: "flex-end" }}>
+                      <Text
+                        style={{
+                          color: "#fff",
+                          fontSize: RFValue(10, 580),
+                          fontFamily: "Poppins-Regular",
+                        }}
+                      >
+                        {userMeData?.user?.email}
+                      </Text>
+                    </View>
+                  </View>
+                  <View
+                    style={{
+                      marginTop: 10,
+                      width: "100%",
+                      flexDirection: "row",
+                    }}
+                  >
+                    <View style={{ width: "50%" }}>
+                      <Text
+                        style={{
+                          color: "#fff",
+                          fontSize: RFValue(15, 580),
+                          fontFamily: "Poppins-Regular",
+                        }}
+                      >
+                        Country
+                      </Text>
+                    </View>
+                    <View style={{ width: "50%", alignItems: "flex-end" }}>
+                      <Text
+                        style={{
+                          color: "#fff",
+                          fontSize: RFValue(12, 580),
+                          fontFamily: "Poppins-Regular",
+                        }}
+                      >
+                        {userMeData?.personal_info?.country}
+                      </Text>
+                    </View>
+                  </View>
+                  <View
+                    style={{
+                      marginTop: 10,
+                      width: "100%",
+                      flexDirection: "row",
+                    }}
+                  >
+                    <View style={{ width: "50%" }}>
+                      <Text
+                        style={{
+                          color: "#fff",
+                          fontSize: RFValue(15, 580),
+                          fontFamily: "Poppins-Regular",
+                        }}
+                      >
+                        State
+                      </Text>
+                    </View>
+                    <View style={{ width: "50%", alignItems: "flex-end" }}>
+                      <Text
+                        style={{
+                          color: "#fff",
+                          fontSize: RFValue(12, 580),
+                          fontFamily: "Poppins-Regular",
+                        }}
+                      >
+                        {userMeData?.personal_info?.state}
+                      </Text>
+                    </View>
+                  </View>
+                  <View
+                    style={{
+                      marginTop: 10,
+                      width: "100%",
+                      flexDirection: "row",
+                    }}
+                  >
+                    <View style={{ width: "50%" }}>
+                      <Text
+                        style={{
+                          color: "#fff",
+                          fontSize: RFValue(15, 580),
+                          fontFamily: "Poppins-Regular",
+                        }}
+                      >
+                        City
+                      </Text>
+                    </View>
+                    <View style={{ width: "50%", alignItems: "flex-end" }}>
+                      <Text
+                        style={{
+                          color: "#fff",
+                          fontSize: RFValue(12, 580),
+                          fontFamily: "Poppins-Regular",
+                        }}
+                      >
+                        {userMeData?.personal_info?.city}
+                      </Text>
+                    </View>
+                  </View>
+                  <View
+                    style={{
+                      marginTop: 10,
+                      width: "100%",
+                      flexDirection: "row",
+                    }}
+                  >
+                    <View style={{ width: "50%" }}>
+                      <Text
+                        style={{
+                          color: "#fff",
+                          fontSize: RFValue(15, 580),
+                          fontFamily: "Poppins-Regular",
+                        }}
+                      >
+                        Gender
+                      </Text>
+                    </View>
+                    <View style={{ width: "50%", alignItems: "flex-end" }}>
+                      <Text
+                        style={{
+                          color: "#fff",
+                          fontSize: RFValue(12, 580),
+                          fontFamily: "Poppins-Regular",
+                        }}
+                      >
+                        {userMeData?.personal_info?.gender}
+                      </Text>
+                    </View>
+                  </View>
+                  <View
+                    style={{
+                      marginTop: 10,
+                      width: "100%",
+                      flexDirection: "row",
+                    }}
+                  >
+                    <View style={{ width: "50%" }}>
+                      <Text
+                        style={{
+                          color: "#fff",
+                          fontSize: RFValue(15, 580),
+                          fontFamily: "Poppins-Regular",
+                        }}
+                      >
+                        Fitness level
+                      </Text>
+                    </View>
+                    <View style={{ width: "50%", alignItems: "flex-end" }}>
+                      <Text
+                        style={{
+                          color: "#fff",
+                          fontSize: RFValue(12, 580),
+                          fontFamily: "Poppins-Regular",
+                        }}
+                      >
+                        {userMeData?.user?.fitness_level?.key}
+                      </Text>
+                    </View>
+                  </View>
+                  <View
+                    style={{
+                      marginTop: 10,
+                      width: "100%",
+                      flexDirection: "row",
+                    }}
+                  >
+                    <View style={{ width: "50%" }}>
+                      <Text
+                        style={{
+                          color: "#fff",
+                          fontSize: RFValue(15, 580),
+                          fontFamily: "Poppins-Regular",
+                        }}
+                      >
+                        Fitness Goal
+                      </Text>
+                    </View>
+                    <View style={{ width: "50%", alignItems: "flex-end" }}>
+                      <Text
+                        style={{
+                          color: "#fff",
+                          fontSize: RFValue(12, 580),
+                          fontFamily: "Poppins-Regular",
+                        }}
+                      >
+                        {userMeData?.user?.fitness_goal?.key}
+                      </Text>
+                    </View>
+                  </View>
                 </View>
-                {ChangePassword && (
+              </View>
+            </View>
+          </View>
+          {/*End Profile */}
+          {/*Start Wallet */}
+          <View style={{ width: "100%", alignItems: "center", marginTop: 30 }}>
+            <Pressable
+              onPress={() => {
+                if (userMeData?.stripe?.card) {
+                  navigation.navigate("WalletForTrainee");
+                } else {
+                  navigation.navigate("CreateCardTrainee");
+                }
+              }}
+              style={{
+                width: "90%",
+                alignItems: "center",
+                backgroundColor: "#000",
+                borderRadius: 14,
+              }}
+            >
+              <View style={{ width: "100%", alignItems: "center" }}>
+                <View style={{ width: "90%", alignItems: "center" }}>
                   <View
                     style={{
                       width: "100%",
-                      borderTopColor: "#fff",
-                      borderTopWidth: 1,
+                      height: 60,
+                      justifyContent: "center",
+                      flexDirection: "row",
+                    }}
+                  >
+                    <View style={{ width: "15%", justifyContent: "center" }}>
+                      <Fontisto name="wallet" size={25} color={"#fff"} />
+                    </View>
+                    <View style={{ width: "80%", justifyContent: "center" }}>
+                      <Text
+                        style={{
+                          color: "#fff",
+                          fontSize: RFValue(13, 580),
+                          fontFamily: "Poppins-SemiBold",
+                        }}
+                      >
+                        Wallet
+                      </Text>
+                    </View>
+                  </View>
+                </View>
+              </View>
+            </Pressable>
+          </View>
+          {/*End Wallet */}
+          {/*Start Password */}
+          <View style={{ width: "100%", alignItems: "center", marginTop: 30 }}>
+            <View
+              style={{
+                width: "90%",
+                alignItems: "center",
+                backgroundColor: "#000",
+                borderRadius: 14,
+              }}
+            >
+              <View style={{ width: "100%", alignItems: "center" }}>
+                <View
+                  style={{
+                    width: "90%",
+                    alignItems: "center",
+                  }}
+                >
+                  <View
+                    style={{
+                      width: "100%",
+                      height: 60,
+                      justifyContent: "center",
+                      flexDirection: "row",
+                    }}
+                  >
+                    <View style={{ width: "15%", justifyContent: "center" }}>
+                      <Fontisto name="key" size={25} color={"#fff"} />
+                    </View>
+                    <View style={{ width: "70%", justifyContent: "center" }}>
+                      <Text
+                        style={{
+                          color: "#fff",
+                          fontSize: RFValue(13, 580),
+                          fontFamily: "Poppins-SemiBold",
+                        }}
+                      >
+                        Change password
+                      </Text>
+                    </View>
+                    <Pressable
+                      onPress={() => setChangePassword(!ChangePassword)}
+                      style={{
+                        width: "15%",
+                        justifyContent: "center",
+                        alignItems: "flex-end",
+                      }}
+                    >
+                      <Entypo name={ChangePassword ? "chevron-up" : "chevron-down"} size={25} color={"#fff"} />
+                    </Pressable>
+                  </View>
+                </View>
+              </View>
+              {ChangePassword && (
+                <View
+                  style={{
+                    width: "100%",
+                    borderTopColor: "#fff",
+                    borderTopWidth: 1,
+                  }}
+                >
+                  <View
+                    style={{
+                      width: "100%",
+                      alignItems: "center",
+                      marginTop: 30,
                     }}
                   >
                     <View
                       style={{
-                        width: "100%",
-                        alignItems: "center",
-                        marginTop: 30,
+                        width: "90%",
+                        backgroundColor: "#414143",
+                        borderRadius: 8,
+                        height: 58,
                       }}
                     >
                       <View
                         style={{
-                          width: "90%",
-                          backgroundColor: "#414143",
+                          width: "100%",
+                          marginTop: 3,
+                          paddingLeft: 10,
                           borderRadius: 8,
-                          height: 58,
+                        }}
+                      >
+                        <Text
+                          style={{
+                            color: "#ffffff",
+                            fontFamily: "Poppins-Regular",
+                            fontSize: RFValue(9, 580),
+                          }}
+                        >
+                          Old Password
+                        </Text>
+                      </View>
+                      <View
+                        style={{
+                          width: "100%",
+                          borderColor: "#fff",
+                          flexDirection: "row",
                         }}
                       >
                         <View
                           style={{
-                            width: "100%",
-                            marginTop: 3,
-                            paddingLeft: 10,
-                            borderRadius: 8,
+                            width: "90%",
+                            borderColor: "#fff",
                           }}
                         >
-                          <Text
-                            style={{
-                              color: "#ffffff",
-                              fontFamily: "Poppins-Regular",
-                              fontSize: RFValue(9, 580),
-                            }}
-                          >
-                            Old Password
-                          </Text>
+                          <Text style={styles.label}>Password</Text>
+                          <TextInput style={styles.inputPassword} placeholder="Old Password" secureTextEntry={hidePass} value={oldPassword} onChangeText={setOldPassword} />
                         </View>
                         <View
                           style={{
-                            width: "100%",
-                            borderColor: "#fff",
-                            flexDirection: "row",
+                            width: "10%",
+                            alignItems: "center",
                           }}
                         >
-                          <View
-                            style={{
-                              width: "90%",
-                              borderColor: "#fff",
-                            }}
-                          >
-                            <TextInput
-                              style={styles.inputPassword}
-                              label="password"
-                              placeholder="Old Password"
-                              secureTextEntry={hidePass ? true : false}
-                              value={oldPassword}
-                              onChangeText={setOldPassword}
-                            />
-                          </View>
-                          <View
-                            style={{
-                              width: "10%",
-                              alignItems: "center",
-                            }}
-                          >
-                            <Ionicons
-                              name={hidePass ? "eye-off" : "eye"}
-                              onPress={() => setHidePass(!hidePass)}
-                              size={20}
-                              color="#fff"
-                            />
-                          </View>
+                          <Ionicons name={hidePass ? "eye-off" : "eye"} onPress={() => setHidePass(!hidePass)} size={20} color="#fff" />
                         </View>
                       </View>
                     </View>
+                  </View>
+                  <View
+                    style={{
+                      width: "100%",
+                      alignItems: "center",
+                      marginTop: 30,
+                    }}
+                  >
                     <View
                       style={{
-                        width: "100%",
-                        alignItems: "center",
-                        marginTop: 30,
+                        width: "90%",
+                        backgroundColor: "#414143",
+                        borderRadius: 8,
+                        height: 58,
                       }}
                     >
                       <View
                         style={{
-                          width: "90%",
-                          backgroundColor: "#414143",
+                          width: "100%",
+                          marginTop: 3,
+                          paddingLeft: 10,
                           borderRadius: 8,
-                          height: 58,
+                        }}
+                      >
+                        <Text
+                          style={{
+                            color: "#ffffff",
+                            fontFamily: "Poppins-Regular",
+                            fontSize: RFValue(9, 580),
+                          }}
+                        >
+                          New Password
+                        </Text>
+                      </View>
+                      <View
+                        style={{
+                          width: "100%",
+                          borderColor: "#fff",
+                          flexDirection: "row",
                         }}
                       >
                         <View
                           style={{
-                            width: "100%",
-                            marginTop: 3,
-                            paddingLeft: 10,
-                            borderRadius: 8,
+                            width: "90%",
+                            borderColor: "#fff",
                           }}
                         >
-                          <Text
-                            style={{
-                              color: "#ffffff",
-                              fontFamily: "Poppins-Regular",
-                              fontSize: RFValue(9, 580),
-                            }}
-                          >
-                            New Password
-                          </Text>
+                          <TextInput
+                            style={styles.inputPassword}
+                            label="password"
+                            placeholder="Enter Password"
+                            secureTextEntry={hidePass ? true : false}
+                            value={newPassword}
+                            onChangeText={setNewPassword}
+                          />
                         </View>
                         <View
                           style={{
-                            width: "100%",
-                            borderColor: "#fff",
-                            flexDirection: "row",
+                            width: "10%",
+                            alignItems: "center",
                           }}
                         >
-                          <View
-                            style={{
-                              width: "90%",
-                              borderColor: "#fff",
-                            }}
-                          >
-                            <TextInput
-                              style={styles.inputPassword}
-                              label="password"
-                              placeholder="Enter Password"
-                              secureTextEntry={hidePass ? true : false}
-                              value={newPassword}
-                              onChangeText={setNewPassword}
-                            />
-                          </View>
-                          <View
-                            style={{
-                              width: "10%",
-                              alignItems: "center",
-                            }}
-                          >
-                            <Ionicons
-                              name={hidePass ? "eye-off" : "eye"}
-                              onPress={() => setHidePass(!hidePass)}
-                              size={20}
-                              color="#fff"
-                            />
-                          </View>
+                          <Ionicons name={hidePass ? "eye-off" : "eye"} onPress={() => setHidePass(!hidePass)} size={20} color="#fff" />
                         </View>
                       </View>
                     </View>
+                  </View>
+                  <View
+                    style={{
+                      width: "100%",
+                      alignItems: "center",
+                      marginTop: 30,
+                    }}
+                  >
                     <View
                       style={{
-                        width: "100%",
-                        alignItems: "center",
-                        marginTop: 30,
+                        width: "90%",
+                        height: 58,
+                        backgroundColor: "#414143",
+                        borderRadius: 8,
                       }}
                     >
                       <View
                         style={{
-                          width: "90%",
-                          height: 58,
-                          backgroundColor: "#414143",
+                          width: "100%",
+                          marginTop: 3,
+                          paddingLeft: 10,
                           borderRadius: 8,
+                        }}
+                      >
+                        <Text
+                          style={{
+                            color: "#ffffff",
+                            fontSize: RFValue(9, 580),
+                            fontFamily: "Poppins-Regular",
+                          }}
+                        >
+                          Crofirm Password
+                        </Text>
+                      </View>
+                      <View
+                        style={{
+                          width: "100%",
+                          borderColor: "#fff",
+                          flexDirection: "row",
                         }}
                       >
                         <View
                           style={{
-                            width: "100%",
-                            marginTop: 3,
-                            paddingLeft: 10,
-                            borderRadius: 8,
+                            width: "90%",
+                            borderColor: "#fff",
                           }}
                         >
-                          <Text
-                            style={{
-                              color: "#ffffff",
-                              fontSize: RFValue(9, 580),
-                              fontFamily: "Poppins-Regular",
-                            }}
-                          >
-                            Crofirm Password
-                          </Text>
+                          <TextInput
+                            style={styles.inputPassword}
+                            label="password"
+                            placeholder="Enter Password"
+                            secureTextEntry={hidePass ? true : false}
+                            value={confirmPassword}
+                            onChangeText={setConfirmPassword}
+                          />
                         </View>
                         <View
                           style={{
-                            width: "100%",
-                            borderColor: "#fff",
-                            flexDirection: "row",
+                            width: "10%",
+                            alignItems: "center",
                           }}
                         >
-                          <View
-                            style={{
-                              width: "90%",
-                              borderColor: "#fff",
-                            }}
-                          >
-                            <TextInput
-                              style={styles.inputPassword}
-                              label="password"
-                              placeholder="Enter Password"
-                              secureTextEntry={hidePass ? true : false}
-                              value={confirmPassword}
-                              onChangeText={setConfirmPassword}
-                            />
-                          </View>
-                          <View
-                            style={{
-                              width: "10%",
-                              alignItems: "center",
-                            }}
-                          >
-                            <Ionicons
-                              name={hidePass ? "eye-off" : "eye"}
-                              onPress={() => setHidePass(!hidePass)}
-                              size={20}
-                              color="#fff"
-                            />
-                          </View>
+                          <Ionicons name={hidePass ? "eye-off" : "eye"} onPress={() => setHidePass(!hidePass)} size={20} color="#fff" />
                         </View>
                       </View>
                     </View>
-                    <View
+                  </View>
+                  <View
+                    style={{
+                      width: "100%",
+                      alignItems: "center",
+                      marginTop: 10,
+                    }}
+                  >
+                    <Pressable
+                      navigation={navigation}
+                      onPress={() => {
+                        UpdatePassword();
+                        setConfirmPassword("");
+                        setNewPassword("");
+                        setOldPassword("");
+                      }}
                       style={{
-                        width: "100%",
+                        width: "30%",
+                        backgroundColor: "#FF0000",
+                        height: 40,
+                        justifyContent: "center",
                         alignItems: "center",
-                        marginTop: 10,
+                        borderRadius: 10,
                       }}
                     >
+                      <Text
+                        style={{
+                          fontFamily: "Poppins-Regular",
+                          fontSize: RFValue(12, 580),
+                          color: "#fff",
+                        }}
+                      >
+                        {isLoading || isLoading1 ? <ActivityIndicator size="small" color="#fff" /> : "Save"}
+                      </Text>
+                    </Pressable>
+                  </View>
+                  <View style={{ marginVertical: 9 }} />
+                </View>
+              )}
+            </View>
+          </View>
+          {/*End Password */}
+          {/*Start Get referral link */}
+          <View style={{ width: "100%", alignItems: "center", marginTop: 30 }}>
+            <View
+              style={{
+                width: "90%",
+                alignItems: "center",
+                backgroundColor: "#000",
+                borderRadius: 14,
+                padding: 10,
+              }}
+            >
+              <View style={{ width: "100%", alignItems: "center" }}>
+                <View
+                  style={{
+                    width: "90%",
+                    alignItems: "center",
+                  }}
+                >
+                  <View
+                    style={{
+                      width: "100%",
+                      height: 60,
+                      justifyContent: "center",
+                      flexDirection: "row",
+                    }}
+                  >
+                    <View style={{ width: "15%", justifyContent: "center" }}>
+                      <Fontisto name="link" size={25} color={"#fff"} />
+                    </View>
+                    <View style={{ width: "70%", justifyContent: "center" }}>
+                      <Text
+                        style={{
+                          color: "#fff",
+                          fontSize: RFValue(13, 580),
+                          fontFamily: "Poppins-SemiBold",
+                        }}
+                      >
+                        Get referral link{"\n"}
+                        <Text style={styles.inviteText}>Invite friends you get discount</Text>
+                      </Text>
+                    </View>
+                    <Pressable
+                      onPress={() => setGetLink(!getLink)}
+                      style={{
+                        width: "15%",
+                        justifyContent: "center",
+                        alignItems: "flex-end",
+                      }}
+                    >
+                      <Entypo name={getLink ? "chevron-up" : "chevron-down"} size={25} color={"#fff"} />
+                    </Pressable>
+                  </View>
+                </View>
+              </View>
+              {getLink && (
+                <View
+                  style={{
+                    width: "100%",
+                    borderTopColor: "#fff",
+                    borderTopWidth: 1,
+                  }}
+                >
+                  <View style={styles.TopView}>
+                    <View style={styles.topView}>
+                      <View>
+                        <TextInput style={styles.textinput} placeholder="https://qazisaif.com" placeholderTextColor={"#fff"} />
+                      </View>
+
                       <Pressable
-                        navigation={navigation}
-                        onPress={() => {
-                          if (load === true) {
-                          } else {
-                            UpdatePassword();
-                            setConfirmPassword("");
-                            setNewPassword("");
-                            setOldPassword("");
-                          }
-                        }}
+                        onPress={() => setChangePassword(false)}
                         style={{
-                          width: "30%",
+                          width: 100,
                           backgroundColor: "#FF0000",
                           height: 40,
                           justifyContent: "center",
                           alignItems: "center",
                           borderRadius: 10,
+                          marginTop: 10,
                         }}
                       >
                         <Text
@@ -935,179 +891,64 @@ const Account = ({ navigation }) => {
                             color: "#fff",
                           }}
                         >
-                          {load === true ? (
-                            <ActivityIndicator size="small" color="#fff" />
-                          ) : (
-                            "Save"
-                          )}
+                          Copy
                         </Text>
-                      </Pressable>
-                    </View>
-                    <View style={{ marginVertical: 9 }} />
-                  </View>
-                )}
-              </View>
-            </View>
-            {/*End Password */}
-            {/*Start Get referral link */}
-            <View
-              style={{ width: "100%", alignItems: "center", marginTop: 30 }}
-            >
-              <View
-                style={{
-                  width: "90%",
-                  alignItems: "center",
-                  backgroundColor: "#000",
-                  borderRadius: 14,
-                  padding: 10,
-                }}
-              >
-                <View style={{ width: "100%", alignItems: "center" }}>
-                  <View
-                    style={{
-                      width: "90%",
-                      alignItems: "center",
-                    }}
-                  >
-                    <View
-                      style={{
-                        width: "100%",
-                        height: 60,
-                        justifyContent: "center",
-                        flexDirection: "row",
-                      }}
-                    >
-                      <View style={{ width: "15%", justifyContent: "center" }}>
-                        <Fontisto name="link" size={25} color={"#fff"} />
-                      </View>
-                      <View style={{ width: "70%", justifyContent: "center" }}>
-                        <Text
-                          style={{
-                            color: "#fff",
-                            fontSize: RFValue(13, 580),
-                            fontFamily: "Poppins-SemiBold",
-                          }}
-                        >
-                          Get referral link{"\n"}
-                          <Text style={styles.inviteText}>
-                            Invite friends you get discount
-                          </Text>
-                        </Text>
-                      </View>
-                      <Pressable
-                        onPress={() => setGetLink(!getLink)}
-                        style={{
-                          width: "15%",
-                          justifyContent: "center",
-                          alignItems: "flex-end",
-                        }}
-                      >
-                        <Entypo
-                          name={getLink ? "chevron-up" : "chevron-down"}
-                          size={25}
-                          color={"#fff"}
-                        />
                       </Pressable>
                     </View>
                   </View>
                 </View>
-                {getLink && (
+              )}
+            </View>
+          </View>
+          {/*End Get referral link */}
+
+          {/*Start Sign out */}
+          <View style={{ width: "100%", alignItems: "center", marginTop: 30 }}>
+            <Pressable
+              style={{
+                width: "90%",
+                alignItems: "center",
+                backgroundColor: "#000",
+                borderRadius: 14,
+              }}
+              onPress={() => {
+                logOut();
+              }}
+            >
+              <View style={{ width: "100%", alignItems: "center" }}>
+                <View style={{ width: "90%", alignItems: "center" }}>
                   <View
                     style={{
                       width: "100%",
-                      borderTopColor: "#fff",
-                      borderTopWidth: 1,
+                      height: 60,
+                      justifyContent: "center",
+                      flexDirection: "row",
                     }}
                   >
-                    <View style={styles.TopView}>
-                      <View style={styles.topView}>
-                        <View>
-                          <TextInput
-                            style={styles.textinput}
-                            placeholder="https://qazisaif.com"
-                            placeholderTextColor={"#fff"}
-                          />
-                        </View>
-
-                        <Pressable
-                          onPress={() => setChangePassword(false)}
-                          style={{
-                            width: 100,
-                            backgroundColor: "#FF0000",
-                            height: 40,
-                            justifyContent: "center",
-                            alignItems: "center",
-                            borderRadius: 10,
-                            marginTop: 10,
-                          }}
-                        >
-                          <Text
-                            style={{
-                              fontFamily: "Poppins-Regular",
-                              fontSize: RFValue(12, 580),
-                              color: "#fff",
-                            }}
-                          >
-                            Copy
-                          </Text>
-                        </Pressable>
-                      </View>
+                    <View style={{ width: "15%", justifyContent: "center" }}>
+                      <Entypo name="log-out" size={25} color={"#fff"} />
                     </View>
-                  </View>
-                )}
-              </View>
-            </View>
-            {/*End Get referral link */}
-
-            {/*Start Sign out */}
-            <View
-              style={{ width: "100%", alignItems: "center", marginTop: 30 }}
-            >
-              <Pressable
-                style={{
-                  width: "90%",
-                  alignItems: "center",
-                  backgroundColor: "#000",
-                  borderRadius: 14,
-                }}
-                onPress={() => {
-                  logOut();
-                }}
-              >
-                <View style={{ width: "100%", alignItems: "center" }}>
-                  <View style={{ width: "90%", alignItems: "center" }}>
-                    <View
-                      style={{
-                        width: "100%",
-                        height: 60,
-                        justifyContent: "center",
-                        flexDirection: "row",
-                      }}
-                    >
-                      <View style={{ width: "15%", justifyContent: "center" }}>
-                        <Entypo name="log-out" size={25} color={"#fff"} />
-                      </View>
-                      <View style={{ width: "80%", justifyContent: "center" }}>
-                        <Text
-                          style={{
-                            color: "#fff",
-                            fontSize: RFValue(13, 580),
-                            fontFamily: "Poppins-SemiBold",
-                          }}
-                        >
-                          Sign out
-                        </Text>
-                      </View>
+                    <View style={{ width: "80%", justifyContent: "center" }}>
+                      <Text
+                        style={{
+                          color: "#fff",
+                          fontSize: RFValue(13, 580),
+                          fontFamily: "Poppins-SemiBold",
+                        }}
+                      >
+                        Sign out
+                      </Text>
                     </View>
                   </View>
                 </View>
-              </Pressable>
-            </View>
-            {/*End Sign out */}
+              </View>
+            </Pressable>
           </View>
-          <View style={{ marginVertical: 45 }} />
-        </ScrollView>
-      )}
+          {/*End Sign out */}
+        </View>
+        <View style={{ marginVertical: 45 }} />
+      </ScrollView>
+
       <View style={styles.footer}>
         {/*Modal Start*/}
         <View style={styles.centeredView}>
@@ -1241,7 +1082,6 @@ const styles = StyleSheet.create({
     backgroundColor: "rgba(0, 0, 0, 0.29)",
   },
   modalView: {
-    margin: 0,
     width: "100%",
     height: "100%",
     margin: 5,
@@ -1293,7 +1133,6 @@ const styles = StyleSheet.create({
     opacity: 1,
   },
   modalView: {
-    margin: 0,
     width: "100%",
     height: "42%",
     margin: 5,
@@ -1363,6 +1202,11 @@ const styles = StyleSheet.create({
     marginTop: 25,
     width: "100%",
     flexDirection: "row",
+  },
+  label: {
+    fontSize: 16,
+    fontWeight: "bold",
+    marginBottom: 5,
   },
 });
 

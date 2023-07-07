@@ -113,7 +113,6 @@ const Home:React.FC<Props> = ({ navigation }) => {
       })
       .catch((error) => {
         setLoadx(false);
-        console.log(error?.message);
       });
   };
 
@@ -178,20 +177,15 @@ const Home:React.FC<Props> = ({ navigation }) => {
                   res[0].country
                 );
               })
-              .catch((error: any) => console.log(error));
           },
           (error) => {
-            console.log(error.code, error?.message);
+            console.error(error.code, error?.message);
           },
           { enableHighAccuracy: true, timeout: 15000, maximumAge: 10000 }
         );
-      } else {
-        Alert.console.log(
-          "Permission Access denied. Please Make Sure GPS Permission is enabled and then exit app and run again"
-        );
       }
     } catch (error) {
-      console.log(error?.message);
+      console.error(error?.message);
     }
   };
 

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { TextInput as RNTextInput, View, StyleSheet, TextStyle, ViewStyle, Platform } from 'react-native';
+import { TextInput as RNTextInput, View, StyleSheet, TextStyle, ViewStyle, Platform, Pressable } from 'react-native';
 import Typography from '../typography/text';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import Colors from '../../constants/Colors';
@@ -12,12 +12,14 @@ interface TextInputProps {
   placeholderTextColor?: string;
   secureTextEntry?: boolean;
   value: string;
-  onChangeText: (text: string) => void;
+  onChangeText?: (text: string) => void;
   icon?: JSX.Element;
   iconColor?: string;
   style?: ViewStyle;
   inputStyle?: TextStyle;
   error?: string;
+  isEditable?: boolean;
+  handleOnPress?:() => void;
 }
 
 const TextInput: React.FC<TextInputProps> = ({
@@ -31,17 +33,20 @@ const TextInput: React.FC<TextInputProps> = ({
   style,
   inputStyle,
   error,
+  isEditable,
+  handleOnPress
 }) => {
   const [hidePass, setHidePass] = useState(true);
 
   return (
     <>
-    <View style={[styles.inputMainView, !error ? styles.marginBottom : null, style]}>
+    <Pressable onPress={handleOnPress} style={[styles.inputMainView, !error ? styles.marginBottom : null, style]}>
       <Typography color="white" size="small" style={{ margin: 0, transform: [{ translateY: 5 }] }}>
         {label}
       </Typography>
       <View>
-        <RNTextInput
+          <RNTextInput
+            editable={isEditable}
           style={[styles.inputTypeStyle, inputStyle]}
           keyboardType={keyboard}
           placeholder={placeholder}
@@ -61,7 +66,7 @@ const TextInput: React.FC<TextInputProps> = ({
           </View>
         )}
       </View>
-    </View>
+    </Pressable>
     {error && <Typography style={styles.errorMessage} size={'small'} weight='700' color={'error'}>{error}</Typography>}
   </>
   );

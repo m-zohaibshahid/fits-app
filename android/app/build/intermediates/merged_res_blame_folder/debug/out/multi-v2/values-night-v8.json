@@ -38,7 +38,7 @@
                     }
                 },
                 {
-                    "source": "/Users/zohaib.shahid/Downloads/works/newFits/fits-ts/node_modules/@react-native-community/datetimepicker/android/build/intermediates/packaged_res/debug/values-night-v8/values-night-v8.xml",
+                    "source": "/Users/zohaib.shahid/Downloads/works/fits-ts/node_modules/@react-native-community/datetimepicker/android/build/intermediates/packaged_res/debug/values-night-v8/values-night-v8.xml",
                     "from": {
                         "startLines": "2,5",
                         "startColumns": "4,4",

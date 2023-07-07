@@ -1,20 +1,5 @@
 import React, { useState, useEffect } from "react";
-import {
-  Text,
-  View,
-  Pressable,
-  StyleSheet,
-  TextInput,
-  Modal,
-  ImageBackground,
-  Image,
-  ScrollView,
-  ToastAndroid,
-  ActivityIndicator,
-  Platform,
-  PermissionsAndroid,
-  Alert,
-} from "react-native";
+import { Text, View, Pressable, StyleSheet, TextInput, Modal, ImageBackground, Image, ScrollView, ToastAndroid, ActivityIndicator, Platform, PermissionsAndroid, Alert } from "react-native";
 import { getDistance } from "geolib";
 import Feather from "react-native-vector-icons/Feather";
 import AntDesign from "react-native-vector-icons/AntDesign";
@@ -34,11 +19,12 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import Geolocation from "react-native-geolocation-service";
 import Geocoder from "react-native-geocoder";
 import FastImage from "react-native-fast-image";
-import {  useGetUserMeQuery,  useSessionsQuery,  useStripeCustomerMutation, useUpdateFilterMutation } from "../../slice/FitsApi.slice";
-import { useSelector } from "react-redux";
+import { useGetUserMeQuery, useSessionsQuery, useStripeCustomerMutation, useUpdateFilterMutation } from "../../slice/FitsApi.slice";
+import { useDispatch, useSelector } from "react-redux";
 import { UserDataInterface, UserDetail } from "../../interfaces";
+import { setCreateStripeData } from "../../slice/FitsSlice.store";
 
-const Home = ({ navigation }:any) => {
+const Home = ({ navigation }: any) => {
   // states
 
   const [modalVisible, setModalVisible] = useState(false);
@@ -52,68 +38,68 @@ const Home = ({ navigation }:any) => {
   const [personalInfoData, setPersonalInfoData] = useState([]);
   const [professionalData, setProfessionalData] = useState([]);
   const [sportData, setSportData] = useState(null);
-  const [minimumPrice, setMinimumPrice] = useState(null);
-  const [maximumPrice, setMaximumPrice] = useState(null);
-  const [classtype, setClasstype] = useState(null);
-  const [classsort, setClasssort] = useState(null);
+  const [minimumPrice, setMinimumPrice] = useState(0);
+  const [maximumPrice, setMaximumPrice] = useState(0);
+  const [classType, setClassType] = useState(null);
+  const [classSort, setClassSort] = useState(null);
   const [search, setSearch] = useState("");
 
   const [m, setM] = useState("");
+  const dispatch = useDispatch();
+  const token: string = useSelector((state: { token: string }) => state.token);
+  const { userInfo } = useSelector((state: { fitsStore: Partial<UserDetail> }) => state.fitsStore);
 
-  const token:string  = useSelector((state: {token:string}) => state.token)
-  const { userInfo } = useSelector((state: {fitsStore:Partial<UserDetail>}) => state.fitsStore)
-  
-  const { data:userMeData, error, isSuccess } = useGetUserMeQuery({ id: userInfo?._id });
-  
+  const { data: userMeData, error, isSuccess, refetch } = useGetUserMeQuery({ id: userInfo?._id });
+
   const [stripeCustomer] = useStripeCustomerMutation({});
-  const {data:session} = useSessionsQuery({});
-  const [updateFilter,{data:filter}]= useUpdateFilterMutation({});
+  const { data: session } = useSessionsQuery({});
+  const [updateFilter, { data: filter }] = useUpdateFilterMutation({});
   // filter data User define functions
-  const handleSportsData = (item: { name: React.SetStateAction<null>; }) => {
+  const handleSportsData = (item: { name: React.SetStateAction<null> }) => {
     setModalVisible(false);
     setSportData(item?.name);
   };
-  const minPriceData = (minPrice: React.SetStateAction<null>) => {
+  const minPriceData = (minPrice: string) => {
     setModalVisible(false);
-    setMinimumPrice(minPrice);
+    setMinimumPrice(parseInt(minPrice));
   };
-  const maxPriceData = (maxPrice: React.SetStateAction<null>) => {
+  const maxPriceData = (maxPrice: string) => {
     setModalVisible(false);
-    setMaximumPrice(maxPrice);
+    setMaximumPrice(parseInt(maxPrice));
   };
-  const handleClassType = (item: { Name: { toLowerCase: () => React.SetStateAction<null>; }; }) => {
+  const handleClassType = (item: { Name: { toLowerCase: () => React.SetStateAction<null> } }) => {
     setModalVisible(false);
-    setClasstype(item?.Name.toLowerCase());
+    setClassType(item?.Name.toLowerCase());
   };
-  const classSorts = (item: { Name: React.SetStateAction<null>; }) => {
+  const classSorts = (item: { Name: React.SetStateAction<null> }) => {
     setModalVisible(false);
-    setClasssort(item?.Name);
+    setClassSort(item?.Name);
   };
 
   useEffect(() => {
-    if (sportData || minimumPrice || maximumPrice || classtype || classsort) {
+    if (sportData || minimumPrice || maximumPrice || classType || classSort) {
       Filter();
     }
-  }, [sportData, minimumPrice, maximumPrice, classtype, classsort]);
+  }, [sportData, minimumPrice, maximumPrice, classType, classSort]);
   // filter Api states
   const Filter = async () => {
-    updateFilter({
+    const data = {
       sports: sportData,
       min_price: minimumPrice,
       max_price: maximumPrice,
-      type: classtype,
-      sort_by: classsort,
-    }).unwrap()
-      .then((res2) => {
-        if (res2.success) {
-          setFilterData(res2?.data?.result);
-          ToastAndroid.show(res2.message, ToastAndroid.SHORT);
+      type: classType,
+      sort_by: classSort,
+    };
+    updateFilter(data)
+      .then(async (res: any) => {
+        if (res?.data?.success) {
+          setFilterData(res.data?.data?.result);
+          ToastAndroid.show(res.data?.message, ToastAndroid.SHORT);
         } else {
-          ToastAndroid.show(res2.message, ToastAndroid.SHORT);
+          ToastAndroid.show(res.error?.data?.message, ToastAndroid.SHORT);
         }
       })
-      .catch(() => {
-      });
+      .catch(() => {});
   };
   //states
   const [nearyou, setNearyou] = useState(true);
@@ -133,8 +119,7 @@ const Home = ({ navigation }:any) => {
   const [superLong, setSuperLong] = useState(55.9754);
   const [superLat, setSuperLat] = useState(21.4735);
 
-  const getPersonalInfo = async () => {
-  };
+  const getPersonalInfo = async () => {};
 
   const setUserLocation = async (data: string) => {
     await AsyncStorage.setItem("userLocation", JSON.stringify(data));
@@ -142,42 +127,35 @@ const Home = ({ navigation }:any) => {
 
   const requestLocationPermission = async () => {
     try {
-      const granted = await PermissionsAndroid.request(
-        PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
-        {
-          title: "Location Access Required",
-          message: "This App needs to Access your location",
-          buttonPositive: "Allow Location",
-        }
-      );
+      const granted = await PermissionsAndroid.request(PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION, {
+        title: "Location Access Required",
+        message: "This App needs to Access your location",
+        buttonPositive: "Allow Location",
+      });
       if (granted === PermissionsAndroid.RESULTS.GRANTED) {
         //To Check, If Permission is granted
         Geolocation.getCurrentPosition(
           (position) => {
             setSuperLong(position?.coords?.longitude);
             setSuperLat(position?.coords?.latitude);
-            const  pos = {
+            const pos = {
               lat: position?.coords?.latitude,
               lng: position?.coords?.longitude,
             };
             Geocoder.geocodePosition(pos)
-              .then((res: {
-                subLocality: string;
-                locality: string;
-                adminArea: string; country: string; 
-}[]) => {
-                setUserLocation(
-                  res[0].subLocality +
-                  " " +
-                  res[0].locality +
-                  " ," +
-                  res[0].adminArea +
-                  "-" +
-                  res[0].country
-                );
-               
-              })
-              .catch((error: any) => alert(error));
+              .then(
+                (
+                  res: {
+                    subLocality: string;
+                    locality: string;
+                    adminArea: string;
+                    country: string;
+                  }[]
+                ) => {
+                  setUserLocation(res[0].subLocality + " " + res[0].locality + " ," + res[0].adminArea + "-" + res[0].country);
+                }
+              )
+              .catch((error: any) => Alert.alert(error));
           },
           () => {
             // See error code charts below.
@@ -185,19 +163,14 @@ const Home = ({ navigation }:any) => {
           { enableHighAccuracy: true, timeout: 15000, maximumAge: 10000 }
         );
       } else {
-        Alert.alert(
-          "Permission Access denied. Please Make Sure GPS Permission is enabled and then exit app and run again"
-        );
+        Alert.alert("Permission Access denied. Please Make Sure GPS Permission is enabled and then exit app and run again");
       }
-    } catch (err) { }
+    } catch (err) {}
   };
 
   useEffect(() => {
     requestLocationPermission();
   }, []);
-
-  
-  
 
   useEffect(() => {
     navigation.addListener("focus", () => {
@@ -208,44 +181,34 @@ const Home = ({ navigation }:any) => {
   }, []);
 
   const userMe = async () => {
-        setLoad(true);
-        if (isSuccess) {
-          setUserData(userMeData);
-          createStripeAccount(userMeData);
-          setLoad(false);
-        } else {
-          alert(error);
-        }
-     
-  };
-  
-
- 
-  const setForCareateStripeCall = async (filterData: any) => {
-    await AsyncStorage.setItem("createStripeData", JSON.stringify(filterData));
-  };
-
-  const createStripeAccount = async (filterData: { personal_info: { name: string,phoneNumber:string}; user: { email: any; }; }) => {
     setLoad(true);
-    
-    stripeCustomer({ name: filterData?.personal_info?.name,
-      email: filterData?.user?.email,
-      phone: filterData?.personal_info?.phoneNumber}).unwrap()
+    if (isSuccess) {
+      setUserData(userMeData);
+      createStripeAccount(userMeData);
+      setLoad(false);
+    } else {
+      Alert.alert(error);
+    }
+  };
+
+  const setForCareateStripeCall = async (filterData: any) => {
+    dispatch(setCreateStripeData(filterData));
+  };
+
+  const createStripeAccount = async (filterData: { personal_info: { name: string; phoneNumber: string }; user: { email: any } }) => {
+    setLoad(true);
+
+    stripeCustomer({ name: filterData?.personal_info?.name, email: filterData?.user?.email, phone: filterData?.personal_info?.phoneNumber })
+      // .unwrap()
       .then((res2) => {
-        if (
-          res2?.message === "success" ||
-          res2?.message === "customer already exists"
-        ) {
-          setForCareateStripeCall(res2?.data);
+        if (res2?.data?.message === "success" || res2?.error?.data?.message === "customer already exists") {
+          setForCareateStripeCall(res2?.error?.data?.data ?? res2?.data?.data);
         }
       })
       .catch((error) => {
         setLoad(false);
-        console.log("stripe account error", error);
       });
   };
-
- 
 
   const handleSetSort = () => {
     setSort(true);
@@ -291,7 +254,7 @@ const Home = ({ navigation }:any) => {
   };
   const bookASessioan = async () => {
     setLoad(true);
-  
+
     await fetch(`${url}/session`, {
       method: "GET",
       headers: {
@@ -302,7 +265,7 @@ const Home = ({ navigation }:any) => {
     })
       .then((res) => res.json())
       .then((res2) => {
-        const {personal_info,profession_info,classes}=res2?.data
+        const { personal_info, profession_info, classes } = res2?.data;
         setLoad(false);
         if (res2.message === "all classes get successfully") {
           setPersonalInfoData(personal_info);
@@ -311,22 +274,17 @@ const Home = ({ navigation }:any) => {
           setDumData(classes);
           getDistanceFunction(classes);
         } else {
-          alert(res2.errors);
+          Alert.alert(res2.errors);
         }
-      })
-    if(error){
-      
-        setLoad(false);
-  
-  }
+      });
+    if (error) {
+      setLoad(false);
+    }
   };
 
   const getDistanceGoogle = (lat: any, lng: any) => {
     let dis;
-    dis = getDistance(
-      { latitude: lat, longitude: lng },
-      { latitude: superLat, longitude: superLong }
-    );
+    dis = getDistance({ latitude: lat, longitude: lng }, { latitude: superLat, longitude: superLong });
 
     let distanceInKM = dis / 1000;
 
@@ -340,8 +298,7 @@ const Home = ({ navigation }:any) => {
     });
   };
 
-  const find = (t:any) => {
-   console.log("t",t)
+  const find = (t: any) => {
     const words = [data];
     setSearch(t);
     if (t === "") {
@@ -353,7 +310,6 @@ const Home = ({ navigation }:any) => {
         const textData = t?.toUpperCase();
         return itemData.indexOf(textData) > -1;
       });
-      console.log("first")
       setFilterData(newData);
     }
   };
@@ -366,9 +322,7 @@ const Home = ({ navigation }:any) => {
               <View style={styles.rowView}>
                 <View style={{ width: "60%" }}>
                   <Text style={styles.hometext}>Home</Text>
-                  <Text style={styles.text}>
-                    Hello, {userData?.personal_info?.name}
-                  </Text>
+                  <Text style={styles.text}>Hello, {userData?.personal_info?.name}</Text>
                 </View>
                 <View style={styles.imageview}>
                   {userData?.personal_info?.profileImage ? (
@@ -409,9 +363,7 @@ const Home = ({ navigation }:any) => {
                 <Pressable
                   style={styles.closeiconview}
                   onPress={() => {
-                    modalVisible
-                      ? setModalVisible(false)
-                      : setModalVisible(true);
+                    modalVisible ? setModalVisible(false) : setModalVisible(true);
                   }}
                 >
                   <Feather name="sliders" size={19} color="#fff" />
@@ -422,28 +374,12 @@ const Home = ({ navigation }:any) => {
           <View style={styles.TopView}>
             <View style={styles.topView}>
               <View style={styles.toptabmainview}>
-                <Pressable
-                  style={styles.mainclassesview}
-                  onPress={() => NearyoutrueState()}
-                >
-                  <Text
-                    style={[nearyou ? styles.topbartext : styles.topbartext1]}
-                  >
-                    Near you
-                  </Text>
+                <Pressable style={styles.mainclassesview} onPress={() => NearyoutrueState()}>
+                  <Text style={[nearyou ? styles.topbartext : styles.topbartext1]}>Near you</Text>
                   {nearyou ? <View style={styles.borderView}></View> : null}
                 </Pressable>
-                <Pressable
-                  onPress={() => RecommendedtrueState()}
-                  style={styles.mainbookedview}
-                >
-                  <Text
-                    style={[
-                      recommended ? styles.topbartext : styles.topbartext1,
-                    ]}
-                  >
-                    Recommended
-                  </Text>
+                <Pressable onPress={() => RecommendedtrueState()} style={styles.mainbookedview}>
+                  <Text style={[recommended ? styles.topbartext : styles.topbartext1]}>Recommended</Text>
                   {recommended ? <View style={styles.borderView}></View> : null}
                 </Pressable>
               </View>
@@ -456,29 +392,21 @@ const Home = ({ navigation }:any) => {
           <ActivityIndicator size="large" color="red" />
         ) : filterData ? (
           <>
-            <ScrollView
-              horizontal={true}
-              showsHorizontalScrollIndicator={false}
-              style={styles.main}
-            >
+            <ScrollView horizontal={true} showsHorizontalScrollIndicator={false} style={styles.main}>
               {/*start image box view*/}
-              {filterData.map((item: UserDataInterface, i:number) => (
-                <Pressable
-                  onPress={() => dummyData(item?.user?._id, item)}
-                  style={styles.boxview}
-                  key={i}
-                >
+              {filterData.map((item: UserDataInterface, i: number) => (
+                <Pressable onPress={() => dummyData(item?.user?._id, item)} style={styles.boxview} key={i}>
                   <ImageBackground
                     imageStyle={{ borderRadius: 10 }}
                     style={styles.ImageBackgroundstyle}
                     source={
                       item.image
                         ? {
-                          uri: `${item?.image}`,
-                        }
+                            uri: `${item?.image}`,
+                          }
                         : {
-                          uri: "https://se-new.ingrammicro.com/_layouts/images/CSDefaultSite/common/no-image-lg.png",
-                        }
+                            uri: "https://se-new.ingrammicro.com/_layouts/images/CSDefaultSite/common/no-image-lg.png",
+                          }
                     }
                   >
                     <View style={styles.TopView}>
@@ -487,20 +415,13 @@ const Home = ({ navigation }:any) => {
                           <View style={styles.inImageView}>
                             <View style={styles.BoxViews}>
                               <Text style={styles.TextStyle}>
-                                <AntDesign
-                                  name="star"
-                                  size={15}
-                                  color={"#000"}
-                                />{" "}
-                                {item?.averageRating?.toFixed(1)}
+                                <AntDesign name="star" size={15} color={"#000"} /> {item?.averageRating?.toFixed(1)}
                               </Text>
                             </View>
                           </View>
                           <View style={styles.inImageView1}>
                             <View style={styles.BoxView1}>
-                              <Text style={styles.TextStyle}>
-                                $ {item?.price} / Session
-                              </Text>
+                              <Text style={styles.TextStyle}>$ {item?.price} / Session</Text>
                             </View>
                           </View>
                         </View>
@@ -511,9 +432,7 @@ const Home = ({ navigation }:any) => {
                     <Text style={styles.jamesnameText}>{item.class_title}</Text>
                     <View style={{ width: "100%", flexDirection: "row" }}>
                       <EvilIcons name="location" size={20} color="black" />
-                      <Text style={styles.kmtextstyle}>
-                        {item?.session_type?.distance?.toFixed(1)} km from you
-                      </Text>
+                      <Text style={styles.kmtextstyle}>{item?.session_type?.distance?.toFixed(1)} km from you</Text>
                     </View>
                   </View>
                 </Pressable>
@@ -540,7 +459,7 @@ const Home = ({ navigation }:any) => {
             </Text>
           </View>
         )}
-        {recommended ? <Recommended navigation={navigation} /> : null}
+        {recommended ? <Recommended navigation={navigation} superLong={undefined} superLat={undefined} /> : null}
       </ScrollView>
       {/*filter option model  Start*/}
       <View style={styles.bottomZero}>
@@ -560,12 +479,7 @@ const Home = ({ navigation }:any) => {
                     {/*start header*/}
                     <View style={styles.flexdirectionView}>
                       <View style={styles.iconView}>
-                        <FontAwesome5
-                          name="arrow-left"
-                          onPress={() => setModalVisible(false)}
-                          size={20}
-                          color={"#000"}
-                        />
+                        <FontAwesome5 name="arrow-left" onPress={() => setModalVisible(false)} size={20} color={"#000"} />
                       </View>
                       <View style={styles.titleName}>
                         <Text style={styles.filterText}>Filter</Text>
@@ -575,56 +489,20 @@ const Home = ({ navigation }:any) => {
                     <ScrollView showsVerticalScrollIndicator={false}>
                       {/*start navigation*/}
                       <View style={styles.toptabmainview}>
-                        <Pressable
-                          style={styles.mainclassesview}
-                          onPress={() => handleSetSort()}
-                        >
-                          <Text
-                            style={[
-                              sort ? styles.topbartext : styles.topbartext1,
-                            ]}
-                          >
-                            Sort
-                          </Text>
+                        <Pressable style={styles.mainclassesview} onPress={() => handleSetSort()}>
+                          <Text style={[sort ? styles.topbartext : styles.topbartext1]}>Sort</Text>
                           {sort ? <View style={styles.borderView} /> : null}
                         </Pressable>
-                        <Pressable
-                          style={styles.mainclassesview}
-                          onPress={() => handleSetSports()}
-                        >
-                          <Text
-                            style={[
-                              sports ? styles.topbartext : styles.topbartext1,
-                            ]}
-                          >
-                            Sports
-                          </Text>
+                        <Pressable style={styles.mainclassesview} onPress={() => handleSetSports()}>
+                          <Text style={[sports ? styles.topbartext : styles.topbartext1]}>Sports</Text>
                           {sports ? <View style={styles.borderView} /> : null}
                         </Pressable>
-                        <Pressable
-                          onPress={() => handleSetPrice()}
-                          style={styles.mainclassesview}
-                        >
-                          <Text
-                            style={[
-                              price ? styles.topbartext : styles.topbartext1,
-                            ]}
-                          >
-                            Price
-                          </Text>
+                        <Pressable onPress={() => handleSetPrice()} style={styles.mainclassesview}>
+                          <Text style={[price ? styles.topbartext : styles.topbartext1]}>Price</Text>
                           {price ? <View style={styles.borderView} /> : null}
                         </Pressable>
-                        <Pressable
-                          onPress={() => handleSetType(true)}
-                          style={styles.mainclassesview}
-                        >
-                          <Text
-                            style={[
-                              type ? styles.topbartext : styles.topbartext1,
-                            ]}
-                          >
-                            Type
-                          </Text>
+                        <Pressable onPress={() => handleSetType()} style={styles.mainclassesview}>
+                          <Text style={[type ? styles.topbartext : styles.topbartext1]}>Type</Text>
                           {type ? <View style={styles.borderView} /> : null}
                         </Pressable>
                       </View>
@@ -632,30 +510,10 @@ const Home = ({ navigation }:any) => {
 
                       {/*Start Navigation Screen*/}
                       <ScrollView showsVerticalScrollIndicator={false}>
-                        {sort && (
-                          <Sort
-                            ClassSorts={classSorts}
-                          />
-                        )}
-                        {sports ? (
-                          <Sports
-                            navigation={navigation}
-                            handleSportsData={handleSportsData}
-                          />
-                        ) : null}
-                        {price ? (
-                          <Price
-                            navigation={navigation}
-                            MinPriceData={minPriceData}
-                            MaxPriceData={maxPriceData}
-                          />
-                        ) : null}
-                        {type ? (
-                          <Type
-                            navigation={navigation}
-                            ClassType={handleClassType}
-                          />
-                        ) : null}
+                        {sort && <Sort ClassSorts={classSorts} />}
+                        {sports ? <Sports navigation={navigation} handleSportsData={handleSportsData} /> : null}
+                        {price ? <Price navigation={navigation} MinPriceData={minPriceData} MaxPriceData={maxPriceData} /> : null}
+                        {type ? <Type navigation={navigation} ClassType={handleClassType} /> : null}
                       </ScrollView>
                       {/*End Navigation Screen*/}
                     </ScrollView>

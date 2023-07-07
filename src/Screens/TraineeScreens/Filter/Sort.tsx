@@ -20,12 +20,11 @@ const Sorts = [
     Name: "Highest rating",
   },
 ];
-const Sort = (props: { ClassSorts: any; }) => {
-  
+const Sort = (props: { ClassSorts: any }) => {
   const { ClassSorts } = props;
 
-  const detailsInfoCall = (item: string) => {
-    if (item !== "") {
+  const detailsInfoCall = (item: { Name: string }) => {
+    if (item.Name !== "") {
       ClassSorts(item);
     }
   };
@@ -35,20 +34,23 @@ const Sort = (props: { ClassSorts: any; }) => {
       <Text style={styles.SortText}>Sort </Text>
       <View style={styles.borderWidth} />
       {/*start flex box*/}
-      {Sorts.map((item, i) => (
-        <Pressable
-          onPress={() => detailsInfoCall(item)}
-          style={styles.flexDirectionView}
-          key={i}
-        >
-          <View style={styles.titleView}>
-            <Text style={styles.titleText}>{item.Name}</Text>
-          </View>
-          <View style={styles.iconView}>
-            <Feather name="check-circle" color={"#000"} size={25} />
-          </View>
-        </Pressable>
-      ))}
+      {Sorts.map(
+        (
+          item: {
+            Name: string;
+          },
+          i
+        ) => (
+          <Pressable onPress={() => detailsInfoCall(item)} style={styles.flexDirectionView} key={i}>
+            <View style={styles.titleView}>
+              <Text style={styles.titleText}>{item.Name}</Text>
+            </View>
+            <View style={styles.iconView}>
+              <Feather name="check-circle" color={"#000"} size={25} />
+            </View>
+          </Pressable>
+        )
+      )}
       {/*End flex box*/}
     </ScrollView>
   );

@@ -1,28 +1,12 @@
 import React, { useState, useEffect } from "react";
-import {
-  Text,
-  View,
-  StyleSheet,
-  Pressable,
-  ToastAndroid,
-  ActivityIndicator,
-  Platform,
-} from "react-native";
+import { Text, View, StyleSheet, Pressable, ActivityIndicator, Platform } from "react-native";
 import AntDesign from "react-native-vector-icons/AntDesign";
 import FontAwesome from "react-native-vector-icons/FontAwesome";
 import { RFValue } from "react-native-responsive-fontsize";
 import { Calendar } from "react-native-calendars";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import moment from "moment";
 
-const MyBookedClasses = ({
-  navigation,
-  data,
-  deleteBooking,
-  detailsInfoCall,
-  load,
-  loadx,
-}) => {
+const MyBookedClasses = ({ data, deleteBooking, detailsInfoCall, load, loadx }) => {
   const [currentDate, setCurrentDate] = useState();
 
   return (
@@ -118,9 +102,7 @@ const MyBookedClasses = ({
                             flexDirection: "row",
                           }}
                         >
-                          <View
-                            style={{ width: "78%", justifyContent: "center" }}
-                          >
+                          <View style={{ width: "78%", justifyContent: "center" }}>
                             <Text
                               style={{
                                 color: "#fff",
@@ -132,11 +114,7 @@ const MyBookedClasses = ({
                               Details
                             </Text>
                           </View>
-                          <AntDesign
-                            name={item.status ? "up" : "down"}
-                            size={14}
-                            color={"#fff"}
-                          />
+                          <AntDesign name={item.status ? "up" : "down"} size={14} color={"#fff"} />
                         </View>
                       </Pressable>
                     </View>
@@ -159,10 +137,7 @@ const MyBookedClasses = ({
                    </View>*/}
                         <View style={styles.dotmainview}>
                           <View style={styles.dotview}>
-                            <FontAwesome
-                              name="circle"
-                              style={{ color: "#979797" }}
-                            />
+                            <FontAwesome name="circle" style={{ color: "#979797" }} />
                           </View>
                           <View style={{ width: "90%" }}>
                             <Text style={styles.textstyle}>
@@ -185,15 +160,10 @@ const MyBookedClasses = ({
                     </View>*/}
                         <View style={styles.dotmainview}>
                           <View style={styles.dotview}>
-                            <FontAwesome
-                              name="circle"
-                              style={{ color: "#979797" }}
-                            />
+                            <FontAwesome name="circle" style={{ color: "#979797" }} />
                           </View>
                           <View style={{ width: "90%" }}>
-                            <Text style={styles.textstyle}>
-                              {item?.session?.details}
-                            </Text>
+                            <Text style={styles.textstyle}>{item?.session?.details}</Text>
                           </View>
                         </View>
                         <View style={styles.mainbtnView}>
@@ -206,13 +176,7 @@ const MyBookedClasses = ({
                             }}
                             style={styles.ccbtnview}
                           >
-                            {loadx === true ? (
-                              <ActivityIndicator size="small" color="#fff" />
-                            ) : (
-                              <Text style={styles.btntextstyle}>
-                                Cancel Class
-                              </Text>
-                            )}
+                            {loadx === true ? <ActivityIndicator size="small" color="#fff" /> : <Text style={styles.btntextstyle}>Cancel Class</Text>}
                           </Pressable>
                         </View>
                       </View>
@@ -225,9 +189,7 @@ const MyBookedClasses = ({
         )}
         {data?.length < 0 && (
           <View style={{ width: "100%", borderWidth: 1 }}>
-            <Text style={{ fontSize: 22 }}>
-              There is no Booked classes by trainee
-            </Text>
+            <Text style={{ fontSize: 22 }}>There is no Booked classes by trainee</Text>
           </View>
         )}
         <View style={{ marginVertical: 20 }} />

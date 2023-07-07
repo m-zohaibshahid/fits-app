@@ -58,7 +58,6 @@ const Professioninfo = ({ navigation }) => {
       .then((res) => res.json())
       .then((res2) => {
         setLoad(false);
-        console.log(res2?.message);
         if (res2?.message === "create profession info successfully") {
           Toast.show({
             type: "success",
