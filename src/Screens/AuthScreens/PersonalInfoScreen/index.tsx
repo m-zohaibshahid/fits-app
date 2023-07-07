@@ -10,7 +10,6 @@ import Header from "../../../Components/Header";
 import Colors from "../../../constants/Colors";
 import Button from "../../../Components/Button";
 import CountryPicker from "react-native-country-picker-modal";
-import { useNavigation } from "@react-navigation/native";
 import TextInput from "../../../Components/Input";
 import Container from "../../../Components/Container";
 import { RFValue } from "react-native-responsive-fontsize";
@@ -21,7 +20,6 @@ import { useGetUserMeQuery, usePersonalInfoCreateMutation } from "../../../slice
 import { PersonalInfoFormValidationResultInterface, PersonalInfoValidateErrorsIntarface, PersonalInfoValidateSchemaInterface } from "../types";
 import { validateForm } from "../../../utils/validation";
 import { errorToast } from "../../../utils/toast";
-import { getUserAsyncStroage, storeUserDataInAsyncStorage } from "../../../utils/async-storage";
 import { NavigationSwitchProp } from "react-navigation";
 
 export const validationSchema = Yup.object().shape({
@@ -64,6 +62,9 @@ const PersonalInfo = ({navigation}: PropsInterface) => {
   const [isCountryVisible, setIsCountryVisible] = React.useState(false);
   const [mutateAsyncPersonalInfoUpdate, { isLoading, isError, error: personalInfoApiError }] = usePersonalInfoCreateMutation()
 
+  const token: string = useSelector((state: { token: string }) => state.token);
+  const { userInfo } = useSelector((state: { fitsStore: Partial<UserDetail> }) => state.fitsStore);
+  const { data: userMeData, isLoading: load } = useGetUserMeQuery({ id: userInfo?._id });
   // Functions
   const onPressFlag = () => {
     return setIsCountryVisible(true);
@@ -117,14 +118,14 @@ const PersonalInfo = ({navigation}: PropsInterface) => {
       });
   };
 
-  const uploadImageOnCloud = async (image) => {
-    const zzz = new FormData();
-    zzz.append("file", image);
-    zzz.append("upload_preset", "employeeApp");
-    zzz.append("cloud_name", "ZACodders");
+  const uploadImageOnCloud = async (image: { uri: string; type: string; name: string }) => {
+    const imageUploadOnCloud = new FormData();
+    imageUploadOnCloud.append("file", image);
+    imageUploadOnCloud.append("upload_preset", "employeeApp");
+    imageUploadOnCloud.append("cloud_name", "ZACodders");
     await fetch("https://api.cloudinary.com/v1_1/ZACodders/image/upload", {
       method: "POST",
-      body: zzz,
+      body: imageUploadOnCloud,
     })
       .then((res) => res.json())
       .then((res2) => {
@@ -298,11 +299,7 @@ const PersonalInfo = ({navigation}: PropsInterface) => {
                             setStatusThree(false);
                           }}
                         >
-                          <View
-                            style={[
-                              statusOne ? styles.BoxViewBoder : styles.inner,
-                            ]}
-                          >
+                          <View style={[statusOne ? styles.BoxViewBoder : styles.inner]}>
                             <Image source={Images.Vector} />
                             <Text style={styles.maletext}>Male</Text>
                           </View>
@@ -318,11 +315,7 @@ const PersonalInfo = ({navigation}: PropsInterface) => {
                             setStatusThree(false);
                           }}
                         >
-                          <View
-                            style={[
-                              statusTwo ? styles.BoxViewBoder : styles.inner,
-                            ]}
-                          >
+                          <View style={[statusTwo ? styles.BoxViewBoder : styles.inner]}>
                             <Image source={Images.Vector2} />
                             <Text style={styles.maletext}>Female</Text>
                           </View>
@@ -345,13 +338,7 @@ const PersonalInfo = ({navigation}: PropsInterface) => {
                             setStatusThree(true);
                           }}
                         >
-                          <View
-                            style={[
-                              statusThree
-                                ? styles.oternameviewBorder
-                                : styles.oternameview,
-                            ]}
-                          >
+                          <View style={[statusThree ? styles.oternameviewBorder : styles.oternameview]}>
                             <Text style={styles.otherText}>Other</Text>
                           </View>
                         </Pressable>
@@ -387,13 +374,7 @@ const PersonalInfo = ({navigation}: PropsInterface) => {
                     </View>
 
                       <View style={styles.topView}>
-                        <DatePicker
-                          mode="date"
-                          textColor="#000"
-                          date={date}
-                          style={styles.DatePicker}
-                          onDateChange={setDate}
-                        />
+                        <DatePicker mode="date" textColor="#000" date={date ? new Date(date) : new Date()} style={styles.DatePicker} onDateChange={setDate} />
                       </View>
                 </View>
               </View>

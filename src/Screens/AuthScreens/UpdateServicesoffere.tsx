@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Text, View, Pressable, StyleSheet, TextInput, Modal, ScrollView, ToastAndroid, ActivityIndicator, Platform } from "react-native";
+import { Text, View, Pressable, StyleSheet, TextInput, Modal, ScrollView, ToastAndroid, ActivityIndicator, Platform, Alert } from "react-native";
 import { RFValue } from "react-native-responsive-fontsize";
 import Feather from "react-native-vector-icons/Feather";
 import Header from "../../Components/Header";
@@ -16,7 +16,7 @@ interface Props {
 const UpdateServicesoffere: React.FC<Props> = ({ navigation }) => {
   const route = useRoute();
 
-  const [value, setValue] = useState("");
+  const [value, setValue] = useState();
   const [key, setKey] = useState("");
   const [id, setId] = useState("");
   const [modalVisible, setModalVisible] = useState(false);
@@ -33,31 +33,27 @@ const UpdateServicesoffere: React.FC<Props> = ({ navigation }) => {
     navigation.addListener("focus", () => {
       getUserInfo();
     });
-  }, [getUserInfo]);
+  }, []);
 
   const getUserInfo = async () => {
     const userData = await AsyncStorage.getItem("userData");
-    let userDatax = JSON.parse(userData);
+    let userDatax = JSON.parse(userData ?? "");
     setToken(userDatax?.access_token);
     setId(userDatax?.data?._id);
     if (userDatax.access_token !== null) {
       Services();
     }
   };
-  // useEffect(() => {
-  //   navigation.addListener('focus', () => {
-  //     Services();
-  //   });
-  // }, []);
+
   const modalFalse = () => {
     setModalVisible(false);
   };
   const GoBack = () => {
     navigation.goBack();
   };
-  const changeServicesSelection = (data, i) => {
+  const changeServicesSelection = (data: any, i: number | React.SetStateAction<string>) => {
     let dummy = [...servicesData];
-    let dummy1 = dummy.map((item, index) => (index == i ? { ...item, check: !item.check } : { ...item, check: false }));
+    let dummy1: any = dummy.map((item, index) => (index == i ? { ...item, check: !item.check } : { ...item, check: false }));
     setValue(i);
     setKey(data?.service_name);
     setServicesData(dummy1);
@@ -106,7 +102,7 @@ const UpdateServicesoffere: React.FC<Props> = ({ navigation }) => {
       .then((res) => res.json())
       .then((res2) => {
         setLoadx(false);
-        res2.data.map((item) => {
+        res2.data.map((item: { check: boolean }) => {
           item.check = false;
           return item;
         });
@@ -143,7 +139,6 @@ const UpdateServicesoffere: React.FC<Props> = ({ navigation }) => {
         .then((res2) => {
           setLoade(false);
           if (res2.message === "created successfully") {
-            // ToastAndroid.show("Done", ToastAndroid.LONG);
             Services();
             modalFalse();
           } else {
@@ -215,7 +210,7 @@ const UpdateServicesoffere: React.FC<Props> = ({ navigation }) => {
       <ScrollView showsVerticalScrollIndicator={false}>
         <View style={styles.main}>
           <View style={styles.mainViewBox}>
-            {servicesData.map((item, i) => (
+            {servicesData.map((item: any, i: number) => (
               <Pressable
                 key={i}
                 onPress={() => {
@@ -229,8 +224,8 @@ const UpdateServicesoffere: React.FC<Props> = ({ navigation }) => {
           </View>
         </View>
         <View style={styles.main}>
-          {loadx === "true" ? <ActivityIndicator size="small" color="#fff" /> : null}
-          {servicesData.map((item, i) => (
+          {loadx ? <ActivityIndicator size="small" color="#fff" /> : null}
+          {servicesData.map((item: any, i) => (
             <View style={styles.mainViewBox} key={i}>
               <Pressable
                 onPress={() => {
@@ -246,13 +241,9 @@ const UpdateServicesoffere: React.FC<Props> = ({ navigation }) => {
       </ScrollView>
       <View style={{ paddingVertical: 10, width: "100%" }}>
         <Button
-          navigation={navigation}
           label={load === true ? <ActivityIndicator size="small" color="#fff" /> : "Done"}
           onPress={() => {
-            if (load === true) {
-            } else {
-              servicesOfferedInfo();
-            }
+            servicesOfferedInfo();
           }}
         />
       </View>
@@ -297,13 +288,8 @@ const UpdateServicesoffere: React.FC<Props> = ({ navigation }) => {
                   <Pressable
                     style={styles.profilebtnview}
                     onPress={() => {
-                      if (loade === true) {
-                      } else {
-                        {
-                          addServices();
-                          setServiceName("");
-                        }
-                      }
+                      addServices();
+                      setServiceName("");
                     }}
                   >
                     {loade === true ? <ActivityIndicator size="small" color="#fff" /> : <Text style={styles.btntextstyle1}>Create</Text>}

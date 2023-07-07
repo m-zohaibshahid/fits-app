@@ -15,7 +15,7 @@ export const fitsApi = createApi({
       return headers;
     },
   }),
-  // keepUnusedDataFor: 30,
+  keepUnusedDataFor: 30,
   endpoints: (builder) => ({
     getUsers: builder.query<any[], void>({
       query: () => "users",

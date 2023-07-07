@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { View, StatusBar, ToastAndroid } from "react-native";
+import { View, StatusBar } from "react-native";
 import FastImage from "react-native-fast-image";
 import styles from "./styles";
 import { useGetUserMeQuery } from "../../../slice/FitsApi.slice";
@@ -14,7 +14,7 @@ interface PropsInterface {
 
 const CheckUser = ({ navigation }: PropsInterface) => {
   
-  const { refetch: getUserInfoFromUserMe } = useGetUserMeQuery({});
+  const { refetch: getUserInfoFromUserMe, isLoading } = useGetUserMeQuery({});
   const [userInfo, setUserInfo] = useState<UserMeApiResponse>() as any
 
   const setDataInAsyncStorageAndUpdateState = async (data: UserMeApiResponse) => {
@@ -47,7 +47,6 @@ const CheckUser = ({ navigation }: PropsInterface) => {
   
   const getUserInfo = async (profile_status: { personal_step_1: boolean; professional_step_2: boolean; service_offered_step_3: boolean; fitness_level_step_2: boolean; fitness_goal_step_3: boolean; }) => {
     if (userInfo === null) {
-      ToastAndroid.show("Please Enter your email.", ToastAndroid.SHORT);
       navigation.navigate("Welcome");
     } else {
         if (userInfo.user.role === "trainer") {
@@ -76,21 +75,25 @@ const CheckUser = ({ navigation }: PropsInterface) => {
 
   return (
     <>
-      <StatusBar backgroundColor="#000" />
-      <View style={styles.mainContainer}>
-        <FastImage
-          style={{
-            width: 50,
-            height: 50,
-          }}
-          source={{
-            uri: "https://i.gifer.com/ZZ5H.gif",
-            headers: { Authorization: "someAuthToken" },
-            priority: FastImage.priority.normal,
-          }}
-          resizeMode={FastImage.resizeMode.cover}
-        />
-      </View>
+      {isLoading && (
+        <>
+          <StatusBar backgroundColor="#000" />
+          <View style={styles.mainContainer}>
+            <FastImage
+              style={{
+                width: 50,
+                height: 50,
+              }}
+              source={{
+                uri: "https://i.gifer.com/ZZ5H.gif",
+                headers: { Authorization: "someAuthToken" },
+                priority: FastImage.priority.normal,
+              }}
+              resizeMode={FastImage.resizeMode.cover}
+            />
+          </View>
+        </>
+      )}
     </>
   );
 };
