@@ -21,6 +21,7 @@ const WalletScreen: React.FC<Props> = ({ navigation }) => {
     setLoad(true);
     const userData = await AsyncStorage.getItem("userData");
     let userDatax = JSON.parse(userData);
+
     if (userDatax) {
       await fetch(`${url}/user/me/${userDatax?.data?._id}`, {
         method: "GET",
@@ -40,7 +41,6 @@ const WalletScreen: React.FC<Props> = ({ navigation }) => {
         })
         .catch((error) => {
           setLoad(false);
-          console.log(error);
         });
     }
   };
@@ -68,7 +68,6 @@ const WalletScreen: React.FC<Props> = ({ navigation }) => {
         })
         .catch((error) => {
           setLoad(false);
-          console.log(error);
         });
     }
   };
@@ -95,7 +94,6 @@ const WalletScreen: React.FC<Props> = ({ navigation }) => {
       })
       .catch((error) => {
         setLoad(false);
-        console.log(error);
         Toast.show({
           type: "error",
           text1: "Something went wrong",

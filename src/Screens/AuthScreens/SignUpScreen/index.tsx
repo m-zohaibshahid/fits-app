@@ -4,31 +4,32 @@ import TextInput from '../../../Components/Input';
 import Header from '../../../Components/Header';
 import Button from '../../../Components/Button';
 import { useRoute } from '@react-navigation/native';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import Container from '../../../Components/Container';
 import * as Yup from 'yup'
 import { SignUpFormValidationErrors, SignUpFormValidationResult, SignUpFormValues } from '../types';
 import { validateForm } from '../../../utils/validation';
-import { useRegisterUserMutation } from '../../../slice/FitsApi.slice';
+import { useGetUserMeQuery, useRegisterUserMutation } from '../../../slice/FitsApi.slice';
 import { errorToast } from '../../../utils/toast';
 import VarificationModal from '../../../Components/VerificationModal';
 import { NavigationSwitchProp } from 'react-navigation';
+import { useDispatch } from 'react-redux';
+import { setToken } from '../../../slice/token.slice';
+import { storeUserDataInAsyncStorage, storeUserTokenInAsyncStorage } from '../../../utils/async-storage';
 
-interface Props {
-  navigation: NavigationSwitchProp;
+interface PropsInterface {
+  navigation: NavigationSwitchProp
 }
-const SignUpScreen: React.FC<Props> = ({ navigation }) => {
+
+const SignUpScreen = ({navigation}: PropsInterface) => {
   const route = useRoute();
+  const dispatch = useDispatch()
   const [email, setEmail] = useState<string>('');
   const [password, setPassword] = useState<string>('');
   const [confirmPassword, setConfirmPassword] = useState<string>('');
   const [validationErrors, setValidationErrors] = useState<SignUpFormValidationErrors>({});
   const [isVarificationModalVisible,setIsVarificationModalVisible] = useState<boolean>(false);
-  const [registerUser, { isLoading, isError, error, data }] = useRegisterUserMutation();
-
-  const storeUserData = async (userData: string) => {
-      await AsyncStorage.setItem('userData', userData);
-  };
+  const [userToken,setUserToken] = useState<string>("");
+  const [registerUser, { isLoading, isError, error, data: userRegisterApiResponse }] = useRegisterUserMutation()
 
   const signupCall = async () => {
     const formValues: SignUpFormValues = {
@@ -43,12 +44,9 @@ const SignUpScreen: React.FC<Props> = ({ navigation }) => {
 
     if (isValid) {
       delete formValues.confirmPassword;
-      console.log(formValues, "{{{{{{{{{{{{{{{{{{{{{{{{{{{{");
-      
       const result = await registerUser(formValues) as any
-      console.log({result})
       if (result.data.register) {
-        await storeUserData(JSON.stringify(result.data))
+        setUserToken(result?.data?.access_token)
         setIsVarificationModalVisible(true)
       }
       if (result.error) errorToast(result.error.data.message)
@@ -56,11 +54,16 @@ const SignUpScreen: React.FC<Props> = ({ navigation }) => {
   }
 
   useEffect(() => {
-    if (isError) {
-      errorToast(error?.data?.message)
-    }
+    if (!!isError) errorToast(error?.data?.message)
   }, [isError])
-      
+  
+  
+  const handleAfterEmailVarified = async () => {
+    await storeUserTokenInAsyncStorage(userToken)
+    dispatch(setToken(userToken));
+    navigation.navigate("CheckUser")
+  }
+  
   return (
     <Container>
       <Header label={"Let's start here"} subLabel={"Fill in your details to begin"} />
@@ -77,9 +80,7 @@ const SignUpScreen: React.FC<Props> = ({ navigation }) => {
           onPress={signupCall}
         />
       </View>
-      
-      {/* <AlertModal visible={isAlertModalVisible} onClick={handleModelButtonClick} onRequestClose={() => setIsAlertModalVisible(false)} title={'Title here'} message={'Already have an account? Please sign in!'} /> */}
-      {isVarificationModalVisible ? <VarificationModal isVisible={isVarificationModalVisible} onClose={() => setIsVarificationModalVisible} /> : null}
+      {isVarificationModalVisible ? <VarificationModal afterVarified={handleAfterEmailVarified} isVisible={isVarificationModalVisible} onClose={() => setIsVarificationModalVisible} email={email} code={userRegisterApiResponse?.email_message.code} /> : null}
     </Container>
   );
 };
@@ -88,9 +89,9 @@ export default SignUpScreen;
 
 export const validationSchema = Yup.object().shape({
   email: Yup.string().email('Invalid email'),
-  password: Yup.string().min(8, 'Must be at least 8 characters long').matches(
-    /^(?=.*[@$!%*?&])(?=.*[A-Z])(?=.*[a-z])(?=.*\d).+$/,
-    'Must Contain A-Z, a-z, special sharacters and numbers'
-  ),
+  // password: Yup.string().min(8, 'Must be at least 8 characters long').matches(
+  //   /^(?=.*[@$!%*?&])(?=.*[A-Z])(?=.*[a-z])(?=.*\d).+$/,
+  //   'Must Contain A-Z, a-z, special sharacters and numbers'
+  // ),
   confirmPassword: Yup.string().oneOf([Yup.ref('password')], 'Passwords must match')
 });

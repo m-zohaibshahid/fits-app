@@ -2,42 +2,55 @@ import React, { useEffect, useState } from "react";
 import { View, StatusBar, ToastAndroid } from "react-native";
 import FastImage from "react-native-fast-image";
 import styles from "./styles";
-import { getUserAsyncStroage } from "../../../common/AsyncStorage";
 import { useGetUserMeQuery } from "../../../slice/FitsApi.slice";
+import { storeUserDataInAsyncStorage } from "../../../utils/async-storage";
+import { NavigationSwitchProp } from "react-navigation";
+import { errorToast } from "../../../utils/toast";
+import { UserMeApiResponse } from "../../../slice/store.interface";
 
-const CheckUser = ({ navigation }) => {
+interface PropsInterface {
+  navigation: NavigationSwitchProp
+}
+
+const CheckUser = ({ navigation }: PropsInterface) => {
   
-  const [userDatax, setUserDatax] = useState();
+  const { refetch: getUserInfoFromUserMe } = useGetUserMeQuery({});
+  const [userInfo, setUserInfo] = useState<UserMeApiResponse>() as any
 
-  const { data:userMeData, isLoading, error, isSuccess } = useGetUserMeQuery({ id: userDatax?.data._id });
+  const setDataInAsyncStorageAndUpdateState = async (data: UserMeApiResponse) => {
+    await storeUserDataInAsyncStorage(JSON.stringify(data))
+    setUserInfo(data)
+    navigation.navigate("CheckUser")
+  }
 
+  const handleGetUserFromUserMeApi = async () => {
+    let result = await getUserInfoFromUserMe()
 
-  // Effects
+    if (result.data) {
+      setDataInAsyncStorageAndUpdateState(result.data)
+    }
+    if (result?.error) errorToast(result?.error?.data?.message) 
+  }
+  
   useEffect(() => {
     navigation.addListener("focus", () => {
-      userMe();
-    });
-  }, []);
-
-  useEffect(() => {
-  getUserInfo(userMeData?.profile_status);
-  }, [userMeData]);
-
-  // Functions
-  const userMe = async () => {
-    const userData=await getUserAsyncStroage()
-    setUserDatax(userData)
+      handleGetUserFromUserMeApi();
+    })
+  }, [navigation]);
   
-      
-  };
-console.log("userDatax?.login",userDatax?.login)
+  useEffect(() => {
+    if (!!userInfo) {
+      getUserInfo(userInfo?.profile_status);
+    }
+  }, [userInfo]);
+
+  
   const getUserInfo = async (profile_status: { personal_step_1: boolean; professional_step_2: boolean; service_offered_step_3: boolean; fitness_level_step_2: boolean; fitness_goal_step_3: boolean; }) => {
-    if (userDatax === null) {
+    if (userInfo === null) {
       ToastAndroid.show("Please Enter your email.", ToastAndroid.SHORT);
       navigation.navigate("Welcome");
     } else {
-      if (userDatax?.login) {
-        if (userDatax?.data?.role === "trainer") {
+        if (userInfo.user.role === "trainer") {
           if (profile_status?.personal_step_1 === false) {
             navigation.navigate("PersonalInfo");
           } else if (profile_status?.professional_step_2 === false) {
@@ -47,7 +60,7 @@ console.log("userDatax?.login",userDatax?.login)
           } else {
             navigation.navigate("TrainerTabb");
           }
-        } else if (userDatax?.data?.role === "trainee") {
+        } else if (userInfo.user.role === "trainee") {
           if (profile_status?.personal_step_1 === false) {
             navigation.navigate("PersonalInfo");
           } else if (profile_status?.fitness_level_step_2 === false) {
@@ -57,33 +70,6 @@ console.log("userDatax?.login",userDatax?.login)
           } else {
             navigation.navigate("TraineeTabb");
           }
-        } else {
-        }
-      } else if (userDatax?.register === true) {
-        if (userDatax?.data?.role === "trainer") {
-          if (profile_status?.personal_step_1 === false) {
-            navigation.navigate("PersonalInfo");
-          } else if (profile_status?.professional_step_2 === false) {
-            navigation.navigate("ProfessionalInfo");
-          } else if (profile_status?.service_offered_step_3 === false) {
-            navigation.navigate("ServicesOffered");
-          } else {
-            navigation.navigate("TrainerTabb");
-          }
-        } else if (userDatax?.data?.role === "trainee") {
-          if (profile_status?.personal_step_1 === false) {
-            navigation.navigate("PersonalInfo");
-          } else if (profile_status?.fitness_level_step_2 === false) {
-            navigation.navigate("FitnessLevel");
-          } else if (profile_status?.fitness_goal_step_3 === false) {
-            navigation.navigate("FitnessGoal");
-          } else {
-            navigation.navigate("TraineeTabb");
-          }
-        } else {
-        }
-      } else {
-        navigation.navigate("Welcome");
       }
     }
   };

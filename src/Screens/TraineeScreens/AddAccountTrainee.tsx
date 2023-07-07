@@ -45,7 +45,7 @@ const AddAccountTrainee: React.FC<Props> = ({ navigation }) => {
     if (userMeData?.success === true) {
       setData(userMeData?.stripe?.customer?.id);
     } else {
-      alert(userMeData.errors);
+      Alert.alert(userMeData.errors);
     }
   }, [userMeData]);
 
@@ -91,8 +91,7 @@ const AddAccountTrainee: React.FC<Props> = ({ navigation }) => {
         })
         .catch((error) => {
           setLoad(false);
-          alert("Something Went Wrong");
-          console.log(error);
+          Alert.alert("Something Went Wrong");
         });
     }
   };

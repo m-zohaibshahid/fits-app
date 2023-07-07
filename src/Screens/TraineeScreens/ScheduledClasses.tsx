@@ -1,13 +1,5 @@
 import React, { useState, useEffect } from "react";
-import {
-  Text,
-  View,
-  StyleSheet,
-  Pressable,
-  ToastAndroid,
-  ActivityIndicator,
-  Platform,
-} from "react-native";
+import { Text, View, StyleSheet, Pressable, ToastAndroid, ActivityIndicator, Platform } from "react-native";
 import AntDesign from "react-native-vector-icons/AntDesign";
 import { RFValue } from "react-native-responsive-fontsize";
 import FontAwesome from "react-native-vector-icons/FontAwesome";
@@ -62,13 +54,12 @@ const ScheduledClasses = ({ navigation }) => {
           // ToastAndroid.show("Done", ToastAndroid.LONG);
           setData(res2?.data?.booking);
         } else {
-          //alert(res2.errors);
+          //Alert.alert(res2.errors);
         }
       })
       .catch((error) => {
         setLoad(false);
-        alert("Something Went Wrong");
-        console.log(error);
+        Alert.alert("Something Went Wrong");
       });
   };
   const deleteBooking = async (item) => {
@@ -101,8 +92,7 @@ const ScheduledClasses = ({ navigation }) => {
       })
       .catch((error) => {
         setLoadx(false);
-        alert("Something Went Wrong");
-        console.log(error);
+        Alert.alert("Something Went Wrong");
       });
   };
   const detailsInfoCall = (item, i) => {
@@ -133,9 +123,7 @@ const ScheduledClasses = ({ navigation }) => {
                           {moment(item?.session?.select_date).format("DD ")}
                           {moment(item?.session?.select_date).format("MMMM")}
                         </Text>
-                        <Text style={styles.Daytext}>
-                          ({moment(item?.session?.select_date).format("dddd")})
-                        </Text>
+                        <Text style={styles.Daytext}>({moment(item?.session?.select_date).format("dddd")})</Text>
                       </View>
                       <View
                         style={{
@@ -152,9 +140,7 @@ const ScheduledClasses = ({ navigation }) => {
                         ></View>
                       </View>
                       <View style={{ width: "35%", flexDirection: "column" }}>
-                        <Text style={styles.marchtext}>
-                          {item?.session?.class_title}
-                        </Text>
+                        <Text style={styles.marchtext}>{item?.session?.class_title}</Text>
                         <Text
                           style={{
                             color: "#fff",
@@ -184,9 +170,7 @@ const ScheduledClasses = ({ navigation }) => {
                             flexDirection: "row",
                           }}
                         >
-                          <View
-                            style={{ width: "80%", justifyContent: "center" }}
-                          >
+                          <View style={{ width: "80%", justifyContent: "center" }}>
                             <Text
                               style={{
                                 color: "#fff",
@@ -198,11 +182,7 @@ const ScheduledClasses = ({ navigation }) => {
                               Details
                             </Text>
                           </View>
-                          <AntDesign
-                            name={item.status ? "up" : "down"}
-                            size={15}
-                            color={"#fff"}
-                          />
+                          <AntDesign name={item.status ? "up" : "down"} size={15} color={"#fff"} />
                         </View>
                       </Pressable>
                     </View>
@@ -211,10 +191,7 @@ const ScheduledClasses = ({ navigation }) => {
                       <View style={{ width: "100%", paddingBottom: 18 }}>
                         <View style={styles.dotmainview}>
                           <View style={styles.dotview}>
-                            <FontAwesome
-                              name="circle"
-                              style={{ color: "#979797" }}
-                            />
+                            <FontAwesome name="circle" style={{ color: "#979797" }} />
                           </View>
                           <View style={{ width: "90%" }}>
                             <Text style={styles.textstyle}>
@@ -224,15 +201,10 @@ const ScheduledClasses = ({ navigation }) => {
                         </View>
                         <View style={styles.dotmainview}>
                           <View style={styles.dotview}>
-                            <FontAwesome
-                              name="circle"
-                              style={{ color: "#979797" }}
-                            />
+                            <FontAwesome name="circle" style={{ color: "#979797" }} />
                           </View>
                           <View style={{ width: "90%" }}>
-                            <Text style={styles.textstyle}>
-                              {item?.session?.details}.
-                            </Text>
+                            <Text style={styles.textstyle}>{item?.session?.details}.</Text>
                           </View>
                         </View>
                         <View style={styles.mainbtnView}>
@@ -245,11 +217,7 @@ const ScheduledClasses = ({ navigation }) => {
                             }}
                             style={styles.ccbtnview}
                           >
-                            {loadx === true ? (
-                              <ActivityIndicator size="small" color="#fff" />
-                            ) : (
-                              <Text style={styles.btntextstyle}>Cancel</Text>
-                            )}
+                            {loadx === true ? <ActivityIndicator size="small" color="#fff" /> : <Text style={styles.btntextstyle}>Cancel</Text>}
                           </Pressable>
                         </View>
                       </View>

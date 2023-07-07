@@ -95,7 +95,6 @@ const CreateCardScreen: React.FC<Props> = ({ navigation }) => {
           }
         })
         .catch((error) => {
-          console.log(error);
           setLoad(false);
           Toast.show({
             type: "error",

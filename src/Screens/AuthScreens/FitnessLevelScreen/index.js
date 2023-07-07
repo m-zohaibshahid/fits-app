@@ -84,7 +84,6 @@ const FitnessLevelScreen = ({ navigation }) => {
         .then((res) => res.json())
         .then((res2) => {
           setLoad(false);
-          console.log(res2.message);
           if (res2.message === "your fitness info updated successfully") {
             Toast.show({
               type: "success",

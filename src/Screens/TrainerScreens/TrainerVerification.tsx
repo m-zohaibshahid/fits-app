@@ -1,22 +1,8 @@
 import React, { useState, useEffect } from "react";
-import {
-  Text,
-  View,
-  Pressable,
-  StyleSheet,
-  TextInput,
-  ScrollView,
-  ToastAndroid,
-  ActivityIndicator,
-  Platform,
-  Image,
-} from "react-native";
+import { Text, View, Pressable, StyleSheet, TextInput, ScrollView, ToastAndroid, ActivityIndicator, Platform, Image } from "react-native";
 import ImagePicker from "react-native-image-crop-picker";
-import {
-  widthPercentageToDP as wp,
-  heightPercentageToDP as hp,
-} from "react-native-responsive-screen";
-import {  RFValue } from "react-native-responsive-fontsize";
+import { widthPercentageToDP as wp, heightPercentageToDP as hp } from "react-native-responsive-screen";
+import { RFValue } from "react-native-responsive-fontsize";
 import * as Images from "../../constants/Images";
 import Header from "../../Components/Header";
 import Button from "../../Components/Button";
@@ -62,9 +48,6 @@ const TrainerVerification = ({ navigation }) => {
         uploadImageOnCloud(newFile);
         setImage(file.path);
       })
-      .catch((err) => {
-        console.log(err);
-      });
   };
 
   const [cloudImageUrl, setCloudImageUrl] = useState("");
@@ -74,7 +57,6 @@ const TrainerVerification = ({ navigation }) => {
     zzz.append("upload_preset", "employeeApp");
     zzz.append("cloud_name", "ZACodders");
 
-
     await fetch("https://api.cloudinary.com/v1_1/ZACodders/image/upload", {
       method: "POST",
       body: zzz,
@@ -83,19 +65,12 @@ const TrainerVerification = ({ navigation }) => {
       .then((res2) => {
         setCloudImageUrl(res2?.url);
       })
-      .catch((err) => {
-        //setLoadx(false);
-        console.log("error--->", err);
-      });
   };
   const upLoadVideoInfo = async () => {
     if (details === "") {
       ToastAndroid.show("Please Enter Details.", ToastAndroid.SHORT);
     } else if (cloudImageUrl === "") {
-      ToastAndroid.show(
-        " Kindly upload verification document picture it could be national identity card, Utility bill, Phone bill, Driving license etc.",
-        ToastAndroid.SHORT
-      );
+      ToastAndroid.show(" Kindly upload verification document picture it could be national identity card, Utility bill, Phone bill, Driving license etc.", ToastAndroid.SHORT);
     } else {
       setLoad(true);
       {
@@ -128,8 +103,7 @@ const TrainerVerification = ({ navigation }) => {
           })
           .catch((error) => {
             setLoad(false);
-            alert("Something Went Wrong");
-            console.log(error);
+            Alert.alert("Something Went Wrong");
           });
     }
   };
@@ -176,8 +150,7 @@ const TrainerVerification = ({ navigation }) => {
               marginBottom: 5,
             }}
           >
-            Kindly upload verification document picture it could be national
-            identity card, Utility bill, Phone bill, Driving license etc.
+            Kindly upload verification document picture it could be national identity card, Utility bill, Phone bill, Driving license etc.
           </Text>
         </View>
       </View>
@@ -199,9 +172,7 @@ const TrainerVerification = ({ navigation }) => {
                   justifyContent: "center",
                 }}
               >
-                <Text style={{ fontSize: RFValue(15, 580) }}>
-                  yogavideo.mp4
-                </Text>
+                <Text style={{ fontSize: RFValue(15, 580) }}>yogavideo.mp4</Text>
                 <Image source={Images.Mp4} marginTop={15} />
 
                 <Pressable
@@ -238,7 +209,6 @@ const TrainerVerification = ({ navigation }) => {
                 borderTopLeftRadius: 16,
               }}
             >
-                
               <Image
                 style={{
                   width: "90%",
@@ -321,13 +291,7 @@ const TrainerVerification = ({ navigation }) => {
           <Button
             navigation={navigation}
             disabled={!details || !cloudImageUrl}
-            label={
-              load === true ? (
-                <ActivityIndicator size="small" color="#fff" />
-              ) : (
-                "Next"
-              )
-            }
+            label={load === true ? <ActivityIndicator size="small" color="#fff" /> : "Next"}
             onPress={() => {
               if (load === true) {
               } else {

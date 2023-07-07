@@ -1,8 +1,7 @@
 import { createSlice } from "@reduxjs/toolkit";
 import { UserDetailInfoInterface } from "../interfaces";
-import { string } from "yup";
 
-interface CounterState {
+export interface CounterState {
   isLoading: boolean;
   userInfo: Partial<UserDetailInfoInterface>;
   createStripeData: any;
@@ -13,6 +12,7 @@ const initialState: CounterState = {
   userInfo: {},
   createStripeData: {},
 };
+
 const fitsSlice = createSlice({
   name: "fits",
   initialState,

@@ -1,17 +1,8 @@
 import React, { useState, useEffect } from "react";
-import {
-  Text,
-  View,
-  TouchableOpacity,
-  StyleSheet,
-  ToastAndroid,
-  ActivityIndicator,
-  Platform,
-  Pressable,
-} from "react-native";
+import { Text, View, TouchableOpacity, StyleSheet, ToastAndroid, ActivityIndicator, Platform, Pressable, Alert } from "react-native";
 import AntDesign from "react-native-vector-icons/AntDesign";
 import FontAwesome from "react-native-vector-icons/FontAwesome";
-import {  RFValue } from "react-native-responsive-fontsize";
+import { RFValue } from "react-native-responsive-fontsize";
 import VideoPlayer from "react-native-video-player";
 import { url } from "../../constants/url";
 import Colors from "../../constants/Colors";
@@ -19,30 +10,28 @@ import { getUserAsyncStroage } from "../../common/AsyncStorage";
 import { NavigationSwitchProp } from "react-navigation";
 import { useSelector } from "react-redux";
 import { useGetUserMeQuery } from "../../slice/FitsApi.slice";
-import { UserDetail, UserDetailInfoInterface } from "../../interfaces";
-interface Props{
+import { UserDetail } from "../../interfaces";
+interface Props {
   navigation: NavigationSwitchProp;
 }
-const VideosForClasses:React.FC<Props> = ({ navigation }) => {
-  
-const token = useSelector((state:{token:string})=>state.token);
-const {userInfo} = useSelector((state:{fitsStore:Partial<UserDetail>})=>state.fitsStore);
-const {data:userMeData}=useGetUserMeQuery({id:userInfo?._id})
+const VideosForClasses: React.FC<Props> = ({ navigation }) => {
+  const token = useSelector((state: { token: string }) => state.token);
+  const { userInfo } = useSelector((state: { fitsStore: Partial<UserDetail> }) => state.fitsStore);
+  const { data: userMeData } = useGetUserMeQuery({ id: userInfo?._id });
   useEffect(() => {
     navigation.addListener("focus", () => {
       userMe();
     });
   }, []);
 
-
   const userMe = async () => {
     setLoadx(true);
-        setLoadx(false);
-        if (userMeData.success === true) {
-          setId(userMeData?.user?._id);
-        } else {
-          ToastAndroid.show(userMeData.message, ToastAndroid.LONG);
-        }
+    setLoadx(false);
+    if (userMeData.success === true) {
+      setId(userMeData?.user?._id);
+    } else {
+      ToastAndroid.show(userMeData.message, ToastAndroid.LONG);
+    }
   };
   const [one, setOne] = useState(false);
   const [two, setTwo] = useState(false);
@@ -133,8 +122,7 @@ const {data:userMeData}=useGetUserMeQuery({id:userInfo?._id})
           })
           .catch((error) => {
             setLoadxx(false);
-            alert("Something Went Wrong");
-            console.log(error);
+            Alert.alert("Something Went Wrong");
           });
     }
   };
@@ -149,8 +137,8 @@ const {data:userMeData}=useGetUserMeQuery({id:userInfo?._id})
 
   const [videoId, setVideoId] = useState("");
   const getAllVideos = async () => {
-     const userData=await getUserAsyncStroage()
-    setUserDatax(userData)
+    const userData = await getUserAsyncStroage();
+    setUserDatax(userData);
     setLoad(true);
 
     await fetch(`${url}/video`, {
@@ -172,8 +160,7 @@ const {data:userMeData}=useGetUserMeQuery({id:userInfo?._id})
       })
       .catch((error) => {
         setLoad(false);
-        alert("Something Went Wrong");
-        console.log(error);
+        Alert.alert("Something Went Wrong");
       });
   };
 
@@ -203,7 +190,7 @@ const {data:userMeData}=useGetUserMeQuery({id:userInfo?._id})
           </View>
         ) : (
           <View>
-                {data.map((item: { video_links: Array<[]>, video_details: string, price: number, video_category: string, topic:string,_id:string}, i) => (
+            {data.map((item: { video_links: Array<[]>; video_details: string; price: number; video_category: string; topic: string; _id: string }, i) => (
               <View key={i} style={styles.TopeView}>
                 <View style={styles.topView}>
                   <View style={styles.VideoView}>
@@ -225,70 +212,30 @@ const {data:userMeData}=useGetUserMeQuery({id:userInfo?._id})
                   <View style={styles.BoxView}>
                     <View style={styles.rowboxmainview}>
                       <View style={styles.boxviewicon}>
-                        <FontAwesome
-                          name="circle"
-                          style={{ color: "#979797" }}
-                        />
+                        <FontAwesome name="circle" style={{ color: "#979797" }} />
                       </View>
                       <View style={{ width: "90%" }}>
-                        <Text style={styles.boxtextstyle}>
-                          Rate this class:
-                        </Text>
+                        <Text style={styles.boxtextstyle}>Rate this class:</Text>
                       </View>
                     </View>
                     {/*start star view*/}
                     <View style={styles.TopView}>
                       <View style={styles.topView}>
                         <View style={styles.starrow1view}>
-                          <Pressable
-                            onPress={() => oneInfo()}
-                            style={styles.startView}
-                          >
-                            <AntDesign
-                              name="star"
-                              size={20}
-                              color={one ? "#50555C" : "#fff"}
-                            />
+                          <Pressable onPress={() => oneInfo()} style={styles.startView}>
+                            <AntDesign name="star" size={20} color={one ? "#50555C" : "#fff"} />
                           </Pressable>
-                          <Pressable
-                            onPress={() => twoInfo()}
-                            style={styles.startView}
-                          >
-                            <AntDesign
-                              name="star"
-                              size={20}
-                              color={two ? "#50555C" : "#fff"}
-                            />
+                          <Pressable onPress={() => twoInfo()} style={styles.startView}>
+                            <AntDesign name="star" size={20} color={two ? "#50555C" : "#fff"} />
                           </Pressable>
-                          <Pressable
-                            onPress={() => threeInfo()}
-                            style={styles.startView}
-                          >
-                            <AntDesign
-                              name="star"
-                              size={20}
-                              color={three ? "#50555C" : "#fff"}
-                            />
+                          <Pressable onPress={() => threeInfo()} style={styles.startView}>
+                            <AntDesign name="star" size={20} color={three ? "#50555C" : "#fff"} />
                           </Pressable>
-                          <Pressable
-                            onPress={() => fourInfo()}
-                            style={styles.startView}
-                          >
-                            <AntDesign
-                              name="star"
-                              size={20}
-                              color={four ? "#50555C" : "#fff"}
-                            />
+                          <Pressable onPress={() => fourInfo()} style={styles.startView}>
+                            <AntDesign name="star" size={20} color={four ? "#50555C" : "#fff"} />
                           </Pressable>
-                          <Pressable
-                            onPress={() => fiveInfo()}
-                            style={styles.startView}
-                          >
-                            <AntDesign
-                              name="star"
-                              size={20}
-                              color={five ? "#50555C" : "#fff"}
-                            />
+                          <Pressable onPress={() => fiveInfo()} style={styles.startView}>
+                            <AntDesign name="star" size={20} color={five ? "#50555C" : "#fff"} />
                           </Pressable>
                         </View>
                       </View>
@@ -296,10 +243,7 @@ const {data:userMeData}=useGetUserMeQuery({id:userInfo?._id})
                     {/*end star view*/}
                     <View style={styles.rowboxmainview}>
                       <View style={styles.boxviewicon}>
-                        <FontAwesome
-                          name="circle"
-                          style={{ color: "#979797" }}
-                        />
+                        <FontAwesome name="circle" style={{ color: "#979797" }} />
                       </View>
                       <View style={{ width: "90%" }}>
                         <Text style={styles.boxtextstyle}>Trainer name:</Text>
@@ -310,18 +254,14 @@ const {data:userMeData}=useGetUserMeQuery({id:userInfo?._id})
                       <View style={styles.boxviewicon} />
                       <View style={{ width: "90%" }}>
                         <Text style={styles.boxtextstyle}>
-                          {item?.trainer?.personal?.name} (
-                          {item.averageRating.toFixed(1)})
+                          {item?.trainer?.personal?.name} ({item.averageRating.toFixed(1)})
                         </Text>
                       </View>
                     </View>
                     {/*start */}
                     <View style={styles.rowboxmainview}>
                       <View style={styles.boxviewicon}>
-                        <FontAwesome
-                          name="circle"
-                          style={{ color: "#979797" }}
-                        />
+                        <FontAwesome name="circle" style={{ color: "#979797" }} />
                       </View>
                       <View style={{ width: "90%" }}>
                         <Text style={styles.boxtextstyle}>Topic:</Text>
@@ -337,10 +277,7 @@ const {data:userMeData}=useGetUserMeQuery({id:userInfo?._id})
                     {/*start */}
                     <View style={styles.rowboxmainview}>
                       <View style={styles.boxviewicon}>
-                        <FontAwesome
-                          name="circle"
-                          style={{ color: "#979797" }}
-                        />
+                        <FontAwesome name="circle" style={{ color: "#979797" }} />
                       </View>
                       <View style={{ width: "90%" }}>
                         <Text style={styles.boxtextstyle}>Video Catagory:</Text>
@@ -350,18 +287,13 @@ const {data:userMeData}=useGetUserMeQuery({id:userInfo?._id})
                     <View style={styles.rowboxmainview}>
                       <View style={styles.boxviewicon} />
                       <View style={{ width: "90%" }}>
-                        <Text style={styles.boxtextstyle}>
-                          {item?.video_category}
-                        </Text>
+                        <Text style={styles.boxtextstyle}>{item?.video_category}</Text>
                       </View>
                     </View>
                     {/*start */}
                     <View style={styles.rowboxmainview}>
                       <View style={styles.boxviewicon}>
-                        <FontAwesome
-                          name="circle"
-                          style={{ color: "#979797" }}
-                        />
+                        <FontAwesome name="circle" style={{ color: "#979797" }} />
                       </View>
                       <View style={{ width: "90%" }}>
                         <Text style={styles.boxtextstyle}>Price:</Text>
@@ -377,10 +309,7 @@ const {data:userMeData}=useGetUserMeQuery({id:userInfo?._id})
                     {/*start */}
                     <View style={styles.rowboxmainview}>
                       <View style={styles.boxviewicon}>
-                        <FontAwesome
-                          name="circle"
-                          style={{ color: "#979797" }}
-                        />
+                        <FontAwesome name="circle" style={{ color: "#979797" }} />
                       </View>
                       <View style={{ width: "90%" }}>
                         <Text style={styles.boxtextstyle}>Description:</Text>
@@ -390,15 +319,13 @@ const {data:userMeData}=useGetUserMeQuery({id:userInfo?._id})
                     <View style={styles.rowboxmainview}>
                       <View style={styles.boxviewicon} />
                       <View style={{ width: "90%" }}>
-                        <Text style={styles.boxtextstyle}>
-                          {item?.video_details}.{" "}
-                        </Text>
+                        <Text style={styles.boxtextstyle}>{item?.video_details}. </Text>
                       </View>
                     </View>
                     {/*start join class Btn*/}
                     <View style={styles.TopView}>
                       <View style={styles.topView}>
-                        <View >
+                        <View>
                           <View style={styles.mainbtnView}>
                             <TouchableOpacity
                               onPress={() => {
@@ -416,13 +343,7 @@ const {data:userMeData}=useGetUserMeQuery({id:userInfo?._id})
                               }}
                               style={styles.ccbtnview}
                             >
-                              {loadxx === true ? (
-                                <ActivityIndicator size="small" color="#fff" />
-                              ) : (
-                                <Text style={styles.btntextstyle}>
-                                  Submit Review
-                                </Text>
-                              )}
+                              {loadxx ? <ActivityIndicator size="small" color="#fff" /> : <Text style={styles.btntextstyle}>Submit Review</Text>}
                             </TouchableOpacity>
                           </View>
                         </View>

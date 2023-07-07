@@ -1,8 +1,7 @@
 import React from 'react';
-import { View, Text, Modal, Platform, StyleSheet, TouchableOpacity } from 'react-native';
+import { View, Modal, StyleSheet, TouchableOpacity } from 'react-native';
 import Button from '../Button';
 import Colors from '../../constants/Colors';
-import { TextStyle, ViewStyle } from 'react-native';
 import Typography from '../typography/text';
 
 interface ModelProps {
@@ -59,8 +58,8 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.white,
     borderRadius: 10,
     padding: 24,
-    marginHorizontal: '10%',
-    marginBottom: '30%',
+    marginHorizontal: "10%",
+    marginBottom: "30%",
     shadowColor: Colors.black,
     shadowOffset: {
       width: 0,
@@ -78,7 +77,7 @@ const styles = StyleSheet.create({
   },
   buttonContainer: {
     marginTop: 10,
-    width: '100%',
+    width: "100%",
   },
 });
 

@@ -88,8 +88,7 @@ const UpdateServicesoffere: React.FC<Props> = ({ navigation }) => {
       })
       .catch((error) => {
         setLoad(false);
-        alert("Something Went Wrong");
-        console.log(error);
+        Alert.alert("Something Went Wrong");
       });
   };
   const Services = async () => {
@@ -119,8 +118,7 @@ const UpdateServicesoffere: React.FC<Props> = ({ navigation }) => {
       })
       .catch((error) => {
         setLoadx(false);
-        alert("Something Went Wrong");
-        console.log(error);
+        Alert.alert("Something Went Wrong");
       });
   };
   const addServices = async () => {
@@ -149,13 +147,12 @@ const UpdateServicesoffere: React.FC<Props> = ({ navigation }) => {
             Services();
             modalFalse();
           } else {
-            alert(res2.errors);
+            Alert.alert(res2.errors);
           }
         })
         .catch((error) => {
           setLoade(false);
-          alert("Something Went Wrong");
-          console.log(error);
+          Alert.alert("Something Went Wrong");
         });
     }
   };

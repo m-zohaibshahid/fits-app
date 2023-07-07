@@ -117,7 +117,6 @@ const Servicesoffere = ({ navigation }) => {
       .then((res) => res.json())
       .then((res2) => {
         setLoad(false);
-        console.log(res2.message);
         if (res2.message === "your fitness info updated successfully") {
           goToNextScreen();
           Toast.show({
@@ -167,7 +166,6 @@ const Servicesoffere = ({ navigation }) => {
       })
       .catch((error) => {
         setLoadx(false);
-        console.log(error);
       });
   };
   const addServices = async () => {
@@ -194,7 +192,6 @@ const Servicesoffere = ({ navigation }) => {
         .then((res) => res.json())
         .then((res2) => {
           setLoade(false);
-          console.log(res2.message);
           if (res2.message === "created successfully") {
             Toast.show({
               type: "success",

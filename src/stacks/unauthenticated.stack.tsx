@@ -12,7 +12,6 @@ import { LoginNow } from "../../Main";
 const Stack = createStackNavigator();
 
 export const UnauthenticatedStack = () => (
-  // <Stack.Navigator screenOptions={{ headerShown: false }}>
   <Stack.Navigator>
     <Stack.Screen name="Welcome" component={WelcomeScreen} options={{ headerShown: false }} />
     <Stack.Screen name="SelectStatusScreen" component={SelectStatusScreen} options={{ headerShown: false }} />
@@ -23,5 +22,4 @@ export const UnauthenticatedStack = () => (
     <Stack.Screen name="GeneratePassword" component={GeneratePassword} options={{ headerShown: false }} />
     <Stack.Screen name="LoginNow" component={LoginNow} options={{ headerShown: false }} />
   </Stack.Navigator>
-  // </Stack.Navigator>
 );
