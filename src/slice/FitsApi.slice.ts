@@ -54,6 +54,13 @@ export const fitsApi = createApi({
         body: body,
       }),
     }),
+    personalInfo: builder.mutation<any, Partial<any>>({
+      query: (body) => ({
+        url: "/personal",
+        method: "POST",
+        body: body,
+      }),
+    }),
 
     updateUser: builder.mutation<any, Partial<any>>({
       query: (user) => ({
@@ -132,6 +139,7 @@ export const {
   useStripeCustomerMutation,
   useUpdateFilterMutation,
   useCreateStripeCardMutation,
+  usePersonalInfoMutation,
   useSessionsQuery,
   useConnectAccountLinkQuery,
   useGetUserMeQuery,

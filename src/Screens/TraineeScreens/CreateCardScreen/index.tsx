@@ -9,6 +9,7 @@ import styles from "./styles";
 import moment from "moment";
 import { NavigationSwitchProp } from "react-navigation";
 import { useSelector } from "react-redux";
+import { useCreateStripeCardMutation } from "../../../slice/FitsApi.slice";
 interface Props {
   navigation: NavigationSwitchProp;
 }
@@ -24,7 +25,8 @@ const CreateCardScreen: React.FC<Props> = ({ navigation }) => {
   const [isDatePickerVisible, setDatePickerVisibility] = useState(false);
   const token: string = useSelector((state: { token: string }) => state.token);
   const { createStripeData } = useSelector((state: any) => state.fitsStore);
-  console.log("createStripeData", createStripeData);
+  const [createStripeCard, { data: createCard, isLoading: isLoading1, isError, error }] = useCreateStripeCardMutation();
+  console.log("createStripeData", createCard, isError, isLoading1, error);
   // Functions
   const showDatePicker = () => {
     setDatePickerVisibility(!isDatePickerVisible);
@@ -50,6 +52,8 @@ const CreateCardScreen: React.FC<Props> = ({ navigation }) => {
   const createCall = async () => {
     setLoad(true);
     if (createStripeData) {
+      console.log("comming", token);
+
       await fetch(`${url}/stripe/card/${createStripeData?.cus_id}`, {
         method: "POST",
         headers: {
@@ -58,7 +62,7 @@ const CreateCardScreen: React.FC<Props> = ({ navigation }) => {
           Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify({
-          card_number: cardNumber,
+          card_number: cardNumber.replace(/\s/g, ""),
           exp_month: expMonth,
           exp_year: expYear,
           cvc: cvc,
@@ -66,14 +70,36 @@ const CreateCardScreen: React.FC<Props> = ({ navigation }) => {
       })
         .then((res) => res.json())
         .then((res2) => {
+          console.log(res2);
           setLoad(false);
-          if (res2?.data?.message === "card created successfully...") {
-            ToastAndroid.show("Card created Successfully...", ToastAndroid.LONG);
-            navigation.goBack();
-          } else {
-            ToastAndroid.show(res2?.message, ToastAndroid.SHORT);
-          }
         })
+
+        // try {
+        //   const body = {
+        //     card_number: "4242424242424242",
+        //     exp_month: "12",
+        //     exp_year: "2025",
+        //     cvc: "123",
+        //   };
+        //   console.log("body====", body, createStripeData?.cus_id);
+        //   await createStripeCard({
+        //     id: createStripeData?.cus_id,
+        //     ...body,
+        //   })
+        //     // .unwrap()
+        //     .then((payload) => console.log("fulfilled", payload))
+        //     .catch((error) => console.error("rejected", error));
+        // } catch (error) {
+        //   console.log("error=====>>>", error);
+        // }
+        //   setLoad(false);
+        //   if (res2?.data?.message === "card created successfully...") {
+        //     ToastAndroid.show("Card created Successfully...", ToastAndroid.LONG);
+        //     navigation.goBack();
+        //   } else {
+        //     ToastAndroid.show(res2?.message, ToastAndroid.SHORT);
+        //   }
+        // })
         .catch((error) => {
           setLoad(false);
           console.log(error.message);

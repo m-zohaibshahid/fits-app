@@ -66,7 +66,7 @@ const EnterChat = ({ navigation }) => {
         if (res2.message === "messages not found") {
           setData(res2?.data?.messages);
         } else {
-          // ToastAndroid.show(res2.message, ToastAndroid.LONG);
+          ToastAndroid.show(res2.message, ToastAndroid.LONG);
         }
       })
       .catch((error) => {

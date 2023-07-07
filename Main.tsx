@@ -97,13 +97,13 @@ const App = () => {
     []
   );
   const renderNavigation = () => {
-    if (isLoading) {
-      return (
-        <Stack.Navigator>
-          <Stack.Screen name="Splash" component={Splash} options={{ headerShown: false }} />
-        </Stack.Navigator>
-      );
-    }
+    // if (isLoading) {
+    //   return (
+    //     <Stack.Navigator>
+    //       <Stack.Screen name="Splash" component={Splash} options={{ headerShown: false }} />
+    //     </Stack.Navigator>
+    //   );
+    // }
 
     if (!token) {
       return <UnauthenticatedStack />;

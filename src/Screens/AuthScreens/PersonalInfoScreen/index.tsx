@@ -13,7 +13,7 @@ import CountryPicker from "react-native-country-picker-modal";
 import styles from "./styles";
 import { Toast } from "react-native-toast-message/lib/src/Toast";
 import { useSelector } from "react-redux";
-import { useGetUserMeQuery } from "../../../slice/FitsApi.slice";
+import { useGetUserMeQuery, usePersonalInfoMutation } from "../../../slice/FitsApi.slice";
 import { UserDetail } from "../../../interfaces";
 import { NavigationSwitchProp } from "react-navigation";
 interface Props {
@@ -42,6 +42,7 @@ const PersonalInfo: React.FC<Props> = ({ navigation }) => {
   const token: string = useSelector((state: { token: string }) => state.token);
   const { userInfo } = useSelector((state: { fitsStore: Partial<UserDetail> }) => state.fitsStore);
   const { data: userMeData, isLoading: load } = useGetUserMeQuery({ id: userInfo?._id });
+  const [personalInfo, { data: userPersonalInfo, isLoading: load1 }] = usePersonalInfoMutation();
   // Functions
   const onPressFlag = () => {
     return setIsCountryVisible(true);
@@ -55,27 +56,36 @@ const PersonalInfo: React.FC<Props> = ({ navigation }) => {
   };
 
   const personalInfoCall = async () => {
-    await fetch(`${url}/personal`, {
-      method: "POST",
-      headers: {
-        Accept: "application/json",
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
-      body: JSON.stringify({
-        name: fullName,
-        date_of_birth: date,
-        country: country,
-        phoneNumber: phoneNumber,
-        state: state,
-        city: city,
-        gender: gender,
-        profileImage: cloudImageUrl,
-      }),
+    // await fetch(`${url}/personal`, {
+    //   method: "POST",
+    //   headers: {
+    //     Accept: "application/json",
+    //     "Content-Type": "application/json",
+    //     Authorization: `Bearer ${token}`,
+    //   },
+    //   body: JSON.stringify({
+    //     name: fullName,
+    //     date_of_birth: date,
+    //     country: country,
+    //     phoneNumber: phoneNumber,
+    //     state: state,
+    //     city: city,
+    //     gender: gender,
+    //     profileImage: cloudImageUrl ?? "https://cvbay.com/wp-content/uploads/2017/03/dummy-image.jpg",
+    //   }),
+    // })
+    await personalInfo({
+      name: fullName,
+      date_of_birth: date,
+      country: country,
+      phoneNumber: phoneNumber,
+      state: state,
+      city: city,
+      gender: gender,
+      profileImage: cloudImageUrl ?? "https://cvbay.com/wp-content/uploads/2017/03/dummy-image.jpg",
     })
-      .then((res) => res.json())
       .then((res2) => {
-        if (res2?.message === "personal info create successfully") {
+        if (res2?.data?.message === "personal info create successfully") {
           userMe();
         } else {
           Toast.show({
@@ -84,7 +94,8 @@ const PersonalInfo: React.FC<Props> = ({ navigation }) => {
           });
         }
       })
-      .catch(() => {
+      .catch((e) => {
+        console.log("e", e);
         Toast.show({
           type: "error",
           text1: "Something Went Wrong!",
@@ -173,7 +184,7 @@ const PersonalInfo: React.FC<Props> = ({ navigation }) => {
               choosePhotoFromCamera();
             }}
           >
-            {image === "" ? (
+            {!image ? (
               <Image
                 style={{
                   width: 80,
@@ -197,7 +208,7 @@ const PersonalInfo: React.FC<Props> = ({ navigation }) => {
         }
       />
 
-      {loadx === true ? (
+      {loadx ? (
         <ActivityIndicator size="large" color="#000" />
       ) : (
         <ScrollView showsVerticalScrollIndicator={false}>
@@ -454,7 +465,14 @@ const PersonalInfo: React.FC<Props> = ({ navigation }) => {
                       </View>
 
                       <View style={styles.topView}>
-                        <DatePicker mode="date" textColor="#000" date={date ? new Date(date) : new Date()} style={styles.DatePicker} onDateChange={setDate} />
+                        <DatePicker
+                          mode="date"
+                          textColor="#000"
+                          date={date ? new Date(date) : new Date()}
+                          maximumDate={new Date(new Date().getFullYear() - 15, new Date().getMonth(), new Date().getDate())} // Set the maximum date to 18 years ago
+                          style={styles.DatePicker}
+                          onDateChange={setDate}
+                        />
                       </View>
                     </View>
                   </ScrollView>
