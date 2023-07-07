@@ -43,7 +43,9 @@ const VarificationModal: React.FC<VerificationScreenProps> = ({ isVisible, onClo
     const body = {
       email: email,
       code: inputValue,
+      type : "verification"
     }
+
     const result = await mutateAsyncVarification(body) as any
     if (result?.data?.message === 'verified') afterVarified()
     if (!!result.error) Alert.alert(result.error.data.message)

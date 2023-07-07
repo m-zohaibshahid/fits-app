@@ -28,9 +28,7 @@ const SignUpScreen = ({navigation}: PropsInterface) => {
   const [confirmPassword, setConfirmPassword] = useState<string>('');
   const [validationErrors, setValidationErrors] = useState<SignUpFormValidationErrors>({});
   const [isVarificationModalVisible,setIsVarificationModalVisible] = useState<boolean>(false);
-  const [userId,setUserId] = useState<number>(0);
   const [userToken,setUserToken] = useState<string>("");
-  const { refetch: getUserInfoFromUserMe } = useGetUserMeQuery(userId);
   const [registerUser, { isLoading, isError, error, data: userRegisterApiResponse }] = useRegisterUserMutation()
 
   const signupCall = async () => {
@@ -48,7 +46,6 @@ const SignUpScreen = ({navigation}: PropsInterface) => {
       delete formValues.confirmPassword;
       const result = await registerUser(formValues) as any
       if (result.data.register) {
-        setUserId(result?.data?.data?._id)
         setUserToken(result?.data?.access_token)
         setIsVarificationModalVisible(true)
       }
@@ -56,21 +53,15 @@ const SignUpScreen = ({navigation}: PropsInterface) => {
     }
   }
 
-  const setDataInAsyncStorageAndUpdateState = async (userInfo: string) => {
-    await storeUserTokenInAsyncStorage(userToken)
-    await storeUserDataInAsyncStorage(userInfo)
-    dispatch(setToken(userToken));
-    navigation.navigate("CheckUser")
-  }
-  
   useEffect(() => {
     if (!!isError) errorToast(error?.data?.message)
   }, [isError])
   
   
-  const handleGetUserInfoFromServer = async () => {
-    let result = await getUserInfoFromUserMe()
-    await setDataInAsyncStorageAndUpdateState(JSON.stringify(result?.data))
+  const handleAfterEmailVarified = async () => {
+    await storeUserTokenInAsyncStorage(userToken)
+    dispatch(setToken(userToken));
+    navigation.navigate("CheckUser")
   }
   
   return (
@@ -89,7 +80,7 @@ const SignUpScreen = ({navigation}: PropsInterface) => {
           onPress={signupCall}
         />
       </View>
-      {isVarificationModalVisible ? <VarificationModal afterVarified={handleGetUserInfoFromServer} isVisible={isVarificationModalVisible} onClose={() => setIsVarificationModalVisible} email={email} code={userRegisterApiResponse?.email_message.code} /> : null}
+      {isVarificationModalVisible ? <VarificationModal afterVarified={handleAfterEmailVarified} isVisible={isVarificationModalVisible} onClose={() => setIsVarificationModalVisible} email={email} code={userRegisterApiResponse?.email_message.code} /> : null}
     </Container>
   );
 };
@@ -98,9 +89,9 @@ export default SignUpScreen;
 
 export const validationSchema = Yup.object().shape({
   email: Yup.string().email('Invalid email'),
-  password: Yup.string().min(8, 'Must be at least 8 characters long').matches(
-    /^(?=.*[@$!%*?&])(?=.*[A-Z])(?=.*[a-z])(?=.*\d).+$/,
-    'Must Contain A-Z, a-z, special sharacters and numbers'
-  ),
+  // password: Yup.string().min(8, 'Must be at least 8 characters long').matches(
+  //   /^(?=.*[@$!%*?&])(?=.*[A-Z])(?=.*[a-z])(?=.*\d).+$/,
+  //   'Must Contain A-Z, a-z, special sharacters and numbers'
+  // ),
   confirmPassword: Yup.string().oneOf([Yup.ref('password')], 'Passwords must match')
 });

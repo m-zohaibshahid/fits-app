@@ -1,9 +1,7 @@
 /* eslint-disable prettier/prettier */
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 import { url } from "../constants/url";
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import { LoginInterface } from "./store.interface";
-import { useSelector } from "react-redux";
+import { LoginInterface, UserMeApiResponse } from "./store.interface";
 import { getUserAsyncStroageToken } from "../utils/async-storage";
 
 // Define a service using a base URL and expected endpoints
@@ -19,20 +17,13 @@ export const fitsApi = createApi({
   }),
   // keepUnusedDataFor: 30,
   endpoints: (builder) => ({
-
     getUsers: builder.query<any[], void>({
       query: () => "users",
     }),
 
-    getUserMe: builder.query<any, Partial<any>>({
+    getUserMe: builder.query<UserMeApiResponse, Partial<any>>({
       keepUnusedDataFor: 30,
-      query: (id) => {
-        if (!id) return '';
-        return {
-          url: `/user/me/${id}`,
-          method: 'GET',
-        };
-      },
+      query: () => `/user/me`
     }),
 
     registerUser: builder.mutation<any, Partial<any>>({
@@ -133,7 +124,7 @@ export const fitsApi = createApi({
       query: (id) => `/session/trainer/${id}`,
     }),
 
-    personalInfoUpdate: builder.mutation<any, Partial<any>>({
+    personalInfoCreate: builder.mutation<any, Partial<any>>({
       query: (body) => ({
         url: "/personal",
         method: "POST",
@@ -160,5 +151,5 @@ export const {
   useGetUserMeQuery,
   useGetUsersQuery,
   useTrainerSessionQuery,
-  usePersonalInfoUpdateMutation,
+  usePersonalInfoCreateMutation,
 } = fitsApi;

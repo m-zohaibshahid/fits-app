@@ -8,13 +8,17 @@ import { useLoginUserMutation, useResendVarificationCodeMutation } from "../../.
 import { useDispatch } from "react-redux";
 import Typography from "../../../Components/typography/text";
 import Container from "../../../Components/Container";
-import { useNavigation } from "@react-navigation/native";
-import { errorToast } from "../../../utils/toast";
-import { storeUserDataInAsyncStorage } from "../../../utils/async-storage";
+import { errorToast, successToast } from "../../../utils/toast";
+import { storeUserTokenInAsyncStorage } from "../../../utils/async-storage";
 import VarificationModal from "../../../Components/VerificationModal";
+import { NavigationSwitchProp } from "react-navigation";
+import { setToken } from "../../../slice/token.slice";
 
-const SignInScreen = () => {
-  const navigation = useNavigation();
+interface PropsInterface {
+  navigation: NavigationSwitchProp
+}
+
+const SignInScreen = ({navigation}: PropsInterface) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [isVarificationModalVisible,setIsVarificationModalVisible] = useState<boolean>(false);
@@ -23,88 +27,46 @@ const SignInScreen = () => {
 
   const dispatch = useDispatch();
 
-/* 
-  const resendCodeCall = async () => {
-    await fetch(`${url}/resend-email`, {
-      method: "POST",
-      headers: {
-        Accept: "application/json",
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        email: email,
-      }),
-    })
-      .then((res) => res.json())
-      .then((res2) => {
-        if (res2?.code) {
-          ToastAndroid.show("OTP sent to your email, please check your email", ToastAndroid.LONG);
-          navigation.navigate("Verification", {
-            email: email,
-            code: res2?.code,
-          });
-          setModalVisible(false);
-        } else {
-          ToastAndroid.show(res2?.message, ToastAndroid.SHORT);
-        }
-      })
-      .catch((error) => {
-        setLoadxx(false);
-      });
-  }; */
-
-
   const handleLogin = async () => {
     const formValues = {
       email,
       password,
     };
-
-      const result = await loginUserMutateAsync(formValues) as any
-      /*  if (result.data.message === "please verify your email first") {
-     // storeUserDataInAsyncStorage(JSON.stringify(result.data))
-
+    const result = await loginUserMutateAsync(formValues) as any
+    if (result?.data?.access_token) {
+      await storeUserTokenInAsyncStorage(result?.data?.access_token)
+      dispatch(setToken(result?.data?.access_token));
+      navigation.navigate("CheckUser")
     }
-      if (result.data) {
-        await storeUserDataInAsyncStorage(JSON.stringify(result.data))
-        setIsVarificationModalVisible(true)
-      } */
-      if (result.error) {
-      errorToast(result.error.data.message)
-      if (result.error.data.message === "please verify your email first") {
-        handleSendCodeOnEmail()
-        setIsVarificationModalVisible(true)
+    else if (result.error) {
+        errorToast(result.error.data.message)
+        if (result.error.data.message === "please verify your email first") {
+          handleSendCodeOnEmail()
+          setIsVarificationModalVisible(true)
+        }
       }
     }
-  }
-
-  useEffect(() => {
-    if (isError) errorToast(error?.error) as any;
-  }, [isError])
-
-  const handleSendCodeOnEmail = async () => {
-    const body = {
-      email: email,
+    
+    const handleSendCodeOnEmail = async () => {
+      const body = {
+        email: email,
+      }
+      const result = await mutateAsyncResendCode(body) as any
+      if (!!result.error) errorToast(result.error.data.message)
     }
-    const result = await mutateAsyncResendCode(body) as any
-    if (!!result.error) errorToast(result.error.data.message)
-  }
 
-/*   const setDataInAsyncStorageAndUpdateState = async (userInfo: string) => {
-    await storeUserTokenInAsyncStorage(userToken)
-    await storeUserDataInAsyncStorage(userInfo)
-    dispatch(setToken(userToken));
-    navigation.navigate("CheckUser")
-  }
-  
-  const handleGetUserInfoFromServer = async () => {
-    let result = await getUserInfoFromUserMe()
-    await setDataInAsyncStorageAndUpdateState(JSON.stringify(result?.data))
-  } */
+  const handleAfterEmailVarified = async () => {
+      setIsVarificationModalVisible(false)
+      successToast("Your email is now verified \n Plz login again")
+    }
 
   const varificationCode = useMemo(() => {
     return sendCodeOnEmailApiResponse?.code
   }, [sendCodeOnEmailApiResponse])
+
+  useEffect(() => {
+    if (isError) errorToast(error?.error) as any;
+  }, [isError])
 
   return (
     <Container style={styles.mainContainer}>
@@ -135,9 +97,7 @@ const SignInScreen = () => {
           </Typography>
         </Typography>
       </Pressable>
-      {isVarificationModalVisible && !!varificationCode ? <VarificationModal isVisible={isVarificationModalVisible} onClose={() => setIsVarificationModalVisible} email={email} code={varificationCode} afterVarified={function (): void {
-        throw new Error("Function not implemented.");
-      } } /> : null}
+      {isVarificationModalVisible && !!varificationCode ? <VarificationModal isVisible={isVarificationModalVisible} onClose={() => setIsVarificationModalVisible} email={email} code={varificationCode} afterVarified={handleAfterEmailVarified} /> : null}
     </Container>
   );
 };

@@ -299,7 +299,6 @@ const Home = ({ navigation }: any) => {
   };
 
   const find = (t: any) => {
-    console.log("t", t);
     const words = [data];
     setSearch(t);
     if (t === "") {

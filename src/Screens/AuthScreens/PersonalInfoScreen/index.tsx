@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {  Text,  View,  Pressable,  Modal,  Image,  ScrollView,  ToastAndroid,  TouchableOpacity,  StyleSheet, Platform,} from "react-native";
 import ImagePicker from "react-native-image-crop-picker";
 import moment from "moment";
@@ -17,10 +17,12 @@ import { RFValue } from "react-native-responsive-fontsize";
 import Typography from "../../../Components/typography/text";
 import { useSelector } from "react-redux";
 import { UserDetailInfoInterface } from "../../../interfaces";
-import { usePersonalInfoUpdateMutation } from "../../../slice/FitsApi.slice";
+import { useGetUserMeQuery, usePersonalInfoCreateMutation } from "../../../slice/FitsApi.slice";
 import { PersonalInfoFormValidationResultInterface, PersonalInfoValidateErrorsIntarface, PersonalInfoValidateSchemaInterface } from "../types";
 import { validateForm } from "../../../utils/validation";
 import { errorToast } from "../../../utils/toast";
+import { getUserAsyncStroage, storeUserDataInAsyncStorage } from "../../../utils/async-storage";
+import { NavigationSwitchProp } from "react-navigation";
 
 export const validationSchema = Yup.object().shape({
   name: Yup.string().required('Name is required'),
@@ -34,13 +36,16 @@ export const validationSchema = Yup.object().shape({
   confirmPassword: Yup.string().oneOf([Yup.ref('password')], 'Passwords must match'),
 });
 
+interface PropsInterface {
+  navigation: NavigationSwitchProp
+}
 
 
-const PersonalInfo = () => {
+
+const PersonalInfo = ({navigation}: PropsInterface) => {
   const token: string = useSelector((state: { token: string }) => state.token);
   const { user } = useSelector((state: {fitsStore: UserDetailInfoInterface}) => state.fitsStore);
   // Hooks
-  const navigation = useNavigation()
   const [modalVisible, setModalVisible] = useState(false);
   const [modalVisibleDate, setModalVisibleDate] = useState(false);
   const [fullName, setFullName] = useState("");
@@ -57,23 +62,18 @@ const PersonalInfo = () => {
   const [image, setImage] = useState("");
   const [cloudImageUrl, setCloudImageUrl] = useState("");
   const [isCountryVisible, setIsCountryVisible] = React.useState(false);
-  const [mutateAsyncPersonalInfoUpdate, { isLoading }] = usePersonalInfoUpdateMutation()
+  const [mutateAsyncPersonalInfoUpdate, { isLoading, isError, error: personalInfoApiError }] = usePersonalInfoCreateMutation()
 
   // Functions
   const onPressFlag = () => {
     return setIsCountryVisible(true);
   };
 
-  const TrainerFlow = async () => {
-    navigation.navigate("ProfessionalInfo");
-  };
-
-  const TraineeFlow = async () => {
-    navigation.navigate("FitnessLevel");
-  };
+  const handleNavigateToCheckUserScreen = () => {
+    navigation.navigate("CheckUser")
+  }
 
   const personalInfoCall = async () => {
-
     const formValues: PersonalInfoValidateSchemaInterface = {
       name: fullName,
       date_of_birth: date,
@@ -89,6 +89,7 @@ const PersonalInfo = () => {
     setValidationErrors(errors);
     if (isValid) {
       const result = await mutateAsyncPersonalInfoUpdate(formValues)
+      if (result?.data?.success) handleNavigateToCheckUserScreen()
       if (result?.error) errorToast(result?.error?.data?.message) 
     }
   };
@@ -134,9 +135,9 @@ const PersonalInfo = () => {
       });
   };
 
-  // Effects
-/*   useEffect(() => {
-  }, [getUserInfo]); */
+  useEffect(() => {
+    if (isError) errorToast(personalInfoApiError?.error)
+  }, [isError]);
 
   return (
     <Container>
@@ -364,41 +365,26 @@ const PersonalInfo = () => {
           {/* Modal End*/}
 
           {/*modalVisibleDate Start*/}
-          <View style={styles.centeredView}>
-            <Modal
-              animationType="fade"
-              transparent={true}
-              visible={modalVisibleDate}
-              onRequestClose={() => {
-                setModalVisibleDate(false);
-              }}
-            >
-              <View style={styles.centeredView}>
-                <View style={styles.modalViewdate}>
-                  <ScrollView showsVerticalScrollIndicator={false}>
-                    <View
-                      style={{
-                        width: "100%",
-                        alignItems: "flex-start",
-                      }}
-                    >
-                      <View style={styles.cancelView}>
-                        <Pressable
-                          onPress={() => setModalVisibleDate(false)}
-                          style={styles.canceldoneView}
-                        >
-                          <Text style={styles.TextCancelDone}>Cancel</Text>
-                        </Pressable>
-                        <View style={styles.DOBView}>
-                          <Text style={styles.TextDOB}>Date of Birth</Text>
-                        </View>
-                        <Pressable
-                          onPress={() => setModalVisibleDate(false)}
-                          style={styles.canceldoneView}
-                        >
-                          <Text style={styles.TextCancelDone}>Done</Text>
-                        </Pressable>
+            <Modal animationType='fade' transparent={true} visible={modalVisibleDate} onRequestClose={() => setModalVisibleDate(false)}>
+             <View style={styles.bottomView}>
+                <View  style={styles.modalContainer}>
+                    <View style={styles.cancelView}>
+                      <Pressable
+                        onPress={() => setModalVisibleDate(false)}
+                        style={styles.canceldoneView}
+                      >
+                        <Text style={styles.TextCancelDone}>Cancel</Text>
+                      </Pressable>
+                      <View style={styles.DOBView}>
+                        <Text style={styles.TextDOB}>Date of Birth</Text>
                       </View>
+                      <Pressable
+                        onPress={() => setModalVisibleDate(false)}
+                        style={styles.canceldoneView}
+                      >
+                        <Text style={styles.TextCancelDone}>Done</Text>
+                      </Pressable>
+                    </View>
 
                       <View style={styles.topView}>
                         <DatePicker
@@ -409,12 +395,9 @@ const PersonalInfo = () => {
                           onDateChange={setDate}
                         />
                       </View>
-                    </View>
-                  </ScrollView>
                 </View>
               </View>
             </Modal>
-          </View>
           {/* modalVisibleDate End*/}
         <Button
           loader={isLoading}
@@ -608,6 +591,25 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignSelf: "center",
     height: Platform.OS === "ios" ? 60 : 60,
+  },
+  bottomView: {
+    flex: 1,
+    justifyContent: 'flex-end',
+    backgroundColor: Colors.transparentBlack,
+  },
+  modalContainer: {
+    backgroundColor: Colors.white,
+    borderRadius: 10,
+    paddingHorizontal: 24,
+    paddingTop: 28,
+    shadowColor: Colors.black,
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 6.84,
+    elevation: 9,
   },
 });
 

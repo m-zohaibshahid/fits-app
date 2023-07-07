@@ -65,7 +65,7 @@ const UploadVideo2 = ({ navigation }) => {
         setVideo(file.path);
       })
       .catch((err) => {
-        console.log(err);
+        console.error(err);
       });
   };
 
@@ -129,7 +129,7 @@ const UploadVideo2 = ({ navigation }) => {
         .catch((error) => {
           setLoad(false);
           Alert.alert("Something Went Wrong");
-          console.log(error);
+          console.error(error);
         });
     }
   };
