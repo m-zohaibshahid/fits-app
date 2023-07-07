@@ -64,7 +64,6 @@ const Videos = ({ navigation }) => {
       })
       .catch((error) => {
         setLoad(false);
-        console.log(error);
       });
   };
 
@@ -91,7 +90,6 @@ const Videos = ({ navigation }) => {
       })
       .catch((error) => {
         setLoad(false);
-        console.log(error);
       });
   };
 
@@ -117,7 +115,6 @@ const Videos = ({ navigation }) => {
       })
       .catch((error) => {
         setLoadx(false);
-        console.log(error);
       });
   };
 

@@ -60,7 +60,6 @@ const ScheduledClasses = ({ navigation }) => {
       .catch((error) => {
         setLoad(false);
         Alert.alert("Something Went Wrong");
-        console.log(error);
       });
   };
   const deleteBooking = async (item) => {
@@ -94,7 +93,6 @@ const ScheduledClasses = ({ navigation }) => {
       .catch((error) => {
         setLoadx(false);
         Alert.alert("Something Went Wrong");
-        console.log(error);
       });
   };
   const detailsInfoCall = (item, i) => {

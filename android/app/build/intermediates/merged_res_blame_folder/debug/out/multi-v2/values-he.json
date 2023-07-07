@@ -4,7 +4,7 @@
             "outputFile": "com.awesomeproject.app-mergeDebugResources-37:/values-he/values-he.xml",
             "map": [
                 {
-                    "source": "/Users/ebryx/Downloads/ReactNative/fits-ts/node_modules/react-native-date-picker/android/build/intermediates/packaged_res/debug/values-he/values-he.xml",
+                    "source": "/Users/zohaib.shahid/Downloads/works/fits-ts/node_modules/react-native-date-picker/android/build/intermediates/packaged_res/debug/values-he/values-he.xml",
                     "from": {
                         "startLines": "2,3,4,5,6,7,8,9,10,11,12",
                         "startColumns": "4,4,4,4,4,4,4,4,4,4,4",

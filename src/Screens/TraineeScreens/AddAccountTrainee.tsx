@@ -92,7 +92,6 @@ const AddAccountTrainee: React.FC<Props> = ({ navigation }) => {
         .catch((error) => {
           setLoad(false);
           Alert.alert("Something Went Wrong");
-          console.log(error);
         });
     }
   };

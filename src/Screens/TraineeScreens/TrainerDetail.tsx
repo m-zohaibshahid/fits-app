@@ -108,8 +108,6 @@ const TrainerDetail = ({ navigation }) => {
       })
       .catch((error) => {
         setLoade(false);
-
-        console.log(error);
       });
   };
   const CreateRoom = async () => {
@@ -144,7 +142,6 @@ const TrainerDetail = ({ navigation }) => {
         .catch((error) => {
           setLoad(false);
           Alert.alert("Something Went Wrong");
-          console.log(error);
         });
     }
   };

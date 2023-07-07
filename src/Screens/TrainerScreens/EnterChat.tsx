@@ -72,7 +72,6 @@ const EnterChat = ({ navigation }) => {
       .catch((error) => {
         setLoade(false);
         Alert.alert("Something Went Wrong");
-        console.log(error);
       });
   };
 
@@ -113,7 +112,6 @@ const EnterChat = ({ navigation }) => {
         .catch((error) => {
           setLoad(false);
           Alert.alert("Something Went Wrong");
-          console.log(error);
         });
     }
   };

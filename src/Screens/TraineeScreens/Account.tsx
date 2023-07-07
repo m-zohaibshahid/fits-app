@@ -15,7 +15,7 @@ import { getUserAsyncStroage } from "../../common/AsyncStorage";
 import { useSelector } from "react-redux";
 import { UserDataInterface, UserDetail } from "../../interfaces";
 import { NavigationSwitchProp } from "react-navigation";
-import ErrorHandler from "../../Components/model/error";
+import ErrorHandler from "../../Components/Alert-modal";
 interface Props {
   navigation: NavigationSwitchProp;
 }
@@ -62,7 +62,6 @@ const Account: React.FC<Props> = ({ navigation }) => {
         oldPassword: oldPassword,
         password: newPassword,
       };
-      console.log("id", id, body);
       await updatePassword({ id, ...body })
         // .unwrap()
         .then((res2) => {
@@ -74,26 +73,11 @@ const Account: React.FC<Props> = ({ navigation }) => {
         })
         .catch((error) => {
           Alert.alert("Something Went Wrong");
-          console.log(error);
         });
     }
   };
   const logOut = async () => {
-    await AsyncStorage.setItem("personalInfoTrainer", JSON.stringify("false"));
-    await AsyncStorage.setItem("pefessionalInfoTrainer", JSON.stringify("false"));
-    await AsyncStorage.setItem("servicesTrainer", JSON.stringify("false"));
-    await AsyncStorage.setItem("personalInfoTrainee", JSON.stringify("false"));
-    await AsyncStorage.setItem("fitnessLevelTrainee", JSON.stringify("false"));
-    await AsyncStorage.setItem("fitnessGoalTrainee", JSON.stringify("false"));
-    await AsyncStorage.removeItem("personalInfoTrainer");
-    await AsyncStorage.removeItem("pefessionalInfoTrainer");
-    await AsyncStorage.removeItem("servicesTrainer");
-    await AsyncStorage.removeItem("personalInfoTrainee");
-    await AsyncStorage.removeItem("fitnessLevelTrainee");
-    await AsyncStorage.removeItem("fitnessGoalTrainee");
-    await AsyncStorage.removeItem("userToken");
-    await AsyncStorage.removeItem("userMeData");
-    await AsyncStorage.removeItem("userData");
+    await AsyncStorage.clear();
     navigation.navigate("logoutNow");
   };
 

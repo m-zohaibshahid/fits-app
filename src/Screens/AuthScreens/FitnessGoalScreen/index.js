@@ -181,7 +181,6 @@ const FitnessGoalScreen = ({ navigation }) => {
       })
       .catch((error) => {
         setLoadx(false);
-        console.log(error);
       });
   };
   const Manual = [

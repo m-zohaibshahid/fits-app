@@ -66,7 +66,6 @@ const AddAccount = ({ navigation }) => {
       .catch((error) => {
         setLoadx(false);
         Alert.alert("Something Went Wrong");
-        console.log(error);
       });
   };
 
@@ -108,7 +107,6 @@ const AddAccount = ({ navigation }) => {
         .catch((error) => {
           setLoad(false);
           Alert.alert("Something Went Wrong");
-          console.log(error);
         });
     }
   };

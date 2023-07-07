@@ -22,6 +22,7 @@ const Colors = {
   background: '#E5E5E5',
   // non-colors
   black: '#000000',
+  transparentBlack: '#000000da',
   lightGray: '#414143',
   white: '#FFFFFF',
   lightWhite: '#FCFCFC',
@@ -38,6 +39,7 @@ const Colors = {
 
   //transparent
   whiteTransparent: 'rgba(255,255,255,0.2)',
+  grayTransparent: 'rgba(86, 86, 86, 0.831)',
 
   mainOrange: '#F5953C',
   lightGray1: '#E5DECE',

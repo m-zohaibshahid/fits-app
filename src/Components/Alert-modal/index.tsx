@@ -1,33 +1,48 @@
-import React from "react";
-import { View, Modal, StyleSheet } from "react-native";
-import Button from "../Button";
-import Colors from "../../constants/Colors";
-import Typography from "../typography/text";
+import React from 'react';
+import { View, Modal, StyleSheet, TouchableOpacity } from 'react-native';
+import Button from '../Button';
+import Colors from '../../constants/Colors';
+import Typography from '../typography/text';
 
 interface ModelProps {
   visible: boolean;
   onClick: () => void;
   onRequestClose: () => void;
+  title: string;
+  message: string;
 }
 
-const Model: React.FC<ModelProps> = ({ visible, onClick, onRequestClose }) => {
+const AlertModal: React.FC<ModelProps> = ({ visible, onClick, onRequestClose, title, message }) => {
+  const handleBackdropPress = () => {
+    onRequestClose();
+  };
+
   return (
-    <Modal animationType="slide" transparent={true} visible={visible} onRequestClose={onRequestClose}>
-      <View style={styles.centeredView}>
+    <Modal
+      animationType="fade"
+      transparent={true}
+      visible={visible}
+      onRequestClose={onRequestClose}
+    >
+      <TouchableOpacity
+        style={styles.centeredView}
+        activeOpacity={1}
+        onPress={handleBackdropPress}
+      >
         <View style={styles.modalView}>
           <Typography weight="700" size="heading2" align="center" style={styles.title}>
-            Modal Title
+            {title}
           </Typography>
 
           <Typography weight="600" size="heading4" align="center" style={styles.message}>
-            Already have an account? Please sign in!
+            {message}
           </Typography>
 
           <View style={styles.buttonContainer}>
             <Button label="Go" onPress={onClick} />
           </View>
         </View>
-      </View>
+      </TouchableOpacity>
     </Modal>
   );
 };
@@ -35,8 +50,8 @@ const Model: React.FC<ModelProps> = ({ visible, onClick, onRequestClose }) => {
 const styles = StyleSheet.create({
   centeredView: {
     flex: 1,
-    justifyContent: "flex-end",
-    backgroundColor: Colors.lightGray,
+    justifyContent: 'flex-end',
+    backgroundColor: Colors.transparentBlack,
     opacity: 0.9,
   },
   modalView: {
@@ -66,4 +81,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default Model;
+export default AlertModal;
