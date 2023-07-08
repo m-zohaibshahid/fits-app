@@ -524,7 +524,6 @@ const VideoCreateScreen = ({ navigation }) => {
                   value={price}
                   keyboardType="numeric"
                   maxLength={19}
-                  onChangeText={setPrice}
                 />
               </View>
               {/*end pricing */}

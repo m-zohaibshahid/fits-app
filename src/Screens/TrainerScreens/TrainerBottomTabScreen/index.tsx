@@ -15,6 +15,8 @@ import {Platform} from 'react-native';
 import MyVideos from '../MyVideosScreen/index';
 import AccountScreen from '../AccountScreen/index';
 import Home from '../HomeScreen';
+import FontAwesome from 'react-native-vector-icons/FontAwesome';
+import Chat from '../../TraineeScreens/Chat';
 
 const Tab = createBottomTabNavigator();
 
@@ -32,14 +34,15 @@ switch (route.name) {
   case 'Video':
     iconName = 'folder-video';
     return <Entypo name={iconName} size={wp(6)} color={color} />;
+  case 'Chat':
+    iconName = "send";
+    return <FontAwesome name={iconName} size={wp(6)} color={color}  />
   case 'Account':
     iconName = 'settings';
     return <Ionicons name={iconName} size={wp(6)} color={color} />;
   default:
     return null; // or handle the case when the route name doesn't match any of the cases
-}
-
-        },
+}},
         tabBarStyle: {
           height: Platform.OS === 'ios' ? 110 : 50,
           justifyContent: 'center',
@@ -74,6 +77,19 @@ switch (route.name) {
       <Tab.Screen
         name="Video"
         component={MyVideos}
+        options={{headerShown: false}}
+        listeners={({navigation, route}: any) => ({
+          tabPress: () => {
+            if (route.state && route.state.routeNames.length > 0) {
+              navigation.navigate('Device');
+            }
+          },
+        })}
+      />
+
+      <Tab.Screen
+        name="Chat"
+        component={Chat}
         options={{headerShown: false}}
         listeners={({navigation, route}: any) => ({
           tabPress: () => {

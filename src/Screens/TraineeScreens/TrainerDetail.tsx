@@ -1,5 +1,15 @@
 import React, { useState, useEffect } from "react";
-import { Text, View, TouchableOpacity, StyleSheet, TextInput, Modal, ToastAndroid, ActivityIndicator, Platform } from "react-native";
+import {
+  Text,
+  View,
+  TouchableOpacity,
+  StyleSheet,
+  TextInput,
+  Modal,
+  ToastAndroid,
+  ActivityIndicator,
+  Platform
+} from "react-native";
 import { ScrollView } from "react-native-gesture-handler";
 import AntDesign from "react-native-vector-icons/AntDesign";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
@@ -16,149 +26,76 @@ import FastImage from "react-native-fast-image";
 import Entypo from "react-native-vector-icons/Entypo";
 import Pressable from "react-native/Libraries/Components/Pressable/Pressable";
 import { useSelector } from "react-redux";
-import { UserDetailInfoInterface } from "../../interfaces";
-import { useGetUserMeQuery } from "../../slice/FitsApi.slice";
+import { UserDetail, UserDetailInfoInterface } from "../../interfaces";
+import { useCreateChatRoomMutation, useGetUserMeQuery } from "../../slice/FitsApi.slice";
+import { NavigationSwitchProp } from "react-navigation";
+import { errorToast } from "../../utils/toast";
 
-const TrainerDetail = ({ navigation }) => {
-  const [modalVisiblex, setModalVisiblex] = useState(false);
+enum Tab {
+  ABOUT,
+  SCHEDULE,
+  VIDEO,
+  RATINGS
+}
+
+interface PropsInterface {
+  navigation: NavigationSwitchProp;
+}
+
+const TrainerDetail = ({ navigation }: PropsInterface) => {
   const route = useRoute();
-  const [about, setAbout] = useState(false);
-  const [schedule, setSchedule] = useState(true);
-  const [video, setVideo] = useState(false);
-  const [ratings, setRatings] = useState(false);
+  const [modalVisible, setModalVisible] = useState(false);
+  const [activeTab, setActiveTab] = useState<Tab>(Tab.ABOUT);
+  const [message, setMessage] = useState("");
+  const [mutateAsyncChatRoomCreate] = useCreateChatRoomMutation()
+  const trainerId = route?.params?.personalData?.check?._id
+  const { userInfo } = useSelector((state: { fitsStore: Partial<UserDetail> }) => state.fitsStore);
+  const token = useSelector((state: { token: string }) => state.token);
 
   const GoBack = () => {
     navigation.goBack();
   };
-  const NextScreen = () => {
-    navigation.navigate("Chat", {
-      TRAINERID: route?.params?.trainerId,
-    });
-  };
-  const Api = () => {
-    setModalVisiblex(true);
-  };
-  const aboutTrueState = () => {
-    setAbout(true);
-    setSchedule(false);
-    setVideo(false);
-    setRatings(false);
-  };
-  const scheduleTrueState = () => {
-    setAbout(false);
-    setSchedule(true);
-    setVideo(false);
-    setRatings(false);
-  };
-  const videotrueState = () => {
-    setAbout(false);
-    setSchedule(false);
-    setVideo(true);
-    setRatings(false);
-  };
-  const ratingstrueState = () => {
-    setAbout(false);
-    setSchedule(false);
-    setVideo(false);
-    setRatings(true);
+
+  const nextScreen = (roomId: string) => {
+    navigation.navigate("Chat", {roomId});
   };
 
-  const [loade, setLoade] = useState(false);
-  const [load, setLoad] = useState(false);
-  const [data, setData] = useState(false);
-  const [id, setId] = useState("");
-  const [token, setToken] = React.useState("");
-  const [trainerId, setTrainerId] = useState("");
-  const [mesage, setMesage] = useState("");
-
-  const { userInfo } = useSelector((state: Partial<UserDetailInfoInterface>) => state.fitsStore);
-  const { data: userMeData, isLoading, error, isSuccess } = useGetUserMeQuery({ id: userInfo?._id });
-  useEffect(() => {
-    navigation.addListener("focus", () => {
-      setTrainerId(route?.params?.trainerId);
-      userMe();
-    });
-  }, []);
-
-  const chatRoomCreate = async () => {
-    const userData = await AsyncStorage.getItem("userData");
-    let userDatax = JSON.parse(userData);
-    setLoade(true);
-    await fetch(`${url}/chat/rooms`, {
-      method: "POST",
-      headers: {
-        Accept: "application/json",
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${userDatax?.access_token}`,
-      },
-      body: JSON.stringify({
-        trainerId: trainerId,
-      }),
-    })
-      .then((res) => res.json())
-      .then((res2) => {
-        setLoade(false);
-        if (res2.message === "rooms not found") {
-          Api();
-        } else if (res2.message === "rooms found") {
-          NextScreen();
-        } else {
-          ToastAndroid.show(res2.message, ToastAndroid.LONG);
-        }
-      })
-      .catch((error) => {
-        setLoade(false);
-      });
+  const handleTabPress = (tab: Tab) => {
+    setActiveTab(tab);
   };
-  const CreateRoom = async () => {
-    if (mesage === "") {
-      ToastAndroid.show("Please Enter Message.", ToastAndroid.SHORT);
-    } else {
-      setLoad(true);
-      let body;
-      await fetch(`${url}/chat/room/create`, {
-        method: "POST",
-        headers: {
-          Accept: "application/json",
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${userInfo.access_token}`,
-        },
-        body: JSON.stringify({
-          message: mesage,
-          rid: route?.params?.personalData?.check?.user,
-          sname: data?.personal_info?.name,
-        }),
-      })
-        .then((res) => res.json())
-        .then((res2) => {
-          setLoad(false);
-          if (res2.message === "Message sent successfully..") {
-            ToastAndroid.show("Message sent successfully", ToastAndroid.LONG);
-            NextScreen();
-          } else {
-            ToastAndroid.show(res2.message, ToastAndroid.LONG);
-          }
-        })
-        .catch((error) => {
-          setLoad(false);
-          Alert.alert("Something Went Wrong");
-        });
+
+  const handleCreateChatRoom = async () => {
+    let body = {
+      message: message,
+      linkId: trainerId
+    }
+    const result = await mutateAsyncChatRoomCreate(body);
+    if (result?.error) errorToast(result.error?.data?.message);
+    if (result?.data) nextScreen(result.data?.data.room._id)
+  };
+
+  const renderTabContent = () => {
+    switch (activeTab) {
+      case Tab.ABOUT:
+        return <About navigation={navigation} token={token} id={userInfo?.user._id} />;
+      case Tab.SCHEDULE:
+        return <Schedule navigation={navigation} />;
+      case Tab.VIDEO:
+        return <Videos2 navigation={navigation} /* token={token} id={userInfo?.user._id} */ />;
+      case Tab.RATINGS:
+        return <Ratings navigation={navigation} token={token} id={userInfo?.user._id} />;
+      default:
+        return null;
     }
   };
-  const userMe = async () => {
-    if (userMeData.success === true) {
-      setData(userMeData);
-    } else {
-      ToastAndroid.show(userMeData.message, ToastAndroid.LONG);
-    }
-  };
+
   return (
     <View style={styles.container}>
       <ScrollView showsVerticalScrollIndicator={false}>
         <FastImage
           style={styles.Imagestyle}
           source={{
-            uri: `${route.params.userData.item.image}`,
+            uri: `${route?.params.userData.item.image}`,
             headers: { Authorization: "someAuthToken" },
             priority: FastImage.priority.normal,
           }}
@@ -168,7 +105,7 @@ const TrainerDetail = ({ navigation }) => {
             <View style={{ width: "90%", alignSelf: "center", marginVertical: 10 }}>
               <View style={{ width: "100%", flexDirection: "row" }}>
                 <View style={{ width: "20%" }}>
-                  <Pressable onPress={GoBack}>
+                  <TouchableOpacity onPress={GoBack}>
                     <View
                       style={{
                         backgroundColor: "black",
@@ -182,7 +119,7 @@ const TrainerDetail = ({ navigation }) => {
                     >
                       <Entypo name="cross" size={20} color="white" />
                     </View>
-                  </Pressable>
+                  </TouchableOpacity>
                 </View>
                 <View style={{ width: "80%", alignItems: "flex-end" }}>
                   <View style={{ width: "45%" }}>
@@ -199,7 +136,7 @@ const TrainerDetail = ({ navigation }) => {
                         flexDirection: "row",
                       }}
                     >
-                      {route?.params?.professionalData?.checkx?.verification_status === "verified" ? (
+                      {route?.params?.professionalData?.check?.verification_status === "verified" ? (
                         <Text
                           style={{
                             fontFamily: "Poppins-Regular",
@@ -214,7 +151,6 @@ const TrainerDetail = ({ navigation }) => {
                         <Text
                           style={{
                             fontFamily: "Poppins-Regular",
-                            fontSize: RFValue(10, 580),
                             color: "#fff",
                             opacity: 1,
                           }}
@@ -230,76 +166,66 @@ const TrainerDetail = ({ navigation }) => {
             </View>
           </View>
         </FastImage>
-        {/* <Image style={styles.Imagestyle} source={Images.Trainer} /> */}
 
         <View style={styles.header}>
           <View style={styles.TopView}>
             <View style={styles.topView1}>
-              {/*start James Name*/}
-              <Text style={styles.NameText}>{route.params.personalData.check.name}</Text>
+              <Text style={styles.NameText}>{route?.params.personalData.check.name}</Text>
               <View style={styles.BtnmainrowView}>
                 <View style={styles.BtnviewView}>
                   <Text style={styles.sessionText}>
-                    <Text style={styles.Boldtextstyle}>{route.params.userData.item.price}$</Text>
+                    <Text style={styles.Boldtextstyle}>{route?.params.userData.item.price}$</Text>
                     /session
                   </Text>
                 </View>
                 <View style={styles.Btnmain2View}>
                   <Text style={styles.sessionText}>
                     <Text style={styles.Boldtextstyle}>
-                      {route?.params?.userData?.item?.averageRating?.toFixed(1)} <AntDesign name="star" color={"#000"} size={15} />
+                      {route?.params?.userData?.item?.averageRating?.toFixed(1)}{" "}
+                      <AntDesign name="star" color={"#000"} size={15} />
                     </Text>
                     ({route?.params?.userData?.item?.numReviews} Reviews)
                   </Text>
                 </View>
               </View>
             </View>
-
-            {/*end James Name*/}
-            {/*start contact Btn */}
             <View style={styles.BtnmainRowView}>
               <View style={styles.BtnviewView}>
-                <TouchableOpacity
-                  onPress={() => {
-                    chatRoomCreate();
-                  }}
-                  style={styles.BtnView}
-                >
-                  <Text style={styles.contactText}>{loade === true ? <ActivityIndicator size="small" color="#fff" /> : "Contact"}</Text>
+                <TouchableOpacity style={styles.BtnView} onPress={() => setModalVisible(true)}>
+                  <Text style={styles.contactText}>
+                    Contact
+                  </Text>
                 </TouchableOpacity>
               </View>
             </View>
-            {/*end contact Btn*/}
-            {/* Modal  */}
             <View style={styles.centeredView}>
-              <Modal animationType="fade" transparent={true} visible={modalVisiblex}>
+              <Modal animationType="fade" transparent={true} visible={modalVisible}>
                 <View style={styles.centeredViewx}>
                   <View style={styles.modalViewx}>
                     <View style={styles.MoadalMainContainer}>
-                      {/*cancel Button*/}
                       <View style={{ flexDirection: "row", width: "100%" }}>
                         <View style={{ width: "80%" }} />
                         <View style={{ width: "20%", alignItems: "flex-end" }}>
-                          <TouchableOpacity onPress={() => setModalVisiblex(false)}>
+                          <TouchableOpacity onPress={() => setModalVisible(false)}>
                             <MaterialIcons name="cancel" size={20} color="black" />
                           </TouchableOpacity>
                         </View>
                       </View>
-                      {/* Label  */}
                       <Text style={styles.ModalLabel}>Enter Message</Text>
-                      {/*Load Measure*/}
                       <View style={styles.parkingtyperow}>
                         <View style={{ width: "85%" }}>
-                          <TextInput style={styles.input} placeholderTextColor="black" placeholder="Message here..." value={mesage} onChangeText={setMesage} />
+                          <TextInput
+                            style={styles.input}
+                            placeholderTextColor="black"
+                            placeholder="Message here..."
+                            value={message}
+                            onChangeText={setMessage}
+                          />
                         </View>
                         <View style={styles.parkingType}>
-                          <TouchableOpacity
-                            onPress={() => {
-                              if (load === true) {
-                              } else {
-                                setModalVisiblex(false);
-                                CreateRoom();
-                              }
+                          <TouchableOpacity onPress={() => {
+                               setModalVisible(false);
+                               handleCreateChatRoom();
                             }}
                           >
                             <MaterialCommunityIcons name="send-circle" size={35} color="#FF0000" />
@@ -311,42 +237,47 @@ const TrainerDetail = ({ navigation }) => {
                 </View>
               </Modal>
             </View>
-            {/* Modal ends here  */}
-            {/*start navigation*/}
             <View style={styles.toptabmainview}>
-              <TouchableOpacity style={styles.mainclassesview} onPress={() => aboutTrueState()}>
-                <Text style={[about ? styles.topbartext : styles.topbartext1]}>About</Text>
-                {about ? <View style={styles.borderView} /> : null}
+              <TouchableOpacity
+                style={styles.mainclassesview}
+                onPress={() => handleTabPress(Tab.ABOUT)}
+              >
+                <Text style={[activeTab === Tab.ABOUT ? styles.topbartext : styles.topbartext1]}>About</Text>
+                {activeTab === Tab.ABOUT ? <View style={styles.borderView} /> : null}
               </TouchableOpacity>
-              <TouchableOpacity style={styles.mainclassesview} onPress={() => scheduleTrueState()}>
-                <Text style={[schedule ? styles.topbartext : styles.topbartext1]}>Schedule</Text>
-                {schedule ? <View style={styles.borderView} /> : null}
+              <TouchableOpacity
+                style={styles.mainclassesview}
+                onPress={() => handleTabPress(Tab.SCHEDULE)}
+              >
+                <Text style={[activeTab === Tab.SCHEDULE ? styles.topbartext : styles.topbartext1]}>Schedule</Text>
+                {activeTab === Tab.SCHEDULE ? <View style={styles.borderView} /> : null}
               </TouchableOpacity>
-              <TouchableOpacity onPress={() => videotrueState()} style={styles.mainclassesview}>
-                <Text style={[video ? styles.topbartext : styles.topbartext1]}>Video</Text>
-                {video ? <View style={styles.borderView} /> : null}
+              <TouchableOpacity
+                onPress={() => handleTabPress(Tab.VIDEO)}
+                style={styles.mainclassesview}
+              >
+                <Text style={[activeTab === Tab.VIDEO ? styles.topbartext : styles.topbartext1]}>Video</Text>
+                {activeTab === Tab.VIDEO ? <View style={styles.borderView} /> : null}
               </TouchableOpacity>
-              <TouchableOpacity onPress={() => ratingstrueState(true)} style={styles.mainclassesview}>
-                <Text style={[ratings ? styles.topbartext : styles.topbartext1]}>Ratings</Text>
-                {ratings ? <View style={styles.borderView} /> : null}
+              <TouchableOpacity
+                onPress={() => handleTabPress(Tab.RATINGS)}
+                style={styles.mainclassesview}
+              >
+                <Text style={[activeTab === Tab.RATINGS ? styles.topbartext : styles.topbartext1]}>Ratings</Text>
+                {activeTab === Tab.RATINGS ? <View style={styles.borderView} /> : null}
               </TouchableOpacity>
             </View>
-            {/*end navigation*/}
           </View>
         </View>
-        {/*Start Navigation Screen*/}
-        {about ? <About navigation={navigation} token={userInfo.access_token} id={userInfo._id} /> : null}
-        {schedule ? <Schedule navigation={navigation} /> : null}
-        {video ? <Videos2 navigation={navigation} token={userInfo.access_token} id={userInfo._id} /> : null}
-        {ratings ? <Ratings navigation={navigation} token={userInfo.access_token} id={id} /> : null}
-        {/*End Navigation Screen*/}
-        <View style={{ paddingVertical: 10 }} />
 
+        {renderTabContent()}
+        <View style={{ paddingVertical: 10 }} />
         <View style={{ paddingVertical: 10 }} />
       </ScrollView>
     </View>
   );
 };
+
 export default TrainerDetail;
 
 const styles = StyleSheet.create({
@@ -463,7 +394,6 @@ const styles = StyleSheet.create({
     color: "#000",
     fontFamily: "Poppins-SemiBold",
   },
-  // Modal
   centeredView: {
     flex: 1,
     justifyContent: "center",
@@ -475,7 +405,6 @@ const styles = StyleSheet.create({
     margin: 0,
     width: "95%",
     justifyContent: "center",
-    margin: 5,
     backgroundColor: "#FAF9F6",
     borderRadius: 25,
     padding: 0,
