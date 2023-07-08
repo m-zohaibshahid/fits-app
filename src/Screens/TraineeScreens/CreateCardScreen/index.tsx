@@ -1,6 +1,6 @@
 /* eslint-disable prettier/prettier */
 import React, { useState } from "react";
-import { Text, View, TextInput, ScrollView, ToastAndroid, TouchableOpacity } from "react-native";
+import { Text, View, TextInput, ScrollView, ToastAndroid, TouchableOpacity, Alert } from "react-native";
 import Header from "../../../Components/Header";
 import Button from "../../../Components/Button";
 import { url } from "../../../constants/url";
@@ -25,8 +25,7 @@ const CreateCardScreen: React.FC<Props> = ({ navigation }) => {
   const [isDatePickerVisible, setDatePickerVisibility] = useState(false);
   const token: string = useSelector((state: { token: string }) => state.token);
   const { createStripeData } = useSelector((state: any) => state.fitsStore);
-  const [createStripeCard, { data: createCard, isLoading: isLoading1, isError, error }] = useCreateStripeCardMutation();
-  console.log("createStripeData", createCard, isError, isLoading1, error);
+  const [createStripeCard, { isLoading: isLoading1 }] = useCreateStripeCardMutation();
   // Functions
   const showDatePicker = () => {
     setDatePickerVisibility(!isDatePickerVisible);
@@ -50,60 +49,33 @@ const CreateCardScreen: React.FC<Props> = ({ navigation }) => {
   };
 
   const createCall = async () => {
-    setLoad(true);
     if (createStripeData) {
-      console.log("comming", token);
-
-      await fetch(`${url}/stripe/card/${createStripeData?.cus_id}`, {
-        method: "POST",
-        headers: {
-          Accept: "application/json",
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify({
+      try {
+        const body = {
           card_number: cardNumber.replace(/\s/g, ""),
           exp_month: expMonth,
           exp_year: expYear,
           cvc: cvc,
-        }),
-      })
-        .then((res) => res.json())
-        .then((res2) => {
-          console.log(res2);
-          setLoad(false);
+        };
+        console.log("createStripeData?.cus_id", createStripeData.cus_id);
+        await createStripeCard({
+          id: createStripeData?.cus_id,
+          ...body,
         })
-
-        // try {
-        //   const body = {
-        //     card_number: "4242424242424242",
-        //     exp_month: "12",
-        //     exp_year: "2025",
-        //     cvc: "123",
-        //   };
-        //   console.log("body====", body, createStripeData?.cus_id);
-        //   await createStripeCard({
-        //     id: createStripeData?.cus_id,
-        //     ...body,
-        //   })
-        //     // .unwrap()
-        //     .then((payload) => console.log("fulfilled", payload))
-        //     .catch((error) => console.error("rejected", error));
-        // } catch (error) {
-        //   console.log("error=====>>>", error);
-        // }
-        //   setLoad(false);
-        //   if (res2?.data?.message === "card created successfully...") {
-        //     ToastAndroid.show("Card created Successfully...", ToastAndroid.LONG);
-        //     navigation.goBack();
-        //   } else {
-        //     ToastAndroid.show(res2?.message, ToastAndroid.SHORT);
-        //   }
-        // })
-        .catch((error) => {
-          setLoad(false);
-          console.log(error.message);
-        });
+          .unwrap()
+          .then((payload) => {
+            console.log("paylload", payload.message);
+            if (payload?.message === "card created successfully...") {
+              ToastAndroid.show("Card created Successfully...", ToastAndroid.LONG);
+              navigation.goBack();
+            } else {
+              ToastAndroid.show(payload?.message, ToastAndroid.SHORT);
+            }
+          })
+          .catch((error) => console.error("rejected", error));
+      } catch (error: any) {
+        Alert.alert(error.message);
+      }
     }
   };
 
@@ -169,7 +141,7 @@ const CreateCardScreen: React.FC<Props> = ({ navigation }) => {
       </ScrollView>
       <Button
         // navigation={navigation}
-        loader={load}
+        loader={load || isLoading1}
         label={"Create"}
         disabled={!cardNumber || !expDate || !cvc}
         onPress={() => {

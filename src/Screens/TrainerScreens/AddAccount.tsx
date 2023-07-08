@@ -94,7 +94,6 @@ const AddAccount = ({ navigation }) => {
       })
         .unwrap()
         .then((res2) => {
-          console.log("res2======================>>", res2);
           setLoad(false);
           if (res2.success) {
             ToastAndroid.show("Card Done", ToastAndroid.LONG);

@@ -26,6 +26,8 @@ export const fitsApi = createApi({
     getUsers: builder.query<any[], void>({
       query: () => "users",
     }),
+
+    //user Me
     getUserMe: builder.query<any, Partial<any>>({
       keepUnusedDataFor: 30,
       query: (id) => `/user/me/${id}`,
@@ -79,7 +81,7 @@ export const fitsApi = createApi({
     }),
 
     createStripeCard: builder.mutation<any, Partial<any>>({
-      query: (id, ...data) => ({
+      query: ({ id, ...data }) => ({
         url: `/stripe/card/${id}`,
         method: "POST",
         body: data,
@@ -109,7 +111,6 @@ export const fitsApi = createApi({
       }),
     }),
 
-    //user Me
     sessions: builder.query<void, Partial<any>>({
       query: () => "/session",
     }),

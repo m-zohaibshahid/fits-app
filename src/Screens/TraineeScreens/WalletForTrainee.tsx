@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Text, View, TouchableOpacity, StyleSheet, ScrollView, ActivityIndicator, Platform } from "react-native";
+import { Text, View, TouchableOpacity, StyleSheet, ScrollView, ActivityIndicator, Platform, ToastAndroid } from "react-native";
 import { RFValue } from "react-native-responsive-fontsize";
 import Header from "../../Components/Header";
 import { url } from "../../constants/url";
@@ -99,6 +99,10 @@ const WalletForTrainee: React.FC<Props> = ({ navigation }) => {
       })
         .then((res) => res.json())
         .then((res2) => {
+          console.log("res2", res2);
+          if (!res2.success) {
+            ToastAndroid.show(res2?.message, ToastAndroid.SHORT);
+          }
           userMe();
           setLoad(true);
         })

@@ -1,6 +1,6 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable prettier/prettier */
-import React, {useState, useEffect, Children} from 'react';
+import React, {useState, useEffect} from 'react';
 import {
   Text,
   View,
