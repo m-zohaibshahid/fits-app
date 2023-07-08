@@ -9,6 +9,7 @@ import {
   TextInput,
   Modal,
   Image,
+  Platform,
 } from 'react-native';
 import {ScrollView} from 'react-native-gesture-handler';
 import AntDesign from 'react-native-vector-icons/AntDesign';
@@ -18,8 +19,13 @@ import Colors from '../../constants/Colors';
 import About from './About';
 import Videos2 from './Videos2';
 import Ratings from './Ratings';
+import { NavigationSwitchProp } from 'react-navigation';
 
-const TrainerProfile = ({navigation}) => {
+interface PropsInterface {
+  navigation: NavigationSwitchProp
+}
+
+const TrainerProfile = ({navigation}: PropsInterface) => {
   const [about, setAbout] = useState(true);
   const [video, setVideo] = useState(false);
   const [ratings, setRatings] = useState(false);
@@ -39,9 +45,6 @@ const TrainerProfile = ({navigation}) => {
     setVideo(false);
     setRatings(true);
   };
-  const GoBack = () => {
-    navigation.goBack();
-  }
   return (
     <ScrollView showsVerticalScrollIndicator={false}>
       <View style={styles.container}>
@@ -102,7 +105,7 @@ const TrainerProfile = ({navigation}) => {
         <ScrollView showsVerticalScrollIndicator={false} style={styles.main}>
           {/*Start Navigation Screen*/}
           {about ? <About navigation={navigation} /> : null}
-          {video ? <Videos2 navigation={navigation} /> : null}
+          {video ? <Videos2 /> : null}
           {ratings ? <Ratings navigation={navigation} /> : null}
           {/*End Navigation Screen*/}
           <View style={{paddingVertical: 20}}></View>

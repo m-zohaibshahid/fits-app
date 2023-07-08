@@ -1,16 +1,14 @@
 import { useEffect, useState } from 'react';
-import { ActiveUsersSocketResponse } from './types';
-import { SendMessageToSocketInterface } from '../components/types';
+import { ActiveUsersSocketResponse, SendMessageToSocketInterface } from './types';
 import socket from './socket';
 
-const useSocket = (userID: number) => {
+const useSocket = (userID: string) => {
   const [activeUsers, setActiveUsers] = useState<ActiveUsersSocketResponse[]>([]);
 
   useEffect(() => {
     socket.on('active-users', (users) => {
       setActiveUsers(users);
     });
-
 
     socket.emit('join', userID);
 

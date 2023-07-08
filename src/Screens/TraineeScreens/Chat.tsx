@@ -2,312 +2,189 @@ import React, { useState, useEffect } from "react";
 import { Text, View, TouchableOpacity, StyleSheet, TextInput, ScrollView, Image, ActivityIndicator, Platform } from "react-native";
 import EvilIcons from "react-native-vector-icons/EvilIcons";
 import { RFValue } from "react-native-responsive-fontsize";
-import { url } from "../../constants/url";
 import { useNavigation, useRoute } from "@react-navigation/native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { NavigationSwitchProp } from "react-navigation";
+import { useGetChatRoomsQuery } from "../../slice/FitsApi.slice";
+import Typography from "../../Components/typography/text";
+import Container from "../../Components/Container";
+import Colors from "../../constants/Colors";
+import useSocket from "../../hooks/use-socket";
+import { useSelector } from "react-redux";
+import { UserDetail } from "../../interfaces";
 
-const Chat = () => {
-  const navigation = useNavigation()
-  const route = useRoute();
-  const NextScreen = (item: any) => {
-    navigation.navigate("EnterChatforTrainee", {
-      roomId: item._id,
-      receiverName: item.receiverName,
-      senderName: item.senderName,
-      reciverId: item.receiverId,
-      receiverImage: item.receiver?.personal?.profileImage,
-    });
+interface PropsInterface {
+  navigation: NavigationSwitchProp;
+}
+
+const Chat = ({ navigation }: PropsInterface) => {
+  const { data: getRoomsFromApi } = useGetChatRoomsQuery({});
+  const { userInfo } = useSelector((state: { fitsStore: Partial<UserDetail> }) => state.fitsStore);
+  const [searchText, setSearchText] = useState("");
+  const { activeUsers } = useSocket(userInfo?.user._id || '')
+
+  
+  const handlePressOnRoom = (roomId: number) => {
+    navigation.navigate("EnterChatforTrainee", { roomId });
   };
-  const [data, setData] = useState([]);
-  const [dumdata, setDumData] = useState([]);
-  const [load, setLoad] = useState(false);
-  const [token, setToken] = useState("");
-  const [search, setSearch] = useState("");
-  const [m, setM] = useState("");
+  
+  console.log('====================================');
+  console.log(getRoomsFromApi?.data);
+  console.log('====================================');
 
+  const filteredRooms = getRoomsFromApi?.data.filter((room: RoomDataInterface) =>
+    room.linkedUser.name.toLowerCase().includes(searchText.toLowerCase())
+  );
 
-
-  const getUserInfo = async () => {
-    const userData = await AsyncStorage.getItem("userData") as string
-    let userDatax = JSON.parse(userData);
-    setToken(userDatax?.access_token);
-  };
-
-  useEffect(() => {
-    navigation.addListener("focus", () => {
-      getUserInfo();
-    });
-  }, [getUserInfo]);
-
-  useEffect(() => {
-    navigation.addListener("focus", () => {
-      getMessages();
-    });
-  }, []);
-
-  const getMessages = async () => {
-    const userData = await AsyncStorage.getItem("userData");
-    let userDatax = JSON.parse(userData);
-
-    setLoad(true);
-
-    await fetch(`${url}/chat/rooms`, {
-      method: "POST",
-      headers: {
-        Accept: "application/json",
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${userDatax?.access_token}`,
-      },
-      body: JSON.stringify({
-        all_rooms: true,
-      }),
-    })
-      .then((res) => res.json())
-      .then((res2) => {
-        setLoad(false);
-        if (res2.message === "rooms found") {
-          // ToastAndroid.show("Done", ToastAndroid.LONG);
-          setData(res2?.data?.rooms);
-          setDumData(res2?.data?.rooms);
-        } else {
-          //Alert.alert(res2.errors);
-        }
-      })
-      .catch((error) => {
-        setLoad(false);
-        Alert.alert("Something Went Wrong");
-      });
-  };
-  const find = (t) => {
-    const words = [...data];
-    setSearch(t);
-    if (t === "") {
-      setM("");
-      setData(dumdata);
-    } else {
-      const newData = words.filter((item: any) => {
-        const itemData = `${item?.item?.toUpperCase()} ${item?.receiverName?.toUpperCase()}`;
-        const textData = t?.toUpperCase();
-        return itemData.indexOf(textData) > -1;
-      });
-      setData(newData);
-
-      // if (newData[0] == null) {
-      //   setM("1");
-      // } else {
-      //   setM("");
-      // }
-    }
-  };
   return (
-    <View style={styles.container}>
+    <Container>
       <View style={styles.header}>
-        <View style={styles.fixeheight1}>
-          <View style={styles.TopView}>
-            <View style={styles.topView}>
-              <Text style={styles.chattext}>Chat</Text>
-            </View>
-          </View>
+        <Typography style={{
+          marginTop: 10,
+          marginBottom: 20,
+          marginLeft: 10,
+    fontSize: 40
+            }}>Chat</Typography>
 
-          <View style={styles.seacherbarmainView}>
-            <View style={styles.seacherbariconview}>
-              <EvilIcons name="search" size={40} style={{ color: "#fff" }} />
-            </View>
-            <View
-              style={{
-                width: "85%",
-                justifyContent: "flex-end",
-                //paddingTop: Platform.OS === 'ios' ? 13 : 5,
-              }}
-            >
+          <View style={styles.searchBarMainView}>
+          <EvilIcons name="search" size={30} style={{ color: "#fff" }} />
               <TextInput
                 numberOfLines={1}
                 placeholder="Search... "
-                placeholderTextColor={"#fff"}
-                value={search}
-                onChangeText={(e) => {
-                  find(e);
-                }}
-                style={{
-                  color: "#fff",
-                  height: 42,
-                  fontFamily: "Poppins-Regular",
-                  fontSize: RFValue(14, 580),
-                  paddingTop: -5,
-                }}
+                placeholderTextColor="#fff"
+                value={searchText}
+                onChangeText={setSearchText}
+                style={styles.searchBarTextInput}
               />
-            </View>
           </View>
         </View>
-      </View>
       <ScrollView showsVerticalScrollIndicator={false}>
         <View style={styles.main}>
-          {/*Chat start */}
-          <View style={styles.TopView}>
-            {/*start*/}
-            {load === true ? (
-              <View
-                style={{
-                  width: "100%",
-                  marginTop: 100,
-                  alignItems: "center",
-                  justifyContent: "center",
-                }}
-              >
-                <ActivityIndicator size="large" color="black" />
-              </View>
-            ) : data[0] == null ? (
-              <View
-                style={{
-                  width: "100%",
-                  marginTop: 100,
-                  alignItems: "center",
-                  justifyContent: "center",
-                }}
-              >
-                <Text
-                  style={{
-                    fontFamily: "Poppins-Regular",
-                    fontSize: RFValue(12, 580),
-                  }}
-                >
-                  Room not available
-                </Text>
+          <View style={styles.topView}>
+            {filteredRooms && filteredRooms.length === 0 ? (
+              <View style={styles.noRoomsView}>
+                <Typography>No rooms found</Typography>
               </View>
             ) : (
-              <View>
-                {data?.map((item: any, i: number) => (
-                  <View
-                    style={{
-                      width: "100%",
-                      borderTopWidth: 1,
-                      borderBottomWidth: 1,
-                      paddingVertical: 10,
-                      borderColor: "grey",
-                    }}
-                    key={item._id}
-                  >
-                    <View style={styles.chatmainview}>
-                      <View style={{ width: "20%", justifyContent: "center" }}>
-                        <Image
-                          style={{
-                            width: 65,
-                            height: 65,
-                            borderRadius: 200 / 2,
-                          }}
-                          source={{
-                            uri: `${item?.receiver?.personal?.profileImage}`,
-                          }}
-                        />
-                      </View>
-                      <TouchableOpacity onPress={() => NextScreen(item)} style={styles.touchview}>
-                        <Text style={styles.nametext}>{item.receiverName}</Text>
-
-                        <Text style={styles.inertextstyles}>{item.lastMessage}</Text>
-                      </TouchableOpacity>
+              filteredRooms?.map((item: any) => (
+                <TouchableOpacity
+                  key={item._id}
+                  style={styles.roomContainer}
+                  onPress={() => handlePressOnRoom(item._id)}
+                >
+                  <View style={styles.roomContent}>
+                    <Image
+                      style={styles.roomImage}
+                      source={{ uri: item?.linkedUser.image }}
+                    />
+                    <View style={styles.roomTextContent}>
+                      <Typography size="sectionTitle">{item.linkedUser.name}</Typography>
+                      <Typography size={'medium'}>{item.messages[0]?.message}</Typography>
                     </View>
                   </View>
-                ))}
-              </View>
+                  {activeUsers.some(user => user.userID === item.linkedUser._id) ?  <View style={styles.activeDot} /> : null}
+                </TouchableOpacity>
+              ))
             )}
-            <View style={{ marginBottom: 40 }} />
-            {/*end*/}
           </View>
-          {/*Chat end */}
         </View>
       </ScrollView>
-      <View style={styles.footer} />
-    </View>
+    </Container>
   );
 };
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "#fff",
-    paddingTop: Platform.OS === "ios" ? 40 : 0,
-    paddingBottom: Platform.OS === "ios" ? 0 : 0,
-  },
   header: {
     width: "100%",
     height: 175,
   },
-  fixeheight: {
-    height: 50,
-    justifyContent: "center",
-    borderBottomWidth: 0.5,
-    borderColor: "lightgrey",
-    width: "100%",
-    alignItems: "center",
-  },
-  fixeheight1: {
+  fixedHeight: {
     height: 175,
     width: "100%",
     justifyContent: "center",
     alignItems: "center",
   },
-  main: {
+  topView: {
     width: "100%",
-    backgroundColor: "#fff",
   },
-  footer: {
-    width: "100%",
-    marginBottom: 0,
-    bottom: 0,
-    justifyContent: "center",
-    position: "absolute",
-    backgroundColor: "#fff",
-  },
-  TopView: {
-    width: "100%",
-    alignItems: "center",
-  },
-  topView: { width: "90%" },
-  topView1: {
-    width: "90%",
-    alignItems: "center",
-  },
-  chattext: {
+  chatText: {
     color: "#000000",
     fontSize: RFValue(30, 580),
     marginTop: 10,
     fontFamily: "Poppins-Bold",
   },
-  seacherbarmainView: {
-    width: "90%",
+  searchBarMainView: {
+    width: "100%",
     backgroundColor: "#000",
-    height: 55,
-    borderRadius: 10,
-    marginTop: 20,
+    borderRadius: 5,
     flexDirection: "row",
+    padding: 5,
+    alignItems: 'center',
     justifyContent: "center",
   },
-  seacherbariconview: {
-    width: "15%",
+  searchBarTextInput: {
+    color: "#fff",
+    fontFamily: "Poppins-Regular",
+    fontSize: RFValue(14, 580),
+    width: "85%",
+  },
+  main: {
+    width: "100%",
+    backgroundColor: "#fff",
+  },
+  noRoomsView: {
+    width: "100%",
+    marginTop: 100,
     alignItems: "center",
     justifyContent: "center",
   },
-  chatmainview: {
-    width: "90%",
+  roomContainer: {
+    width: "100%",
+    borderBottomWidth: 1,
+    paddingVertical: 15,
+    borderColor: "grey",
+    position: "relative",
+    flex: 1,
+    alignItems: "center",
+  },
+  roomContent: {
+    width: "100%",
     alignSelf: "center",
     flexDirection: "row",
-    height: 98,
   },
-  touchview: {
-    width: "80%",
-    paddingLeft: 4,
-    justifyContent: "center",
+  roomImage: {
+    width: 60,
+    height: 60,
+    borderRadius: 100,
   },
-  nametext: {
-    fontSize: RFValue(16, 580),
-    fontFamily: "Poppins-Bold",
-    color: "#000",
+  roomTextContent: {
+    paddingLeft: 10,
   },
-  inertextstyles: {
+  roomInnerText: {
     fontSize: RFValue(12, 580),
     fontFamily: "Poppins-Regular",
     color: "#000",
   },
+  activeDot: {
+    position: "absolute",
+    top: 25,
+    right: 20,
+    width: 10,
+    height: 10,
+    borderRadius: 5,
+    backgroundColor: Colors.success
+  },
 });
 
 export default Chat;
+
+
+interface RoomDataInterface {
+  _id: string;
+  createdAt: string;
+  linkedUser: {
+    id: string;
+    image: string;
+    name: string;
+  }
+}

@@ -1,6 +1,6 @@
 /* eslint-disable prettier/prettier */
-import React, { useState, useEffect, useRef } from "react";
-import { Text, View, Pressable, StyleSheet, TextInput, ScrollView, ToastAndroid, ActivityIndicator, Platform, Modal, TouchableOpacity, Image } from "react-native";
+import React, { useState, useEffect } from "react";
+import { Text, View, Pressable, StyleSheet, TextInput, ScrollView, ToastAndroid, Platform, Modal, TouchableOpacity, Image } from "react-native";
 import ImagePicker from "react-native-image-crop-picker";
 import AntDesign from "react-native-vector-icons/AntDesign";
 import Ionicons from "react-native-vector-icons/Ionicons";
@@ -11,87 +11,58 @@ import { Calendar } from "react-native-calendars";
 import DateTimePickerModal from "react-native-modal-datetime-picker";
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from "react-native-responsive-screen";
 import Colors from "../../../constants/Colors";
-import { url } from "../../../constants/url";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import moment from "moment";
-import MapView from "react-native-maps";
-import { Marker } from "react-native-maps";
 import { useRoute } from "@react-navigation/native";
-const Sporst = [
-  {
-    Name: "Soccer",
-  },
-  {
-    Name: "Basketball",
-  },
-  {
-    Name: "Tennis",
-  },
-  {
-    Name: "Baseball",
-  },
-  {
-    Name: "Golf",
-  },
-  {
-    Name: "Volleyball",
-  },
-  {
-    Name: "Running",
-  },
-  {
-    Name: "Badminton",
-  },
-  {
-    Name: "Swimming",
-  },
-  {
-    Name: "Boxing",
-  },
-  {
-    Name: "Table tennis",
-  },
-  {
-    Name: "Skiing",
-  },
-  {
-    Name: "Ice skating",
-  },
-  {
-    Name: "Roller skating",
-  },
-  {
-    Name: "Cricket",
-  },
-  {
-    Name: "Rugby",
-  },
-  {
-    Name: "Pool",
-  },
-  {
-    Name: "Arts",
-  },
-  {
-    Name: "Bowling",
-  },
-  {
-    Name: "Karate",
-  },
-];
-const BookSession = ({ navigation }) => {
+import { useSelector } from "react-redux";
+import { UserDetail } from "../../../interfaces";
+import { errorToast } from "../../../utils/toast";
+import { useSessionCreateMutation } from "../../../slice/FitsApi.slice";
+import Button from "../../../Components/Button";
+import Container from "../../../Components/Container";
+import Header from "../../../Components/Header";
+import Typography from "../../../Components/typography/text";
+
+enum SessionType {
+  ONLINE = "online",
+  PHYSICAL = "physical",
+  RECORDED = "recorded",
+}
+
+const BookSession = ({ navigation }: any) => {
   const route = useRoute();
+  // const { userInfo } = useSelector((state: { fitsStore: Partial<UserDetail> }) => state.fitsStore);
+  // const token = useSelector((state: { token: string }) => state.token);
   const [superLong, setSuperLong] = useState();
   const [superLat, setSuperLat] = useState();
-  const [modalVisibleDate, setModalVisibleDate] = useState(false);
+  const [currentDate, setCurrentDate] = useState("");
+  const [modalVisible, setModalVisible] = useState(false);
+  const [modalVisibleTopSelect, setModalVisibleTopSelect] = useState(false);
+  const [isDatePickerVisible, setDatePickerVisibility] = useState(false);
+  const [type, setType] = useState<SessionType>(SessionType.ONLINE);
+  const [value, setValue] = useState("");
+  const [cardio, setCardio] = useState(false);
+  const [noEquipment, setNoEquipment] = useState(false);
+  const [learn, setLearn] = useState(false);
+  const [classTitle, setClassTitle] = useState("");
+  const [sessionTitle, setSessionTitle] = useState("");
+  const [sport, setSport] = useState("");
+  const [equipment, setEquipment] = useState([]);
+  const [image, setImage] = useState("");
+  const [meetingLink, setMeetingLink] = useState("");
+  const [description, setDescription] = useState("");
+  const [time, setTime] = useState("00:00 PM");
+  const [duration, setDuration] = useState();
+  const [slots, setSlots] = useState(0);
+  const [price, setPrice] = useState<string>("");
+  const [cloudImageUrl, setCloudImageUrl] = useState("");
+  const [data, setData] = useState([]);
+  const [mutateAsyncSessionCreate] = useSessionCreateMutation()
+
 
   useEffect(() => {
     navigation.addListener("focus", () => {
-      if (route.params.superLat && route.params.superLong) {
-        setSuperLat(route.params.superLat);
-        setSuperLong(route.params.superLong);
-      } else {
-      }
+        setSuperLat(route?.params?.superLat);
+        setSuperLong(route?.params?.superLong);
     });
   }, [route.params]);
 
@@ -99,38 +70,14 @@ const BookSession = ({ navigation }) => {
     navigation.navigate("Home");
   };
 
-  useEffect(() => {
-    navigation.addListener("focus", () => {
-      getUserInfo();
-      userMe();
-    });
-  }, [getUserInfo]);
-
-  const [token, setToken] = useState("");
-  const mapRef = useRef();
-  const getUserInfo = async () => {
-    const userData = await AsyncStorage.getItem("userData");
-    let userDatax = JSON.parse(userData);
-    setToken(userDatax?.access_token);
-  };
   const upLoadVideo = () => {
-    if (classTitle === "") {
-      ToastAndroid.show("Please Enter your Class Title.", ToastAndroid.SHORT);
-    } else if (currentDate === "" || currentDate === undefined) {
-      ToastAndroid.show("Please Select Date.", ToastAndroid.SHORT);
-    } else if (time === "") {
-      ToastAndroid.show("Please enter the time.", ToastAndroid.SHORT);
-    } else if (!duration) {
-      ToastAndroid.show("Please enter duration.", ToastAndroid.SHORT);
-    } else if (image === "") {
-      ToastAndroid.show("Please Upload Image.", ToastAndroid.SHORT);
-    } else if (slots === "") {
-      ToastAndroid.show("Please enter the No of slots.", ToastAndroid.SHORT);
+    if ((classTitle || currentDate || time || image) === "" || !slots || !duration) {
+      errorToast("Fill out all fields")
     } else {
       navigation.navigate("CreateRecorderClass", {
         // params
         select_date: currentDate,
-        class_title: classTitle,
+        session_title: classTitle,
         class_time: time,
         duration: duration,
         no_of_slots: slots,
@@ -140,50 +87,6 @@ const BookSession = ({ navigation }) => {
       });
     }
   };
-  const [currentDate, setCurrentDate] = useState("");
-  const [modalVisible, setModalVisible] = useState(false);
-  const [details, setDetails] = useState("false");
-  const [modalVisibleTopSelect, setModalVisibleTopSelect] = useState(false);
-  const [isDatePickerVisible, setDatePickerVisibility] = useState(false);
-  {
-    /*start a  type of Session*/
-  }
-  const [type, setType] = useState(false);
-  {
-    /*End a  type of Session*/
-  }
-  {
-    /*start a  type of Session*/
-  }
-  const [value, setValue] = useState("");
-  const [cardio, setCardio] = useState(false);
-  const [noEquipment, setNoEquipment] = useState(false);
-  const [learn, setLearn] = useState(false);
-  const [strength, setStrength] = useState(false);
-  const [fat, setFat] = useState(false);
-  const [mental, setMental] = useState(false);
-  {
-    /*End a  type of Session*/
-  }
-  const [classTitle, setClassTitle] = useState("");
-  const [sessionTitle, setSessionTitle] = useState("");
-  const [sport, setSport] = useState("");
-  const [equipment, setEquipment] = useState([
-    {
-      value: "",
-    },
-  ]);
-  const [image, setImage] = useState("");
-  const [meetingLink, setMeetingLink] = useState("");
-  const [description, setDescription] = useState("");
-  const [time, setTime] = useState("00:00 PM");
-  const [duration, setDuration] = useState();
-  const [slots, setSlots] = useState(0);
-  const [price, setPrice] = useState();
-  const [cloudImageUrl, setCloudImageUrl] = useState("");
-  const [data, setData] = useState([]);
-  const [load, setLoad] = useState(false);
-  const [loadx, setLoadx] = useState(false);
 
   const showDatePicker = () => {
     setDatePickerVisibility(true);
@@ -199,103 +102,49 @@ const BookSession = ({ navigation }) => {
   };
 
   const callBookSession = async () => {
-    if (classTitle === "") {
-      ToastAndroid.show("Please Enter your Class Title.", ToastAndroid.SHORT);
-    } else if (equipment.value === "") {
-      ToastAndroid.show("Please Enter Value.", ToastAndroid.SHORT);
-    } else if (sport === "") {
-      ToastAndroid.show("Please Enter any Sports.", ToastAndroid.SHORT);
-    } else if (currentDate === "") {
-      ToastAndroid.show("Please Enter Date.", ToastAndroid.SHORT);
-    } else if (description === "") {
-      ToastAndroid.show("Please enter the description.", ToastAndroid.SHORT);
-    } else if (image === "") {
-      ToastAndroid.show("Please Upload Image.", ToastAndroid.SHORT);
-    } else if (time === "") {
-      ToastAndroid.show("Please enter the time.", ToastAndroid.SHORT);
-    } else if (duration === "") {
-      ToastAndroid.show("Please enter duration.", ToastAndroid.SHORT);
-    } else if (value === "") {
-      ToastAndroid.show("Please select the Category.", ToastAndroid.SHORT);
-    } else if (slots === 0) {
-      ToastAndroid.show("Please enter the No of slots.", ToastAndroid.SHORT);
-    } else if (price === "") {
-      ToastAndroid.show("Please enter the Price.", ToastAndroid.SHORT);
-    } else if (token === "") {
-      ToastAndroid.show("token missing", ToastAndroid.SHORT);
-    } else {
-      setLoad(true);
+    if (classTitle !== '' || equipment.length || sport !== '' || currentDate !== '' || description !== '' || image !== '' || time !== '' || duration !== '' || value !== '' || slots || price !== '') {
       let session_type;
-      if (type == "online") {
-        if (sessionTitle === "") {
-          ToastAndroid.show("Please enter the Session title.", ToastAndroid.SHORT);
-        }
-
-        if (meetingLink === "") {
-          ToastAndroid.show("Please enter the Meeting link here.", ToastAndroid.SHORT);
-        }
-
+      if (type === SessionType.ONLINE) {
+        if (sessionTitle === "") ToastAndroid.show("Please enter the Session title.", ToastAndroid.SHORT)
+        if (meetingLink === "") ToastAndroid.show("Please enter the Meeting link here.", ToastAndroid.SHORT);
         session_type = {
           type: type,
           meetingLink: meetingLink,
           lat: superLat,
           lng: superLong,
-          // null
           recordCategory: "na",
           no_of_play: "na",
           videoTitle: "na",
         };
-      } else if (type == "physical") {
+      } else if (type === SessionType.PHYSICAL) {
         session_type = {
           type: type,
           lat: superLat,
           lng: superLong,
           meetingLink: meetingLink,
-          // null
           recordCategory: "na",
           no_of_play: "na",
           videoTitle: "we",
         };
       }
+      const body = {
+        select_date: currentDate,
+        class_title: classTitle,
+        class_time: time,
+        duration: duration,
+        no_of_slots: slots,
+        equipment: equipment,
+        sports: sport,
+        price: price,
+        details: description,
+        image: cloudImageUrl,
+        session_type: session_type,
+        session_title: "sessionTitle",
+      }
 
-      await fetch(`${url}/session`, {
-        method: "POST",
-        headers: {
-          Accept: "application/json",
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify({
-          // body
-          select_date: currentDate,
-          class_title: classTitle,
-          class_time: time,
-          duration: duration,
-          no_of_slots: slots,
-          equipment: equipment,
-          sports: sport,
-          category: value,
-          price: price,
-          details: description,
-          image: cloudImageUrl,
-          session_type: session_type,
-          session_title: sessionTitle,
-        }),
-      })
-        .then((res) => res.json())
-        .then((res2) => {
-          setLoad(false);
-          if (res2.success) {
-            // ToastAndroid.show("Done", ToastAndroid.LONG);
-            NextScreen();
-          } else {
-            Alert.alert(res2?.errors?.email);
-          }
-        })
-        .catch((error) => {
-          setLoad(false);
-          Alert.alert("Something Went Wrong");
-        });
+      const result = await mutateAsyncSessionCreate(body)
+        if (result?.error) errorToast(result.error?.data?.message)
+        if (result?.data) NextScreen();
     }
   };
   const upValue = (value, index) => {
@@ -303,32 +152,35 @@ const BookSession = ({ navigation }) => {
     oldEquipment[index].value = value;
     setEquipment(oldEquipment);
   };
+
   const delEquipment = (value) => {
     let oldEquipment = [...equipment];
     let newEquipment = oldEquipment.filter((item) => item.value !== value);
     setEquipment(newEquipment);
   };
+
   const addEquipment = () => {
     let oldEquipment = [...equipment];
     let newEquipment = {
       value: "",
     };
     oldEquipment.push(newEquipment);
-
     setEquipment(oldEquipment);
   };
+
   const UseTemplate = (item) => {
-    if (item?.session_type?.type === "recorded") {
+    if (item?.session_type?.type === SessionType.RECORDED) {
       Recorded(item);
-      setModalVisibleTopSelect("false");
-    } else if (item?.session_type?.type === "physical") {
+      setModalVisibleTopSelect(false);
+    } else if (item?.session_type?.type === SessionType.PHYSICAL) {
       Physical(item);
-      setModalVisibleTopSelect("false");
-    } else if (item?.session_type?.type === "online") {
+      setModalVisibleTopSelect(false);
+    } else if (item?.session_type?.type === SessionType.ONLINE) {
       Online(item);
-      setModalVisibleTopSelect("false");
+      setModalVisibleTopSelect(false);
     }
   };
+
   const Physical = (item) => {
     setClassTitle(item?.class_title);
     setDuration(item?.duration);
@@ -339,6 +191,7 @@ const BookSession = ({ navigation }) => {
     setSlots(item?.no_of_slots);
     setSport(item?.sports);
   };
+
   const Online = (item) => {
     setClassTitle(item?.class_title);
     setDuration(item?.duration);
@@ -351,18 +204,19 @@ const BookSession = ({ navigation }) => {
     // setEquipment(item?.equipment[0]?.value);
     setSport(item?.sports);
   };
+
   const Recorded = (item) => {
     setClassTitle(item?.class_title);
     setDuration(item?.duration);
   };
+
   const choosePhotoFromCamera = () => {
     ImagePicker.openPicker({
       width: 500,
       height: 800,
       cropping: true,
       compressImageQuality: 0.4,
-    })
-      .then((file) => {
+    }).then((file) => {
         let newFile = {
           uri: file.path,
           type: "image/png",
@@ -371,96 +225,43 @@ const BookSession = ({ navigation }) => {
         uploadImageOnCloud(newFile);
         setImage(file.path);
       })
-      .catch((err) => {
+      .catch(() => {
       });
   };
-  const uploadImageOnCloud = async (image) => {
-    const zzz = new FormData();
-    zzz.append("file", image);
-    zzz.append("upload_preset", "employeeApp");
-    zzz.append("cloud_name", "ZACodders");
+
+  const uploadImageOnCloud = async (image: any) => {
+    const formData = new FormData();
+    formData.append("file", image);
+    formData.append("upload_preset", "employeeApp");
+    formData.append("cloud_name", "ZACodders");
 
     await fetch("https://api.cloudinary.com/v1_1/ZACodders/image/upload", {
       method: "POST",
-      body: zzz,
+      body: formData,
     })
       .then((res) => res.json())
       .then((res2) => {
         //setLoadx(false);
         setCloudImageUrl(res2?.url);
       })
-      .catch((err) => {
+      .catch(() => {
       });
   };
-  const userMe = async () => {
-    setLoadx(true);
-    const userData = await AsyncStorage.getItem("userData");
-    let userDatax = JSON.parse(userData);
-    await fetch(`${url}/user/me/${userDatax?.data?._id}`, {
-      method: "GET",
-      headers: {
-        Accept: "application/json",
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${userDatax?.access_token}`,
-      },
-    })
-      .then((res) => res.json())
-      .then((res2) => {
-        setLoadx(false);
-        if (res2.success === true) {
-          setData(res2?.session);
-        } else {
-          ToastAndroid.show(res2.message, ToastAndroid.LONG);
-        }
-      })
-      .catch((error) => {
-        setLoadx(false);
-        ToastAndroid.show(error, ToastAndroid.LONG);
-      });
-  };
-  const detailsInfoCall = (item, i) => {
+
+  const detailsInfoCall = (index: number) => {
     let dummy = [...data];
-    if (dummy[i].status == true) {
+    if (dummy[index].status == true) {
       dummy.forEach((item) => (item.status = false));
     } else {
       dummy.forEach((item) => (item.status = false));
-      dummy[i].status = true;
+      dummy[index].status = true;
     }
     setData(dummy);
   };
-  const readyHa = () => {
-    mapRef.current.fitToCoordinates(["zuhair"], {
-      edgePadding: { top: 50, right: 50, bottom: 50, left: 50 },
-      animated: true,
-    });
-  };
+
   return (
-    <View style={styles.mainContainer}>
-      <View style={styles.mainHeaderRect}>
-        <View
-          style={{
-            width: "100%",
-            borderBottomWidth: 0.5,
-            alignItems: "center",
-            borderColor: "lightgrey",
-          }}
-        >
-          <View style={styles.arrowHeadRect}>
-            <AntDesign
-              onPress={() => navigation.goBack()}
-              name="arrowleft"
-              style={{
-                fontSize: RFValue(20, 580),
-                color: Colors.black,
-              }}
-            />
-          </View>
-        </View>
-        <View style={styles.titleHeadRect}>
-          <Text style={styles.pageTitleText}>Create a Session</Text>
-          <Text style={styles.pageSubTitleText}>Fill in some details</Text>
-        </View>
-      </View>
+    <Container>
+      <Header label={"Create a Session"} subLabel="Fill in some Details" />
 
       <ScrollView showsVerticalScrollIndicator={false}>
         <View style={styles.mainBody}>
@@ -485,9 +286,7 @@ const BookSession = ({ navigation }) => {
           {image === "" ? (
             <Pressable
               style={styles.imageBox}
-              onPress={() => {
-                choosePhotoFromCamera();
-              }}
+              onPress={choosePhotoFromCamera}
             >
               <Ionicons name="cloud-upload-outline" size={wp(9)} color={Colors.white} />
               <Text style={styles.uploadTitleText}>Upload Image</Text>
@@ -504,18 +303,16 @@ const BookSession = ({ navigation }) => {
             </View>
           )}
 
-          <View style={styles.mainRectViewRow}>
             <Text style={styles.selectText}>
               Select type of Session <Text style={styles.selectTexts}>(select one)</Text>
             </Text>
-          </View>
 
           <View style={styles.mainBoxView}>
             <View style={styles.boxViews1}>
               <Pressable
-                style={type == "online" ? styles.boxShadowborder : styles.boxShadowView}
+                style={type == SessionType.ONLINE ? styles.boxShadowborder : styles.boxShadowView}
                 onPress={() => {
-                  setType("online");
+                  setType(SessionType.ONLINE);
                 }}
               >
                 <Text style={styles.boxText}>
@@ -526,17 +323,17 @@ const BookSession = ({ navigation }) => {
             </View>
             <View style={styles.boxViews2}>
               <Pressable
-                style={type == "physical" ? styles.boxShadowborder : styles.boxShadowView}
+                style={type == SessionType.PHYSICAL ? styles.boxShadowborder : styles.boxShadowView}
                 onPress={() => {
                   //readyHa();
-                  setType("physical");
+                  setType(SessionType.PHYSICAL);
                 }}
               >
                 <Text style={styles.boxText}>Physical {"\n"} Session</Text>
               </Pressable>
             </View>
             <View style={styles.boxViews3}>
-              <Pressable style={type == "recorded" ? styles.boxShadowborder : styles.boxShadowView} onPress={upLoadVideo}>
+              <Pressable style={type == SessionType.RECORDED ? styles.boxShadowborder : styles.boxShadowView} onPress={upLoadVideo}>
                 <Text style={styles.boxText}>Recorded {"\n"}Session</Text>
               </Pressable>
             </View>
@@ -590,7 +387,7 @@ const BookSession = ({ navigation }) => {
             </View>
             <View style={styles.titleRightColRect}>
               <Pressable style={styles.lastBtn}>
-                <TextInput placeholder="00" placeholderTextColor={Colors.white} value={duration} onChangeText={setDuration} keyboardType="numeric" maxLength={3} style={styles.TopselectTexte} />
+                <TextInput placeholder="00" placeholderTextColor={Colors.white} value={duration} keyboardType="numeric" maxLength={3} style={styles.TopselectTexte} />
               </Pressable>
             </View>
           </View>
@@ -602,7 +399,7 @@ const BookSession = ({ navigation }) => {
             <View style={styles.TimepulsView}>
               <View style={styles.TimewidthView}>
                 <View style={styles.TimewidthchangeView}>
-                  <TouchableOpacity activeOpacity={0.8} onPress={() => setSlots((e) => e - 1)} style={styles.minusview}>
+                  <TouchableOpacity activeOpacity={0.8} disabled={!slots} onPress={() => setSlots((e) => e - 1)} style={styles.minusview}>
                     <AntDesign name="minus" color={"#fff"} size={20} />
                   </TouchableOpacity>
                 </View>
@@ -610,7 +407,7 @@ const BookSession = ({ navigation }) => {
                   <Text style={styles.RangeText}>{slots}</Text>
                 </View>
                 <View style={styles.TimewidthchangeView2}>
-                  <TouchableOpacity activeOpacity={0.8} onPress={() => setSlots((prevState) => prevState + 1)} style={styles.pulsview}>
+                  <TouchableOpacity activeOpacity={0.8} disabled={slots >= 100} onPress={() => setSlots((prevState) => prevState + 1)} style={styles.pulsview}>
                     <AntDesign name="plus" color={"#fff"} size={20} />
                   </TouchableOpacity>
                 </View>
@@ -633,9 +430,6 @@ const BookSession = ({ navigation }) => {
                   setValue("Cardio/Abs");
                   setNoEquipment(false);
                   setLearn(false);
-                  setStrength(false);
-                  setFat(false);
-                  setMental(false);
                 }}
               >
                 <Text style={styles.boxText}>Cardio/Abs</Text>
@@ -649,9 +443,6 @@ const BookSession = ({ navigation }) => {
                   setNoEquipment(true);
                   setValue("No Equipment Home Exercise");
                   setLearn(false);
-                  setStrength(false);
-                  setFat(false);
-                  setMental(false);
                 }}
               >
                 <Text style={styles.boxText}>
@@ -667,31 +458,22 @@ const BookSession = ({ navigation }) => {
                   setNoEquipment(false);
                   setLearn(true);
                   setValue("Learn Technique");
-                  setStrength(false);
-                  setFat(false);
-                  setMental(false);
                 }}
               >
                 <Text style={styles.boxText}>Learn {"\n"}Technique</Text>
               </Pressable>
             </View>
           </View>
-          <View style={styles.mainRectViewRow}>
-            <Text style={styles.HeadingTextstyle}>Equipment Required</Text>
-          </View>
+            <Typography size='heading3' weight="600" style={{marginTop: 10}}>Equipment Required</Typography>
 
           {equipment.map((item, i) => (
-            <View style={{ width: "90%", alignSelf: "center" }} key={i}>
-              {/*Start Equipment Required */}
+            <View style={{ width: "100%", alignSelf: "center" }} key={i}>
               <View style={styles.textinputtopview}>
                 <View style={styles.bgcolorview}>
                   <TextInput
-                    // multiline={true}
-                    // numberOfLines={5}
-                    // maxLength={500}
                     placeholder="Dumbbell"
                     placeholderTextColor={Colors.white}
-                    value={item.value}
+                    value={item}
                     onChangeText={(text) => upValue(text, i)}
                     style={{
                       color: Colors.white,
@@ -702,7 +484,6 @@ const BookSession = ({ navigation }) => {
                     }}
                   />
                 </View>
-                <View style={{ width: "20%", alignItems: "flex-end" }}>
                   <Pressable style={styles.deleteiconview} onPress={() => delEquipment(item.value)}>
                     <AntDesign
                       name="delete"
@@ -712,7 +493,6 @@ const BookSession = ({ navigation }) => {
                       }}
                     />
                   </Pressable>
-                </View>
               </View>
               {/*End Equipment Required  */}
             </View>
@@ -721,9 +501,10 @@ const BookSession = ({ navigation }) => {
           <Pressable onPress={addEquipment}>
             <View
               style={{
-                width: "90%",
+                width: "100%",
                 alignItems: "center",
-                marginTop: 15,
+                marginTop: 5,
+                marginBottom: 15,
                 alignSelf: "center",
                 flexDirection: "row",
               }}
@@ -751,22 +532,17 @@ const BookSession = ({ navigation }) => {
               </View>
             </View>
           </Pressable>
-          <View style={styles.mainRectViewRow}>
             <Text style={styles.HeadingTextstyle}>Add any Sports</Text>
-          </View>
-          <View style={{ width: "90%", marginBottom: 7, alignSelf: "center" }}>
             <View style={styles.searTextInput}>
               {sport.length === 0 ? <Text style={styles.searchInput}>Add any Sports</Text> : <Text style={styles.searchInput}>{sport}</Text>}
               <View style={styles.UpIcon}>
                 <Entypo onPress={() => setModalVisible(!modalVisible)} name={modalVisible ? "chevron-up" : "chevron-down"} color={"#fff"} size={25} />
               </View>
             </View>
-          </View>
 
           {modalVisible ? (
             <View style={styles.SportsDropdown}>
-              <View style={{ width: "93%", alignSelf: "center" }}>
-                {Sporst.map((data, i) => (
+                {preDefineSports.map((data, i) => (
                   <Text
                     key={i}
                     style={styles.sportsText}
@@ -778,7 +554,6 @@ const BookSession = ({ navigation }) => {
                     {data.Name}
                   </Text>
                 ))}
-              </View>
             </View>
           ) : null}
 
@@ -804,50 +579,14 @@ const BookSession = ({ navigation }) => {
 
           <View style={styles.TextInput}>
             <Text style={styles.dolarText}>$</Text>
-            <TextInput style={styles.inputEmail} placeholderTextColor={"#fff"} value={price} keyboardType="numeric" maxLength={19} onChangeText={setPrice} />
+            <TextInput style={styles.inputEmail} placeholderTextColor={"#fff"} value={price} keyboardType="numeric" maxLength={19} onChangeText={setPrice}/>
           </View>
         </View>
         <View style={{ marginVertical: "20%" }}></View>
       </ScrollView>
       {/*start btn*/}
       <View style={styles.rowView}>
-        <View style={styles.mainbtnView}>
-          <Pressable
-            onPress={() => {
-              navigation.goBack();
-            }}
-            style={styles.ccbtnview}
-          >
-            <Text style={styles.btntextstyle1}>Cancel</Text>
-          </Pressable>
-        </View>
-        <View style={{ width: "10%" }} />
-        <View style={styles.mainbtnView}>
-          <Pressable
-            //onPress={() => navigation.navigate("Home")}
-            label={<ActivityIndicator size="small" color="#fff" />}
-            onPress={() => {
-              if (!load) {
-                callBookSession();
-                setClassTitle("");
-                setCloudImageUrl("");
-                setTime("");
-                setDuration();
-                setSlots("");
-                setCurrentDate("");
-                setDescription("");
-                setImage("");
-                setPrice();
-                setSport("");
-                setSessionTitle("");
-                setMeetingLink("");
-              }
-            }}
-            style={[!classTitle || !sport || !currentDate || !description || !image || !time || !duration || !value || !slots === 0 || !price ? styles.profileDisablebtnview : styles.profilebtnview]}
-          >
-            {load === true ? <ActivityIndicator size="small" color="#fff" /> : <Text style={styles.btntextstyle}>Next</Text>}
-          </Pressable>
-        </View>
+        <Button onPress={callBookSession} disabled={!sport || !currentDate || !description || !image || !time || !value || !slots || !price} label={"Create"} />
       </View>
       {/*end btn*/}
       <DateTimePickerModal isVisible={isDatePickerVisible} mode="time" onConfirm={handleConfirm} onCancel={hideDatePicker} />
@@ -877,8 +616,7 @@ const BookSession = ({ navigation }) => {
                 <Text style={styles.addText}>Choose Template to Duplicate</Text>
               </View>
               <ScrollView showsVerticalScrollIndicator={false}>
-                {/*start Totale */}
-                {data.map((item, i) => (
+                {data.map((item: any, i) => (
                   <View style={styles.TopView} key={i}>
                     <View style={styles.marchmainview}>
                       <View style={styles.marchmainview2}>
@@ -918,8 +656,7 @@ const BookSession = ({ navigation }) => {
                           </Text>
                         </View>
                         <Pressable
-                          onPress={() => detailsInfoCall(item, i)}
-                          //onPress={() => setDetails(!details)}
+                          onPress={() => detailsInfoCall(i)}
                           style={{
                             width: "30%",
                             backgroundColor: "#414143",
@@ -959,7 +696,7 @@ const BookSession = ({ navigation }) => {
                             <View style={styles.dotview}>
                               <FontAwesome name="circle" style={{ color: "#979797" }} />
                             </View>
-                            <View style={{ width: "90%" }}>
+                            <View style={{ width: "100%" }}>
                               <Text style={styles.textstyle}>
                                 Type:{"\n"} {item?.session_type?.type} session
                               </Text>
@@ -969,7 +706,7 @@ const BookSession = ({ navigation }) => {
                             <View style={styles.dotview}>
                               <FontAwesome name="circle" style={{ color: "#979797" }} />
                             </View>
-                            <View style={{ width: "90%" }}>
+                            <View style={{ width: "100%" }}>
                               <Text style={styles.textstyle}>
                                 Cost: {"\n"}$ {item?.price}
                               </Text>
@@ -979,7 +716,7 @@ const BookSession = ({ navigation }) => {
                             <View style={styles.dotview}>
                               <FontAwesome name="circle" style={{ color: "#979797" }} />
                             </View>
-                            <View style={{ width: "90%" }}>
+                            <View style={{ width: "100%" }}>
                               <Text style={styles.textstyle}>
                                 Available slots:: {"\n"} {item?.no_of_slots}
                               </Text>
@@ -989,7 +726,7 @@ const BookSession = ({ navigation }) => {
                             <View style={styles.dotview}>
                               <FontAwesome name="circle" style={{ color: "#979797" }} />
                             </View>
-                            <View style={{ width: "90%" }}>
+                            <View style={{ width: "100%" }}>
                               <Text style={styles.textstyle}>{item?.details}</Text>
                             </View>
                           </View>
@@ -1010,7 +747,7 @@ const BookSession = ({ navigation }) => {
         </Modal>
       </View>
       {/*end modal*/}
-    </View>
+    </Container>
   );
 };
 export default BookSession;
@@ -1028,13 +765,13 @@ const styles = StyleSheet.create({
     height: 120,
   },
   arrowHeadRect: {
-    width: "90%",
+    width: "100%",
     alignSelf: "center",
     height: 50,
     justifyContent: "center",
   },
   titleHeadRect: {
-    width: "90%",
+    width: "100%",
     height: 70,
   },
   pageTitleText: {
@@ -1051,14 +788,14 @@ const styles = StyleSheet.create({
     width: "100%",
   },
   calendarView: {
-    width: "90%",
+    width: "100%",
     alignSelf: "center",
     borderBottomWidth: 2,
     paddingBottom: 4,
     borderColor: "##3A3A3C",
   },
   mainClassTitleRect: {
-    width: "90%",
+    width: "100%",
     alignSelf: "center",
     marginTop: 15,
   },
@@ -1083,7 +820,7 @@ const styles = StyleSheet.create({
     color: Colors.white,
   },
   imageBox: {
-    width: "90%",
+    width: "100%",
     height: "8%",
     backgroundColor: Colors.black,
     marginTop: 12,
@@ -1101,18 +838,11 @@ const styles = StyleSheet.create({
     color: Colors.white,
   },
   imagestyle: {
-    width: "90%",
+    width: "100%",
     height: 200,
     alignSelf: "center",
     borderRadius: 5,
     marginBottom: 5,
-  },
-  mainRectViewRow: {
-    width: "90%",
-    alignSelf: "center",
-    flexDirection: "row",
-    marginTop: 15,
-    marginBottom: 3,
   },
   titleLeftColRect: {
     width: "50%",
@@ -1248,7 +978,7 @@ const styles = StyleSheet.create({
     alignItems: "flex-end",
   },
   mainBoxView: {
-    width: "90%",
+    width: "100%",
     alignSelf: "center",
     alignItems: "center",
     flexDirection: "row",
@@ -1279,9 +1009,9 @@ const styles = StyleSheet.create({
     width: "100%",
     alignItems: "center",
   },
-  topView: { width: "90%" },
+  topView: { width: "100%" },
   topView1: {
-    width: "90%",
+    width: "100%",
     alignItems: "center",
   },
 
@@ -1291,12 +1021,12 @@ const styles = StyleSheet.create({
     bordercolor: "#000",
   },
   absrowview: {
-    width: "90%",
+    width: "100%",
     flexDirection: "row",
     marginTop: 20,
   },
   absrowView: {
-    width: "90%",
+    width: "100%",
     marginTop: 20,
     alignSelf: "center",
   },
@@ -1337,7 +1067,7 @@ const styles = StyleSheet.create({
   },
 
   selectView: {
-    width: "90%",
+    width: "100%",
     alignSelf: "center",
     marginTop: 3,
   },
@@ -1362,7 +1092,7 @@ const styles = StyleSheet.create({
     fontWeight: "700",
   },
   rowView: {
-    width: "90%",
+    width: "100%",
     marginBottom: 0,
     position: "absolute",
     bottom: 0,
@@ -1416,7 +1146,7 @@ const styles = StyleSheet.create({
   },
 
   InputView: {
-    width: "90%",
+    width: "100%",
     backgroundColor: "#414143",
     borderRadius: 8,
     alignSelf: "center",
@@ -1441,7 +1171,7 @@ const styles = StyleSheet.create({
     color: Colors.white,
   },
   TextInput: {
-    width: "90%",
+    width: "100%",
     alignSelf: "center",
     backgroundColor: Colors.black,
     borderRadius: 9,
@@ -1488,6 +1218,7 @@ const styles = StyleSheet.create({
   nonee: { marginBottom: hp(-12) },
   textinputtopview: {
     width: "100%",
+    justifyContent: 'space-between',
     flexDirection: "row",
     marginTop: 10,
   },
@@ -1512,7 +1243,7 @@ const styles = StyleSheet.create({
     marginTop: 10,
   },
   searTextInput: {
-    width: "90%",
+    width: "100%",
     alignItems: "center",
     backgroundColor: "#000",
     flexDirection: "row",
@@ -1520,9 +1251,10 @@ const styles = StyleSheet.create({
     marginTop: 10,
     justifyContent: "center",
     height: 50,
+    marginBottom: 10
   },
   SportsDropdown: {
-    width: "90%",
+    width: "100%",
     alignSelf: "center",
     borderRadius: 10,
     backgroundColor: "#000",
@@ -1541,7 +1273,7 @@ const styles = StyleSheet.create({
   },
   searInput: {
     borderRadius: 10,
-    width: "80%",
+    width: "100%",
     paddingLeft: 10,
     fontSize: RFValue(15, 580),
     color: Colors.white,
@@ -1555,14 +1287,13 @@ const styles = StyleSheet.create({
     margintop: hp(-1),
   },
   sportsText: {
-    // borderRadius: 10,
-    // paddingHorizontal: wp(2),
     fontSize: RFValue(15, 580),
     color: Colors.white,
     textTransform: "capitalize",
     borderBottomWidth: 1,
     marginVertical: 5,
     borderColor: "white",
+    padding: 10
   },
   fixeheight: {
     height: 50,
@@ -1577,12 +1308,8 @@ const styles = StyleSheet.create({
     width: "100%",
     flexDirection: "row",
   },
-  dotview: {
-    width: "10%",
-    alignItems: "center",
-  },
   marchmainview: {
-    width: "90%",
+    width: "100%",
     backgroundColor: "#000",
     justifyContent: "center",
     borderRadius: 12,
@@ -1603,11 +1330,6 @@ const styles = StyleSheet.create({
   Daytext: {
     color: "#fff",
     fontSize: RFValue(8, 580),
-    fontFamily: "Poppins-Regular",
-  },
-  btntextstyle: {
-    color: "#fff",
-    fontSize: RFValue(10, 580),
     fontFamily: "Poppins-Regular",
   },
   upcomingtextstyle: {
@@ -1658,7 +1380,7 @@ const styles = StyleSheet.create({
     height: "100%",
   },
   mapBox: {
-    width: "90%",
+    width: "100%",
     height: 200,
     backgroundColor: Colors.black,
     marginTop: 13,
@@ -1705,7 +1427,6 @@ const styles = StyleSheet.create({
     margin: 0,
     width: "95%",
     height: "60%",
-    margin: 5,
     backgroundColor: Colors.white,
     borderRadius: 14,
     padding: 0,
@@ -1766,13 +1487,8 @@ const styles = StyleSheet.create({
     fontFamily: "Poppins-SemiBold",
     color: Colors.black,
   },
-  TextCancelDone: {
-    fontFamily: "poppins-Regular",
-    color: Colors.black,
-    fontSize: RFValue(12, 580),
-  },
   PersonalinfoView: {
-    width: "90%",
+    width: "100%",
     flexDirection: "row",
   },
   PersonalinfoText: {
@@ -1797,7 +1513,7 @@ const styles = StyleSheet.create({
     marginTop: 30,
   },
   inputtopviews: {
-    width: "90%",
+    width: "100%",
     height: 60,
     backgroundColor: Colors.black,
     borderRadius: 8,
@@ -1819,7 +1535,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
   },
   genderTopview: {
-    width: "90%",
+    width: "100%",
     backgroundColor: Colors.black,
     borderRadius: 10,
     height: 60,
@@ -1891,11 +1607,82 @@ const styles = StyleSheet.create({
   btn: {
     padding: 10,
     margin: 10,
-    width: "90%",
+    width: "100%",
     borderRadius: 10,
     color: Colors.infos,
     backgroundColor: Colors.bgRedBtn,
     alignItems: "center",
     justifyContent: "center",
   },
+  mainRectViewRow: {
+    flex: 1,
+    flexDirection: 'row',
+    justifyContent: "space-between",
+    paddingVertical: 10
+  },
 });
+
+
+
+const preDefineSports = [
+  {
+    Name: "Soccer",
+  },
+  {
+    Name: "Basketball",
+  },
+  {
+    Name: "Tennis",
+  },
+  {
+    Name: "Baseball",
+  },
+  {
+    Name: "Golf",
+  },
+  {
+    Name: "Volleyball",
+  },
+  {
+    Name: "Running",
+  },
+  {
+    Name: "Badminton",
+  },
+  {
+    Name: "Swimming",
+  },
+  {
+    Name: "Boxing",
+  },
+  {
+    Name: "Table tennis",
+  },
+  {
+    Name: "Skiing",
+  },
+  {
+    Name: "Ice skating",
+  },
+  {
+    Name: "Roller skating",
+  },
+  {
+    Name: "Cricket",
+  },
+  {
+    Name: "Rugby",
+  },
+  {
+    Name: "Pool",
+  },
+  {
+    Name: "Arts",
+  },
+  {
+    Name: "Bowling",
+  },
+  {
+    Name: "Karate",
+  },
+];

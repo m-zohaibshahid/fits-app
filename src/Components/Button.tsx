@@ -3,18 +3,18 @@ import * as React from "react";
 import { View, Text, StyleSheet, ActivityIndicator, TouchableOpacity, TouchableOpacityProps, ViewStyle } from "react-native";
 import { RFValue } from "react-native-responsive-fontsize";
 import Colors from "../constants/Colors";
+import Typography from "./typography/text";
 
 const Button = ({ label, onPress, loader, disabled, style }: ButtonProps) => {
   return (
     <View style={[styles.MainResponsevieView, style]}>
       <TouchableOpacity
+        disabled={disabled}
         activeOpacity={0.8}
         style={[disabled ? styles.diableBtn : styles.btn]}
-        onPress={() => {
-          !disabled && onPress();
-        }}
+        onPress={onPress}
       >
-        {!loader ? <Text style={styles.Textcreate}>{label}</Text> : <ActivityIndicator size="small" color="#fff" />}
+        {!loader ? <Typography style={styles.Textcreate}>{label}</Typography> : <ActivityIndicator size="small" color="#fff" />}
       </TouchableOpacity>
     </View>
   );
@@ -56,7 +56,7 @@ const styles = StyleSheet.create({
 });
 
 interface ButtonProps extends TouchableOpacityProps {
-  label: string | Element;
+  label: string;
   onPress: () => void;
   loader?: boolean;
   disabled?: boolean;

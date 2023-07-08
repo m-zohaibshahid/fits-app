@@ -14,9 +14,7 @@ import TextInput from "../../../Components/Input";
 import Container from "../../../Components/Container";
 import { RFValue } from "react-native-responsive-fontsize";
 import Typography from "../../../Components/typography/text";
-import { useSelector } from "react-redux";
-import { UserDetailInfoInterface } from "../../../interfaces";
-import { useGetUserMeQuery, usePersonalInfoCreateMutation } from "../../../slice/FitsApi.slice";
+import { usePersonalInfoCreateMutation } from "../../../slice/FitsApi.slice";
 import { PersonalInfoFormValidationResultInterface, PersonalInfoValidateErrorsIntarface, PersonalInfoValidateSchemaInterface } from "../types";
 import { validateForm } from "../../../utils/validation";
 import { errorToast } from "../../../utils/toast";
@@ -41,9 +39,6 @@ interface PropsInterface {
 
 
 const PersonalInfo = ({navigation}: PropsInterface) => {
-  const token: string = useSelector((state: { token: string }) => state.token);
-  const { user } = useSelector((state: {fitsStore: UserDetailInfoInterface}) => state.fitsStore);
-  // Hooks
   const [modalVisible, setModalVisible] = useState(false);
   const [modalVisibleDate, setModalVisibleDate] = useState(false);
   const [fullName, setFullName] = useState("");
@@ -62,10 +57,6 @@ const PersonalInfo = ({navigation}: PropsInterface) => {
   const [isCountryVisible, setIsCountryVisible] = React.useState(false);
   const [mutateAsyncPersonalInfoUpdate, { isLoading, isError, error: personalInfoApiError }] = usePersonalInfoCreateMutation()
 
-  const token: string = useSelector((state: { token: string }) => state.token);
-  const { userInfo } = useSelector((state: { fitsStore: Partial<UserDetail> }) => state.fitsStore);
-  const { data: userMeData, isLoading: load } = useGetUserMeQuery({ id: userInfo?._id });
-  // Functions
   const onPressFlag = () => {
     return setIsCountryVisible(true);
   };

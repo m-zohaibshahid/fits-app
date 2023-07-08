@@ -11,6 +11,8 @@ export const fitsApi = createApi({
     baseUrl: url,
     prepareHeaders: async (headers: Headers) => {
       const token = await getUserAsyncStroageToken()
+      console.log(token);
+
       headers.set("Authorization", `Bearer ${token}`);
       return headers;
     },
@@ -24,6 +26,11 @@ export const fitsApi = createApi({
     getUserMe: builder.query<UserMeApiResponse, Partial<any>>({
       keepUnusedDataFor: 30,
       query: () => `/user/me`
+    }),
+
+    getChatRooms: builder.query({
+      keepUnusedDataFor: 30,
+      query: () => `/chat/rooms`
     }),
 
     registerUser: builder.mutation<any, Partial<any>>({
@@ -66,6 +73,38 @@ export const fitsApi = createApi({
       }),
     }),
 
+    trainerProfessionalInfoCreate: builder.mutation<any, Partial<any>>({
+      query: (body) => ({
+        url: "/profession",
+        method: "POST",
+        body: body,
+      }),
+    }),
+
+    fitnessLevelChoose: builder.mutation<any, Partial<any>>({
+      query: (body) => ({
+        url: `/user/fitness/choose`,
+        method: "PUT",
+        body: body,
+      }),
+    }),
+
+    addCustomService: builder.mutation<any, Partial<any>>({
+      query: (body) => ({
+        url: `/services`,
+        method: "POST",
+        body: body,
+      }),
+    }),
+
+    addNewGoal: builder.mutation<any, Partial<any>>({
+      query: (body) => ({
+        url: `/goals`,
+        method: "POST",
+        body: body,
+      }),
+    }),
+
     updateUser: builder.mutation<any, Partial<any>>({
       query: (user) => ({
         url: `users/${user.id}`,
@@ -101,6 +140,22 @@ export const fitsApi = createApi({
       query: (id) => ({
         url: `/session/${id}`,
         method: "DELETE",
+      }),
+    }),
+
+    sessionCreate: builder.mutation<void, Partial<any>>({
+      query: (body) => ({
+        url: `/session`,
+        method: "POST",
+        body: body
+      }),
+    }),
+
+    createChatRoom: builder.mutation<void, Partial<any>>({
+      query: (body) => ({
+        url: `/chat/room/create`,
+        method: "POST",
+        body: body
       }),
     }),
 
@@ -152,4 +207,11 @@ export const {
   useGetUsersQuery,
   useTrainerSessionQuery,
   usePersonalInfoCreateMutation,
+  useTrainerProfessionalInfoCreateMutation,
+  useFitnessLevelChooseMutation,
+  useAddCustomServiceMutation,
+  useAddNewGoalMutation,
+  useSessionCreateMutation,
+  useCreateChatRoomMutation,
+  useGetChatRoomsQuery
 } = fitsApi;
