@@ -1,8 +1,7 @@
 import React, { useState, useEffect } from "react";
-import { Text, View, Pressable, TextInput, ScrollView } from "react-native";
+import { Text, View, Pressable, TextInput, ScrollView, Platform, StyleSheet } from "react-native";
 import {
   widthPercentageToDP as wp,
-  heightPercentageToDP as hp,
 } from "react-native-responsive-screen";
 import { RFValue } from "react-native-responsive-fontsize";
 import Ionicons from "react-native-vector-icons/Ionicons";
@@ -10,13 +9,15 @@ import AntDesign from "react-native-vector-icons/AntDesign";
 import Header from "../../../Components/Header";
 import Colors from "../../../constants/Colors";
 import Button from "../../../Components/Button";
-import { url } from "../../../constants/url";
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import styles from "./styles";
-import { Toast } from "react-native-toast-message/lib/src/Toast";
+import { NavigationSwitchProp } from "react-navigation";
+import { useTrainerProfessionalInfoCreateMutation } from "../../../slice/FitsApi.slice";
+import { errorToast } from "../../../utils/toast";
+import Container from "../../../Components/Container";
 
-const Professioninfo = ({ navigation }) => {
-  // Hooks
+interface PropsInterface {
+  navigation: NavigationSwitchProp
+}
+const Professioninfo = ({ navigation }: PropsInterface) => {
   const [qualification, setQualification] = useState([
     {
       id: 1,
@@ -26,59 +27,26 @@ const Professioninfo = ({ navigation }) => {
   ]);
   const [experienceYear, setExperienceYear] = useState("");
   const [experienceNote, setExperienceNote] = useState("");
-  const [load, setLoad] = useState(false);
-  const [token, setToken] = useState("");
+  const [mutateAsyncPersonalInfoUpdate, { isLoading }] = useTrainerProfessionalInfoCreateMutation()
 
   // Functions
   const goToNextScreen = async () => {
-    navigation.navigate("ServicesOffered");
+    navigation.navigate("CheckUser");
   };
 
-  const getUserInfo = async () => {
-    const userData = await AsyncStorage.getItem("userData");
-    let userDatax = JSON.parse(userData);
-    setToken(userDatax?.access_token);
-  };
+  const handleUpdateProfessionallInfo = async () => {
 
-  const professionallInfo = async () => {
-    setLoad(true);
-    await fetch(`${url}/profession`, {
-      method: "POST",
-      headers: {
-        Accept: "application/json",
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
-      body: JSON.stringify({
-        qualification: qualification,
-        experience_year: experienceYear,
-        experience_note: experienceNote,
-      }),
-    })
-      .then((res) => res.json())
-      .then((res2) => {
-        setLoad(false);
-        console.log(res2?.message);
-        if (res2?.message === "create profession info successfully") {
-          Toast.show({
-            type: "success",
-            text1: "Professional info created successfully",
-          });
-          goToNextScreen();
-        } else {
-          Toast.show({
-            type: "error",
-            text1: "Something went wrong!",
-          });
-        }
-      })
-      .catch(() => {
-        setLoad(false);
-        Toast.show({
-          type: "error",
-          text1: "Something went wrong!",
-        });
-      });
+    const body = {
+      qualification: qualification,
+      experience_year: experienceYear,
+      experience_note: experienceNote,
+    }
+
+    const result = await mutateAsyncPersonalInfoUpdate(body)
+    
+    if (result?.data) goToNextScreen()
+    if (result?.error) errorToast(result.error?.error?.message)
+
   };
 
   const upDegree = (value, index) => {
@@ -110,16 +78,9 @@ const Professioninfo = ({ navigation }) => {
   };
 
   // Effects
-  useEffect(() => {
-    navigation.addListener("focus", () => {
-      getUserInfo();
-    });
-  }, [getUserInfo]);
-
   return (
-    <View style={styles.mainContainer}>
-      <Header label={"Profession Info"} navigation={navigation} />
-
+    <Container >
+      <Header label={"Profession Info"} />
       <ScrollView showsVerticalScrollIndicator={false}>
         <View style={styles.mainBody}>
           <View style={styles.inputMainView}>
@@ -160,8 +121,6 @@ const Professioninfo = ({ navigation }) => {
               />
             </ScrollView>
           </View>
-
-          {/*Qualification section start*/}
 
           <View style={styles.qualificationsView}>
             <View style={{ width: "100%", alignItems: "flex-start" }}>
@@ -227,7 +186,6 @@ const Professioninfo = ({ navigation }) => {
                       multiline={true}
                       numberOfLines={5}
                       maxLength={500}
-                      paddingLeft={10}
                       placeholder="Any Description related to degrees....."
                       placeholderTextColor={Colors.white}
                       value={item.degree_note}
@@ -294,8 +252,7 @@ const Professioninfo = ({ navigation }) => {
           </View>
         </Pressable>
         <Button
-          navigation={navigation}
-          loader={load}
+          loader={isLoading}
           label={"NEXT"}
           disabled={
             !experienceYear ||
@@ -303,15 +260,104 @@ const Professioninfo = ({ navigation }) => {
             !qualification[0].degree ||
             !qualification[0].degree_note
           }
-          onPress={() => {
-            if (!load) {
-              professionallInfo();
-            }
-          }}
+          onPress={handleUpdateProfessionallInfo}
         />
       </View>
-    </View>
+    </Container>
   );
 };
 
 export default Professioninfo;
+
+
+const styles = StyleSheet.create({
+  mainBody: {
+    width: "100%",
+    alignItems: "center",
+  },
+  inputMainView: {
+    width: "100%",
+    backgroundColor: Colors.black,
+    borderRadius: 8,
+    marginTop: "3%",
+    marginBottom: "3%",
+    justifyContent: "center",
+    alignSelf: "center",
+    height: Platform.OS === "ios" ? 60 : 60,
+  },
+  inputTitleView: {
+    width: "95%",
+    alignSelf: "center",
+    height: 20,
+    justifyContent: "center",
+  },
+  inputTitleText: {
+    color: Colors.white,
+    fontSize: Platform.OS === "ios" ? RFValue(8, 580) : RFValue(10, 580),
+    fontFamily: "poppins-regular",
+  },
+  inputTypeMainView: {
+    width: "95%",
+    alignSelf: "center",
+    borderColor: Colors.white,
+    flexDirection: "row",
+    height: 40,
+  },
+  inputTypeView: {
+    width: "90%",
+    height: 40,
+    justifyContent: "center",
+  },
+  inputTypeStyle: {
+    width: "100%",
+    height: 40,
+    fontSize: RFValue(10, 580),
+    fontFamily: "Poppins-Regular",
+    color: "#fff",
+  },
+  descriptionInnerViews: {
+    width: "100%",
+    marginTop: 5,
+    backgroundColor: Colors.black,
+    borderRadius: 8,
+    flexDirection: "column",
+    alignSelf: "center",
+    height: 130,
+  },
+
+  qualificationsView: {
+    width: "100%",
+    alignSelf: "center",
+    flexDirection: "row",
+    marginBottom: 10,
+    marginTop: 20,
+  },
+  qualificationstext: {
+    color: Colors.black,
+    fontSize: RFValue(18, 580),
+    fontFamily: "Poppins-Bold",
+    left: 2,
+  },
+  uptotext: {
+    fontSize: RFValue(9, 580),
+    fontFamily: "Poppins-Regular",
+    marginTop: 10,
+  },
+  textinputMainview: {
+    width: "100%",
+    flexDirection: "row",
+  },
+  bgcolorview: {
+    width: "81%",
+    backgroundColor: Colors.black,
+    borderRadius: 8,
+  },
+  deleteiconview: {
+    width: 50,
+    height: 50,
+    backgroundColor: Colors.gray,
+    alignItems: "center",
+    justifyContent: "center",
+    borderRadius: 10,
+  },
+});

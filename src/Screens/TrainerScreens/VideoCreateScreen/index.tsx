@@ -60,9 +60,6 @@ const VideoCreateScreen = ({ navigation }) => {
         uploadImageOnCloud(newFile);
         setVideo(file.path);
       })
-      .catch((err) => {
-        console.log(err);
-      });
   };
 
   const chooseImageFromCamera = () => {
@@ -78,9 +75,6 @@ const VideoCreateScreen = ({ navigation }) => {
         uploadImageOnCloud(newFile);
         setImage(file.path);
       })
-      .catch((err) => {
-        console.log(err);
-      });
   };
 
   const uploadImageOnCloud = async (image) => {
@@ -101,7 +95,6 @@ const VideoCreateScreen = ({ navigation }) => {
       })
       .catch((err) => {
         setLoadx(false);
-        console.log("catch" + err);
       });
   };
   const upLoadVideoInfo = async () => {
@@ -143,7 +136,6 @@ const VideoCreateScreen = ({ navigation }) => {
         })
         .catch((error) => {
           setLoad(false);
-          console.log(error);
         });
     }
   };
@@ -532,7 +524,6 @@ const VideoCreateScreen = ({ navigation }) => {
                   value={price}
                   keyboardType="numeric"
                   maxLength={19}
-                  onChangeText={setPrice}
                 />
               </View>
               {/*end pricing */}

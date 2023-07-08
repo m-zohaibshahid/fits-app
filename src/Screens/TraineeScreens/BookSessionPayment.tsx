@@ -131,9 +131,6 @@ const BookSessionPayment = () => {
           });
         }
       })
-      .catch((error) => {
-        console.log(error);
-      });
   };
   // Effects
   useEffect(() => {

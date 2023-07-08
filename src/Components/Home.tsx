@@ -7,7 +7,7 @@ function Home({navigation}: any) {
   return (
     <View style={{flex: 1, alignItems: 'center'}}>
       <Text>Home Screen</Text>
-      <Text>Zuhair Abbas</Text>
+      <Text>Zeshan Shakil</Text>
       <Button
         title="Go to About"
         onPress={() => navigation.navigate('About')}

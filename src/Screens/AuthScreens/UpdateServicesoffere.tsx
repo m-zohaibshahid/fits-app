@@ -9,6 +9,7 @@ import { url } from "../../constants/url";
 import { useRoute } from "@react-navigation/native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { NavigationSwitchProp } from "react-navigation";
+import Container from "../../Components/Container";
 interface Props {
   navigation: NavigationSwitchProp;
 }
@@ -85,7 +86,6 @@ const UpdateServicesoffere: React.FC<Props> = ({ navigation }) => {
       .catch((error) => {
         setLoad(false);
         Alert.alert("Something Went Wrong");
-        console.log(error);
       });
   };
   const Services = async () => {
@@ -116,7 +116,6 @@ const UpdateServicesoffere: React.FC<Props> = ({ navigation }) => {
       .catch((error) => {
         setLoadx(false);
         Alert.alert("Something Went Wrong");
-        console.log(error);
       });
   };
   const addServices = async () => {
@@ -150,7 +149,6 @@ const UpdateServicesoffere: React.FC<Props> = ({ navigation }) => {
         .catch((error) => {
           setLoade(false);
           Alert.alert("Something Went Wrong");
-          console.log(error);
         });
     }
   };
@@ -184,11 +182,8 @@ const UpdateServicesoffere: React.FC<Props> = ({ navigation }) => {
     },
   ];
   return (
-    <View style={styles.container}>
+    <Container>
       <View style={styles.header}>
-        <View style={styles.fixeheight}>
-          <Header navigation={navigation} onPress={GoBack} />
-        </View>
         <View style={styles.fixeheight1}>
           <View style={styles.topView}>
             <Text style={styles.ServicesoffereText}>Services Offered</Text>
@@ -304,7 +299,7 @@ const UpdateServicesoffere: React.FC<Props> = ({ navigation }) => {
           </View>
         </Modal>
       </View>
-    </View>
+    </Container>
   );
 };
 const styles = StyleSheet.create({

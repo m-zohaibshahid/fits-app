@@ -1,4 +1,5 @@
 import { ReactNode } from "react";
+import { UserMeApiResponse } from "../slice/store.interface";
 
 /* eslint-disable prettier/prettier */
 export interface SelectStatusesUserDataInterfaceInterface {
@@ -83,5 +84,5 @@ export interface UserInterface {
 }
 
 export interface UserDetail {
-  userInfo: UserDataInterface
+  userInfo: UserMeApiResponse
 }

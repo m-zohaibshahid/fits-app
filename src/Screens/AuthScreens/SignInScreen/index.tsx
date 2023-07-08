@@ -1,157 +1,88 @@
-import React, { useState } from "react";
-import { Text, View, Pressable, ScrollView, ToastAndroid, Modal, Platform } from "react-native";
+import React, { useEffect, useMemo, useState } from "react";
+import { View, Pressable, ScrollView } from "react-native";
 import TextInput from "../../../Components/Input";
 import Header from "../../../Components/Header";
 import Button from "../../../Components/Button";
-import { url } from "../../../constants/url";
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import { Toast } from "react-native-toast-message/lib/src/Toast";
 import styles from "./styles";
-import { useLoginUserMutation } from "../../../slice/FitsApi.slice";
+import { useLoginUserMutation, useResendVarificationCodeMutation } from "../../../slice/FitsApi.slice";
 import { useDispatch } from "react-redux";
-import { LoginInterface } from "../../../slice/store.interface";
-import { setToken } from "../../../slice/token.slice";
-import { setUserInfo } from "../../../slice/FitsSlice.store";
 import Typography from "../../../Components/typography/text";
 import Container from "../../../Components/Container";
-import { useNavigation } from "@react-navigation/native";
+import { errorToast, successToast } from "../../../utils/toast";
+import { storeUserTokenInAsyncStorage } from "../../../utils/async-storage";
+import VarificationModal from "../../../Components/VerificationModal";
+import { NavigationSwitchProp } from "react-navigation";
+import { setToken } from "../../../slice/token.slice";
 
-const SignInScreen = () => {
-  const navigation: any = useNavigation();
-  const [email, setEmail] = useState(""); //abbastrainer1@yopmail.com
-  const [password, setPassword] = useState(""); //Abbas110@
-  const [load, setLoad] = useState(false);
-  const [loadxx, setLoadxx] = useState(false);
-  const [modalVisible, setModalVisible] = useState(false);
-  const [loginUser, { data, isLoading, error }] = useLoginUserMutation();
+interface PropsInterface {
+  navigation: NavigationSwitchProp
+}
+
+const SignInScreen = ({navigation}: PropsInterface) => {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [isVarificationModalVisible,setIsVarificationModalVisible] = useState<boolean>(false);
+  const [loginUserMutateAsync, {isLoading, isError, error}] = useLoginUserMutation() as any
+  const [mutateAsyncResendCode, {data: sendCodeOnEmailApiResponse}] = useResendVarificationCodeMutation();
 
   const dispatch = useDispatch();
 
-  // Functions
-  const storeData = async (userToken: string, userData: LoginInterface) => {
-    try {
-      setLoad(false);
-      await AsyncStorage.setItem("userToken", JSON.stringify(userToken));
-      await AsyncStorage.setItem("userData", JSON.stringify(userData));
-      navigation.navigate("LoginNow");
-    } catch (e) {
-      console.log("error", e);
-    }
-  };
-
-  const OpneModule = () => {
-    return setModalVisible(true);
-  };
-  const resendCodeCall = async () => {
-    setLoadxx(true);
-
-    await fetch(`${url}/resend-email`, {
-      method: "POST",
-      headers: {
-        Accept: "application/json",
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        email: email,
-      }),
-    })
-      .then((res) => res.json())
-      .then((res2) => {
-        setLoadxx(false);
-        if (res2?.code) {
-          ToastAndroid.show("OTP sent to your email, please check your email", ToastAndroid.LONG);
-          navigation.navigate("Verification", {
-            email: email,
-            code: res2?.code,
-          });
-          setModalVisible(false);
-        } else {
-          ToastAndroid.show(res2?.message, ToastAndroid.SHORT);
-        }
-      })
-      .catch((error) => {
-        setLoadxx(false);
-        console.log(error);
-      });
-  };
-
-  const signInCall = async () => {
-    setLoad(true);
-
-    if (!email.includes("@")) {
-      Toast.show({
-        type: "error",
-        text1: "Please enter a valid email",
-      });
-    }
-    await loginUser({
+  const handleLogin = async () => {
+    const formValues = {
       email,
       password,
-    })
-      .unwrap()
-      .then(async (res2) => {
-        setLoad(false);
-        if (res2?.login) {
-          Toast.show({
-            type: "success",
-            text1: "Login Successfully",
-          });
-          dispatch(setToken(res2?.access_token));
-          dispatch(setUserInfo(res2?.data));
-          await storeData("usertoken", res2);
-        } else if (res2?.message === "please verify your email first") {
-          OpneModule();
-        } else {
-          Toast.show({
-            type: "error",
-            text1: res2?.message,
-          });
+    };
+    const result = await loginUserMutateAsync(formValues) as any
+    if (result?.data?.access_token) {
+      await storeUserTokenInAsyncStorage(result?.data?.access_token)
+      dispatch(setToken(result?.data?.access_token));
+      navigation.navigate("CheckUser")
+    }
+    else if (result.error) {
+        errorToast(result.error.data.message)
+        if (result.error.data.message === "please verify your email first") {
+          handleSendCodeOnEmail()
+          setIsVarificationModalVisible(true)
         }
-      })
-      .catch((err) => {
-        setLoad(false);
-        console.log(err);
-      });
-  };
+      }
+    }
+    
+    const handleSendCodeOnEmail = async () => {
+      const body = {
+        email: email,
+      }
+      const result = await mutateAsyncResendCode(body) as any
+      if (!!result.error) errorToast(result.error.data.message)
+    }
+
+  const handleAfterEmailVarified = async () => {
+      setIsVarificationModalVisible(false)
+      successToast("Your email is now verified \n Plz login again")
+    }
+
+  const varificationCode = useMemo(() => {
+    return sendCodeOnEmailApiResponse?.code
+  }, [sendCodeOnEmailApiResponse])
+
+  useEffect(() => {
+    if (isError) errorToast(error?.error) as any;
+  }, [isError])
 
   return (
     <Container style={styles.mainContainer}>
       <Header label={"Welcome"} />
-
       <ScrollView showsVerticalScrollIndicator={false}>
         <View style={styles.mainBody}>
           <TextInput style={{ marginBottom: 15 }} label={"E-mail"} placeholder={"xyz@fits.com"} value={email} onChangeText={setEmail} />
           <TextInput style={{ marginBottom: 20 }} secureTextEntry label={"Password"} placeholder={"••••••••"} value={password} onChangeText={setPassword} />
-          <Pressable onPress={() => navigation.navigate("ForgotPassword")}>
-            <Typography align="right" color="softGray" size="paragraph" style={styles.forgottext} weight="500">
-              Forgot Password?
-            </Typography>
-          </Pressable>
-
-          <Button
-            loader={load}
-            label={"Sign In"}
-            disabled={!email || !password}
-            onPress={() => {
-              if (!load) {
-                signInCall();
-              }
-            }}
-            style={{ marginBottom: 20 }}
-          />
-
+          <Pressable onPress={() => navigation.navigate("ForgotPassword")}><Typography align="right" color="softGray" size="paragraph" style={styles.forgottext} weight="500">Forgot Password?</Typography></Pressable>
+          <Button  loader={isLoading} label={"Sign In"} disabled={isLoading} onPress={handleLogin} style={{ marginBottom: 20 }} />
           <View style={styles.termsTextRect}>
             <Typography weight="500" align="center" style={{ lineHeight: 20 }}>
               By signing in, I agree with{" "}
-              <Typography color="redColor" style={styles.underlinetext}>
-                {" "}
-                Terms of Use
-              </Typography>
+              <Typography color="redColor" style={styles.underlinetext}>{" "}Terms of Use</Typography>
               {"\n"}and{" "}
-              <Typography color="redColor" style={styles.underlinetext}>
-                {" "}
-                Privacy Policy
-              </Typography>
+              <Typography color="redColor" style={styles.underlinetext}>{" "}Privacy Policy</Typography>
             </Typography>
           </View>
         </View>
@@ -166,40 +97,7 @@ const SignInScreen = () => {
           </Typography>
         </Typography>
       </Pressable>
-
-      {/*Modal Start*/}
-      <Modal
-        animationType="fade"
-        transparent={true}
-        visible={modalVisible}
-        onRequestClose={() => {
-          setModalVisible(false);
-        }}
-      >
-        <View style={styles.centeredView}>
-          <View style={styles.modalView}>
-            <View style={{ width: "90%", alignSelf: "center" }}>
-              <Text style={styles.vercodetext}>Your Email isn't verified. Please go to email verification screen...</Text>
-            </View>
-
-            <View
-              style={{
-                marginTop: Platform.OS === "ios" ? 50 : 10,
-                width: "100%",
-              }}
-            >
-              <Button
-                loader={loadxx}
-                label={"Go"}
-                onPress={() => {
-                  if (!loadxx) resendCodeCall();
-                }}
-              />
-            </View>
-          </View>
-        </View>
-      </Modal>
-      {/* Modal End*/}
+      {isVarificationModalVisible && !!varificationCode ? <VarificationModal isVisible={isVarificationModalVisible} onClose={() => setIsVarificationModalVisible} email={email} code={varificationCode} afterVarified={handleAfterEmailVarified} /> : null}
     </Container>
   );
 };

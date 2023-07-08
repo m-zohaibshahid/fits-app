@@ -102,7 +102,6 @@ const Ratings = ({ navigation, token, id }) => {
           .then((res2) => {
             setLoadxx(false);
             if (res2.success) {
-              console.log("|--------------------------------------------------|", res2, "|--------------------------------------------------|");
               ToastAndroid.show("Confirmed your reviews", ToastAndroid.LONG);
               NextScreen();
             } else {
@@ -112,7 +111,6 @@ const Ratings = ({ navigation, token, id }) => {
           .catch((error) => {
             setLoadxx(false);
             Alert.alert("Something Went Wrong");
-            console.log(error);
           });
     }
   };

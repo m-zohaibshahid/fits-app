@@ -15,9 +15,9 @@ import { url } from "../../constants/url";
 import { useNavigation } from "@react-navigation/native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useGetUserMeQuery } from "../../slice/FitsApi.slice";
-import { getUserAsyncStroage } from "../../common/AsyncStorage";
 import { UserDetail } from "../../interfaces";
 import { useSelector } from "react-redux";
+import { getUserAsyncStroage } from "../../utils/async-storage";
 
 const AccountUpdate = () => {
   const navigation = useNavigation();
@@ -37,7 +37,6 @@ const AccountUpdate = () => {
   const [image, setImage] = useState("");
   const [cloudImageUrl, setCloudImageUrl] = useState("");
   const [userDatax, setUserDatax] = useState();
-  console.log("date................", date);
   const [isCountryVisible, setIsCountryVisible] = React.useState(false);
 
   const { userInfo } = useSelector((state: { fitsStore: Partial<UserDetail> }) => state.fitsStore);

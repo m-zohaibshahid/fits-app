@@ -123,7 +123,6 @@ const VideosForClasses: React.FC<Props> = ({ navigation }) => {
           .catch((error) => {
             setLoadxx(false);
             Alert.alert("Something Went Wrong");
-            console.log(error);
           });
     }
   };
@@ -162,7 +161,6 @@ const VideosForClasses: React.FC<Props> = ({ navigation }) => {
       .catch((error) => {
         setLoad(false);
         Alert.alert("Something Went Wrong");
-        console.log(error);
       });
   };
 

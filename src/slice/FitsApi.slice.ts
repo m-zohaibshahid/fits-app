@@ -1,8 +1,8 @@
 /* eslint-disable prettier/prettier */
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 import { url } from "../constants/url";
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import { LoginInterface } from "./store.interface";
+import { LoginInterface, UserMeApiResponse } from "./store.interface";
+import { getUserAsyncStroageToken } from "../utils/async-storage";
 
 // Define a service using a base URL and expected endpoints
 export const fitsApi = createApi({
@@ -10,14 +10,10 @@ export const fitsApi = createApi({
   baseQuery: fetchBaseQuery({
     baseUrl: url,
     prepareHeaders: async (headers: Headers) => {
-      const userToken: string | null = await AsyncStorage.getItem("userData");
-      let token;
-      if (userToken) {
-        token = JSON.parse(userToken ?? "");
-      }
-      if (token?.access_token) {
-        headers.set("Authorization", `Bearer ${token.access_token}`);
-      }
+      const token = await getUserAsyncStroageToken()
+      console.log(token);
+
+      headers.set("Authorization", `Bearer ${token}`);
       return headers;
     },
   }),
@@ -27,13 +23,17 @@ export const fitsApi = createApi({
       query: () => "users",
     }),
 
-    //user Me
-    getUserMe: builder.query<any, Partial<any>>({
+    getUserMe: builder.query<UserMeApiResponse, Partial<any>>({
       keepUnusedDataFor: 30,
-      query: (id) => `/user/me/${id}`,
+      query: () => `/user/me`
     }),
 
-    registerUser: builder.mutation<LoginInterface, Partial<any>>({
+    getChatRooms: builder.query({
+      keepUnusedDataFor: 30,
+      query: () => `/chat/rooms`
+    }),
+
+    registerUser: builder.mutation<any, Partial<any>>({
       query: (body) => ({
         url: "/register",
         method: "POST",
@@ -49,6 +49,22 @@ export const fitsApi = createApi({
       }),
     }),
 
+    codeVerify: builder.mutation<any, Partial<any>>({
+      query: (body) => ({
+        url: "/code-verify",
+        method: "POST",
+        body: body,
+      }),
+    }),
+
+    resendVarificationCode: builder.mutation<any, Partial<any>>({
+      query: (body) => ({
+        url: "/resend-email",
+        method: "POST",
+        body: body,
+      }),
+    }),
+
     stripeCustomer: builder.mutation<any, Partial<any>>({
       query: (body) => ({
         url: "/stripe/customer",
@@ -59,6 +75,38 @@ export const fitsApi = createApi({
     personalInfo: builder.mutation<any, Partial<any>>({
       query: (body) => ({
         url: "/personal",
+        method: "POST",
+        body: body,
+      }),
+    }),
+
+    trainerProfessionalInfoCreate: builder.mutation<any, Partial<any>>({
+      query: (body) => ({
+        url: "/profession",
+        method: "POST",
+        body: body,
+      }),
+    }),
+
+    fitnessLevelChoose: builder.mutation<any, Partial<any>>({
+      query: (body) => ({
+        url: `/user/fitness/choose`,
+        method: "PUT",
+        body: body,
+      }),
+    }),
+
+    addCustomService: builder.mutation<any, Partial<any>>({
+      query: (body) => ({
+        url: `/services`,
+        method: "POST",
+        body: body,
+      }),
+    }),
+
+    addNewGoal: builder.mutation<any, Partial<any>>({
+      query: (body) => ({
+        url: `/goals`,
         method: "POST",
         body: body,
       }),
@@ -102,7 +150,22 @@ export const fitsApi = createApi({
       }),
     }),
 
-    //updatePassword
+    sessionCreate: builder.mutation<void, Partial<any>>({
+      query: (body) => ({
+        url: `/session`,
+        method: "POST",
+        body: body
+      }),
+    }),
+
+    createChatRoom: builder.mutation<void, Partial<any>>({
+      query: (body) => ({
+        url: `/chat/room/create`,
+        method: "POST",
+        body: body
+      }),
+    }),
+
     updatePassword: builder.mutation<void, Partial<any>>({
       query: ({ id, ...data }) => ({
         url: `/profile/edit/password/${id}`,
@@ -115,17 +178,20 @@ export const fitsApi = createApi({
       query: () => "/session",
     }),
 
-    //Connect account link
     connectAccountLink: builder.query<void, Partial<any>>({
       query: () => "/stripe/connect/accountLink",
     }),
 
-    // }),
-
-    //trainer screen api
-
     trainerSession: builder.query<any, Partial<any>>({
       query: (id) => `/session/trainer/${id}`,
+    }),
+
+    personalInfoCreate: builder.mutation<any, Partial<any>>({
+      query: (body) => ({
+        url: "/personal",
+        method: "POST",
+        body: body,
+      }),
     }),
   }),
 });
@@ -141,9 +207,19 @@ export const {
   useUpdateFilterMutation,
   useCreateStripeCardMutation,
   usePersonalInfoMutation,
+  useCodeVerifyMutation,
+  useResendVarificationCodeMutation,
   useSessionsQuery,
   useConnectAccountLinkQuery,
   useGetUserMeQuery,
   useGetUsersQuery,
   useTrainerSessionQuery,
+  usePersonalInfoCreateMutation,
+  useTrainerProfessionalInfoCreateMutation,
+  useFitnessLevelChooseMutation,
+  useAddCustomServiceMutation,
+  useAddNewGoalMutation,
+  useSessionCreateMutation,
+  useCreateChatRoomMutation,
+  useGetChatRoomsQuery
 } = fitsApi;

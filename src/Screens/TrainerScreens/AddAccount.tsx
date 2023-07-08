@@ -48,11 +48,31 @@ const AddAccount = ({ navigation }) => {
   };
 
   const userMe = async () => {
-    if (userMeData.success === true) {
-      setData(userMeData.stripe.customer.id);
-    } else {
-      Alert.alert(userMeData.errors);
-    }
+    setLoadx(true);
+    const userData = await AsyncStorage.getItem("userData");
+    let userDatax = JSON.parse(userData);
+    await fetch(`${url}/user/me/${userDatax?.data?._id}`, {
+      method: "GET",
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${userDatax?.access_token}`,
+      },
+    })
+      .then((res) => res.json())
+      .then((res2) => {
+        setLoadx(false);
+        if (res2.success === true) {
+          setData(res2.stripe.customer.id);
+        } else {
+          Alert.alert(res2.errors);
+        }
+      })
+      .catch((error) => {
+        setLoadx(false);
+        Alert.alert("Something Went Wrong");
+        console.log(error);
+      });
   };
 
   const UpdateCard = async () => {
@@ -101,6 +121,11 @@ const AddAccount = ({ navigation }) => {
           } else {
             ToastAndroid.show(res2.message, ToastAndroid.LONG);
           }
+        })
+        .catch((error) => {
+          setLoad(false);
+          Alert.alert("Something Went Wrong");
+          console.log(error);
         });
       // .catch((error) => {
       //   setLoad(false);

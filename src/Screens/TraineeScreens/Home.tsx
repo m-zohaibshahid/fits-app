@@ -218,7 +218,6 @@ const Home: React.FC<Props> = ({ navigation }) => {
       })
       .catch((error) => {
         setLoad(false);
-        console.log("stripe account error", error);
       });
   };
   const handleSetState = (
