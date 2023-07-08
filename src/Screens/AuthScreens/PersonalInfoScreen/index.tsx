@@ -14,11 +14,13 @@ import TextInput from "../../../Components/Input";
 import Container from "../../../Components/Container";
 import { RFValue } from "react-native-responsive-fontsize";
 import Typography from "../../../Components/typography/text";
-import { usePersonalInfoCreateMutation } from "../../../slice/FitsApi.slice";
+import { useGetUserMeQuery, usePersonalInfoCreateMutation, usePersonalInfoMutation } from "../../../slice/FitsApi.slice";
 import { PersonalInfoFormValidationResultInterface, PersonalInfoValidateErrorsIntarface, PersonalInfoValidateSchemaInterface } from "../types";
 import { validateForm } from "../../../utils/validation";
 import { errorToast } from "../../../utils/toast";
 import { NavigationSwitchProp } from "react-navigation";
+import { useSelector } from "react-redux";
+import { UserDetail } from "../../../interfaces";
 
 export const validationSchema = Yup.object().shape({
   name: Yup.string().required('Name is required'),
@@ -57,6 +59,11 @@ const PersonalInfo = ({navigation}: PropsInterface) => {
   const [isCountryVisible, setIsCountryVisible] = React.useState(false);
   const [mutateAsyncPersonalInfoUpdate, { isLoading, isError, error: personalInfoApiError }] = usePersonalInfoCreateMutation()
 
+  const token: string = useSelector((state: { token: string }) => state.token);
+  const { userInfo } = useSelector((state: { fitsStore: Partial<UserDetail> }) => state.fitsStore);
+  const { data: userMeData, isLoading: load } = useGetUserMeQuery({ id: userInfo?._id });
+  const [personalInfo, { data: userPersonalInfo, isLoading: load1 }] = usePersonalInfoMutation();
+  // Functions
   const onPressFlag = () => {
     return setIsCountryVisible(true);
   };
@@ -365,7 +372,14 @@ const PersonalInfo = ({navigation}: PropsInterface) => {
                     </View>
 
                       <View style={styles.topView}>
-                        <DatePicker mode="date" textColor="#000" date={date ? new Date(date) : new Date()} style={styles.DatePicker} onDateChange={setDate} />
+                        <DatePicker
+                          mode="date"
+                          textColor="#000"
+                          date={date ? new Date(date) : new Date()}
+                          maximumDate={new Date(new Date().getFullYear() - 15, new Date().getMonth(), new Date().getDate())} // Set the maximum date to 18 years ago
+                          style={styles.DatePicker}
+                          onDateChange={setDate}
+                        />
                       </View>
                 </View>
               </View>

@@ -1,18 +1,23 @@
 import React, { useState, useEffect } from "react";
-import { Text, View, StyleSheet, TextInput, ScrollView, ToastAndroid, ActivityIndicator, TouchableOpacity, Platform } from "react-native";
+import { Text, View, StyleSheet, TextInput, ScrollView, ToastAndroid, ActivityIndicator, TouchableOpacity, Platform, Alert } from "react-native";
 import { RFValue } from "react-native-responsive-fontsize";
 import Header from "../../Components/Header";
 import Colors from "../../constants/Colors";
 import Button from "../../Components/Button";
 import { url } from "../../constants/url";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useSelector } from "react-redux";
+import { UserDetail } from "../../interfaces";
+import { useCreateStripeCardMutation, useGetUserMeQuery } from "../../slice/FitsApi.slice";
 
 const AddAccount = ({ navigation }) => {
   const [cardNumber, setCardNumber] = useState("");
   const [expiryMonth, setExpiryMonth] = useState("");
   const [expiryYear, setExpiryYear] = useState("");
   const [cvc, setCvc] = useState("");
-  const [space, setSpace] = useState(" ");
+  const { userInfo } = useSelector((state: { fitsStore: Partial<UserDetail> }) => state.fitsStore);
+  const { data: userMeData, isLoading } = useGetUserMeQuery({ id: userInfo?._id });
+  const [createStripeCard, { data: createCard, isLoading: isLoading1 }] = useCreateStripeCardMutation();
 
   const GoBack = () => {
     navigation.goBack();
@@ -34,7 +39,7 @@ const AddAccount = ({ navigation }) => {
       getUserInfo();
       userMe();
     });
-  }, [getUserInfo]);
+  }, []);
 
   const getUserInfo = async () => {
     const userData = await AsyncStorage.getItem("userData");
@@ -66,38 +71,51 @@ const AddAccount = ({ navigation }) => {
       .catch((error) => {
         setLoadx(false);
         Alert.alert("Something Went Wrong");
+        console.log(error);
       });
   };
 
   const UpdateCard = async () => {
-    if (cardNumber === "") {
+    if (!cardNumber) {
       ToastAndroid.show("Please Enter your Card Number.", ToastAndroid.SHORT);
-    } else if (expiryMonth === "") {
+    } else if (!expiryMonth) {
       ToastAndroid.show("Please Enter your Card Expiry Month.", ToastAndroid.SHORT);
-    } else if (expiryYear === "") {
+    } else if (!expiryYear) {
       ToastAndroid.show("Please Enter your Card Expiry Year.", ToastAndroid.SHORT);
-    } else if (cvc === "") {
+    } else if (!cvc) {
       ToastAndroid.show("Please Enter your cvc.", ToastAndroid.SHORT);
     } else {
       setLoad(true);
-      await fetch(`${url}/stripe/card/${data}`, {
-        method: "POST",
-        headers: {
-          Accept: "application/json",
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify({
-          card_number: cardNumber,
-          exp_month: expiryMonth,
-          exp_year: expiryYear,
-          cvc: cvc,
-        }),
+      console.log("object,", data);
+      // await fetch(`${url}/stripe/card/${data}`, {
+      //   method: "POST",
+      //   headers: {
+      //     Accept: "application/json",
+      //     "Content-Type": "application/json",
+      //     Authorization: `Bearer ${token}`,
+      //   },
+      //   body: JSON.stringify({
+      //     card_number: cardNumber,
+      //     exp_month: expiryMonth,
+      //     exp_year: expiryYear,
+      //     cvc: cvc,
+      //   }),
+      // })
+      //   .then((res) => res.json())
+      const body = {
+        card_number: cardNumber,
+        exp_month: expiryMonth,
+        exp_year: expiryYear,
+        cvc: cvc,
+      };
+      await createStripeCard({
+        id: data,
+        ...body,
       })
-        .then((res) => res.json())
+        .unwrap()
         .then((res2) => {
           setLoad(false);
-          if (res2.success === true) {
+          if (res2.success) {
             ToastAndroid.show("Card Done", ToastAndroid.LONG);
             NextScreen();
           } else {
@@ -107,7 +125,13 @@ const AddAccount = ({ navigation }) => {
         .catch((error) => {
           setLoad(false);
           Alert.alert("Something Went Wrong");
+          console.log(error);
         });
+      // .catch((error) => {
+      //   setLoad(false);
+      //   Alert.alert("Something Went Wrong");
+      //   console.log(error);
+      // });
     }
   };
 
@@ -176,7 +200,7 @@ const AddAccount = ({ navigation }) => {
         {/* modalVisibleDate End*/}
         <View style={{ paddingVertical: 10, alignItems: "center" }}>
           <Button
-            label={load === true ? <ActivityIndicator size="small" color="#fff" /> : "NEXT"}
+            label={load || isLoading ? <ActivityIndicator size="small" color="#fff" /> : "NEXT"}
             onPress={() => {
               if (load === true) {
               } else {

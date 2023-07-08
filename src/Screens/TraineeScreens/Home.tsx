@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Text, View, Pressable, StyleSheet, TextInput, Modal, ImageBackground, Image, ScrollView, ToastAndroid, ActivityIndicator, Platform, PermissionsAndroid, Alert } from "react-native";
+import { Text, View, Pressable, StyleSheet, TextInput, Modal, ImageBackground, Image, ScrollView, ToastAndroid, ActivityIndicator, Platform, PermissionsAndroid, Alert, Linking } from "react-native";
 import { getDistance } from "geolib";
 import Feather from "react-native-vector-icons/Feather";
 import AntDesign from "react-native-vector-icons/AntDesign";
@@ -23,14 +23,16 @@ import { useGetUserMeQuery, useSessionsQuery, useStripeCustomerMutation, useUpda
 import { useDispatch, useSelector } from "react-redux";
 import { UserDataInterface, UserDetail } from "../../interfaces";
 import { setCreateStripeData } from "../../slice/FitsSlice.store";
-
-const Home = ({ navigation }: any) => {
+import { NavigationSwitchProp } from "react-navigation";
+interface Props {
+  navigation: NavigationSwitchProp;
+}
+const Home: React.FC<Props> = ({ navigation }) => {
   // states
-
   const [modalVisible, setModalVisible] = useState(false);
   const [sort, setSort] = useState(true);
   const [sports, setSports] = useState(false);
-  const [price, SetPrice] = useState(false);
+  const [price, setPrice] = useState(false);
   const [type, setType] = useState(false);
   const [filterData, setFilterData] = useState([]);
   const [dumdata, setDumData] = useState([]);
@@ -43,44 +45,70 @@ const Home = ({ navigation }: any) => {
   const [classType, setClassType] = useState(null);
   const [classSort, setClassSort] = useState(null);
   const [search, setSearch] = useState("");
+  const [nearyou, setNearyou] = useState(true);
+  const [recommended, setRecommended] = useState(false);
+  const [load, setLoad] = useState(false);
+  const [superLong, setSuperLong] = useState(55.9754);
+  const [superLat, setSuperLat] = useState(21.4735);
 
-  const [m, setM] = useState("");
   const dispatch = useDispatch();
   const token: string = useSelector((state: { token: string }) => state.token);
   const { userInfo } = useSelector((state: { fitsStore: Partial<UserDetail> }) => state.fitsStore);
-
   const { data: userMeData, error, isSuccess, refetch } = useGetUserMeQuery({ id: userInfo?._id });
-
   const [stripeCustomer] = useStripeCustomerMutation({});
-  const { data: session } = useSessionsQuery({});
+  const { data: session, isLoading, refetch: sessionRefetch }: any = useSessionsQuery({});
   const [updateFilter, { data: filter }] = useUpdateFilterMutation({});
+  const dummyImageSource = "https://se-new.ingrammicro.com/_layouts/images/CSDefaultSite/common/no-image-lg.png";
   // filter data User define functions
-  const handleSportsData = (item: { name: React.SetStateAction<null> }) => {
+
+  const handleSportsData = (item: { name: null }) => {
     setModalVisible(false);
     setSportData(item?.name);
   };
+
   const minPriceData = (minPrice: string) => {
     setModalVisible(false);
-    setMinimumPrice(parseInt(minPrice));
+    setMinimumPrice(parseInt(minPrice, 10));
   };
+
   const maxPriceData = (maxPrice: string) => {
     setModalVisible(false);
-    setMaximumPrice(parseInt(maxPrice));
+    setMaximumPrice(parseInt(maxPrice, 10));
   };
+
   const handleClassType = (item: { Name: { toLowerCase: () => React.SetStateAction<null> } }) => {
     setModalVisible(false);
     setClassType(item?.Name.toLowerCase());
   };
+
   const classSorts = (item: { Name: React.SetStateAction<null> }) => {
     setModalVisible(false);
     setClassSort(item?.Name);
   };
+
+  // useEffects
 
   useEffect(() => {
     if (sportData || minimumPrice || maximumPrice || classType || classSort) {
       Filter();
     }
   }, [sportData, minimumPrice, maximumPrice, classType, classSort]);
+
+  useEffect(() => {
+    navigation.addListener("focus", () => {
+      userMe();
+      requestLocationPermission();
+      sessionRefetch();
+    });
+  }, []);
+  useEffect(() => {
+    if (!isLoading && session?.success) {
+      bookASessioan();
+    } else if (session?.errors) {
+      Alert.alert(session?.errors);
+    }
+  }, [session]);
+
   // filter Api states
   const Filter = async () => {
     const data = {
@@ -99,11 +127,11 @@ const Home = ({ navigation }: any) => {
           ToastAndroid.show(res.error?.data?.message, ToastAndroid.SHORT);
         }
       })
-      .catch(() => {});
+      .catch(() => {
+        console.error("Error while updating filter:", error);
+      });
   };
-  //states
-  const [nearyou, setNearyou] = useState(true);
-  const [recommended, setRecommended] = useState(false);
+
   //function
   const NearyoutrueState = () => {
     setNearyou(true);
@@ -113,13 +141,6 @@ const Home = ({ navigation }: any) => {
     setNearyou(false);
     setRecommended(true);
   };
-
-  const [load, setLoad] = useState(false);
-
-  const [superLong, setSuperLong] = useState(55.9754);
-  const [superLat, setSuperLat] = useState(21.4735);
-
-  const getPersonalInfo = async () => {};
 
   const setUserLocation = async (data: string) => {
     await AsyncStorage.setItem("userLocation", JSON.stringify(data));
@@ -133,7 +154,6 @@ const Home = ({ navigation }: any) => {
         buttonPositive: "Allow Location",
       });
       if (granted === PermissionsAndroid.RESULTS.GRANTED) {
-        //To Check, If Permission is granted
         Geolocation.getCurrentPosition(
           (position) => {
             setSuperLong(position?.coords?.longitude);
@@ -152,33 +172,24 @@ const Home = ({ navigation }: any) => {
                     country: string;
                   }[]
                 ) => {
-                  setUserLocation(res[0].subLocality + " " + res[0].locality + " ," + res[0].adminArea + "-" + res[0].country);
+                  const address = res[0].subLocality + " " + res[0].locality + ", " + res[0].adminArea + "-" + res[0].country;
+                  setUserLocation(address);
                 }
               )
-              .catch((error: any) => Alert.alert(error));
+              .catch((error: string) => Alert.alert(error));
           },
-          () => {
-            // See error code charts below.
+          (error) => {
+            console.log("Error while getting location:", error);
           },
           { enableHighAccuracy: true, timeout: 15000, maximumAge: 10000 }
         );
       } else {
         Alert.alert("Permission Access denied. Please Make Sure GPS Permission is enabled and then exit app and run again");
       }
-    } catch (err) {}
+    } catch (err) {
+      console.log("Error while requesting location permission:", err);
+    }
   };
-
-  useEffect(() => {
-    requestLocationPermission();
-  }, []);
-
-  useEffect(() => {
-    navigation.addListener("focus", () => {
-      getPersonalInfo();
-      userMe();
-      bookASessioan();
-    });
-  }, []);
 
   const userMe = async () => {
     setLoad(true);
@@ -200,7 +211,7 @@ const Home = ({ navigation }: any) => {
 
     stripeCustomer({ name: filterData?.personal_info?.name, email: filterData?.user?.email, phone: filterData?.personal_info?.phoneNumber })
       // .unwrap()
-      .then((res2) => {
+      .then((res2: any) => {
         if (res2?.data?.message === "success" || res2?.error?.data?.message === "customer already exists") {
           setForCareateStripeCall(res2?.error?.data?.data ?? res2?.data?.data);
         }
@@ -209,77 +220,63 @@ const Home = ({ navigation }: any) => {
         setLoad(false);
       });
   };
+  const handleSetState = (
+    sort: boolean | ((prevState: boolean) => boolean),
+    sports: boolean | ((prevState: boolean) => boolean),
+    price: boolean | ((prevState: boolean) => boolean),
+    type: boolean | ((prevState: boolean) => boolean)
+  ) => {
+    setSort(sort);
+    setSports(sports);
+    setPrice(price);
+    setType(type);
+  };
 
   const handleSetSort = () => {
-    setSort(true);
-    setSports(false);
-    SetPrice(false);
-    setType(false);
+    handleSetState(true, false, false, false);
   };
+
   const handleSetSports = () => {
-    setSort(false);
-    setSports(true);
-    SetPrice(false);
-    setType(false);
+    handleSetState(false, true, false, false);
   };
+
   const handleSetPrice = () => {
-    setSort(false);
-    setSports(false);
-    SetPrice(true);
-    setType(false);
+    handleSetState(false, false, true, false);
   };
+
   const handleSetType = () => {
-    setSort(false);
-    setSports(false);
-    SetPrice(false);
-    setType(true);
+    handleSetState(false, false, false, true);
   };
-  const dummyData = (id: any, item: never) => {
-    const check = personalInfoData.find((data) => data?.user === id);
-    const checkx = professionalData.find((data) => data?.user === id);
-    if (check === undefined) {
-      ToastAndroid.show("undefined", ToastAndroid.LONG);
+
+  const dummyData = (item: UserDataInterface) => {
+    console.log("id", item.user, item._id, personalInfoData);
+    const findPersonalInfoById = personalInfoData.find((data: any) => data?.user === item.user);
+    const findProfessionalInfoById = professionalData.find((data: any) => data?.user === item.user);
+    console.log("personalInfoData", findPersonalInfoById, item.user, item?.user?._id);
+
+    if (!findPersonalInfoById) {
+      ToastAndroid.show("Failed to retrieve personal information. Please make sure the user has filled out their personal profile.", ToastAndroid.LONG);
     }
-    if (checkx === undefined) {
-      ToastAndroid.show("undefined", ToastAndroid.LONG);
+    if (!findProfessionalInfoById) {
+      ToastAndroid.show("Failed to retrieve professional information. Please make sure the user has filled out their professional profile.", ToastAndroid.LONG);
     } else {
       navigation.navigate("TrainerDetail", {
-        personalData: { check },
-        professionalData: { checkx },
+        personalData: { findPersonalInfoById },
+        professionalData: { findProfessionalInfoById },
         userData: { item },
         trainerId: id,
-        sessionId: item._id,
+        sessionId: item?._id,
       });
     }
   };
-  const bookASessioan = async () => {
-    setLoad(true);
 
-    await fetch(`${url}/session`, {
-      method: "GET",
-      headers: {
-        Accept: "application/json",
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
-    })
-      .then((res) => res.json())
-      .then((res2) => {
-        const { personal_info, profession_info, classes } = res2?.data;
-        setLoad(false);
-        if (res2.message === "all classes get successfully") {
-          setPersonalInfoData(personal_info);
-          setProfessionalData(profession_info);
-          setFilterData(classes);
-          setDumData(classes);
-          getDistanceFunction(classes);
-        } else {
-          Alert.alert(res2.errors);
-        }
-      });
-    if (error) {
-      setLoad(false);
-    }
+  const bookASessioan = async () => {
+    const { personal_info, profession_info, classes } = session?.data;
+    setPersonalInfoData(personal_info);
+    setProfessionalData(profession_info);
+    setFilterData(classes);
+    setDumData(classes);
+    getDistanceFunction(classes);
   };
 
   const getDistanceGoogle = (lat: any, lng: any) => {
@@ -290,6 +287,7 @@ const Home = ({ navigation }: any) => {
 
     return distanceInKM;
   };
+
   const getDistanceFunction = (data: any) => {
     let dummy = [...data];
     dummy.map((item) => {
@@ -299,10 +297,10 @@ const Home = ({ navigation }: any) => {
   };
 
   const find = (t: any) => {
-    const words = [data];
+    console.log("t", t);
+    const words = [...filterData];
     setSearch(t);
-    if (t === "") {
-      setM("");
+    if (!t) {
       setFilterData(dumdata);
     } else {
       const newData = words.filter((item) => {
@@ -313,6 +311,7 @@ const Home = ({ navigation }: any) => {
       setFilterData(newData);
     }
   };
+
   return (
     <View style={styles.container}>
       <View style={styles.header}>
@@ -388,27 +387,15 @@ const Home = ({ navigation }: any) => {
         </View>
       </View>
       <ScrollView showsVerticalScrollIndicator={false} style={styles.main}>
-        {nearyou && load ? (
+        {(nearyou && load) || isLoading ? (
           <ActivityIndicator size="large" color="red" />
         ) : filterData ? (
           <>
             <ScrollView horizontal={true} showsHorizontalScrollIndicator={false} style={styles.main}>
               {/*start image box view*/}
               {filterData.map((item: UserDataInterface, i: number) => (
-                <Pressable onPress={() => dummyData(item?.user?._id, item)} style={styles.boxview} key={i}>
-                  <ImageBackground
-                    imageStyle={{ borderRadius: 10 }}
-                    style={styles.ImageBackgroundstyle}
-                    source={
-                      item.image
-                        ? {
-                            uri: `${item?.image}`,
-                          }
-                        : {
-                            uri: "https://se-new.ingrammicro.com/_layouts/images/CSDefaultSite/common/no-image-lg.png",
-                          }
-                    }
-                  >
+                <Pressable onPress={() => dummyData(item)} style={styles.boxview} key={i}>
+                  <ImageBackground imageStyle={{ borderRadius: 10 }} style={styles.ImageBackgroundstyle} source={{ uri: item.image } ?? dummyImageSource}>
                     <View style={styles.TopView}>
                       <View style={styles.topView}>
                         <View style={styles.RowView}>

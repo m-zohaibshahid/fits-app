@@ -68,9 +68,6 @@ const Recommended: React.FC<Props> = ({ navigation, superLong, superLat }) => {
       });
     }
   };
-  // const NextScreen = () => {
-  //   navigation.navigate("TrainerDetail");
-  // };
 
   const getDistanceGoogle = (lat: any, lng: any) => {
     let dis;

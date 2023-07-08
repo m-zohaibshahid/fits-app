@@ -1,6 +1,6 @@
 /* eslint-disable prettier/prettier */
 import React, { useState } from "react";
-import { Text, View, TextInput, ScrollView, ToastAndroid, TouchableOpacity } from "react-native";
+import { Text, View, TextInput, ScrollView, ToastAndroid, TouchableOpacity, Alert } from "react-native";
 import Header from "../../../Components/Header";
 import Button from "../../../Components/Button";
 import { url } from "../../../constants/url";
@@ -9,6 +9,7 @@ import styles from "./styles";
 import moment from "moment";
 import { NavigationSwitchProp } from "react-navigation";
 import { useSelector } from "react-redux";
+import { useCreateStripeCardMutation } from "../../../slice/FitsApi.slice";
 interface Props {
   navigation: NavigationSwitchProp;
 }
@@ -24,6 +25,7 @@ const CreateCardScreen: React.FC<Props> = ({ navigation }) => {
   const [isDatePickerVisible, setDatePickerVisibility] = useState(false);
   const token: string = useSelector((state: { token: string }) => state.token);
   const { createStripeData } = useSelector((state: any) => state.fitsStore);
+  const [createStripeCard, { isLoading: isLoading1 }] = useCreateStripeCardMutation();
   // Functions
   const showDatePicker = () => {
     setDatePickerVisibility(!isDatePickerVisible);
@@ -47,35 +49,33 @@ const CreateCardScreen: React.FC<Props> = ({ navigation }) => {
   };
 
   const createCall = async () => {
-    setLoad(true);
     if (createStripeData) {
-      await fetch(`${url}/stripe/card/${createStripeData?.cus_id}`, {
-        method: "POST",
-        headers: {
-          Accept: "application/json",
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify({
-          card_number: cardNumber,
+      try {
+        const body = {
+          card_number: cardNumber.replace(/\s/g, ""),
           exp_month: expMonth,
           exp_year: expYear,
           cvc: cvc,
-        }),
-      })
-        .then((res) => res.json())
-        .then((res2) => {
-          setLoad(false);
-          if (res2?.data?.message === "card created successfully...") {
-            ToastAndroid.show("Card created Successfully...", ToastAndroid.LONG);
-            navigation.goBack();
-          } else {
-            ToastAndroid.show(res2?.message, ToastAndroid.SHORT);
-          }
+        };
+        console.log("createStripeData?.cus_id", createStripeData.cus_id);
+        await createStripeCard({
+          id: createStripeData?.cus_id,
+          ...body,
         })
-        .catch((error) => {
-          setLoad(false);
-        });
+          .unwrap()
+          .then((payload) => {
+            console.log("paylload", payload.message);
+            if (payload?.message === "card created successfully...") {
+              ToastAndroid.show("Card created Successfully...", ToastAndroid.LONG);
+              navigation.goBack();
+            } else {
+              ToastAndroid.show(payload?.message, ToastAndroid.SHORT);
+            }
+          })
+          .catch((error) => console.error("rejected", error));
+      } catch (error: any) {
+        Alert.alert(error.message);
+      }
     }
   };
 
@@ -141,7 +141,7 @@ const CreateCardScreen: React.FC<Props> = ({ navigation }) => {
       </ScrollView>
       <Button
         // navigation={navigation}
-        loader={load}
+        loader={load || isLoading1}
         label={"Create"}
         disabled={!cardNumber || !expDate || !cvc}
         onPress={() => {

@@ -72,6 +72,13 @@ export const fitsApi = createApi({
         body: body,
       }),
     }),
+    personalInfo: builder.mutation<any, Partial<any>>({
+      query: (body) => ({
+        url: "/personal",
+        method: "POST",
+        body: body,
+      }),
+    }),
 
     trainerProfessionalInfoCreate: builder.mutation<any, Partial<any>>({
       query: (body) => ({
@@ -122,7 +129,7 @@ export const fitsApi = createApi({
     }),
 
     createStripeCard: builder.mutation<any, Partial<any>>({
-      query: (id, ...data) => ({
+      query: ({ id, ...data }) => ({
         url: `/stripe/card/${id}`,
         method: "POST",
         body: data,
@@ -199,6 +206,7 @@ export const {
   useStripeCustomerMutation,
   useUpdateFilterMutation,
   useCreateStripeCardMutation,
+  usePersonalInfoMutation,
   useCodeVerifyMutation,
   useResendVarificationCodeMutation,
   useSessionsQuery,
