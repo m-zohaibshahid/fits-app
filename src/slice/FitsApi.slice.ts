@@ -3,6 +3,7 @@ import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 import { url } from "../constants/url";
 import { LoginInterface, UserMeApiResponse } from "./store.interface";
 import { getUserAsyncStroageToken } from "../utils/async-storage";
+import { TrainerSessionApiResultInterface } from "../interfaces";
 
 // Define a service using a base URL and expected endpoints
 export const fitsApi = createApi({
@@ -174,7 +175,7 @@ export const fitsApi = createApi({
       }),
     }),
 
-    sessions: builder.query<void, Partial<any>>({
+    sessions: builder.query<TrainerSessionApiResultInterface, Partial<any>>({
       query: () => "/session",
     }),
 

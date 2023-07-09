@@ -1,6 +1,7 @@
 /* eslint-disable prettier/prettier */
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef, LegacyRef } from "react";
 import { Text, View, Pressable, StyleSheet, TextInput, ScrollView, ToastAndroid, Platform, Modal, TouchableOpacity, Image } from "react-native";
+import {default as CustomInput} from '../../../Components/Input'
 import ImagePicker from "react-native-image-crop-picker";
 import AntDesign from "react-native-vector-icons/AntDesign";
 import Ionicons from "react-native-vector-icons/Ionicons";
@@ -13,14 +14,13 @@ import { widthPercentageToDP as wp, heightPercentageToDP as hp } from "react-nat
 import Colors from "../../../constants/Colors";
 import moment from "moment";
 import { useRoute } from "@react-navigation/native";
-import { useSelector } from "react-redux";
-import { UserDetail } from "../../../interfaces";
 import { errorToast } from "../../../utils/toast";
 import { useSessionCreateMutation } from "../../../slice/FitsApi.slice";
 import Button from "../../../Components/Button";
 import Container from "../../../Components/Container";
 import Header from "../../../Components/Header";
 import Typography from "../../../Components/typography/text";
+import MapView, { LatLng, Marker } from "react-native-maps";
 
 enum SessionType {
   ONLINE = "online",
@@ -30,15 +30,14 @@ enum SessionType {
 
 const BookSession = ({ navigation }: any) => {
   const route = useRoute();
-  // const { userInfo } = useSelector((state: { fitsStore: Partial<UserDetail> }) => state.fitsStore);
-  // const token = useSelector((state: { token: string }) => state.token);
-  const [superLong, setSuperLong] = useState();
-  const [superLat, setSuperLat] = useState();
+  const mapRef = useRef<MapView | null>(null);
+  const [superLong, setSuperLong] = useState<number>();
+  const [superLat, setSuperLat] = useState<number>();
   const [currentDate, setCurrentDate] = useState("");
   const [modalVisible, setModalVisible] = useState(false);
   const [modalVisibleTopSelect, setModalVisibleTopSelect] = useState(false);
   const [isDatePickerVisible, setDatePickerVisibility] = useState(false);
-  const [type, setType] = useState<SessionType>(SessionType.ONLINE);
+  const [type, setType] = useState<SessionType>();
   const [value, setValue] = useState("");
   const [cardio, setCardio] = useState(false);
   const [noEquipment, setNoEquipment] = useState(false);
@@ -51,7 +50,7 @@ const BookSession = ({ navigation }: any) => {
   const [meetingLink, setMeetingLink] = useState("");
   const [description, setDescription] = useState("");
   const [time, setTime] = useState("00:00 PM");
-  const [duration, setDuration] = useState();
+  const [duration, setDuration] = useState<string>("");
   const [slots, setSlots] = useState(0);
   const [price, setPrice] = useState<string>("");
   const [cloudImageUrl, setCloudImageUrl] = useState("");
@@ -105,18 +104,23 @@ const BookSession = ({ navigation }: any) => {
     if (classTitle !== '' || equipment.length || sport !== '' || currentDate !== '' || description !== '' || image !== '' || time !== '' || duration !== '' || value !== '' || slots || price !== '') {
       let session_type;
       if (type === SessionType.ONLINE) {
-        if (sessionTitle === "") ToastAndroid.show("Please enter the Session title.", ToastAndroid.SHORT)
-        if (meetingLink === "") ToastAndroid.show("Please enter the Meeting link here.", ToastAndroid.SHORT);
+        if (!sessionTitle || !meetingLink) {
+          errorToast("Missing something in Online Session")
+          return
+        }
         session_type = {
           type: type,
           meetingLink: meetingLink,
-          lat: superLat,
-          lng: superLong,
           recordCategory: "na",
           no_of_play: "na",
           videoTitle: "na",
-        };
+          session_title: sessionTitle,
+        }
       } else if (type === SessionType.PHYSICAL) {
+        if (!superLat || !superLong) {
+          errorToast("Missing something in Physical Session")
+          return
+        }
         session_type = {
           type: type,
           lat: superLat,
@@ -139,7 +143,7 @@ const BookSession = ({ navigation }: any) => {
         details: description,
         image: cloudImageUrl,
         session_type: session_type,
-        session_title: "sessionTitle",
+        session_title: sessionTitle,
       }
 
       const result = await mutateAsyncSessionCreate(body)
@@ -147,6 +151,7 @@ const BookSession = ({ navigation }: any) => {
         if (result?.data) NextScreen();
     }
   };
+
   const upValue = (value, index) => {
     let oldEquipment = [...equipment];
     oldEquipment[index].value = value;
@@ -241,7 +246,6 @@ const BookSession = ({ navigation }: any) => {
     })
       .then((res) => res.json())
       .then((res2) => {
-        //setLoadx(false);
         setCloudImageUrl(res2?.url);
       })
       .catch(() => {
@@ -259,10 +263,23 @@ const BookSession = ({ navigation }: any) => {
     setData(dummy);
   };
 
+  const handleOnMapReady = () => {
+    if (mapRef.current && superLat !== undefined && superLong !== undefined) {
+      const zuhairLatLng: LatLng = {
+        latitude:superLat,
+        longitude: superLong,
+      };
+  
+      mapRef.current.fitToCoordinates([zuhairLatLng], {
+        edgePadding: { top: 50, right: 50, bottom: 50, left: 50 },
+        animated: true,
+      });
+    }
+  };
+
   return (
     <Container>
       <Header label={"Create a Session"} subLabel="Fill in some Details" />
-
       <ScrollView showsVerticalScrollIndicator={false}>
         <View style={styles.mainBody}>
           <View style={styles.calendarView}>
@@ -277,12 +294,7 @@ const BookSession = ({ navigation }: any) => {
               }}
             />
           </View>
-          <View style={styles.mainClassTitleRect}>
-            <Text style={styles.classTitleText}>Class Title</Text>
-            <View style={styles.textInputMainRect}>
-              <TextInput placeholder="Enter Class Title" style={styles.inputTypeStyle} placeholderTextColor={Colors.white} value={classTitle} onChangeText={setClassTitle} />
-            </View>
-          </View>
+              <CustomInput placeholder="Enter Class Title" style={styles.inputTypeStyle} placeholderTextColor={Colors.white} value={classTitle} onChangeText={setClassTitle} label={"Class Title"} />
           {image === "" ? (
             <Pressable
               style={styles.imageBox}
@@ -305,8 +317,79 @@ const BookSession = ({ navigation }: any) => {
 
             <Text style={styles.selectText}>
               Select type of Session <Text style={styles.selectTexts}>(select one)</Text>
-            </Text>
-
+          </Text>
+          
+          {type === SessionType.ONLINE ? (
+            <View>
+              <CustomInput
+                placeholder=" Enter Session title "
+                style={styles.inputEmail}
+                placeholderTextColor={"#fff"}
+                value={sessionTitle}
+                onChangeText={setSessionTitle} label={"Title"}
+              />
+              <CustomInput
+                placeholder=" Enter The Link "
+                style={styles.inputEmail}
+                placeholderTextColor={"#fff"}
+                value={meetingLink}
+                onChangeText={setMeetingLink} label={"Link"}
+              />
+            </View>
+          ) :  type == SessionType.PHYSICAL ? (
+                  <View>
+                    <CustomInput
+                  label="Session title"
+                  style={styles.inputEmail}
+                  placeholderTextColor={"#fff"}
+                  value={sessionTitle}
+                  onChangeText={setSessionTitle} placeholder={"Enter Session title"}                      />
+                    <View style={styles.mapBox}>
+                      <MapView
+                        style={styles.mapStyle}
+                        showsUserLocation={false}
+                        showsMyLocationButton={true}
+                        zoomEnabled={true}
+                        zoomControlEnabled={true}
+                        ref={mapRef}
+                        minZoomLevel={2}
+                        maxZoomLevel={15}
+                        initialCamera={{
+                          center: {
+                            latitude: superLat || 0,
+                            longitude: superLong || 0,
+                          },
+                          pitch: 90,
+                          heading: 0,
+                          altitude: 1000,
+                          zoom: 12,
+                        }}
+                        onMapReady={handleOnMapReady}
+                        onPress={(e) => {
+                          setSuperLat(e.nativeEvent.coordinate.latitude);
+                          setSuperLong(e.nativeEvent.coordinate.longitude);
+                        }}
+                        initialRegion={{
+                          latitude: superLat || 0,
+                          longitude: superLong  || 0,
+                          latitudeDelta: 0.922,
+                          longitudeDelta: 0.421,
+                        }}
+                      >
+                        <Marker
+                          coordinate={{
+                            latitude: superLat || 0,
+                            longitude: superLong  || 0,
+                          }}
+                          title={"User Location"}
+                          description={"Current Location"}
+                          identifier={"Zeshan"}
+                          pinColor={"red"}
+                        />
+                      </MapView>
+                    </View>
+                  </View>
+          ) : null}
           <View style={styles.mainBoxView}>
             <View style={styles.boxViews1}>
               <Pressable
@@ -387,7 +470,7 @@ const BookSession = ({ navigation }: any) => {
             </View>
             <View style={styles.titleRightColRect}>
               <Pressable style={styles.lastBtn}>
-                <TextInput placeholder="00" placeholderTextColor={Colors.white} value={duration} keyboardType="numeric" maxLength={3} style={styles.TopselectTexte} />
+                <TextInput onChangeText={setDuration} placeholder="00" placeholderTextColor={Colors.white} value={duration} keyboardType="numeric" maxLength={3} style={styles.TopselectTexte} />
               </Pressable>
             </View>
           </View>
@@ -586,7 +669,7 @@ const BookSession = ({ navigation }: any) => {
       </ScrollView>
       {/*start btn*/}
       <View style={styles.rowView}>
-        <Button onPress={callBookSession} disabled={!sport || !currentDate || !description || !image || !time || !value || !slots || !price} label={"Create"} />
+        <Button onPress={callBookSession} disabled={!sport || !currentDate || !description || !image || !time || !value || !slots || !duration || !price} label={"Create"} />
       </View>
       {/*end btn*/}
       <DateTimePickerModal isVisible={isDatePickerVisible} mode="time" onConfirm={handleConfirm} onCancel={hideDatePicker} />
