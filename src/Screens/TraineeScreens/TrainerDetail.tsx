@@ -48,7 +48,10 @@ const TrainerDetail = ({ navigation }: PropsInterface) => {
   const [activeTab, setActiveTab] = useState<Tab>(Tab.ABOUT);
   const [message, setMessage] = useState("");
   const [mutateAsyncChatRoomCreate] = useCreateChatRoomMutation()
-  const trainerId = route?.params?.personalData?.check?._id
+  console.log('====================================');
+  console.log(route?.params.personalData?._id);
+  console.log('====================================');
+  const trainerId = route?.params.personalData?._id
   const { userInfo } = useSelector((state: { fitsStore: Partial<UserDetail> }) => state.fitsStore);
   const token = useSelector((state: { token: string }) => state.token);
 
@@ -95,7 +98,7 @@ const TrainerDetail = ({ navigation }: PropsInterface) => {
         <FastImage
           style={styles.Imagestyle}
           source={{
-            uri: `${route?.params.userData.item.image}`,
+            uri: `${route?.params.userData.image}`,
             headers: { Authorization: "someAuthToken" },
             priority: FastImage.priority.normal,
           }}
@@ -170,21 +173,21 @@ const TrainerDetail = ({ navigation }: PropsInterface) => {
         <View style={styles.header}>
           <View style={styles.TopView}>
             <View style={styles.topView1}>
-              <Text style={styles.NameText}>{route?.params.personalData.check.name}</Text>
+              <Text style={styles.NameText}>{route?.params?.personalData.name}</Text>
               <View style={styles.BtnmainrowView}>
                 <View style={styles.BtnviewView}>
                   <Text style={styles.sessionText}>
-                    <Text style={styles.Boldtextstyle}>{route?.params.userData.item.price}$</Text>
+                    <Text style={styles.Boldtextstyle}>{route?.params?.userData.price}$</Text>
                     /session
                   </Text>
                 </View>
                 <View style={styles.Btnmain2View}>
                   <Text style={styles.sessionText}>
                     <Text style={styles.Boldtextstyle}>
-                      {route?.params?.userData?.item?.averageRating?.toFixed(1)}{" "}
+                      {route?.params?.userData.averageRating}{" "}
                       <AntDesign name="star" color={"#000"} size={15} />
                     </Text>
-                    ({route?.params?.userData?.item?.numReviews} Reviews)
+                    ({route?.params?.userData.numReviews} Reviews)
                   </Text>
                 </View>
               </View>

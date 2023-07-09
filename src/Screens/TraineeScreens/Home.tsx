@@ -1,11 +1,10 @@
 import React, { useState, useEffect } from "react";
-import { Text, View, Pressable, StyleSheet, TextInput, Modal, ImageBackground, Image, ScrollView, ToastAndroid, ActivityIndicator, Platform, PermissionsAndroid, Alert, Linking } from "react-native";
+import { Text, View, Pressable, StyleSheet, TextInput, Modal, ImageBackground, Image, ScrollView, ToastAndroid, Platform, PermissionsAndroid, Alert } from "react-native";
 import { getDistance } from "geolib";
 import Feather from "react-native-vector-icons/Feather";
 import AntDesign from "react-native-vector-icons/AntDesign";
 import EvilIcons from "react-native-vector-icons/EvilIcons";
 import FontAwesome from "react-native-vector-icons/FontAwesome";
-import FontAwesome5 from "react-native-vector-icons/FontAwesome5";
 import { RFValue } from "react-native-responsive-fontsize";
 import Recommended from "./Recommended";
 import * as Images from "../../constants/Images";
@@ -14,31 +13,31 @@ import Sort from "./Filter/Sort";
 import Sports from "./Filter/Sports";
 import Price from "./Filter/Price";
 import Type from "./Filter/Type";
-import { url } from "../../constants/url";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import Geolocation from "react-native-geolocation-service";
 import Geocoder from "react-native-geocoder";
 import FastImage from "react-native-fast-image";
-import { useGetUserMeQuery, useSessionsQuery, useStripeCustomerMutation, useUpdateFilterMutation } from "../../slice/FitsApi.slice";
+import { useSessionsQuery, useStripeCustomerMutation, useUpdateFilterMutation } from "../../slice/FitsApi.slice";
 import { useDispatch, useSelector } from "react-redux";
-import { UserDataInterface, UserDetail } from "../../interfaces";
+import { TrainerClassInterfaceInTraineeScreenInterface, TrainerPersonalinfoInTraineeScreenInterface, TrainerProfessioninfoInTraineeScreen, UserDetail } from "../../interfaces";
 import { setCreateStripeData } from "../../slice/FitsSlice.store";
 import { NavigationSwitchProp } from "react-navigation";
+import { errorToast } from "../../utils/toast";
+import Container from "../../Components/Container";
+import Header from "../../Components/Header";
+import Typography from "../../Components/typography/text";
 interface Props {
   navigation: NavigationSwitchProp;
 }
 const Home: React.FC<Props> = ({ navigation }) => {
-  // states
+  const dispatch = useDispatch();
+  const { userInfo } = useSelector((state: { fitsStore: Partial<UserDetail> }) => state.fitsStore);
   const [modalVisible, setModalVisible] = useState(false);
-  const [sort, setSort] = useState(true);
-  const [sports, setSports] = useState(false);
-  const [price, setPrice] = useState(false);
-  const [type, setType] = useState(false);
-  const [filterData, setFilterData] = useState([]);
-  const [dumdata, setDumData] = useState([]);
-  const [userData, setUserData] = useState([]);
-  const [personalInfoData, setPersonalInfoData] = useState([]);
-  const [professionalData, setProfessionalData] = useState([]);
+  const [filterType, setFilterType] = useState<FilterTypes>(FilterTypes.SORT);
+  const [filterData, setFilterData] = useState<TrainerClassInterfaceInTraineeScreenInterface[]>([]);
+  const [dumdata, setDumData] = useState<TrainerClassInterfaceInTraineeScreenInterface[]>([]);
+  const [personalInfoData, setPersonalInfoData] = useState<TrainerPersonalinfoInTraineeScreenInterface[]>([]);
+  const [professionalData, setProfessionalData] = useState<TrainerProfessioninfoInTraineeScreen[]>([]);
   const [sportData, setSportData] = useState(null);
   const [minimumPrice, setMinimumPrice] = useState(0);
   const [maximumPrice, setMaximumPrice] = useState(0);
@@ -47,19 +46,12 @@ const Home: React.FC<Props> = ({ navigation }) => {
   const [search, setSearch] = useState("");
   const [nearyou, setNearyou] = useState(true);
   const [recommended, setRecommended] = useState(false);
-  const [load, setLoad] = useState(false);
   const [superLong, setSuperLong] = useState(55.9754);
   const [superLat, setSuperLat] = useState(21.4735);
 
-  const dispatch = useDispatch();
-  const token: string = useSelector((state: { token: string }) => state.token);
-  const { userInfo } = useSelector((state: { fitsStore: Partial<UserDetail> }) => state.fitsStore);
-  const { data: userMeData, error, isSuccess, refetch } = useGetUserMeQuery({ id: userInfo?._id });
+  const { data: session, refetch: sessionRefetch } = useSessionsQuery({});
   const [stripeCustomer] = useStripeCustomerMutation({});
-  const { data: session, isLoading, refetch: sessionRefetch }: any = useSessionsQuery({});
-  const [updateFilter, { data: filter }] = useUpdateFilterMutation({});
-  const dummyImageSource = "https://se-new.ingrammicro.com/_layouts/images/CSDefaultSite/common/no-image-lg.png";
-  // filter data User define functions
+  const [updateFilter] = useUpdateFilterMutation({});
 
   const handleSportsData = (item: { name: null }) => {
     setModalVisible(false);
@@ -96,17 +88,14 @@ const Home: React.FC<Props> = ({ navigation }) => {
 
   useEffect(() => {
     navigation.addListener("focus", () => {
-      userMe();
+      createStripeAccount(userInfo?.personal_info);
       requestLocationPermission();
       sessionRefetch();
     });
   }, []);
+  
   useEffect(() => {
-    if (!isLoading && session?.success) {
-      bookASessioan();
-    } else if (session?.errors) {
-      Alert.alert(session?.errors);
-    }
+      bookASession();
   }, [session]);
 
   // filter Api states
@@ -118,18 +107,10 @@ const Home: React.FC<Props> = ({ navigation }) => {
       type: classType,
       sort_by: classSort,
     };
-    updateFilter(data)
-      .then(async (res: any) => {
-        if (res?.data?.success) {
-          setFilterData(res.data?.data?.result);
-          ToastAndroid.show(res.data?.message, ToastAndroid.SHORT);
-        } else {
-          ToastAndroid.show(res.error?.data?.message, ToastAndroid.SHORT);
-        }
-      })
-      .catch(() => {
-        console.error("Error while updating filter:", error);
-      });
+    const result = await updateFilter(data)
+    
+    if (result?.error) errorToast(result.error?.data?.message);
+    if (result?.data) setFilterData(result.data?.data?.result);
   };
 
   //function
@@ -191,24 +172,11 @@ const Home: React.FC<Props> = ({ navigation }) => {
     }
   };
 
-  const userMe = async () => {
-    setLoad(true);
-    if (isSuccess) {
-      setUserData(userMeData);
-      createStripeAccount(userMeData);
-      setLoad(false);
-    } else {
-      Alert.alert(error);
-    }
-  };
-
   const setForCareateStripeCall = async (filterData: any) => {
     dispatch(setCreateStripeData(filterData));
   };
 
   const createStripeAccount = async (filterData: { personal_info: { name: string; phoneNumber: string }; user: { email: any } }) => {
-    setLoad(true);
-
     stripeCustomer({ name: filterData?.personal_info?.name, email: filterData?.user?.email, phone: filterData?.personal_info?.phoneNumber })
       // .unwrap()
       .then((res2: any) => {
@@ -217,82 +185,51 @@ const Home: React.FC<Props> = ({ navigation }) => {
         }
       })
       .catch((error) => {
-        setLoad(false);
+        errorToast(error?.message)
       });
   };
-  const handleSetState = (
-    sort: boolean | ((prevState: boolean) => boolean),
-    sports: boolean | ((prevState: boolean) => boolean),
-    price: boolean | ((prevState: boolean) => boolean),
-    type: boolean | ((prevState: boolean) => boolean)
-  ) => {
-    setSort(sort);
-    setSports(sports);
-    setPrice(price);
-    setType(type);
-  };
 
-  const handleSetSort = () => {
-    handleSetState(true, false, false, false);
-  };
-
-  const handleSetSports = () => {
-    handleSetState(false, true, false, false);
-  };
-
-  const handleSetPrice = () => {
-    handleSetState(false, false, true, false);
-  };
-
-  const handleSetType = () => {
-    handleSetState(false, false, false, true);
-  };
-
-  const dummyData = (item: UserDataInterface) => {
-    console.log("id", item.user, item._id, personalInfoData);
-    const findPersonalInfoById = personalInfoData.find((data: any) => data?.user === item.user);
-    const findProfessionalInfoById = professionalData.find((data: any) => data?.user === item.user);
-    console.log("personalInfoData", findPersonalInfoById, item.user, item?.user?._id);
-
-    if (!findPersonalInfoById) {
-      ToastAndroid.show("Failed to retrieve personal information. Please make sure the user has filled out their personal profile.", ToastAndroid.LONG);
-    }
+  const handlePressOnCard = (item: TrainerClassInterfaceInTraineeScreenInterface) => {
+    const findPersonalInfoById = personalInfoData.find((data: TrainerPersonalinfoInTraineeScreenInterface) => data.user === item.user?._id);
+    const findProfessionalInfoById = professionalData.find((data: TrainerProfessioninfoInTraineeScreen) => data.user === item.user?._id);
+    if (!findPersonalInfoById) ToastAndroid.show("Failed to retrieve personal information. Please make sure the user has filled out their personal profile.", ToastAndroid.LONG);
     if (!findProfessionalInfoById) {
       ToastAndroid.show("Failed to retrieve professional information. Please make sure the user has filled out their professional profile.", ToastAndroid.LONG);
     } else {
+      console.log();
+      
       navigation.navigate("TrainerDetail", {
-        personalData: { findPersonalInfoById },
-        professionalData: { findProfessionalInfoById },
-        userData: { item },
-        trainerId: id,
+        personalData: findPersonalInfoById,
+        professionalData: findProfessionalInfoById,
+        userData: item,
         sessionId: item?._id,
       });
     }
   };
 
-  const bookASessioan = async () => {
-    const { personal_info, profession_info, classes } = session?.data;
-    setPersonalInfoData(personal_info);
-    setProfessionalData(profession_info);
-    setFilterData(classes);
-    setDumData(classes);
-    getDistanceFunction(classes);
+  const bookASession = async () => {
+    if (!session?.data) return
+    setPersonalInfoData(session?.data.personal_info);
+    setProfessionalData(session?.data.profession_info);
+    setFilterData(session?.data.classes);
+    setDumData(session?.data.classes);
+    getDistanceFunction(session?.data.classes);
   };
 
   const getDistanceGoogle = (lat: any, lng: any) => {
-    let dis;
-    dis = getDistance({ latitude: lat, longitude: lng }, { latitude: superLat, longitude: superLong });
+    let distance;
+    distance = getDistance({ latitude: lat, longitude: lng }, { latitude: superLat, longitude: superLong });
 
-    let distanceInKM = dis / 1000;
+    let distanceInKM = distance / 1000;
 
     return distanceInKM;
   };
 
   const getDistanceFunction = (data: any) => {
     let dummy = [...data];
-    dummy.map((item) => {
-      var dis = getDistanceGoogle(item.session_type.lat, item.session_type.lng);
-      item.session_type.distance = dis;
+    dummy.forEach((item) => {
+      const distance = getDistanceGoogle(item.session_type.lat, item.session_type.lng);
+      item.session_type.distance = distance;
     });
   };
 
@@ -303,7 +240,7 @@ const Home: React.FC<Props> = ({ navigation }) => {
     if (!t) {
       setFilterData(dumdata);
     } else {
-      const newData = words.filter((item) => {
+      const newData = words.filter((item: any) => {
         const itemData = `${item?.item?.toUpperCase()} ${item?.class_title?.toUpperCase()}`;
         const textData = t?.toUpperCase();
         return itemData.indexOf(textData) > -1;
@@ -313,7 +250,7 @@ const Home: React.FC<Props> = ({ navigation }) => {
   };
 
   return (
-    <View style={styles.container}>
+    <Container>
       <View style={styles.header}>
         <View style={styles.fixeheight1}>
           <View style={styles.TopView}>
@@ -321,10 +258,10 @@ const Home: React.FC<Props> = ({ navigation }) => {
               <View style={styles.rowView}>
                 <View style={{ width: "60%" }}>
                   <Text style={styles.hometext}>Home</Text>
-                  <Text style={styles.text}>Hello, {userData?.personal_info?.name}</Text>
+                  <Text style={styles.text}>Hello, {userInfo?.personal_info?.name}</Text>
                 </View>
                 <View style={styles.imageview}>
-                  {userData?.personal_info?.profileImage ? (
+                  {userInfo?.personal_info?.profileImage ? (
                     <FastImage
                       style={{
                         width: 70,
@@ -332,7 +269,7 @@ const Home: React.FC<Props> = ({ navigation }) => {
                         borderRadius: 200 / 2,
                       }}
                       source={{
-                        uri: `${userData?.personal_info?.profileImage}`,
+                        uri: `${userInfo?.personal_info?.profileImage}`,
                         headers: { Authorization: "someAuthToken" },
                         priority: FastImage.priority.normal,
                       }}
@@ -354,9 +291,7 @@ const Home: React.FC<Props> = ({ navigation }) => {
                     placeholderTextColor={"#fff"}
                     style={styles.textinputstyle}
                     value={search}
-                    onChangeText={(e) => {
-                      find(e);
-                    }}
+                    onChangeText={(e) => find(e)}
                   />
                 </View>
                 <Pressable
@@ -387,14 +322,10 @@ const Home: React.FC<Props> = ({ navigation }) => {
         </View>
       </View>
       <ScrollView showsVerticalScrollIndicator={false} style={styles.main}>
-        {(nearyou && load) || isLoading ? (
-          <ActivityIndicator size="large" color="red" />
-        ) : filterData ? (
-          <>
+        {filterData ? (
             <ScrollView horizontal={true} showsHorizontalScrollIndicator={false} style={styles.main}>
-              {/*start image box view*/}
-              {filterData.map((item: UserDataInterface, i: number) => (
-                <Pressable onPress={() => dummyData(item)} style={styles.boxview} key={i}>
+              {filterData.map((item: TrainerClassInterfaceInTraineeScreenInterface, i: number) => (
+                <Pressable onPress={() => handlePressOnCard(item)} style={styles.boxview} key={i}>
                   <ImageBackground imageStyle={{ borderRadius: 10 }} style={styles.ImageBackgroundstyle} source={{ uri: item.image } ?? dummyImageSource}>
                     <View style={styles.TopView}>
                       <View style={styles.topView}>
@@ -419,14 +350,12 @@ const Home: React.FC<Props> = ({ navigation }) => {
                     <Text style={styles.jamesnameText}>{item.class_title}</Text>
                     <View style={{ width: "100%", flexDirection: "row" }}>
                       <EvilIcons name="location" size={20} color="black" />
-                      <Text style={styles.kmtextstyle}>{item?.session_type?.distance?.toFixed(1)} km from you</Text>
+                      <Text style={styles.kmtextstyle}>{item.session_type.desc} km from you</Text>
                     </View>
                   </View>
                 </Pressable>
               ))}
-              {/*End image box view*/}
             </ScrollView>
-          </>
         ) : (
           <View
             style={{
@@ -448,71 +377,43 @@ const Home: React.FC<Props> = ({ navigation }) => {
         )}
         {recommended ? <Recommended navigation={navigation} superLong={undefined} superLat={undefined} /> : null}
       </ScrollView>
-      {/*filter option model  Start*/}
-      <View style={styles.bottomZero}>
-        <View style={styles.modalStyle}>
-          <Modal
-            animationType="fade"
+    <Modal
+      animationType="fade"
             transparent={true}
             visible={modalVisible}
-            onRequestClose={() => {
-              setModalVisible(false);
-            }}
-          >
-            <View style={styles.centeredView}>
-              <View style={styles.modalView}>
-                <View style={styles.TopView}>
-                  <View style={styles.topView}>
-                    {/*start header*/}
-                    <View style={styles.flexdirectionView}>
-                      <View style={styles.iconView}>
-                        <FontAwesome5 name="arrow-left" onPress={() => setModalVisible(false)} size={20} color={"#000"} />
-                      </View>
-                      <View style={styles.titleName}>
-                        <Text style={styles.filterText}>Filter</Text>
-                      </View>
-                    </View>
-                    {/*end header*/}
-                    <ScrollView showsVerticalScrollIndicator={false}>
-                      {/*start navigation*/}
+            onRequestClose={() => setModalVisible(false)}
+      >
+              <View style={styles.bottomView}>
+                <View style={styles.modalContainer}>
+                    <Header label={"Filter"} hideBackButton showCloseButton lableStyle={{marginBottom: 30}} onClose={() => setModalVisible(false)} />
                       <View style={styles.toptabmainview}>
-                        <Pressable style={styles.mainclassesview} onPress={() => handleSetSort()}>
-                          <Text style={[sort ? styles.topbartext : styles.topbartext1]}>Sort</Text>
-                          {sort ? <View style={styles.borderView} /> : null}
-                        </Pressable>
-                        <Pressable style={styles.mainclassesview} onPress={() => handleSetSports()}>
-                          <Text style={[sports ? styles.topbartext : styles.topbartext1]}>Sports</Text>
-                          {sports ? <View style={styles.borderView} /> : null}
-                        </Pressable>
-                        <Pressable onPress={() => handleSetPrice()} style={styles.mainclassesview}>
-                          <Text style={[price ? styles.topbartext : styles.topbartext1]}>Price</Text>
-                          {price ? <View style={styles.borderView} /> : null}
-                        </Pressable>
-                        <Pressable onPress={() => handleSetType()} style={styles.mainclassesview}>
-                          <Text style={[type ? styles.topbartext : styles.topbartext1]}>Type</Text>
-                          {type ? <View style={styles.borderView} /> : null}
-                        </Pressable>
+                          <Typography style={filterType === FilterTypes.SORT ? {
+                            borderBottomColor: Colors.redColor,
+                            borderBottomWidth: 2
+                          } : {}} color={filterType === FilterTypes.SORT ? "redColor" : "black"} size="medium" onPress={() => setFilterType(FilterTypes.SORT)} pressAble>Sort</Typography>
+                          <Typography style={filterType === FilterTypes.SPORT ? {
+                            borderBottomColor: Colors.redColor,
+                            borderBottomWidth: 2
+                          } : {}} color={filterType === FilterTypes.SPORT ? "redColor" : "black"} size="medium" onPress={() => setFilterType(FilterTypes.SPORT)} pressAble>Sports</Typography>
+                          <Typography style={filterType === FilterTypes.PRICE ? {
+                            borderBottomColor: Colors.redColor,
+                            borderBottomWidth: 2
+                          } : {}} color={filterType === FilterTypes.PRICE ? "redColor" : "black"} size="medium" onPress={() => setFilterType(FilterTypes.PRICE)} pressAble>Price</Typography>
+                          <Typography style={filterType === FilterTypes.TYPE ? {
+                            borderBottomColor: Colors.redColor,
+                            borderBottomWidth: 2
+                          } : {}} color={filterType === FilterTypes.TYPE ? "redColor" : "black"} size="medium" onPress={() => setFilterType(FilterTypes.TYPE)} pressAble>Type</Typography>
                       </View>
-                      {/*end navigation*/}
-
-                      {/*Start Navigation Screen*/}
                       <ScrollView showsVerticalScrollIndicator={false}>
-                        {sort && <Sort ClassSorts={classSorts} />}
-                        {sports ? <Sports navigation={navigation} handleSportsData={handleSportsData} /> : null}
-                        {price ? <Price navigation={navigation} MinPriceData={minPriceData} MaxPriceData={maxPriceData} /> : null}
-                        {type ? <Type navigation={navigation} ClassType={handleClassType} /> : null}
+                        {filterType === FilterTypes.SORT ? <Sort ClassSorts={classSorts} /> : null}
+                        {filterType === FilterTypes.SPORT ? <Sports navigation={navigation} handleSportsData={handleSportsData} /> : null}
+                        {filterType === FilterTypes.PRICE ? <Price navigation={navigation} MinPriceData={minPriceData} MaxPriceData={maxPriceData} /> : null}
+                        {filterType === FilterTypes.TYPE ? <Type navigation={navigation} ClassType={handleClassType} /> : null}
                       </ScrollView>
-                      {/*End Navigation Screen*/}
-                    </ScrollView>
                   </View>
                 </View>
-              </View>
-            </View>
-          </Modal>
-        </View>
-      </View>
-      {/* filter option model*/}
-    </View>
+    </Modal>
+    </Container>
   );
 };
 
@@ -521,7 +422,27 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: "#ffffff",
     paddingTop: Platform.OS === "ios" ? 40 : 0,
-    paddingBottom: Platform.OS === "ios" ? 0 : 0,
+    paddingBottom: 0,
+  },
+  bottomView: {
+    flex: 1,
+    justifyContent: 'flex-end',
+    backgroundColor: Colors.transparentBlack,
+  },
+  modalContainer: {
+    backgroundColor: Colors.white,
+    borderRadius: 10,
+    paddingHorizontal: 24,
+    paddingTop: 15,
+    shadowColor: Colors.black,
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 6.84,
+    elevation: 9,
+    height: 500
   },
   header: {
     width: "100%",
@@ -539,6 +460,7 @@ const styles = StyleSheet.create({
   TopView: {
     width: "100%",
     alignItems: "center",
+    marginTop: 20
   },
   topView: {
     width: "90%",
@@ -630,7 +552,10 @@ const styles = StyleSheet.create({
   toptabmainview: {
     width: "100%",
     flexDirection: "row",
-    marginTop: 20,
+    // flex: 1,
+    justifyContent: "space-between",
+    alignItems: "center",
+    marginBottom: 10
   },
   mainclassesview: {
     width: "25%",
@@ -739,3 +664,10 @@ const styles = StyleSheet.create({
   },
 });
 export default Home;
+
+enum FilterTypes {
+  SORT = "sort",
+  SPORT = "sport",
+  TYPE = "type",
+  PRICE = "price",
+}
