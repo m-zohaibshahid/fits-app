@@ -6,17 +6,17 @@ import Colors from "../../constants/Colors";
 import Button from "../../Components/Button";
 import { url } from "../../constants/url";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { useSelector } from "react-redux";
-import { UserDetail } from "../../interfaces";
 import { useCreateStripeCardMutation, useGetUserMeQuery } from "../../slice/FitsApi.slice";
-
-const AddAccount = ({ navigation }) => {
+import { NavigationSwitchProp } from "react-navigation";
+interface PropsInterface {
+  navigation: NavigationSwitchProp;
+}
+const AddAccount: React.FC<PropsInterface> = ({ navigation }) => {
   const [cardNumber, setCardNumber] = useState("");
   const [expiryMonth, setExpiryMonth] = useState("");
   const [expiryYear, setExpiryYear] = useState("");
   const [cvc, setCvc] = useState("");
-  const { userInfo } = useSelector((state: { fitsStore: Partial<UserDetail> }) => state.fitsStore);
-  const { data: userMeData, isLoading } = useGetUserMeQuery({ id: userInfo?._id });
+  const { data: userMeData, isLoading } = useGetUserMeQuery({});
   const [createStripeCard, { data: createCard, isLoading: isLoading1 }] = useCreateStripeCardMutation();
 
   const GoBack = () => {

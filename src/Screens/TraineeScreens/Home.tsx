@@ -53,8 +53,7 @@ const Home: React.FC<Props> = ({ navigation }) => {
 
   const dispatch = useDispatch();
   const token: string = useSelector((state: { token: string }) => state.token);
-  const { userInfo } = useSelector((state: { fitsStore: Partial<UserDetail> }) => state.fitsStore);
-  const { data: userMeData, error, isSuccess, refetch } = useGetUserMeQuery({ id: userInfo?._id });
+  const { data: userMeData, error, isSuccess, refetch } = useGetUserMeQuery({});
   const [stripeCustomer] = useStripeCustomerMutation({});
   const { data: session, isLoading, refetch: sessionRefetch }: any = useSessionsQuery({});
   const [updateFilter, { data: filter }] = useUpdateFilterMutation({});

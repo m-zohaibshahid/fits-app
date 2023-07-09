@@ -39,8 +39,7 @@ const AccountUpdate = () => {
   const [userDatax, setUserDatax] = useState();
   const [isCountryVisible, setIsCountryVisible] = React.useState(false);
 
-  const { userInfo } = useSelector((state: { fitsStore: Partial<UserDetail> }) => state.fitsStore);
-  const { data: userMeData, refetch, isLoading } = useGetUserMeQuery({ id: userInfo?._id });
+  const { data: userMeData, refetch, isLoading } = useGetUserMeQuery({});
 
   const [load, setLoad] = useState(false);
   const [loadx, setLoadx] = useState(false);

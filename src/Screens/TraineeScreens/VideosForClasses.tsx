@@ -17,7 +17,7 @@ interface Props {
 const VideosForClasses: React.FC<Props> = ({ navigation }) => {
   const token = useSelector((state: { token: string }) => state.token);
   const { userInfo } = useSelector((state: { fitsStore: Partial<UserDetail> }) => state.fitsStore);
-  const { data: userMeData } = useGetUserMeQuery({ id: userInfo?._id });
+  const { data: userMeData } = useGetUserMeQuery({});
   useEffect(() => {
     navigation.addListener("focus", () => {
       userMe();

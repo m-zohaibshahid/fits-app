@@ -13,7 +13,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Toast } from "react-native-toast-message/lib/src/Toast";
 import { useSelector } from "react-redux";
 import { UserDetailInfoInterface } from "../../interfaces";
-import { useGetUserMeQuery } from "../../slice/FitsApi.slice";
+import { useBookASessionMutation, useGetUserMeQuery } from "../../slice/FitsApi.slice";
 
 const BookSessionPayment = () => {
   const navigation = useNavigation();
@@ -26,8 +26,8 @@ const BookSessionPayment = () => {
   const reciverId = route.params?.data.userData.item?.user.cus_id;
 
   const { userInfo } = useSelector((state: Partial<UserDetailInfoInterface>) => state.fitsStore);
-
-  const { data, isLoading, error, isSuccess } = useGetUserMeQuery({ id: userInfo?._id });
+  const { data, isLoading, error, isSuccess } = useGetUserMeQuery({});
+  const [bookASession, { data: sessionBook, isLoading: isLoading1 }] = useBookASessionMutation();
 
   const userMe = async () => {
     setLoad(true);
@@ -63,21 +63,26 @@ const BookSessionPayment = () => {
     }
   };
   const BookASession = async () => {
-    await fetch(`${url}/book-a-session`, {
-      method: "POST",
-      headers: {
-        Accept: "application/json",
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${userInfo?.access_token}`,
-      },
-      body: JSON.stringify({
-        sessionId: route?.params?.data?.sessionId,
-        trainerId: route?.params?.data?.trainerId,
-      }),
+    // await fetch(`${url}/book-a-session`, {
+    //   method: "POST",
+    //   headers: {
+    //     Accept: "application/json",
+    //     "Content-Type": "application/json",
+    //     Authorization: `Bearer ${userInfo?.access_token}`,
+    //   },
+    //   body: JSON.stringify({
+    //     sessionId: route?.params?.data?.sessionId,
+    //     trainerId: route?.params?.data?.trainerId,
+    //   }),
+    // })
+    bookASession({
+      sessionId: route?.params?.data?.sessionId,
+      trainerId: route?.params?.data?.trainerId,
     })
-      .then((res) => res.json())
+      // .then((res) => res.json())
+
       .then((res2) => {
-        if (res2.message === "session booked") {
+        if (res2?.data?.message === "session booked") {
           setLoad(false);
           navigation.navigate("Home");
           Toast.show({
@@ -130,7 +135,7 @@ const BookSessionPayment = () => {
             text1: "Something went Wrong",
           });
         }
-      })
+      });
   };
   // Effects
   useEffect(() => {

@@ -6,8 +6,6 @@ import { url } from "../../constants/url";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Toast } from "react-native-toast-message/lib/src/Toast";
 import { NavigationSwitchProp } from "react-navigation";
-import { useSelector } from "react-redux";
-import { UserDetailInfoInterface } from "../../interfaces";
 import { useGetUserMeQuery } from "../../slice/FitsApi.slice";
 
 interface Props {
@@ -19,8 +17,7 @@ const WalletForTrainee: React.FC<Props> = ({ navigation }) => {
   const [load, setLoad] = useState(false);
   const [cardData, setCardData] = useState();
   const [addBalance, setAddBalance] = useState();
-  const { userInfo } = useSelector((state: Partial<UserDetailInfoInterface>) => state.fitsStore);
-  const { data, isLoading, error, isSuccess } = useGetUserMeQuery({ id: userInfo?._id });
+  const { data, isLoading, error, isSuccess } = useGetUserMeQuery({});
 
   // Functions
 

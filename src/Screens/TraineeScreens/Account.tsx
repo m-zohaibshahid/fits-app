@@ -31,10 +31,8 @@ const Account: React.FC<Props> = ({ navigation }) => {
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const { userInfo } = useSelector((state: { fitsStore: Partial<UserDetail> }) => state.fitsStore);
-
-  const { data: userMeData, isLoading: isLoading1, error: error1 } = useGetUserMeQuery({ id: userDatax?.data._id });
+  const { data: userMeData, isLoading: isLoading1, error: error1 } = useGetUserMeQuery({});
   const [updatePassword, { isLoading, error }] = useUpdatePasswordMutation();
-
   useEffect(() => {
     navigation.addListener("focus", () => {
       getUserInfo();
@@ -44,7 +42,7 @@ const Account: React.FC<Props> = ({ navigation }) => {
   const getUserInfo = async () => {
     const userMeData = await getUserAsyncStroage();
     setUserDatax(userMeData);
-    setId(userInfo?._id ?? "");
+    setId(userInfo?.user?._id ?? "");
     const userLoc: string | null = await AsyncStorage.getItem("userLocation");
     let userLocx = JSON.parse(userLoc ?? "");
     setUserCurrentLocation(userLocx);
@@ -91,7 +89,6 @@ const Account: React.FC<Props> = ({ navigation }) => {
               alignItems: "center",
             }}
           >
-            <ErrorHandler error={error || error1} />
             <View style={{ width: "90%" }}>
               <Text
                 style={{
