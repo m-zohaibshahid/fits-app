@@ -11,7 +11,7 @@ import * as Images from "../../constants/Images";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import FastImage from "react-native-fast-image";
 import { useGetUserMeQuery, useUpdatePasswordMutation } from "../../slice/FitsApi.slice";
-import { getUserAsyncStroage } from "../../common/AsyncStorage";
+import { getUserAsyncStroage } from "../../common/fetchApi";
 import { useSelector } from "react-redux";
 import { UserDataInterface, UserDetail } from "../../interfaces";
 import { NavigationSwitchProp } from "react-navigation";

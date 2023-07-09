@@ -7,13 +7,14 @@ import { useNavigation } from "@react-navigation/native";
 import Typography from "../typography/text";
 
 interface HeaderProps {
-  label: string;
+  label?: string;
   subLabel?: string;
   lableStyle?: TextStyle | ViewStyle;
+  navigation?: any;
 }
 
-const Header = ({ label, subLabel, lableStyle }: HeaderProps) => {
-  const navigation = useNavigation();
+const Header = ({ label, subLabel, lableStyle, navigation }: HeaderProps) => {
+  // const navigation = useNavigation();
 
   const goBack = () => {
     navigation.goBack();

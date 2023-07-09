@@ -127,7 +127,7 @@ const UpdateProfessioninfo: React.FC<Props> = ({ navigation }) => {
       {/*Header rect start*/}
       <View style={styles.header}>
         <View style={styles.fixeheight}>
-          <Header navigation={navigation} onPress={GoBack} />
+          <Header navigation={navigation} />
         </View>
         <View style={styles.fixeheight1}>
           <View style={styles.topView}>

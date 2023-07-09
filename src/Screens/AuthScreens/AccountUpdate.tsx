@@ -11,13 +11,9 @@ import * as Images from "../../constants/Images";
 import Header from "../../Components/Header";
 import Colors from "../../constants/Colors";
 import Button from "../../Components/Button";
-import { url } from "../../constants/url";
 import { useNavigation } from "@react-navigation/native";
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import { useGetUserMeQuery } from "../../slice/FitsApi.slice";
-import { UserDetail } from "../../interfaces";
+import { useGetUserMeQuery, usePersonalInfoUpdateMutation } from "../../slice/FitsApi.slice";
 import { useSelector } from "react-redux";
-import { getUserAsyncStroage } from "../../utils/async-storage";
 
 const AccountUpdate = () => {
   const navigation = useNavigation();
@@ -30,35 +26,23 @@ const AccountUpdate = () => {
   const [gender, setGender] = useState("");
   const [phoneNumber, setPhoneNumber] = useState("");
   const [date, setDate] = useState(new Date());
-  const [token, setToken] = useState("");
   const [statusOne, setStatusOne] = useState(true);
   const [statusTwo, setStatusTwo] = useState(false);
   const [statusThree, setStatusThree] = useState(false);
   const [image, setImage] = useState("");
   const [cloudImageUrl, setCloudImageUrl] = useState("");
-  const [userDatax, setUserDatax] = useState();
   const [isCountryVisible, setIsCountryVisible] = React.useState(false);
-
   const { data: userMeData, refetch, isLoading } = useGetUserMeQuery({});
-
+  const [personalInfoUpdate, { data: personallInfo, isLoading: isLoading1 }] = usePersonalInfoUpdateMutation();
   const [load, setLoad] = useState(false);
   const [loadx, setLoadx] = useState(false);
-
   const [userId, setUserId] = useState("");
-
+  console.log("date", date);
   useEffect(() => {
     navigation.addListener("focus", () => {
-      getUserInfo();
       userMe();
     });
   }, []);
-
-  const getUserInfo = async () => {
-    const userData = await getUserAsyncStroage();
-    setUserDatax(userData);
-
-    setToken(userData?.access_token);
-  };
 
   const onPressFlag = () => {
     setIsCountryVisible(true);
@@ -68,48 +52,35 @@ const AccountUpdate = () => {
     navigation.goBack();
   };
   const userApiCalling = async (data: any) => {
-    await AsyncStorage.setItem("userPersonalInfo", JSON.stringify(data));
     userMe();
   };
 
   const accountUpdate = async () => {
     setLoad(true);
-    await fetch(`${url}/personal/${userId}`, {
-      method: "PUT",
-      headers: {
-        Accept: "application/json",
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
-      body: JSON.stringify({
-        name: fullName,
-        date_of_birth: date,
-        country: country,
-        state: state,
-        city: city,
-        phoneNumber: phoneNumber,
-        gender: gender,
-        profileImage: cloudImageUrl,
-      }),
-    })
-      .then((res) => res.json())
-      .then((res2) => {
-        refetch();
-        if (isLoading) {
-          setLoad(false);
-          if (res2.success) {
-            userApiCalling(res2.data);
-            GoBack();
-          } else {
-            ToastAndroid.show(res2.message, ToastAndroid.LONG);
-          }
-        }
-      })
-      .catch(() => {
-        setLoad(false);
-        Alert.alert("Something Went Wrong");
-      });
+    const body = {
+      name: fullName,
+      date_of_birth: date,
+      country: country,
+      state: state,
+      city: city,
+      phoneNumber: phoneNumber,
+      gender: gender,
+      profileImage: cloudImageUrl,
+    };
+
+    await personalInfoUpdate({ id: userId, body }).then((res2: any) => {
+      refetch();
+
+      setLoad(false);
+      if (res2.data.success) {
+        userApiCalling(res2.data.data);
+        GoBack();
+      } else {
+        ToastAndroid.show(res2.data.message, ToastAndroid.LONG);
+      }
+    });
   };
+
   // choose Photo From Camera
   const choosePhotoFromCamera = () => {
     ImagePicker.openPicker({
@@ -131,7 +102,9 @@ const AccountUpdate = () => {
         Alert.alert(err.message);
       });
   };
-
+  const handleCountrySelect = (value: { name: string }) => {
+    setCountry(value.name);
+  };
   const uploadImageOnCloud = async (image: { uri: string; type: string; name: string } | undefined) => {
     setLoadx(true);
     const cloudImage = new FormData();
@@ -153,44 +126,43 @@ const AccountUpdate = () => {
         Alert.alert(err.message);
       });
   };
-  // Assuming date is in the format "YYYY-MM-DD" e.g., "2023-07-06"
   const validDate = moment(date, "YYYY-MM-DD");
-
-  // user Me api
   const userMe = async () => {
-    setLoadx(true);
+    try {
+      if (userMeData?.success) {
+        const personalInfo = userMeData?.personal_info;
 
-    setLoadx(false);
-    if (userMeData.success) {
-      setFullName(userMeData?.personal_info?.name);
-      setCountry(userMeData?.personal_info?.country);
-      setState(userMeData?.personal_info?.state);
-      setCity(userMeData?.personal_info?.city);
-      setGender(userMeData?.personal_info?.gender);
-      setUserId(userMeData?.personal_info?._id);
-      setPhoneNumber(userMeData?.personal_info?.phoneNumber);
-      setDate(userMeData?.personal_info?.date_of_birth);
-      setImage(userMeData?.personal_info?.profileImage);
-      setCloudImageUrl(userMeData?.personal_info?.profileImage);
-    } else {
-      Alert.alert(userMeData.errors);
+        setFullName(personalInfo?.name ?? "");
+        setCountry(personalInfo?.country ?? "");
+        setState(personalInfo?.state ?? "");
+        setCity(personalInfo?.city ?? "");
+        setGender(personalInfo?.gender ?? "");
+        setUserId(personalInfo?._id ?? "");
+        setPhoneNumber(personalInfo?.phoneNumber ?? "");
+        setDate(personalInfo?.date_of_birth ?? "");
+        setImage(personalInfo?.profileImage ?? "");
+        setCloudImageUrl(personalInfo?.profileImage ?? "");
+      } else {
+        throw new Error("Personal information is not available");
+      }
+    } catch (error) {
+      console.error(error); // Log the error for debugging purposes
+      // Show a more informative error message to the user
+      Alert.alert("Error", "Failed to retrieve personal information");
     }
   };
+
   return (
     <View style={styles.container}>
       {/*Header rect start*/}
       <View style={styles.header}>
         <View style={styles.fixeheight}>
-          <Header navigation={navigation} onPress={GoBack} />
+          <Header navigation={navigation} />
         </View>
         <View style={styles.fixeheight1}>
           <View style={styles.PersonalinfoView}>
             <View style={{ width: "60%", alignItems: "flex-start" }}>
-              <TouchableOpacity
-              // onPress={() => {
-              //   uploadImageOnCloud();
-              // }}
-              >
+              <TouchableOpacity>
                 <Text style={styles.PersonalinfoText}>Personal Info</Text>
               </TouchableOpacity>
               <Text style={styles.filldetailsText}>Fill in your details</Text>
@@ -358,9 +330,8 @@ const AccountUpdate = () => {
             <CountryPicker
               onClose={() => setIsCountryVisible(false)}
               visible={isCountryVisible}
-              onSelect={(value: { name: string }) => {
-                setCountry(value?.name);
-              }}
+              countryCode="US" // Add the countryCode prop with the appropriate value
+              onSelect={handleCountrySelect}
             />
           )}
 
@@ -498,11 +469,9 @@ const AccountUpdate = () => {
                       </View>
 
                       <View style={styles.topView}>
-                        {/* <DatePicker mode="date" textColor="#000" date={date ? new Date(date) : new Date()} style={styles.DatePicker} onDateChange={setDate} /> */}
-
                         <DatePicker
                           mode="date"
-                          date={date ? new Date(date) : new Date()}
+                          date={new Date(date)}
                           onDateChange={setDate}
                           maximumDate={new Date(new Date().getFullYear() - 15, new Date().getMonth(), new Date().getDate())} // Set the maximum date to 18 years ago
                         />
@@ -514,13 +483,15 @@ const AccountUpdate = () => {
             </Modal>
           </View>
           {/* modalVisibleDate End*/}
-          <View style={{ paddingVertical: 10, alignItems: "center" }}>
-            <Button
-              label={load ? <ActivityIndicator size="small" color="#fff" /> : "NEXT"}
-              onPress={() => {
-                accountUpdate();
-              }}
-            />
+          <View style={{ alignItems: "center" }}>
+            <View style={styles.buttonContainer}>
+              <Button
+                label={load || isLoading1 || isLoading ? <ActivityIndicator size="small" color="#fff" /> : "NEXT"}
+                onPress={() => {
+                  accountUpdate();
+                }}
+              />
+            </View>
           </View>
         </ScrollView>
       )}
@@ -542,10 +513,13 @@ const styles = StyleSheet.create({
   fixeheight: {
     height: 50,
     borderBottomWidth: 0.5,
-    justifyContent: "center",
     borderColor: "lightgrey",
     width: "100%",
-    alignItems: "center",
+    flexDirection: "row",
+    paddingHorizontal: 10,
+  },
+  arrowLeft: {
+    marginRight: 10,
   },
   fixeheight1: {
     height: 100,
@@ -877,6 +851,11 @@ const styles = StyleSheet.create({
     color: Colors.white,
     textAlign: "left",
     left: 10,
+  },
+  buttonContainer: {
+    width: "90%",
+    marginTop: "5%",
+    alignItems: "center",
   },
 });
 export default AccountUpdate;

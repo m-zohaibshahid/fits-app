@@ -2,11 +2,11 @@ import React, { useState, useEffect } from "react";
 import { Text, View, TouchableOpacity, StyleSheet, ScrollView, ActivityIndicator, Platform, ToastAndroid } from "react-native";
 import { RFValue } from "react-native-responsive-fontsize";
 import Header from "../../Components/Header";
-import { url } from "../../constants/url";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Toast } from "react-native-toast-message/lib/src/Toast";
 import { NavigationSwitchProp } from "react-navigation";
-import { useGetUserMeQuery } from "../../slice/FitsApi.slice";
+import { useGetUserMeQuery, useRechargeStripeMutation } from "../../slice/FitsApi.slice";
+import { useSelector } from "react-redux";
+import { getApi } from "../../common/fetchApi";
 
 interface Props {
   navigation: NavigationSwitchProp;
@@ -16,16 +16,17 @@ const WalletForTrainee: React.FC<Props> = ({ navigation }) => {
   // Hooks
   const [load, setLoad] = useState(false);
   const [cardData, setCardData] = useState();
-  const [addBalance, setAddBalance] = useState();
-  const { data, isLoading, error, isSuccess } = useGetUserMeQuery({});
-
+  const [addBalance, setAddBalance] = useState<any>({});
+  const { data, isLoading } = useGetUserMeQuery<any>({});
+  const [rechargeStripe, { isLoading: isLoading1 }] = useRechargeStripeMutation();
+  const token = useSelector((state: { token: string }) => state.token);
   // Functions
 
-  const userMe = async () => {
+  const userMe = async (msg?: string) => {
     setLoad(true);
 
     if (data?.success) {
-      getStripeCard(data?.stripe?.card?.customer);
+      getStripeCard(data?.stripe?.card?.customer, msg);
       setAddBalance(data?.stripe?.card);
     } else {
       Toast.show({
@@ -35,82 +36,60 @@ const WalletForTrainee: React.FC<Props> = ({ navigation }) => {
     }
   };
 
-  const getStripeCard = async (id: string) => {
+  const getStripeCard = async (id: string, msg?: string) => {
     setLoad(true);
-    const userData = await AsyncStorage.getItem("userData");
-    let userDatax = JSON.parse(userData);
-    if (userDatax) {
-      await fetch(`${url}/stripe/customer/${id}`, {
-        method: "GET",
-        headers: {
-          Accept: "application/json",
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${userDatax?.access_token}`,
-        },
-      })
-        .then((res) => res.json())
-        .then((res2) => {
-          setLoad(false);
+    getApi(id, token)
+      .then((res) => res.json())
+      .then((res2) => {
+        setLoad(false);
 
-          if (res2?.message === "Stripe Customer Found Successfully!") {
-            Toast.show({
-              type: "success",
-              text1: "Balance successfully updated",
-            });
-            setCardData(res2?.data);
-          } else {
-            Toast.show({
-              type: "error",
-              text1: "Something went wrong",
-            });
-          }
-        })
-        .catch(() => {
-          setLoad(false);
+        if (res2?.success) {
+          Toast.show({
+            type: "success",
+            text1: msg ? "Balance successfully updated" : "Balance get successfully",
+          });
+          setCardData(res2?.data);
+        } else {
           Toast.show({
             type: "error",
             text1: "Something went wrong",
           });
+        }
+      })
+      .catch(() => {
+        setLoad(false);
+        Toast.show({
+          type: "error",
+          text1: "Something went wrong",
         });
-    }
+      });
   };
 
   const callRecharge = async (amount: number) => {
     setLoad(true);
-    const userTokendata = await AsyncStorage.getItem("userData");
-    let userTokendatax = JSON.parse(userTokendata);
-    if (userTokendatax) {
-      await fetch(`${url}/stripe/recharge/${addBalance?.customer}`, {
-        method: "POST",
-        headers: {
-          Accept: "application/json",
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${userTokendatax?.access_token}`,
-        },
-        body: JSON.stringify({
-          amount: amount,
-          currency: "USD",
-          source: addBalance?.id,
-          description: "Recharge Account",
-        }),
+    const body = {
+      amount: amount,
+      currency: "USD",
+      source: addBalance?.id,
+      description: "Recharge Account",
+    };
+    console.log("recharge", body);
+    rechargeStripe({ id: addBalance?.customer, ...body })
+      .then((res2: any) => {
+        console.log("res2", res2);
+        if (!res2.data.success) {
+          ToastAndroid.show(res2?.message, ToastAndroid.SHORT);
+        }
+        userMe("update");
+        setLoad(false);
       })
-        .then((res) => res.json())
-        .then((res2) => {
-          console.log("res2", res2);
-          if (!res2.success) {
-            ToastAndroid.show(res2?.message, ToastAndroid.SHORT);
-          }
-          userMe();
-          setLoad(true);
-        })
-        .catch(() => {
-          setLoad(false);
-          Toast.show({
-            type: "error",
-            text1: "Something went wrong!",
-          });
+      .catch(() => {
+        setLoad(false);
+        Toast.show({
+          type: "error",
+          text1: "Something went wrong!",
         });
-    }
+      });
   };
 
   // Effects
@@ -125,7 +104,7 @@ const WalletForTrainee: React.FC<Props> = ({ navigation }) => {
 
       {/*End Header*/}
       <ScrollView showsVerticalScrollIndicator={false} style={styles.main}>
-        {load ? (
+        {load || isLoading || isLoading1 ? (
           <View style={{ marginTop: 20 }}>
             <ActivityIndicator size="large" color="red" />
           </View>
@@ -302,9 +281,7 @@ const WalletForTrainee: React.FC<Props> = ({ navigation }) => {
                   </TouchableOpacity>
                   {/*end right box*/}
                 </View>
-                {/*start Box View*/}
-                {/*start Box View*/}
-                {/*start Box View*/}
+
                 <View style={styles.FlexView}>
                   {/*start left box*/}
                   <TouchableOpacity
@@ -408,9 +385,7 @@ const WalletForTrainee: React.FC<Props> = ({ navigation }) => {
         <View style={{ paddingVertical: 40 }}></View>
       </ScrollView>
       {/*start Add btn*/}
-      {/* <View style={styles.footer}>
-        <Button navigation={navigation} label={"book Wallet"} disabled={load} />
-      </View> */}
+
       {/*End Add btn*/}
     </View>
   );
@@ -440,7 +415,6 @@ const styles = StyleSheet.create({
     height: 200,
     width: "100%",
     justifyContent: "center",
-    // alignItems:'center',
   },
   main: {
     width: "100%",

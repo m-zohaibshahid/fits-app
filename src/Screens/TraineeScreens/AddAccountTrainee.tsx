@@ -6,7 +6,7 @@ import Colors from "../../constants/Colors";
 import Button from "../../Components/Button";
 import { url } from "../../constants/url";
 import { useGetUserMeQuery } from "../../slice/FitsApi.slice";
-import { getUserAsyncStroage } from "../../common/AsyncStorage";
+import { getUserAsyncStroage } from "../../common/fetchApi";
 import { NavigationSwitchProp } from "react-navigation";
 interface Props {
   navigation: NavigationSwitchProp;

@@ -6,7 +6,7 @@ import { RFValue } from "react-native-responsive-fontsize";
 import VideoPlayer from "react-native-video-player";
 import { url } from "../../constants/url";
 import Colors from "../../constants/Colors";
-import { getUserAsyncStroage } from "../../common/AsyncStorage";
+import { getUserAsyncStroage } from "../../common/fetchApi";
 import { NavigationSwitchProp } from "react-navigation";
 import { useSelector } from "react-redux";
 import { useGetUserMeQuery } from "../../slice/FitsApi.slice";
