@@ -1,31 +1,26 @@
 import React, { useState, useEffect } from "react";
-import { Text, View, StyleSheet, Pressable, ToastAndroid, ActivityIndicator, Platform } from "react-native";
+import { Text, View, StyleSheet, Pressable, ToastAndroid, ActivityIndicator, Platform, Alert } from "react-native";
 import AntDesign from "react-native-vector-icons/AntDesign";
 import { RFValue } from "react-native-responsive-fontsize";
 import FontAwesome from "react-native-vector-icons/FontAwesome";
 import { url } from "../../constants/url";
 import moment from "moment";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { NavigationSwitchProp } from "react-navigation";
+import { useSelector } from "react-redux";
+import { UserDetail } from "../../interfaces";
 
-const ScheduledClasses = ({ navigation }) => {
+interface PropsInterface {
+  navigation: NavigationSwitchProp;
+}
+
+
+const ScheduledClasses = ({ navigation }: PropsInterface) => {
+  const { userInfo } = useSelector((state: { fitsStore: Partial<UserDetail> }) => state.fitsStore);
+  const token: string = useSelector((state: { token: string }) => state.token);
   const [data, setData] = useState();
   const [load, setLoad] = useState(false);
   const [loadx, setLoadx] = useState(false);
-  const [token, setToken] = useState("");
-  const [id, setId] = useState("");
-
-  useEffect(() => {
-    navigation.addListener("focus", () => {
-      getUserInfo();
-    });
-  }, [getUserInfo]);
-
-  const getUserInfo = async () => {
-    const userData = await AsyncStorage.getItem("userData");
-    let userDatax = JSON.parse(userData);
-    setToken(userDatax?.access_token);
-    setId(userDatax?.data?._id);
-  };
 
   useEffect(() => {
     navigation.addListener("focus", () => {
@@ -34,42 +29,17 @@ const ScheduledClasses = ({ navigation }) => {
   }, []);
 
   const getAllClassesTrainee = async () => {
-    const userData = await AsyncStorage.getItem("userData");
-    let userDatax = JSON.parse(userData);
-
-    setLoad(true);
-
-    await fetch(`${url}/book-a-session/trainee/${userDatax?.data?._id}`, {
+    await fetch(`${url}/book-a-session/trainee/${userInfo?.user._id}`, {
       method: "GET",
       headers: {
         Accept: "application/json",
         "Content-Type": "application/json",
-        Authorization: `Bearer ${userDatax?.access_token}`,
+        Authorization: `Bearer ${token}`,
       },
     })
-      .then((res) => res.json())
-      .then((res2) => {
-        setLoad(false);
-        if (res2.success === true) {
-          // ToastAndroid.show("Done", ToastAndroid.LONG);
-          setData(res2?.data?.booking);
-        } else {
-          //Alert.alert(res2.errors);
-        }
-      })
-      .catch((error) => {
-        setLoad(false);
-        Alert.alert("Something Went Wrong");
-      });
   };
+
   const deleteBooking = async (item) => {
-    const userData = await AsyncStorage.getItem("userData");
-    let userDatax = JSON.parse(userData);
-
-    setLoadx(true);
-    {
-    }
-
     await fetch(`${url}/book-a-session/trainee/${item?._id}`, {
       method: "DELETE",
       headers: {
@@ -78,23 +48,8 @@ const ScheduledClasses = ({ navigation }) => {
         Authorization: `Bearer ${userDatax?.access_token}`,
       },
     })
-      .then((res) => res.json())
-      .then((res2) => {
-        setLoadx(false);
-        if (res2.success === true) {
-          ToastAndroid.show(res2.message, ToastAndroid.LONG);
-          getAllClassesTrainee();
-
-          navigation.navigate("BookSessionPayment");
-        } else {
-          ToastAndroid.show(res2.message, ToastAndroid.LONG);
-        }
-      })
-      .catch((error) => {
-        setLoadx(false);
-        Alert.alert("Something Went Wrong");
-      });
   };
+
   const detailsInfoCall = (item, i) => {
     let dummy = [...data];
     if (dummy[i].status == true) {
@@ -103,11 +58,9 @@ const ScheduledClasses = ({ navigation }) => {
       dummy.forEach((item) => (item.status = false));
       dummy[i].status = true;
     }
-    setData(dummy);
   };
   return (
     <View style={styles.container}>
-      {/*start Totale */}
       <View style={styles.main}>
         {load === true ? (
           <ActivityIndicator size="large" color="black" />

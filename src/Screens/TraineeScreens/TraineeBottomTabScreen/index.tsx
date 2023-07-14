@@ -20,6 +20,7 @@ const TraineeBottomTabScreen = () => {
   const {unReadMessages} = useSelector((state: { messages: Partial<MessageState> }) => state.messages);
   return (
     <Tab.Navigator
+    options={{ headerShown: false }}
       screenOptions={({ route }) => ({
         tabBarIcon: ({ color }) => {
           let iconName;
@@ -59,10 +60,10 @@ const TraineeBottomTabScreen = () => {
         },
       }}
     >
-      <Tab.Screen name="Home" component={Home} />
-      <Tab.Screen name="MyClasses" component={MyClasses} />
-      <Tab.Screen name="Chat" component={Chat} />
-      <Tab.Screen name="Account" component={Account} />
+      <Tab.Screen options={{headerShown: false}} name="Home" component={Home} />
+      <Tab.Screen options={{headerShown: false}} name="MyClasses" component={MyClasses} />
+      <Tab.Screen options={{headerShown: false}} name="Chat" component={Chat} />
+      <Tab.Screen options={{headerShown: false}} name="Account" component={Account} />
     </Tab.Navigator>
   );
 };

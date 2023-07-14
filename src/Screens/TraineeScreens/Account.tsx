@@ -11,11 +11,11 @@ import * as Images from "../../constants/Images";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import FastImage from "react-native-fast-image";
 import { useGetUserMeQuery, useUpdatePasswordMutation } from "../../slice/FitsApi.slice";
-import { getUserAsyncStroage } from "../../common/AsyncStorage";
 import { useSelector } from "react-redux";
 import { UserDataInterface, UserDetail } from "../../interfaces";
 import { NavigationSwitchProp } from "react-navigation";
 import ErrorHandler from "../../Components/Alert-modal";
+import { getUserAsyncStroage } from "../../utils/async-storage";
 interface Props {
   navigation: NavigationSwitchProp;
 }
@@ -44,7 +44,7 @@ const Account: React.FC<Props> = ({ navigation }) => {
   const getUserInfo = async () => {
     const userMeData = await getUserAsyncStroage();
     setUserDatax(userMeData);
-    setId(userInfo?._id ?? "");
+    setId(userInfo?.user?._id ?? "");
     const userLoc: string | null = await AsyncStorage.getItem("userLocation");
     let userLocx = JSON.parse(userLoc ?? "");
     setUserCurrentLocation(userLocx);

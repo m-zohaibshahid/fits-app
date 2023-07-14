@@ -16,7 +16,7 @@ import { useRoute } from "@react-navigation/native";
 import { heightPercentageToDP } from "react-native-responsive-screen";
 import moment from "moment";
 import { useGetUserMeQuery } from "../../slice/FitsApi.slice";
-import { getUserAsyncStroage } from "../../common/AsyncStorage";
+import { getUserAsyncStroage } from "../../utils/async-storage";
 
 const Schedule = ({ navigation }) => {
   const route = useRoute();

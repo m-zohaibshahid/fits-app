@@ -63,10 +63,10 @@ const TrainerBottomTabScreen = () => {
         paddingBottom: Platform.OS === 'ios' ? 20 : 0,
       },
     }}>
-      <Tab.Screen name="Home" component={Home} options={{ headerShown: false }} />
-      <Tab.Screen name="Video" component={MyVideos} options={{ headerShown: false }} />
-      <Tab.Screen name="Chat" component={Chat} options={{ title: "Chat" }} />
-      <Tab.Screen name="Account" component={AccountScreen} options={{ headerShown: false }} />
+      <Tab.Screen options={{headerShown: false}} name="Home" component={Home} />
+      <Tab.Screen options={{headerShown: false}} name="Video" component={MyVideos} />
+      <Tab.Screen options={{headerShown: false}} name="Chat" component={Chat} />
+      <Tab.Screen options={{headerShown: false}} name="Account" component={AccountScreen} />
   </Tab.Navigator>
   )
 }
