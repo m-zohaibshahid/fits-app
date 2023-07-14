@@ -13,19 +13,18 @@ import { errorToast } from "../../../utils/toast";
 import Container from "../../../Components/Container";
 
 interface PropsInterface {
-  navigation: NavigationSwitchProp
+  navigation: NavigationSwitchProp;
 }
 
 const FitnessLevelScreen = ({ navigation }: PropsInterface) => {
   // Hooks
-  const { userInfo } = useSelector((state: { fitsStore: Partial<UserDetail> }) => state.fitsStore);
   const [value, setValue] = useState("");
   const [key, setKey] = useState("");
   const [statusOne, setStatusOne] = useState(false);
   const [statusTwo, setStatusTwo] = useState(false);
   const [statusThree, setStatusThree] = useState(false);
   const [statusFour, setStatusFour] = useState(false);
-  const [mutateAsyncFitnessLevelChoose, { isLoading }] = useFitnessLevelChooseMutation()
+  const [mutateAsyncFitnessLevelChoose, { isLoading }] = useFitnessLevelChooseMutation();
 
   // Functions
   const selectLevelFirst = () => {
@@ -69,12 +68,12 @@ const FitnessLevelScreen = ({ navigation }: PropsInterface) => {
   };
 
   const handleCallPersonalInfoUpdate = async () => {
-    const fitnessLevelInfo = { fitness_level: { value: value, key: key }};
-    let result = await mutateAsyncFitnessLevelChoose(fitnessLevelInfo)
-    if (result?.data) gotToNextScreen()
+    const fitnessLevelInfo = { fitness_level: { value: value, key: key } };
+    let result = await mutateAsyncFitnessLevelChoose(fitnessLevelInfo);
+    if (result?.data) gotToNextScreen();
     if (result?.error) errorToast(result.error?.error?.message);
-  }
-  
+  };
+
   return (
     <Container>
       <Header label={"Fitness Level"} />
@@ -98,9 +97,7 @@ const FitnessLevelScreen = ({ navigation }: PropsInterface) => {
                 }}
                 style={[statusTwo ? styles.innerBorderBox : styles.innerBox]}
               >
-                <Text style={styles.titleText}>
-                  (Level-2){"\n"}Intermediate
-                </Text>
+                <Text style={styles.titleText}>(Level-2){"\n"}Intermediate</Text>
               </Pressable>
             </View>
           </View>
@@ -129,17 +126,11 @@ const FitnessLevelScreen = ({ navigation }: PropsInterface) => {
           </View>
         </View>
       </ScrollView>
-        <Button
-          loader={isLoading}
-          label={"Done"}
-          disabled={!value || !key}
-          onPress={handleCallPersonalInfoUpdate}
-        />
+      <Button loader={isLoading} label={"Done"} disabled={!value || !key} onPress={handleCallPersonalInfoUpdate} />
     </Container>
   );
 };
 export default FitnessLevelScreen;
-
 
 const styles = StyleSheet.create({
   mainContainer: {

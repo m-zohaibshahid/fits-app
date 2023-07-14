@@ -1,14 +1,5 @@
 import React, { useState, useEffect } from "react";
-import {
-  Text,
-  View,
-  TouchableOpacity,
-  Image,
-  ScrollView,
-  Alert,
-  PermissionsAndroid,
-  ToastAndroid,
-} from "react-native";
+import { Text, View, TouchableOpacity, Image, ScrollView, Alert, PermissionsAndroid, ToastAndroid } from "react-native";
 import { widthPercentageToDP as wp } from "react-native-responsive-screen";
 import AntDesign from "react-native-vector-icons/AntDesign";
 import * as Images from "../../../constants/Images";
@@ -25,11 +16,11 @@ import { useSelector } from "react-redux";
 import { UserDetail } from "../../../interfaces";
 import { NavigationSwitchProp } from "react-navigation";
 
-interface Props{
-    navigation: NavigationSwitchProp;
+interface Props {
+  navigation: NavigationSwitchProp;
 }
 
-const Home:React.FC<Props> = ({ navigation }) => {
+const Home: React.FC<Props> = ({ navigation }) => {
   // Hooks
   const [classes, setClasses] = useState(true);
   const [reviews, setReviews] = useState(false);
@@ -41,40 +32,36 @@ const Home:React.FC<Props> = ({ navigation }) => {
   const [loadx, setLoadx] = useState(false);
   const [dumdata, setDumData] = useState([]);
   const [classesData, setClassesData] = useState([]);
-  const {userInfo}  = useSelector((state: {fitsStore:Partial<UserDetail>}) => state.fitsStore)
-  const token:string  = useSelector((state: {token:string}) => state.token)
-  const { data:userMeData } = useGetUserMeQuery({ id: userInfo?._id });
-  const { data:trainerSession } = useTrainerSessionQuery({ id: userInfo?._id });
-  const [sessionDel,{ data: sessionDelete }] = useSessionDelMutation();
-  const [stripeCustomer,{ data: stripeCustomerData }] = useStripeCustomerMutation();
-  
+  const { data: userMeData } = useGetUserMeQuery({});
+  const { data: trainerSession } = useTrainerSessionQuery({});
+  const [sessionDel, { data: sessionDelete }] = useSessionDelMutation();
+  const [stripeCustomer, { data: stripeCustomerData }] = useStripeCustomerMutation();
+
   // Functions
   const userMe = async () => {
-        if (userMeData?.success) {
-          setUserData(userMeData);
-          getAllClasses();
-          createStripeAccount(userMeData);
-        } else {
-          ToastAndroid.show(userMeData?.message, ToastAndroid.LONG);
-        }   
+    if (userMeData?.success) {
+      setUserData(userMeData);
+      getAllClasses();
+      createStripeAccount(userMeData);
+    } else {
+      ToastAndroid.show(userMeData?.message, ToastAndroid.LONG);
+    }
   };
 
   const setForCareateStripeCall = async (data: any) => {
     await AsyncStorage.setItem("createStripeData", JSON.stringify(data));
   };
 
-  const createStripeAccount = async (data: { personal_info: { name: any; phoneNumber: any; }; user: { email: any; }; }) => {
+  const createStripeAccount = async (data: { personal_info: { name: any; phoneNumber: any }; user: { email: any } }) => {
     setLoad(true);
     stripeCustomer({
       name: data?.personal_info?.name,
       email: data?.user?.email,
       phone: data?.personal_info?.phoneNumber,
-    }).unwrap()
+    })
+      .unwrap()
       .then((res2) => {
-        if (
-          res2?.message === "success" ||
-          res2?.message === "customer already exists"
-        ) {
+        if (res2?.message === "success" || res2?.message === "customer already exists") {
           setForCareateStripeCall(res2?.data);
         }
       })
@@ -98,10 +85,10 @@ const Home:React.FC<Props> = ({ navigation }) => {
     }
   };
 
-  const deleteClass = async (item: { _id: number; }) => {
-   
+  const deleteClass = async (item: { _id: number }) => {
     setLoadx(true);
-    sessionDel(item._id).unwrap()
+    sessionDel(item._id)
+      .unwrap()
       .then((res2) => {
         setLoadx(false);
         if (res2.succes === true) {
@@ -143,14 +130,11 @@ const Home:React.FC<Props> = ({ navigation }) => {
 
   const requestLocationPermission = async () => {
     try {
-      const granted = await PermissionsAndroid.request(
-        PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
-        {
-          title: "Location Access Required",
-          message: "This App needs to Access your location",
-          buttonPositive: "Allow Location",
-        }
-      );
+      const granted = await PermissionsAndroid.request(PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION, {
+        title: "Location Access Required",
+        message: "This App needs to Access your location",
+        buttonPositive: "Allow Location",
+      });
       if (granted === PermissionsAndroid.RESULTS.GRANTED) {
         Geolocation.getCurrentPosition(
           (position) => {
@@ -160,23 +144,19 @@ const Home:React.FC<Props> = ({ navigation }) => {
               lat: position?.coords?.latitude,
               lng: position?.coords?.longitude,
             };
-            
-            Geocoder.geocodePosition(pos)
-              .then((res: {
-                subLocality: string;
-                locality: string;
-                adminArea: string; country: string; 
-}[]) => {
-                setUserLocation(
-                  res[0].subLocality +
-                  " " +
-                  res[0].locality +
-                  " ," +
-                  res[0].adminArea +
-                  "-" +
-                  res[0].country
-                );
-              })
+
+            Geocoder.geocodePosition(pos).then(
+              (
+                res: {
+                  subLocality: string;
+                  locality: string;
+                  adminArea: string;
+                  country: string;
+                }[]
+              ) => {
+                setUserLocation(res[0].subLocality + " " + res[0].locality + " ," + res[0].adminArea + "-" + res[0].country);
+              }
+            );
           },
           (error) => {
             console.error(error.code, error?.message);
@@ -190,18 +170,17 @@ const Home:React.FC<Props> = ({ navigation }) => {
   };
 
   const getAllClasses = async () => {
-        if (trainerSession.success) {
-          setDumData(trainerSession?.data?.session);
-          setClassesData(trainerSession?.data?.session);
-        } else {
-        }
-     
+    if (trainerSession.success) {
+      setDumData(trainerSession?.data?.session);
+      setClassesData(trainerSession?.data?.session);
+    } else {
+    }
   };
 
   // Effects
 
   useEffect(() => {
-    requestLocationPermission()
+    requestLocationPermission();
     Toast.show({
       type: "success",
       text1: "Welcome",
@@ -211,7 +190,6 @@ const Home:React.FC<Props> = ({ navigation }) => {
     });
   }, []);
 
-  
   return (
     <View style={styles.mainContainer}>
       {/*Header rect start*/}
@@ -220,9 +198,7 @@ const Home:React.FC<Props> = ({ navigation }) => {
         <View style={styles.topHeaderRect}>
           <View style={{ width: "60%" }}>
             <Text style={styles.homeTitleText}>Home</Text>
-            <Text style={styles.userTitleText}>
-              Hello, {userData?.personal_info?.name}
-            </Text>
+            <Text style={styles.userTitleText}>Hello, {userData?.personal_info?.name}</Text>
           </View>
           <View style={styles.profileImageRect}>
             {userData?.personal_info?.profileImage ? (
@@ -246,42 +222,21 @@ const Home:React.FC<Props> = ({ navigation }) => {
         </View>
         {/*Second Header titles*/}
         <View style={styles.secondHeaderRect}>
-          <TouchableOpacity
-            style={styles.mainclassesview}
-            onPress={() => classestrueState()}
-          >
-            <Text style={[classes ? styles.titleText : styles.activeTitleText]}>
-              Classes
-            </Text>
+          <TouchableOpacity style={styles.mainclassesview} onPress={() => classestrueState()}>
+            <Text style={[classes ? styles.titleText : styles.activeTitleText]}>Classes</Text>
             {classes ? <View style={styles.borderView}></View> : null}
           </TouchableOpacity>
-          <TouchableOpacity
-            onPress={() => reviewstrueState()}
-            style={styles.mainclassesview}
-          >
-            <Text style={[reviews ? styles.titleText : styles.activeTitleText]}>
-              Reviews
-            </Text>
-            {reviews && <View style={styles.borderView}></View> }
+          <TouchableOpacity onPress={() => reviewstrueState()} style={styles.mainclassesview}>
+            <Text style={[reviews ? styles.titleText : styles.activeTitleText]}>Reviews</Text>
+            {reviews && <View style={styles.borderView}></View>}
           </TouchableOpacity>
         </View>
-
       </View>
       {/*Header rect end*/}
       <ScrollView showsVerticalScrollIndicator={false}>
         <View style={styles.mainBody}>
-          {classes && (
-            <Classes
-              deleteClass={deleteClass}
-              detailsInfoCall={detailsInfoCall}
-              loadx={loadx}
-              load={load}
-              data={classesData}
-            />
-          ) }
-          {reviews && (
-            <Reviews load={load} data={classesData} navigation={navigation} />
-          ) }
+          {classes && <Classes deleteClass={deleteClass} detailsInfoCall={detailsInfoCall} loadx={loadx} load={load} data={classesData} />}
+          {reviews && <Reviews load={load} data={classesData} navigation={navigation} />}
         </View>
         <View style={{ marginVertical: 60 }}></View>
       </ScrollView>

@@ -21,9 +21,7 @@ const CreateCardScreen: React.FC<Props> = ({ navigation }) => {
   const [expMonth, setExpMonth] = useState("");
   const [expYear, setExpYear] = useState("");
   const [cvc, setCVC] = useState("");
-  const [load, setLoad] = useState(false);
   const [isDatePickerVisible, setDatePickerVisibility] = useState(false);
-  const token: string = useSelector((state: { token: string }) => state.token);
   const { createStripeData } = useSelector((state: any) => state.fitsStore);
   const [createStripeCard, { isLoading: isLoading1 }] = useCreateStripeCardMutation();
   // Functions
@@ -138,11 +136,11 @@ const CreateCardScreen: React.FC<Props> = ({ navigation }) => {
       </ScrollView>
       <Button
         // navigation={navigation}
-        loader={load || isLoading1}
+        loader={isLoading1}
         label={"Create"}
         disabled={!cardNumber || !expDate || !cvc}
         onPress={() => {
-          if (!load) {
+          if (!isLoading1) {
             createCall();
           }
         }}

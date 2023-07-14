@@ -18,7 +18,7 @@ const AddAccountTrainee: React.FC<Props> = ({ navigation }) => {
   const [cvc, setCvc] = useState("");
   const [userDatax, setUserDatax] = useState();
 
-  const { data: userMeData, isLoading, error, isSuccess } = useGetUserMeQuery({ id: userDatax?.data._id });
+  const { data: userMeData, isLoading, error, isSuccess } = useGetUserMeQuery({});
 
   const GoBack = () => {
     navigation.goBack();

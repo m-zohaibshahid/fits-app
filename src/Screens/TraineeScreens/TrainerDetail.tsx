@@ -1,13 +1,5 @@
 import React, { useState } from "react";
-import {
-  Text,
-  View,
-  TouchableOpacity,
-  StyleSheet,
-  TextInput,
-  Modal,
-  Platform
-} from "react-native";
+import { Text, View, TouchableOpacity, StyleSheet, TextInput, Modal, Platform } from "react-native";
 import { ScrollView } from "react-native-gesture-handler";
 import AntDesign from "react-native-vector-icons/AntDesign";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
@@ -30,7 +22,7 @@ enum Tab {
   ABOUT,
   SCHEDULE,
   VIDEO,
-  RATINGS
+  RATINGS,
 }
 
 interface PropsInterface {
@@ -52,7 +44,7 @@ const TrainerDetail = ({ navigation }: PropsInterface) => {
   };
 
   const nextScreen = (roomId: string) => {
-    navigation.navigate("Chat", {roomId});
+    navigation.navigate("Chat", { roomId });
   };
 
   const handleTabPress = (tab: Tab) => {
@@ -62,17 +54,17 @@ const TrainerDetail = ({ navigation }: PropsInterface) => {
   const handleCreateChatRoom = async () => {
     let body = {
       message: message,
-      linkId: trainerId
-    }
+      linkId: trainerId,
+    };
     const result = await mutateAsyncChatRoomCreate(body);
     if (result?.error) errorToast(result.error?.data?.message);
-    if (result?.data) nextScreen(result.data?.data.room._id)
+    if (result?.data) nextScreen(result.data?.data.room._id);
   };
 
   const renderTabContent = () => {
     switch (activeTab) {
       case Tab.ABOUT:
-        return <About navigation={navigation} token={token} id={userInfo?.user._id} />;
+        return <About />;
       case Tab.SCHEDULE:
         return <Schedule navigation={navigation} />;
       case Tab.VIDEO:
@@ -176,8 +168,7 @@ const TrainerDetail = ({ navigation }: PropsInterface) => {
                 <View style={styles.Btnmain2View}>
                   <Text style={styles.sessionText}>
                     <Text style={styles.Boldtextstyle}>
-                      {route?.params?.userData.averageRating}{" "}
-                      <AntDesign name="star" color={"#000"} size={15} />
+                      {route?.params?.userData.averageRating} <AntDesign name="star" color={"#000"} size={15} />
                     </Text>
                     ({route?.params?.userData.numReviews} Reviews)
                   </Text>
@@ -187,9 +178,7 @@ const TrainerDetail = ({ navigation }: PropsInterface) => {
             <View style={styles.BtnmainRowView}>
               <View style={styles.BtnviewView}>
                 <TouchableOpacity style={styles.BtnView} onPress={() => setModalVisible(true)}>
-                  <Text style={styles.contactText}>
-                    Contact
-                  </Text>
+                  <Text style={styles.contactText}>Contact</Text>
                 </TouchableOpacity>
               </View>
             </View>
@@ -209,18 +198,13 @@ const TrainerDetail = ({ navigation }: PropsInterface) => {
                       <Text style={styles.ModalLabel}>Enter Message</Text>
                       <View style={styles.parkingtyperow}>
                         <View style={{ width: "85%" }}>
-                          <TextInput
-                            style={styles.input}
-                            placeholderTextColor="black"
-                            placeholder="Message here..."
-                            value={message}
-                            onChangeText={setMessage}
-                          />
+                          <TextInput style={styles.input} placeholderTextColor="black" placeholder="Message here..." value={message} onChangeText={setMessage} />
                         </View>
                         <View style={styles.parkingType}>
-                          <TouchableOpacity onPress={() => {
-                               setModalVisible(false);
-                               handleCreateChatRoom();
+                          <TouchableOpacity
+                            onPress={() => {
+                              setModalVisible(false);
+                              handleCreateChatRoom();
                             }}
                           >
                             <MaterialCommunityIcons name="send-circle" size={35} color="#FF0000" />
@@ -233,31 +217,19 @@ const TrainerDetail = ({ navigation }: PropsInterface) => {
               </Modal>
             </View>
             <View style={styles.toptabmainview}>
-              <TouchableOpacity
-                style={styles.mainclassesview}
-                onPress={() => handleTabPress(Tab.ABOUT)}
-              >
+              <TouchableOpacity style={styles.mainclassesview} onPress={() => handleTabPress(Tab.ABOUT)}>
                 <Text style={[activeTab === Tab.ABOUT ? styles.topbartext : styles.topbartext1]}>About</Text>
                 {activeTab === Tab.ABOUT ? <View style={styles.borderView} /> : null}
               </TouchableOpacity>
-              <TouchableOpacity
-                style={styles.mainclassesview}
-                onPress={() => handleTabPress(Tab.SCHEDULE)}
-              >
+              <TouchableOpacity style={styles.mainclassesview} onPress={() => handleTabPress(Tab.SCHEDULE)}>
                 <Text style={[activeTab === Tab.SCHEDULE ? styles.topbartext : styles.topbartext1]}>Schedule</Text>
                 {activeTab === Tab.SCHEDULE ? <View style={styles.borderView} /> : null}
               </TouchableOpacity>
-              <TouchableOpacity
-                onPress={() => handleTabPress(Tab.VIDEO)}
-                style={styles.mainclassesview}
-              >
+              <TouchableOpacity onPress={() => handleTabPress(Tab.VIDEO)} style={styles.mainclassesview}>
                 <Text style={[activeTab === Tab.VIDEO ? styles.topbartext : styles.topbartext1]}>Video</Text>
                 {activeTab === Tab.VIDEO ? <View style={styles.borderView} /> : null}
               </TouchableOpacity>
-              <TouchableOpacity
-                onPress={() => handleTabPress(Tab.RATINGS)}
-                style={styles.mainclassesview}
-              >
+              <TouchableOpacity onPress={() => handleTabPress(Tab.RATINGS)} style={styles.mainclassesview}>
                 <Text style={[activeTab === Tab.RATINGS ? styles.topbartext : styles.topbartext1]}>Ratings</Text>
                 {activeTab === Tab.RATINGS ? <View style={styles.borderView} /> : null}
               </TouchableOpacity>

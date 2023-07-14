@@ -6,55 +6,60 @@ import { useNavigation } from "@react-navigation/native";
 import Typography from "../typography/text";
 
 interface HeaderProps {
-  label: string;
+  label?: string;
   subLabel?: string;
   lableStyle?: TextStyle | ViewStyle;
   hideBackButton?: boolean;
   showCloseButton?: boolean;
+  navigation?: any;
   onClose?: () => void;
 }
 
-const Header = ({ label, subLabel, lableStyle, hideBackButton, showCloseButton, onClose }: HeaderProps) => {
-  const navigation = useNavigation();
-
+const Header = ({ label, subLabel, lableStyle, hideBackButton, showCloseButton, onClose, navigation }: HeaderProps) => {
   const goBack = () => {
     navigation.goBack();
   };
   return (
     <View>
-     {hideBackButton ? null : <View style={styles.firstArrowHeaderRect1}>
-        <AntDesign
-          onPress={goBack}
-          name="arrowleft"
-          style={{
-            fontSize: 27,
-            color: "#130F26",
-          }}
-        />
-      </View>}
-    
-      <View style={[styles.label]}>
-        <View style={[styles.labelContainer, {
-          marginTop: 10,
-          marginBottom: subLabel ? 18 : 40,
-        }, lableStyle]}>
-        <Typography
-          size="pageTitle"
-          weight="700"
-          >
-          {label}
-        </Typography>
-          {showCloseButton ? 
+      {hideBackButton ? null : (
+        <View style={styles.firstArrowHeaderRect1}>
           <AntDesign
-          onPress={onClose}
-          name="closecircleo"
-          style={{
-            fontSize: 27,
-            color: "#130F26",
-          }}
-        /> : null}
-          </View>
-        
+            onPress={goBack}
+            name="arrowleft"
+            style={{
+              fontSize: 27,
+              color: "#130F26",
+            }}
+          />
+        </View>
+      )}
+
+      <View style={[styles.label]}>
+        <View
+          style={[
+            styles.labelContainer,
+            {
+              marginTop: 10,
+              marginBottom: subLabel ? 18 : 40,
+            },
+            lableStyle,
+          ]}
+        >
+          <Typography size="pageTitle" weight="700">
+            {label}
+          </Typography>
+          {showCloseButton ? (
+            <AntDesign
+              onPress={onClose}
+              name="closecircleo"
+              style={{
+                fontSize: 27,
+                color: "#130F26",
+              }}
+            />
+          ) : null}
+        </View>
+
         {subLabel ? (
           <Typography
             size="pageSubTitle"
@@ -73,7 +78,6 @@ const Header = ({ label, subLabel, lableStyle, hideBackButton, showCloseButton, 
 };
 
 export default Header;
-
 
 const styles = StyleSheet.create({
   firstArrowHeaderRect1: {

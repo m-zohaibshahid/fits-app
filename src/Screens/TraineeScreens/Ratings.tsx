@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Text, View, Pressable, StyleSheet, TextInput, Image, ScrollView, ToastAndroid, ActivityIndicator } from "react-native";
+import { Text, View, Pressable, StyleSheet, TextInput, Image, ScrollView, ToastAndroid, ActivityIndicator, Alert } from "react-native";
 import AntDesign from "react-native-vector-icons/AntDesign";
 import Entypo from "react-native-vector-icons/Entypo";
 import { RFValue } from "react-native-responsive-fontsize";
@@ -7,8 +7,8 @@ import { RFValue } from "react-native-responsive-fontsize";
 import { url } from "../../constants/url";
 import { ParamListBase, RouteProp, useRoute } from "@react-navigation/native";
 
-const Ratings = ({ navigation, token, id }) => {
-  const route: RouteProp<ParamListBase> = useRoute();
+const Ratings = ({ navigation, token, id }: any) => {
+  const route: any = useRoute();
 
   const [details, setDetails] = useState(false);
   const [one, setOne] = useState(false);
@@ -121,8 +121,8 @@ const Ratings = ({ navigation, token, id }) => {
           <View style={styles.topView}>
             <View style={styles.totleratingView}>
               <Text style={styles.totaleratingtext}>Total Rating</Text>
-              <Text style={styles.totalerating40text}>{route?.params?.userData?.item?.averageRating?.toFixed(1)}</Text>
-              <Text style={styles.reviewText}>({route?.params?.userData?.item?.numReviews} Reviews)</Text>
+              <Text style={styles.totalerating40text}>{route?.params?.userData?.averageRating?.toFixed(1)}</Text>
+              <Text style={styles.reviewText}>({route?.params?.userData?.numReviews} Reviews)</Text>
               <View style={styles.starrowview}>
                 <AntDesign name="star" size={18} color={"#000"} />
                 <AntDesign name="star" size={18} color={"#000"} style={{ marginLeft: 5 }} />
@@ -223,17 +223,17 @@ const Ratings = ({ navigation, token, id }) => {
                 <Image
                   style={styles.imagestyles}
                   source={{
-                    uri: `${route.params.personalData.check.profileImage}`,
+                    uri: `${route.params?.personalData?.check?.profileImage}`,
                   }}
                 />
-                <Text style={styles.nameTest}>{route.params.personalData.check.name}</Text>
+                <Text style={styles.nameTest}>{route.params?.personalData?.check?.name}</Text>
                 <Text style={styles.nameTest}>
-                  {route.params.userData.item.user.averageRating.toFixed(1)} <AntDesign name="star" />
+                  {route.params?.userData?.item?.user?.averageRating.toFixed(1)} <AntDesign name="star" />
                 </Text>
               </View>
               <View style={styles.lineView}></View>
               <View style={styles.TextsView}>
-                <Text style={styles.TextsStyle}>{route.params.userData.item.details}</Text>
+                <Text style={styles.TextsStyle}>{route?.params?.userData?.details}</Text>
               </View>
             </View>
             {/*end BoxmainView*/}

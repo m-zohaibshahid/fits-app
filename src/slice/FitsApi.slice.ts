@@ -24,12 +24,12 @@ export const fitsApi = createApi({
 
     getUserMe: builder.query<UserMeApiResponse, Partial<any>>({
       keepUnusedDataFor: 30,
-      query: () => `/user/me`
+      query: () => `/user/me`,
     }),
 
     getChatRooms: builder.query({
       keepUnusedDataFor: 30,
-      query: () => `/chat/rooms`
+      query: () => `/chat/rooms`,
     }),
 
     registerUser: builder.mutation<any, Partial<any>>({
@@ -71,10 +71,19 @@ export const fitsApi = createApi({
         body: body,
       }),
     }),
+
     personalInfo: builder.mutation<any, Partial<any>>({
       query: (body) => ({
         url: "/personal",
         method: "POST",
+        body: body,
+      }),
+    }),
+
+    personalInfoUpdate: builder.mutation<any, Partial<any>>({
+      query: ({ id: userId, body }) => ({
+        url: `/personal/${userId}`,
+        method: "PUT",
         body: body,
       }),
     }),
@@ -161,7 +170,7 @@ export const fitsApi = createApi({
       query: (body) => ({
         url: `/session`,
         method: "POST",
-        body: body
+        body: body,
       }),
     }),
 
@@ -169,7 +178,7 @@ export const fitsApi = createApi({
       query: (body) => ({
         url: `/chat/room/create`,
         method: "POST",
-        body: body
+        body: body,
       }),
     }),
 
@@ -177,6 +186,14 @@ export const fitsApi = createApi({
       query: ({ id, ...data }) => ({
         url: `/profile/edit/password/${id}`,
         method: "PUT",
+        body: data,
+      }),
+    }),
+
+    bookASession: builder.mutation<void, Partial<any>>({
+      query: ({ id, ...data }) => ({
+        url: `/book-a-session`,
+        method: "POST",
         body: data,
       }),
     }),
@@ -192,6 +209,12 @@ export const fitsApi = createApi({
     trainerSession: builder.query<any, Partial<any>>({
       query: (id) => `/session/trainer/${id}`,
     }),
+    stripeCustomerGet: builder.query<any, Partial<any>>({
+      query: (id) => ({
+        url: `/stripe/customer/${id}`,
+        method: "GET",
+      }),
+    }),
 
     getRoomMessages: builder.query<RoomMessagesResponse, Partial<any>>({
       query: (id) => `chat/messages/${id}`,
@@ -200,6 +223,13 @@ export const fitsApi = createApi({
     personalInfoCreate: builder.mutation<any, Partial<any>>({
       query: (body) => ({
         url: "/personal",
+        method: "POST",
+        body: body,
+      }),
+    }),
+    rechargeStripe: builder.mutation<any, Partial<any>>({
+      query: ({ id, ...body }) => ({
+        url: `/stripe/recharge/${id}`,
         method: "POST",
         body: body,
       }),
@@ -213,9 +243,12 @@ export const {
   useUpdateUserMutation,
   useDeleteUserMutation,
   useSessionDelMutation,
+  useBookASessionMutation,
   useUpdatePasswordMutation,
   useStripeCustomerMutation,
   useUpdateFilterMutation,
+  usePersonalInfoUpdateMutation,
+  useRechargeStripeMutation,
   useCreateStripeCardMutation,
   usePersonalInfoMutation,
   useCodeVerifyMutation,
@@ -233,6 +266,7 @@ export const {
   useSessionCreateMutation,
   useCreateChatRoomMutation,
   useGetChatRoomsQuery,
+  useStripeCustomerGetQuery,
   useGetRoomMessagesQuery,
   useSendMessageMutation
 } = fitsApi;

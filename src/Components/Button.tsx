@@ -8,12 +8,7 @@ import Typography from "./typography/text";
 const Button = ({ label, onPress, loader, disabled, style }: ButtonProps) => {
   return (
     <View style={[styles.MainResponsevieView, style]}>
-      <TouchableOpacity
-        disabled={disabled}
-        activeOpacity={0.8}
-        style={[disabled ? styles.diableBtn : styles.btn]}
-        onPress={onPress}
-      >
+      <TouchableOpacity disabled={disabled} activeOpacity={0.8} style={[disabled ? styles.diableBtn : styles.btn]} onPress={onPress}>
         {!loader ? <Typography style={styles.Textcreate}>{label}</Typography> : <ActivityIndicator size="small" color="#fff" />}
       </TouchableOpacity>
     </View>
@@ -56,7 +51,7 @@ const styles = StyleSheet.create({
 });
 
 interface ButtonProps extends TouchableOpacityProps {
-  label: string;
+  label: string | Element;
   onPress: () => void;
   loader?: boolean;
   disabled?: boolean;

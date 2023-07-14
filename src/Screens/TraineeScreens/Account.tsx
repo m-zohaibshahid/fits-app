@@ -14,7 +14,6 @@ import { useGetUserMeQuery, useUpdatePasswordMutation } from "../../slice/FitsAp
 import { useSelector } from "react-redux";
 import { UserDataInterface, UserDetail } from "../../interfaces";
 import { NavigationSwitchProp } from "react-navigation";
-import ErrorHandler from "../../Components/Alert-modal";
 import { getUserAsyncStroage } from "../../utils/async-storage";
 interface Props {
   navigation: NavigationSwitchProp;
@@ -31,10 +30,8 @@ const Account: React.FC<Props> = ({ navigation }) => {
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const { userInfo } = useSelector((state: { fitsStore: Partial<UserDetail> }) => state.fitsStore);
-
-  const { data: userMeData, isLoading: isLoading1, error: error1 } = useGetUserMeQuery({ id: userDatax?.data._id });
+  const { data: userMeData, isLoading: isLoading1, error: error1 } = useGetUserMeQuery({});
   const [updatePassword, { isLoading, error }] = useUpdatePasswordMutation();
-
   useEffect(() => {
     navigation.addListener("focus", () => {
       getUserInfo();
@@ -64,8 +61,8 @@ const Account: React.FC<Props> = ({ navigation }) => {
       };
       await updatePassword({ id, ...body })
         // .unwrap()
-        .then((res2) => {
-          if (res2?.data.success === true) {
+        .then((res2: any) => {
+          if (res2?.data.success) {
             ToastAndroid.show("Password updated", ToastAndroid.LONG);
           } else {
             Alert.alert(res2?.data?.message);
@@ -91,7 +88,6 @@ const Account: React.FC<Props> = ({ navigation }) => {
               alignItems: "center",
             }}
           >
-            <ErrorHandler error={error || error1} />
             <View style={{ width: "90%" }}>
               <Text
                 style={{
