@@ -11,11 +11,10 @@ import * as Images from "../../constants/Images";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import FastImage from "react-native-fast-image";
 import { useGetUserMeQuery, useUpdatePasswordMutation } from "../../slice/FitsApi.slice";
-import { getUserAsyncStroage } from "../../common/AsyncStorage";
 import { useSelector } from "react-redux";
 import { UserDataInterface, UserDetail } from "../../interfaces";
 import { NavigationSwitchProp } from "react-navigation";
-import ErrorHandler from "../../Components/Alert-modal";
+import { getUserAsyncStroage } from "../../utils/async-storage";
 interface Props {
   navigation: NavigationSwitchProp;
 }
@@ -32,7 +31,7 @@ const Account: React.FC<Props> = ({ navigation }) => {
   const [confirmPassword, setConfirmPassword] = useState("");
   const { userInfo } = useSelector((state: { fitsStore: Partial<UserDetail> }) => state.fitsStore);
 
-  const { data: userMeData, isLoading: isLoading1, error: error1 } = useGetUserMeQuery({ id: userDatax?.data._id });
+  const { data: userMeData, isLoading: isLoading1, error: error1 } = useGetUserMeQuery({});
   const [updatePassword, { isLoading, error }] = useUpdatePasswordMutation();
 
   useEffect(() => {
@@ -44,7 +43,7 @@ const Account: React.FC<Props> = ({ navigation }) => {
   const getUserInfo = async () => {
     const userMeData = await getUserAsyncStroage();
     setUserDatax(userMeData);
-    setId(userInfo?._id ?? "");
+    setId(userInfo?.user?._id ?? "");
     const userLoc: string | null = await AsyncStorage.getItem("userLocation");
     let userLocx = JSON.parse(userLoc ?? "");
     setUserCurrentLocation(userLocx);
@@ -64,8 +63,8 @@ const Account: React.FC<Props> = ({ navigation }) => {
       };
       await updatePassword({ id, ...body })
         // .unwrap()
-        .then((res2) => {
-          if (res2?.data.success === true) {
+        .then((res2: any) => {
+          if (res2?.data.success) {
             ToastAndroid.show("Password updated", ToastAndroid.LONG);
           } else {
             Alert.alert(res2?.data?.message);
@@ -91,7 +90,6 @@ const Account: React.FC<Props> = ({ navigation }) => {
               alignItems: "center",
             }}
           >
-            <ErrorHandler error={error || error1} />
             <View style={{ width: "90%" }}>
               <Text
                 style={{

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Text, View, Pressable, TextInput, Modal, Image, ScrollView, ToastAndroid, ActivityIndicator, TouchableOpacity, Alert, Platform, StyleSheet } from "react-native";
+import { Text, View, Pressable, TextInput, Modal, Image, ScrollView, ToastAndroid, ActivityIndicator, TouchableOpacity, Alert, Platform, StyleSheet, ImageSourcePropType } from "react-native";
 import FastImage from "react-native-fast-image";
 import CountryPicker from "react-native-country-picker-modal";
 import ImagePicker from "react-native-image-crop-picker";
@@ -15,9 +15,8 @@ import { url } from "../../constants/url";
 import { useNavigation } from "@react-navigation/native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useGetUserMeQuery } from "../../slice/FitsApi.slice";
-import { UserDetail } from "../../interfaces";
+import { genderOptions } from "../../constants/utilities";
 import { useSelector } from "react-redux";
-import { getUserAsyncStroage } from "../../utils/async-storage";
 
 const AccountUpdate = () => {
   const navigation = useNavigation();
@@ -27,39 +26,22 @@ const AccountUpdate = () => {
   const [country, setCountry] = useState("");
   const [state, setState] = useState("");
   const [city, setCity] = useState("");
-  const [gender, setGender] = useState("");
+  const [gender, setGender] = useState<any>("");
   const [phoneNumber, setPhoneNumber] = useState("");
   const [date, setDate] = useState(new Date());
-  const [token, setToken] = useState("");
-  const [statusOne, setStatusOne] = useState(true);
-  const [statusTwo, setStatusTwo] = useState(false);
-  const [statusThree, setStatusThree] = useState(false);
   const [image, setImage] = useState("");
   const [cloudImageUrl, setCloudImageUrl] = useState("");
-  const [userDatax, setUserDatax] = useState();
   const [isCountryVisible, setIsCountryVisible] = React.useState(false);
-
-  const { userInfo } = useSelector((state: { fitsStore: Partial<UserDetail> }) => state.fitsStore);
-  const { data: userMeData, refetch, isLoading } = useGetUserMeQuery({});
-
   const [load, setLoad] = useState(false);
   const [loadx, setLoadx] = useState(false);
-
   const [userId, setUserId] = useState("");
-
+  const { data: userMeData, refetch, isLoading } = useGetUserMeQuery({});
+  const token = useSelector((state: { token: string }) => state.token);
   useEffect(() => {
     navigation.addListener("focus", () => {
-      getUserInfo();
       userMe();
     });
   }, []);
-
-  const getUserInfo = async () => {
-    const userData = await getUserAsyncStroage();
-    setUserDatax(userData);
-
-    setToken(userData?.access_token);
-  };
 
   const onPressFlag = () => {
     setIsCountryVisible(true);
@@ -157,24 +139,60 @@ const AccountUpdate = () => {
   // Assuming date is in the format "YYYY-MM-DD" e.g., "2023-07-06"
   const validDate = moment(date, "YYYY-MM-DD");
 
+  const handleOptionPress = (
+    genderSelect: number | boolean | React.SetStateAction<string> | React.ReactElement<any, string | React.JSXElementConstructor<any>> | Iterable<React.ReactNode> | null | undefined
+  ) => {
+    console.log("gender", genderSelect);
+    setGender(genderSelect);
+    setModalVisible(false);
+  };
+
+  const renderOption = (
+    option: { value: string | number | boolean | React.ReactElement<any, string | React.JSXElementConstructor<any>> | Iterable<React.ReactNode> | null | undefined; image: ImageSourcePropType },
+    index: React.Key | null | undefined
+  ) => {
+    const isActive = gender === option.value;
+    return (
+      <>
+        {option.value !== "Other" ? (
+          <Pressable key={index} style={isActive ? styles.BoxViewBoder : styles.inner} onPress={() => handleOptionPress(option.value)}>
+            <View style={isActive ? styles.oternameview : styles.inner}>
+              {option.image && <Image source={option.image} />}
+              <Text style={styles.maletext}>{option.value}</Text>
+            </View>
+          </Pressable>
+        ) : (
+          <Pressable
+            style={styles.otherView}
+            onPress={() => {
+              handleOptionPress(option.value);
+            }}
+          >
+            <View style={[isActive ? styles.oternameviewBorder : styles.oternameview]}>
+              <Text style={styles.otherText}>Other</Text>
+            </View>
+          </Pressable>
+        )}
+      </>
+    );
+  };
+
   // user Me api
   const userMe = async () => {
-    setLoadx(true);
-
-    setLoadx(false);
-    if (userMeData.success) {
-      setFullName(userMeData?.personal_info?.name);
-      setCountry(userMeData?.personal_info?.country);
-      setState(userMeData?.personal_info?.state);
-      setCity(userMeData?.personal_info?.city);
-      setGender(userMeData?.personal_info?.gender);
-      setUserId(userMeData?.personal_info?._id);
-      setPhoneNumber(userMeData?.personal_info?.phoneNumber);
-      setDate(userMeData?.personal_info?.date_of_birth);
-      setImage(userMeData?.personal_info?.profileImage);
-      setCloudImageUrl(userMeData?.personal_info?.profileImage);
+    const personalInfo = userMeData?.personal_info;
+    if (userMeData?.success) {
+      setFullName(personalInfo?.name);
+      setCountry(personalInfo?.country);
+      setState(personalInfo?.state);
+      setCity(personalInfo?.city);
+      setGender(personalInfo?.gender);
+      setUserId(personalInfo?._id);
+      setPhoneNumber(personalInfo?.phoneNumber);
+      setDate(personalInfo?.date_of_birth);
+      setImage(personalInfo?.profileImage);
+      setCloudImageUrl(personalInfo?.profileImage);
     } else {
-      Alert.alert(userMeData.errors);
+      Alert.alert(userMeData?.message ?? "user Information not available");
     }
   };
   return (
@@ -182,7 +200,7 @@ const AccountUpdate = () => {
       {/*Header rect start*/}
       <View style={styles.header}>
         <View style={styles.fixeheight}>
-          <Header navigation={navigation} onPress={GoBack} />
+          <Header navigation={navigation} />
         </View>
         <View style={styles.fixeheight1}>
           <View style={styles.PersonalinfoView}>
@@ -378,84 +396,7 @@ const AccountUpdate = () => {
               <View style={styles.centeredView}>
                 <View style={styles.modalView}>
                   <ScrollView showsVerticalScrollIndicator={false}>
-                    <View
-                      style={{
-                        width: "100%",
-                        alignItems: "flex-start",
-                      }}
-                    >
-                      <View style={styles.TopView}>
-                        <View style={styles.topView}>
-                          <View
-                            style={{
-                              width: "100%",
-                              height: 60,
-                              justifyContent: "center",
-                            }}
-                          >
-                            <Text style={styles.Gendertexts}>
-                              Gender
-                              <Text style={styles.genderonetext}>(Select one)</Text>
-                            </Text>
-                          </View>
-                        </View>
-                      </View>
-                      <View style={styles.opercard}>
-                        <Pressable
-                          style={styles.box}
-                          onPress={() => {
-                            setGender("Male");
-                            setModalVisible(false);
-                            setStatusOne(true);
-                            setStatusTwo(false);
-                            setStatusThree(false);
-                          }}
-                        >
-                          <View style={[statusOne ? styles.BoxViewBoder : styles.inner]}>
-                            <Image source={Images.Vector} />
-                            <Text style={styles.maletext}>Male</Text>
-                          </View>
-                        </Pressable>
-
-                        <Pressable
-                          style={styles.box1}
-                          onPress={() => {
-                            setGender("Female");
-                            setModalVisible(false);
-                            setStatusOne(false);
-                            setStatusTwo(true);
-                            setStatusThree(false);
-                          }}
-                        >
-                          <View style={[statusTwo ? styles.BoxViewBoder : styles.inner]}>
-                            <Image source={Images.Vector2} />
-                            <Text style={styles.maletext}>Female</Text>
-                          </View>
-                        </Pressable>
-                      </View>
-                      <View
-                        style={{
-                          width: "100%",
-                          height: "30%",
-                          marginTop: 20,
-                        }}
-                      >
-                        <Pressable
-                          style={styles.otherView}
-                          onPress={() => {
-                            setGender("Other");
-                            setModalVisible(false);
-                            setStatusOne(false);
-                            setStatusTwo(false);
-                            setStatusThree(true);
-                          }}
-                        >
-                          <View style={[statusThree ? styles.oternameviewBorder : styles.oternameview]}>
-                            <Text style={styles.otherText}>Other</Text>
-                          </View>
-                        </Pressable>
-                      </View>
-                    </View>
+                    <View style={styles.opercard}>{genderOptions.map(renderOption)}</View>
                   </ScrollView>
                 </View>
               </View>
@@ -499,8 +440,6 @@ const AccountUpdate = () => {
                       </View>
 
                       <View style={styles.topView}>
-                        {/* <DatePicker mode="date" textColor="#000" date={date ? new Date(date) : new Date()} style={styles.DatePicker} onDateChange={setDate} /> */}
-
                         <DatePicker
                           mode="date"
                           date={date ? new Date(date) : new Date()}
@@ -587,6 +526,8 @@ const styles = StyleSheet.create({
     width: "88%",
     alignSelf: "center",
     flexDirection: "row",
+    flexWrap: "wrap",
+    justifyContent: "space-between",
   },
   box: {
     width: "50%",

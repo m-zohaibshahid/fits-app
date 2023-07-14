@@ -11,7 +11,7 @@ export const fitsApi = createApi({
   baseQuery: fetchBaseQuery({
     baseUrl: url,
     prepareHeaders: async (headers: Headers) => {
-      const token = await getUserAsyncStroageToken()
+      const token = await getUserAsyncStroageToken();
       console.log(token);
 
       headers.set("Authorization", `Bearer ${token}`);
@@ -26,12 +26,12 @@ export const fitsApi = createApi({
 
     getUserMe: builder.query<UserMeApiResponse, Partial<any>>({
       keepUnusedDataFor: 30,
-      query: () => `/user/me`
+      query: () => `/user/me`,
     }),
 
     getChatRooms: builder.query({
       keepUnusedDataFor: 30,
-      query: () => `/chat/rooms`
+      query: () => `/chat/rooms`,
     }),
 
     registerUser: builder.mutation<any, Partial<any>>({
@@ -155,7 +155,7 @@ export const fitsApi = createApi({
       query: (body) => ({
         url: `/session`,
         method: "POST",
-        body: body
+        body: body,
       }),
     }),
 
@@ -163,7 +163,7 @@ export const fitsApi = createApi({
       query: (body) => ({
         url: `/chat/room/create`,
         method: "POST",
-        body: body
+        body: body,
       }),
     }),
 
@@ -171,6 +171,14 @@ export const fitsApi = createApi({
       query: ({ id, ...data }) => ({
         url: `/profile/edit/password/${id}`,
         method: "PUT",
+        body: data,
+      }),
+    }),
+
+    bookASession: builder.mutation<void, Partial<any>>({
+      query: ({ id, ...data }) => ({
+        url: `/book-a-session`,
+        method: "POST",
         body: data,
       }),
     }),
@@ -203,6 +211,7 @@ export const {
   useUpdateUserMutation,
   useDeleteUserMutation,
   useSessionDelMutation,
+  useBookASessionMutation,
   useUpdatePasswordMutation,
   useStripeCustomerMutation,
   useUpdateFilterMutation,
@@ -222,5 +231,5 @@ export const {
   useAddNewGoalMutation,
   useSessionCreateMutation,
   useCreateChatRoomMutation,
-  useGetChatRoomsQuery
+  useGetChatRoomsQuery,
 } = fitsApi;

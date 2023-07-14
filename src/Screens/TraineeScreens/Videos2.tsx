@@ -1,11 +1,5 @@
 import React, { useState, useEffect } from "react";
-import {
-  Text,
-  View,
-  StyleSheet,
-  Modal,
-  ScrollView,
-} from "react-native";
+import { Text, View, StyleSheet, Modal, ScrollView, ToastAndroid } from "react-native";
 import FontAwesome from "react-native-vector-icons/FontAwesome";
 
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -14,7 +8,6 @@ import VideoPlayer from "react-native-video-player";
 import Button from "../../Components/Button";
 import { useRoute } from "@react-navigation/native";
 import { url } from "../../constants/url";
-
 
 const Videos2 = ({ navigation }) => {
   const [modalVisible, setModalVisible] = useState(false);
@@ -43,7 +36,7 @@ const Videos2 = ({ navigation }) => {
           }
         })
         .catch((error) => {
-          ToastAndroid("errrrror")
+          ToastAndroid("errrrror");
         });
     }
   };
@@ -59,28 +52,29 @@ const Videos2 = ({ navigation }) => {
         "Content-Type": "application/json",
         Authorization: `Bearer ${userTokendatax?.access_token}`,
       },
-    }).then((res) => res.json())
+    })
+      .then((res) => res.json())
       .then((res2) => {
         if (res2.success) {
           setData(res2.data);
         } else {
           ToastAndroid.show(res2.message, ToastAndroid.LONG);
         }
-      })
+      });
   };
 
   const NextScreen = (price, video_links) => {
-    navigation.navigate("BookSessionPayment", { item: price, video_links, });
+    navigation.navigate("BookSessionPayment", { item: price, video_links });
   };
 
   useEffect(async () => {
     getSubscribedVideo();
     getAllVideos();
-  }, [])
+  }, []);
 
   return (
     <View style={styles.container}>
-      <View styl={styles.header}>
+      <View style={styles.header}>
         <View style={styles.TopView}>
           <View style={styles.topView}>
             <Text style={styles.VideoboughtText}>Videos bought from you</Text>
@@ -90,117 +84,114 @@ const Videos2 = ({ navigation }) => {
       <View style={styles.main}>
         <ScrollView showsHorizontalScrollIndicator={false} horizontal={true}>
           {/*start image Box*/}
-          {data?.length > 0 && data?.map((item, i) => {
-
-            return < View style={styles.boxView} >
-              <View style={{ display: "flex", flexDirection: "row", justifyContent: "space-between", margin: 7 }}>
-                <View style={styles.ratingWrap}>
-                  <Text style={{ marginTop: 3 }}><FontAwesome name="star" style={{ color: "#fff", fontSize: 16 }} /></Text>
-                  <View>
-                    <Text style={{ color: "white", fontSize: 17, marginLeft: 4 }}>{item.averageRating}</Text>
-                  </View>
-                </View>
-                <View style={styles.priceWrap}>
-                  <Text style={{ color: "white", fontSize: 20 }}>$</Text>
-                  <View>
-                    <Text style={{ color: "white", marginLeft: 5, fontSize: 20 }}>{item.price}</Text>
-                  </View>
-                </View>
-              </View>
-              <View style={styles.VideoView} >
-                {subscribedVideos?.length > 0 && subscribedVideos.includes(item?.video_links[0]) ?
-                  <View>
-                    <VideoPlayer
-                      video={{
-                        uri: `${item.video_links[0]}`,
-                      }}
-                      filterEnabled={true}
-                      videoWidth={900}
-                      videoHeight={500}
-                      thumbnail={{
-                        uri: item?.video_thumbnail ?? "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQtLvJBFarEabFbaBsDwn429BPEnnDmaon2JA&usqp=CAU",
-                      }}
-                      style={{
-                        borderTopRightRadius: 16,
-                        borderTopLeftRadius: 16,
-                      }}
-                    />
-                  </View>
-
-                  : <View
-                    pointerEvents="none"
-                  >
-                    <VideoPlayer
-                      video={{
-                        uri: `${item.video_links[0]}`,
-                      }}
-                      filterEnabled={true}
-                      videoWidth={900}
-                      videoHeight={500}
-                      thumbnail={{
-                        uri: item?.video_thumbnail ?? "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQtLvJBFarEabFbaBsDwn429BPEnnDmaon2JA&usqp=CAU",
-                      }}
-                      style={{
-                        borderTopRightRadius: 16,
-                        borderTopLeftRadius: 16,
-                      }}
-                    />
-                  </View>}
-
-                <View style={styles.rowView}>
-                  <View
-                    style={{
-                      width: "10%",
-                      alignItems: "center",
-                    }}
-                  >
-                    <FontAwesome name="circle" style={{ color: "#fff" }} />
-                  </View>
-                  <View style={{ width: "90%" }}>
-                    <Text style={styles.desTextStyles}>Description:</Text>
-                  </View>
-                </View>
-                <View style={styles.rowView}>
-                  <View
-                    style={{
-                      width: "10%",
-                      alignItems: "center",
-                    }}
-                  ></View>
-                  <View style={{ width: "90%" }}>
-                    <Text style={styles.destTextStyles}>
-                      {item.video_details}{" "}
-                    </Text>
-                    {subscribedVideos?.length > 0 && subscribedVideos.includes(item?.video_links[0]) ?
-                      <View style={styles.btnBook} >
-                        <Button label="Book Now" onPress={() => setModalVisible(true)} />
+          {data?.length > 0 &&
+            data?.map((item, i) => {
+              return (
+                <View style={styles.boxView}>
+                  <View style={{ display: "flex", flexDirection: "row", justifyContent: "space-between", margin: 7 }}>
+                    <View style={styles.ratingWrap}>
+                      <Text style={{ marginTop: 3 }}>
+                        <FontAwesome name="star" style={{ color: "#fff", fontSize: 16 }} />
+                      </Text>
+                      <View>
+                        <Text style={{ color: "white", fontSize: 17, marginLeft: 4 }}>{item.averageRating}</Text>
                       </View>
-                      : <View style={styles.btnBook} >
-                        <Button label="Booked" disabled={true} onPress={() => setModalVisible(true)} />
-                      </View>}
+                    </View>
+                    <View style={styles.priceWrap}>
+                      <Text style={{ color: "white", fontSize: 20 }}>$</Text>
+                      <View>
+                        <Text style={{ color: "white", marginLeft: 5, fontSize: 20 }}>{item.price}</Text>
+                      </View>
+                    </View>
                   </View>
-                </View>
-              </View>
-              <Modal
-                animationType="slide"
-                transparent={true}
-                visible={modalVisible}
-                onRequestClose={() => setModalVisible(false)}
-              >
-                <View style={styles.modalView}>
-                  <View >
-                    <Text style={{ marginTop: 50, marginBottom: 30, fontSize: 20, color: "black" }}>Are You Sure , You want to Buy this Video?</Text>
-                  </View>
-                  <Button label="Skip" onPress={() => setModalVisible(false)} />
-                  <Button label="Continue" onPress={() => NextScreen(item.price, item.video_links)} />
+                  <View style={styles.VideoView}>
+                    {subscribedVideos?.length > 0 && subscribedVideos.includes(item?.video_links[0]) ? (
+                      <View>
+                        <VideoPlayer
+                          video={{
+                            uri: `${item.video_links[0]}`,
+                          }}
+                          filterEnabled={true}
+                          videoWidth={900}
+                          videoHeight={500}
+                          thumbnail={{
+                            uri: item?.video_thumbnail ?? "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQtLvJBFarEabFbaBsDwn429BPEnnDmaon2JA&usqp=CAU",
+                          }}
+                          style={{
+                            borderTopRightRadius: 16,
+                            borderTopLeftRadius: 16,
+                          }}
+                        />
+                      </View>
+                    ) : (
+                      <View pointerEvents="none">
+                        <VideoPlayer
+                          video={{
+                            uri: `${item.video_links[0]}`,
+                          }}
+                          filterEnabled={true}
+                          videoWidth={900}
+                          videoHeight={500}
+                          thumbnail={{
+                            uri: item?.video_thumbnail ?? "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQtLvJBFarEabFbaBsDwn429BPEnnDmaon2JA&usqp=CAU",
+                          }}
+                          style={{
+                            borderTopRightRadius: 16,
+                            borderTopLeftRadius: 16,
+                          }}
+                        />
+                      </View>
+                    )}
 
+                    <View style={styles.rowView}>
+                      <View
+                        style={{
+                          width: "10%",
+                          alignItems: "center",
+                        }}
+                      >
+                        <FontAwesome name="circle" style={{ color: "#fff" }} />
+                      </View>
+                      <View style={{ width: "90%" }}>
+                        <Text style={styles.desTextStyles}>Description:</Text>
+                      </View>
+                    </View>
+                    <View style={styles.rowView}>
+                      <View
+                        style={{
+                          width: "10%",
+                          alignItems: "center",
+                        }}
+                      ></View>
+                      <View style={{ width: "90%" }}>
+                        <Text style={styles.destTextStyles}>{item.video_details} </Text>
+                        {subscribedVideos?.length > 0 && subscribedVideos.includes(item?.video_links[0]) ? (
+                          <View style={styles.btnBook}>
+                            <Button label="Book Now" onPress={() => setModalVisible(true)} />
+                          </View>
+                        ) : (
+                          <View style={styles.btnBook}>
+                            <Button label="Booked" disabled={true} onPress={() => setModalVisible(true)} />
+                          </View>
+                        )}
+                      </View>
+                    </View>
+                  </View>
+                  <Modal animationType="slide" transparent={true} visible={modalVisible} onRequestClose={() => setModalVisible(false)}>
+                    <View style={styles.modalView}>
+                      <View>
+                        <Text style={{ marginTop: 50, marginBottom: 30, fontSize: 20, color: "black" }}>Are You Sure , You want to Buy this Video?</Text>
+                      </View>
+                      <Button label="Skip" onPress={() => setModalVisible(false)} />
+                      <Button label="Continue" onPress={() => NextScreen(item.price, item.video_links)} />
+                    </View>
+                  </Modal>
                 </View>
-              </Modal>
-            </View>
-          })}
+              );
+            })}
         </ScrollView>
-      </View >
-    </View >
+      </View>
+    </View>
   );
 };
 export default Videos2;
@@ -273,7 +264,7 @@ const styles = StyleSheet.create({
   lockbtn: {
     position: "absolute",
     top: 30,
-    left: 125
+    left: 125,
   },
   ratingWrap: {
     display: "flex",
@@ -282,7 +273,7 @@ const styles = StyleSheet.create({
     paddingLeft: 15,
     paddingRight: 15,
     paddingVertical: 4,
-    borderRadius: 20
+    borderRadius: 20,
   },
   priceWrap: {
     display: "flex",
@@ -291,7 +282,7 @@ const styles = StyleSheet.create({
     paddingLeft: 15,
     paddingRight: 15,
     paddingVertical: 4,
-    borderRadius: 20
+    borderRadius: 20,
   },
   boxView: {
     width: 320,
@@ -313,7 +304,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     marginLeft: 40,
     borderRadius: 5,
-    fontSize: 20
+    fontSize: 20,
   },
   btnBookDisabled: {
     width: "60%",
@@ -324,7 +315,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     marginLeft: 40,
     borderRadius: 5,
-    fontSize: 20
+    fontSize: 20,
   },
   row11View: {
     width: "100%",
