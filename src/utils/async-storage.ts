@@ -15,3 +15,13 @@ export const getUserAsyncStroage = async () => {
 export const getUserAsyncStroageToken = async () => {
     return AsyncStorage.getItem('userToken');
 };
+export const storeUnReadMessageInAsyncStorage = async () => {
+    AsyncStorage.setItem('unReadMessage', JSON.stringify(true));
+};
+export const getUnReadMessagesFromAsyncStorage = async (): Promise<boolean> => {
+    const unReadMessage: string | null = await AsyncStorage.getItem('unReadMessage');
+    return await JSON.parse(unReadMessage ?? '');
+};
+export const clearUnReadMessageFromAsyncStorage = async () => {
+    AsyncStorage.removeItem('unReadMessage');
+};

@@ -9,6 +9,7 @@ import {
 import MapView from "react-native-maps";
 import { Marker } from "react-native-maps";
 import Geolocation from "react-native-geolocation-service";
+import { errorToast } from "../../utils/toast";
 
 function Map({ navigation }) {
   const [superLong, setSuperLong] = useState(55.9754);
@@ -39,8 +40,8 @@ function Map({ navigation }) {
           "Permission Access denied. Please Make Sure GPS Permission is enabled and then exit app and run again"
         );
       }
-    } catch (err) {
-      console.warn(err);
+    } catch (err: any) {
+      errorToast(err?.message);
     }
   };
 

@@ -57,14 +57,12 @@ const CreateCardScreen: React.FC<Props> = ({ navigation }) => {
           exp_year: expYear,
           cvc: cvc,
         };
-        console.log("createStripeData?.cus_id", createStripeData.cus_id);
         await createStripeCard({
           id: createStripeData?.cus_id,
           ...body,
         })
           .unwrap()
           .then((payload) => {
-            console.log("paylload", payload.message);
             if (payload?.message === "card created successfully...") {
               ToastAndroid.show("Card created Successfully...", ToastAndroid.LONG);
               navigation.goBack();
@@ -72,7 +70,6 @@ const CreateCardScreen: React.FC<Props> = ({ navigation }) => {
               ToastAndroid.show(payload?.message, ToastAndroid.SHORT);
             }
           })
-          .catch((error) => console.error("rejected", error));
       } catch (error: any) {
         Alert.alert(error.message);
       }

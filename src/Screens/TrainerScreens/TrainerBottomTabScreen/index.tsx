@@ -1,119 +1,91 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
-/* eslint-disable prettier/prettier */
 import React from 'react';
-import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
-import Ionicons from 'react-native-vector-icons/Ionicons';
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
-import Entypo from 'react-native-vector-icons/Entypo';
-
-import {
-  widthPercentageToDP as wp,
-  heightPercentageToDP as hp,
-} from 'react-native-responsive-screen';
-
-import {Platform} from 'react-native';
+import { widthPercentageToDP as wp } from 'react-native-responsive-screen';
+import { Platform, StyleSheet, View } from 'react-native';
 import MyVideos from '../MyVideosScreen/index';
 import AccountScreen from '../AccountScreen/index';
 import Home from '../HomeScreen';
-import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import Chat from '../../TraineeScreens/Chat';
+import Colors from '../../../constants/Colors';
+import { useSelector } from 'react-redux';
+import { MessageState } from '../../../slice/messages.slice';
 
 const Tab = createBottomTabNavigator();
 
-function TrainerBottomTabScreen() {
+const TrainerBottomTabScreen = () => {
+  const {unReadMessages} = useSelector((state: { messages: Partial<MessageState> }) => state.messages);
+
   return (
     <Tab.Navigator
-      screenOptions={({route}: any) => ({
-        tabBarIcon: ({focused, color}) => {
-          let iconName;
-          
-switch (route.name) {
-  case 'Home':
-    iconName = 'home-filled';
-    return <MaterialIcons name={iconName} size={wp(6)} color={color} />;
-  case 'Video':
-    iconName = 'folder-video';
-    return <Entypo name={iconName} size={wp(6)} color={color} />;
-  case 'Chat':
-    iconName = "send";
-    return <FontAwesome name={iconName} size={wp(6)} color={color}  />
-  case 'Account':
-    iconName = 'settings';
-    return <Ionicons name={iconName} size={wp(6)} color={color} />;
-  default:
-    return null; // or handle the case when the route name doesn't match any of the cases
-}},
-        tabBarStyle: {
-          height: Platform.OS === 'ios' ? 110 : 50,
-          justifyContent: 'center',
-          bottom: Platform.OS === 'ios' ? -30 : 0,
-          marginBottom: 0,
-          position: 'absolute',
-        },
-      })}
-      tabBarIcon
-      tabBarOptions={{
-        activeTintColor: '#fff',
-        inactiveTintColor: 'grey',
-        activeBackgroundColor: '#000',
-        inactiveBackgroundColor: '#000',
-        labelStyle: {
-          paddingBottom: Platform.OS === 'ios' ? 20 : 0,
-        },
-      }}>
-      <Tab.Screen
-        name="Home"
-        component={Home}
-        options={{headerShown: false}}
-        listeners={({navigation, route}: any) => ({
-          tabPress: () => {
-            if (route.state && route.state.routeNames.length > 0) {
-              navigation.navigate('Device');
-            }
-          },
-        })}
-      />
+    screenOptions={({ route }) => ({
+      tabBarIcon: ({ color }) => {
+        let iconName;
 
-      <Tab.Screen
-        name="Video"
-        component={MyVideos}
-        options={{headerShown: false}}
-        listeners={({navigation, route}: any) => ({
-          tabPress: () => {
-            if (route.state && route.state.routeNames.length > 0) {
-              navigation.navigate('Device');
-            }
-          },
-        })}
-      />
+        switch (route.name) {
+          case 'Home':
+            iconName = 'home-filled';
+            break;
+          case 'Video':
+            iconName = 'folder-video';
+            break;
+          case 'Chat':
+            iconName = 'send';
+            break;
+          case 'Account':
+            iconName = 'settings';
+            break;
+          default:
+            return null;
+        }
 
-      <Tab.Screen
-        name="Chat"
-        component={Chat}
-        options={{headerShown: false}}
-        listeners={({navigation, route}: any) => ({
-          tabPress: () => {
-            if (route.state && route.state.routeNames.length > 0) {
-              navigation.navigate('Device');
-            }
-          },
-        })}
-      />
-
-      <Tab.Screen
-        name="Account"
-        component={AccountScreen}
-        options={{headerShown: false}}
-        listeners={({navigation, route}: any) => ({
-          tabPress: () => {
-            if (route.state && route.state.routeNames.length > 0) {
-              navigation.navigate('Device');
-            }
-          },
-        })}
-      />
-    </Tab.Navigator>
-  );
+        return (
+          <View style={styles.iconContainer}>
+            <MaterialIcons name={iconName} size={wp(6)} color={color} />
+              {route.name === "Chat" && unReadMessages ? <View style={styles.unreadIcon} /> : null}
+          </View>
+        );
+      },
+      tabBarStyle: {
+        height: Platform.OS === 'ios' ? 110 : 50,
+        justifyContent: 'center',
+        bottom: Platform.OS === 'ios' ? -30 : 0,
+        marginBottom: 0,
+        position: 'absolute',
+      },
+    })}
+    tabBarOptions={{
+      activeTintColor: '#fff',
+      inactiveTintColor: 'grey',
+      activeBackgroundColor: '#000',
+      inactiveBackgroundColor: '#000',
+      labelStyle: {
+        paddingBottom: Platform.OS === 'ios' ? 20 : 0,
+      },
+    }}>
+      <Tab.Screen name="Home" component={Home} options={{ headerShown: false }} />
+      <Tab.Screen name="Video" component={MyVideos} options={{ headerShown: false }} />
+      <Tab.Screen name="Chat" component={Chat} options={{ title: "Chat" }} />
+      <Tab.Screen name="Account" component={AccountScreen} options={{ headerShown: false }} />
+  </Tab.Navigator>
+  )
 }
+
+const styles = StyleSheet.create({
+  iconContainer: {
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  unreadIcon: {
+    position: "absolute",
+    top: 4,
+    right: 8,
+    width: 8,
+    height: 8,
+    borderRadius: 4,
+    backgroundColor: Colors.bgRedBtn, // Use your desired color here
+  },
+});
+
 
 export default TrainerBottomTabScreen;

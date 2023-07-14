@@ -3,7 +3,7 @@ import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 import { url } from "../constants/url";
 import { LoginInterface, UserMeApiResponse } from "./store.interface";
 import { getUserAsyncStroageToken } from "../utils/async-storage";
-import { TrainerSessionApiResultInterface } from "../interfaces";
+import { RoomMessagesResponse, TrainerSessionApiResultInterface } from "../interfaces";
 
 // Define a service using a base URL and expected endpoints
 export const fitsApi = createApi({
@@ -12,8 +12,6 @@ export const fitsApi = createApi({
     baseUrl: url,
     prepareHeaders: async (headers: Headers) => {
       const token = await getUserAsyncStroageToken()
-      console.log(token);
-
       headers.set("Authorization", `Bearer ${token}`);
       return headers;
     },
@@ -84,6 +82,14 @@ export const fitsApi = createApi({
     trainerProfessionalInfoCreate: builder.mutation<any, Partial<any>>({
       query: (body) => ({
         url: "/profession",
+        method: "POST",
+        body: body,
+      }),
+    }),
+
+    sendMessage: builder.mutation<any, Partial<any>>({
+      query: (body) => ({
+        url: "/chat/message/create",
         method: "POST",
         body: body,
       }),
@@ -187,6 +193,10 @@ export const fitsApi = createApi({
       query: (id) => `/session/trainer/${id}`,
     }),
 
+    getRoomMessages: builder.query<RoomMessagesResponse, Partial<any>>({
+      query: (id) => `chat/messages/${id}`,
+    }),
+
     personalInfoCreate: builder.mutation<any, Partial<any>>({
       query: (body) => ({
         url: "/personal",
@@ -222,5 +232,7 @@ export const {
   useAddNewGoalMutation,
   useSessionCreateMutation,
   useCreateChatRoomMutation,
-  useGetChatRoomsQuery
+  useGetChatRoomsQuery,
+  useGetRoomMessagesQuery,
+  useSendMessageMutation
 } = fitsApi;

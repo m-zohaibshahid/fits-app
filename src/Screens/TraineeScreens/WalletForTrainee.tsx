@@ -99,7 +99,6 @@ const WalletForTrainee: React.FC<Props> = ({ navigation }) => {
       })
         .then((res) => res.json())
         .then((res2) => {
-          console.log("res2", res2);
           if (!res2.success) {
             ToastAndroid.show(res2?.message, ToastAndroid.SHORT);
           }

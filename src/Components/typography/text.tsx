@@ -57,6 +57,7 @@ const Typography: React.FC<TypographyProps> = ({
 
 const getSize = (size: keyof SizeVariant | number): number => {
   const sizeVariant: SizeVariant = {
+    extraSmall: 10,
     small: 12,
     medium: 14,
     large: 20,
@@ -130,6 +131,7 @@ export default Typography;
 type weightInterface = | 'bold' | 'normal' | '100' | '200' | '300' | '400' | '500' | '600' | '700' | '800' | '900';
 
 interface SizeVariant {
+    extraSmall: number;
     small: number;
     medium: number;
     large: number;
