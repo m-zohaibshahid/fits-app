@@ -11,11 +11,10 @@ import * as Images from "../../constants/Images";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import FastImage from "react-native-fast-image";
 import { useGetUserMeQuery, useUpdatePasswordMutation } from "../../slice/FitsApi.slice";
-import { getUserAsyncStroage } from "../../common/fetchApi";
 import { useSelector } from "react-redux";
 import { UserDataInterface, UserDetail } from "../../interfaces";
 import { NavigationSwitchProp } from "react-navigation";
-import ErrorHandler from "../../Components/Alert-modal";
+import { getUserAsyncStroage } from "../../utils/async-storage";
 interface Props {
   navigation: NavigationSwitchProp;
 }
@@ -62,8 +61,8 @@ const Account: React.FC<Props> = ({ navigation }) => {
       };
       await updatePassword({ id, ...body })
         // .unwrap()
-        .then((res2) => {
-          if (res2?.data.success === true) {
+        .then((res2: any) => {
+          if (res2?.data.success) {
             ToastAndroid.show("Password updated", ToastAndroid.LONG);
           } else {
             Alert.alert(res2?.data?.message);

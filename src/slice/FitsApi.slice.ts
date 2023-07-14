@@ -128,14 +128,6 @@ export const fitsApi = createApi({
       }),
     }),
 
-    bookASession: builder.mutation<any, Partial<any>>({
-      query: (body) => ({
-        url: `/book-a-session`,
-        method: "POST",
-        body: body,
-      }),
-    }),
-
     updateUser: builder.mutation<any, Partial<any>>({
       query: (user) => ({
         url: `users/${user.id}`,
@@ -194,6 +186,14 @@ export const fitsApi = createApi({
       query: ({ id, ...data }) => ({
         url: `/profile/edit/password/${id}`,
         method: "PUT",
+        body: data,
+      }),
+    }),
+
+    bookASession: builder.mutation<void, Partial<any>>({
+      query: ({ id, ...data }) => ({
+        url: `/book-a-session`,
+        method: "POST",
         body: data,
       }),
     }),

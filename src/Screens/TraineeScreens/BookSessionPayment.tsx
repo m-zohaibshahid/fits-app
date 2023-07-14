@@ -7,13 +7,22 @@ import { RFValue } from "react-native-responsive-fontsize";
 import Header from "../../Components/Header";
 import { url } from "../../constants/url";
 import Button from "../../Components/Button";
-import { useNavigation, useRoute } from "@react-navigation/native";
+import { RouteProp, useNavigation, useRoute } from "@react-navigation/native";
 
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Toast } from "react-native-toast-message/lib/src/Toast";
 import { useSelector } from "react-redux";
-import { UserDetailInfoInterface } from "../../interfaces";
+import { UserDetail, UserDetailInfoInterface, UserInterface } from "../../interfaces";
 import { useBookASessionMutation, useGetUserMeQuery } from "../../slice/FitsApi.slice";
+
+type RootStackParamList = {
+  BookSessionPaymentScreen: BookSessionPaymentParams;
+  // Define other screens and their respective route params here
+};
+
+type BookSessionPaymentParams = {
+  data: any;
+};
 
 const BookSessionPayment = () => {
   const navigation = useNavigation();
@@ -21,46 +30,43 @@ const BookSessionPayment = () => {
   const [load, setLoad] = useState(false);
   const [cardData, setCardData] = useState();
   const [senderId, setSenderId] = useState();
-  const route = useRoute();
-
-  const reciverId = route.params?.data.userData.item?.user.cus_id;
-
-  const { userInfo } = useSelector((state: Partial<UserDetailInfoInterface>) => state.fitsStore);
+  const route = useRoute<RouteProp<RootStackParamList, "BookSessionPaymentScreen">>();
+  const bookSessionParams = route?.params?.data;
+  const reciverId = bookSessionParams.userData?.user?.cus_id;
+  const token = useSelector((state: { token: string }) => state.token);
   const { data, isLoading, error, isSuccess } = useGetUserMeQuery({});
-  const [bookASession, { data: sessionBook, isLoading: isLoading1 }] = useBookASessionMutation();
+  const [bookASession] = useBookASessionMutation();
 
   const userMe = async () => {
     setLoad(true);
     if (data?.success) {
-      getStripeCard(data?.stripe?.card?.customer.id);
-      setSenderId(data?.stripe?.card?.customer.id);
+      getStripeCard(data?.stripe?.card?.customer);
+      setSenderId(data?.stripe?.card?.customer);
     }
   };
 
   const getStripeCard = async (id: string) => {
     setLoad(true);
-    const userData = await AsyncStorage.getItem("userData");
-    let userDatax = JSON.parse(userData);
-    if (userDatax) {
-      await fetch(`${url}/stripe/customer/${id}`, {
-        method: "GET",
-        headers: {
-          Accept: "application/json",
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${userDatax?.access_token}`,
-        },
+
+    await fetch(`${url}/stripe/customer/${id}`, {
+      method: "GET",
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+    })
+      // .then((res) => res.json())
+
+      .then((res2) => {
+        setLoad(false);
+        if (res2?.success) {
+          setCardData(res2?.data);
+        }
       })
-        .then((res) => res.json())
-        .then((res2) => {
-          setLoad(false);
-          if (res2?.success) {
-            setCardData(res2?.data);
-          }
-        })
-        .catch(() => {
-          setLoad(false);
-        });
-    }
+      .catch(() => {
+        setLoad(false);
+      });
   };
   const BookASession = async () => {
     // await fetch(`${url}/book-a-session`, {
@@ -75,14 +81,13 @@ const BookSessionPayment = () => {
     //     trainerId: route?.params?.data?.trainerId,
     //   }),
     // })
-    bookASession({
+    const body = {
       sessionId: route?.params?.data?.sessionId,
       trainerId: route?.params?.data?.trainerId,
-    })
-      // .then((res) => res.json())
-
+    };
+    bookASession(body)
       .then((res2) => {
-        if (res2?.data?.message === "session booked") {
+        if (res2.data.success) {
           setLoad(false);
           navigation.navigate("Home");
           Toast.show({
@@ -143,8 +148,9 @@ const BookSessionPayment = () => {
       userMe();
     });
   }, []);
+  console.log("cardData", cardData, data?.stripe?.card?.customer);
   let wallet = Number(cardData?.balance === undefined ? 0 : cardData?.balance);
-  let cost = Number(route.params?.data.userData?.item?.price);
+  let cost = Number(bookSessionParams.userData?.price);
   let balance = Number(wallet - cost);
   return (
     <View style={styles.container}>
@@ -162,8 +168,8 @@ const BookSessionPayment = () => {
                 <View style={styles.marchmainview2}>
                   <View style={{ width: "25%", alignItems: "center" }}>
                     <Text style={styles.marchtext}>
-                      {moment(route.params?.data.userData.item?.select_date).format("DD ")}
-                      {moment(route.params?.data.userData.item?.select_date).format("MMMM")}
+                      {moment(bookSessionParams.userData?.select_date).format("DD ")}
+                      {moment(bookSessionParams.userData?.select_date).format("MMMM")}
                     </Text>
                   </View>
                   <View
@@ -181,7 +187,7 @@ const BookSessionPayment = () => {
                     ></View>
                   </View>
                   <View style={{ width: "35%", flexDirection: "column" }}>
-                    <Text style={styles.marchtext}>{route.params?.data.userData.item?.category}</Text>
+                    <Text style={styles.marchtext}>{bookSessionParams.userData?.category}</Text>
                     <Text
                       style={{
                         color: "#fff",
@@ -189,7 +195,7 @@ const BookSessionPayment = () => {
                         fontFamily: "Poppins-Regular",
                       }}
                     >
-                      {route.params?.data.userData.item?.class_time.slice(0, 10)}
+                      {bookSessionParams.userData?.class_time.slice(0, 10)}
                     </Text>
                   </View>
                   <Pressable
@@ -236,7 +242,7 @@ const BookSessionPayment = () => {
                         </View>
                         <View style={{ width: "90%" }}>
                           <Text style={styles.textstyle}>
-                            Type:{"\n"} {route.params?.data.userData.item?.session_type.type}
+                            Type:{"\n"} {bookSessionParams.userData?.session_type.type}
                           </Text>
                         </View>
                       </View>
@@ -246,7 +252,7 @@ const BookSessionPayment = () => {
                         </View>
                         <View style={{ width: "90%" }}>
                           <Text style={styles.textstyle}>
-                            Cost: {"\n"}$ {route.params?.data.userData.item?.price}
+                            Cost: {"\n"}$ {bookSessionParams.userData?.price}
                           </Text>
                         </View>
                       </View>
@@ -257,7 +263,7 @@ const BookSessionPayment = () => {
                         <View style={{ width: "90%" }}>
                           <Text style={styles.textstyle}>
                             Trainee name:{"\n"}
-                            {route.params?.data.personalData.check.name}
+                            {bookSessionParams.personalData.check.name}
                           </Text>
                         </View>
                       </View>
@@ -287,7 +293,7 @@ const BookSessionPayment = () => {
                     <Text style={styles.totalText}>Total Cost</Text>
                   </View>
                   <View style={styles.$10View}>
-                    <Text style={styles.totalText}>$ {route.params?.data.userData.item?.price}</Text>
+                    <Text style={styles.totalText}>$ {bookSessionParams.userData?.price}</Text>
                   </View>
                 </View>
                 {/*end pay*/}

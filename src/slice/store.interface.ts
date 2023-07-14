@@ -53,5 +53,6 @@ export interface Session {
 }
 
 export interface Stripe {
+  card: any;
   message: string
 }

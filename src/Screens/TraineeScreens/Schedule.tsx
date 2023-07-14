@@ -8,12 +8,19 @@ import { useRoute } from "@react-navigation/native";
 import { heightPercentageToDP } from "react-native-responsive-screen";
 import moment from "moment";
 import { useGetUserMeQuery } from "../../slice/FitsApi.slice";
+import { NavigationSwitchProp } from "react-navigation";
 import { getUserAsyncStroage } from "../../utils/async-storage";
 
-const Schedule = ({ navigation }) => {
-  const route = useRoute();
+interface Props {
+  navigation: NavigationSwitchProp;
+}
+const Schedule: React.FC<Props> = ({ navigation }) => {
+  const route: any = useRoute();
   const [details, setDetails] = useState(false);
-  const [currentDate, setCurrentDate] = useState();
+  const [card, setCard] = useState(false);
+  const [currentDate, setCurrentDate] = useState('');
+
+  const { data: userMeData } = useGetUserMeQuery<any>({});
 
   const goToNextScreen = () => {
     navigation.navigate("BookSessionPayment", {
@@ -21,38 +28,20 @@ const Schedule = ({ navigation }) => {
     });
   };
 
-  const [card, setCard] = useState("");
-  const [sessionId, setSessionId] = useState("");
-  const [trainerId, setTrainerId] = useState("");
-  const [userDatax, setUserDatax] = useState();
-
-  const { data: userMeData, isLoading: isLoading1, error: error1, isSuccess } = useGetUserMeQuery({});
-
-  useEffect(() => {
-    navigation.addListener("focus", () => {
-      setSessionId(route?.params?.sessionId);
-      setTrainerId(route?.params?.trainerId);
-      userMe();
-    });
-  }, []);
-
   useEffect(() => {
     setCard(userMeData?.user?.cardCreated);
   }, [userMeData]);
-  const userMe = async () => {
-    const userData = await getUserAsyncStroage();
-    setUserDatax(userData);
-  };
+  
   return (
     <View style={styles.container}>
       <View style={styles.main}>
         <View style={styles.TopView}>
           <View style={styles.topView}>
-            <View style={styles.CalendarView}>
+            <View>
               <Calendar
                 markingType={"custom"}
-                onDayPress={(day) => {
-                  setCurrentDate(day.dateString);
+                onDayPress={(day: any) => {
+                  setCurrentDate(day?.dateString);
                 }}
                 firstDay={1}
                 markedDates={{
@@ -72,8 +61,8 @@ const Schedule = ({ navigation }) => {
             <View style={styles.marchmainview2}>
               <View style={{ width: "25%", alignItems: "center" }}>
                 <Text style={styles.marchtext}>
-                  {moment(route.params.userData.item.select_date).format("DD ")}
-                  {moment(route.params.userData.item.select_date).format("MMMM")}
+                  {moment(route.params?.userData?.select_date).format("DD ")}
+                  {moment(route.params?.userData?.select_date).format("MMMM")}
                 </Text>
                 <Text
                   style={{
@@ -82,7 +71,7 @@ const Schedule = ({ navigation }) => {
                     fontFamily: "Poppins-Regular",
                   }}
                 >
-                  ({moment(route.params.userData.item.select_date).format("dddd")})
+                  ({moment(route.params?.userData?.select_date).format("dddd")})
                 </Text>
               </View>
               <View
@@ -101,7 +90,7 @@ const Schedule = ({ navigation }) => {
               </View>
               <View style={{ width: "35%", flexDirection: "column" }}>
                 <Text style={styles.marchtext}>
-                  {route.params.userData.item.class_title} {"\n"}
+                  {route?.params?.userData?.class_title} {"\n"}
                   <Text
                     style={{
                       color: "#fff",
@@ -109,7 +98,7 @@ const Schedule = ({ navigation }) => {
                       fontFamily: "Poppins-Regular",
                     }}
                   >
-                    {route.params.userData.item.class_time.slice(0, 10)}
+                    {route?.params?.userData?.class_time.slice(0, 10)}
                   </Text>
                 </Text>
               </View>
@@ -161,18 +150,15 @@ const Schedule = ({ navigation }) => {
                   </View>
                   <View style={{ width: "90%" }}>
                     <Text style={styles.textstyle}>
-                      Cost: {"\n"}${route?.params?.userData?.item.price}
+                      Cost: {"\n"}${route?.params?.userData?.price}
                     </Text>
                   </View>
                 </View>
                 <View style={styles.mainbtnView}>
                   <Pressable
                     onPress={() => {
-                      if (card) {
-                        goToNextScreen();
-                      } else {
-                        navigation.navigate("CreateCardTrainee");
-                      }
+                      if (card) goToNextScreen()
+                      else navigation.navigate("CreateCardTrainee");
                     }}
                     style={styles.ccbtnview}
                   >

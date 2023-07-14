@@ -93,9 +93,9 @@ const Home: React.FC<Props> = ({ navigation }) => {
       sessionRefetch();
     });
   }, []);
-  
+
   useEffect(() => {
-      bookASession();
+    bookASession();
   }, [session]);
 
   // filter Api states
@@ -107,8 +107,8 @@ const Home: React.FC<Props> = ({ navigation }) => {
       type: classType,
       sort_by: classSort,
     };
-    const result = await updateFilter(data)
-    
+    const result: any = await updateFilter(data);
+
     if (result?.error) errorToast(result.error?.data?.message);
     if (result?.data) setFilterData(result.data?.data?.result);
   };
@@ -185,7 +185,7 @@ const Home: React.FC<Props> = ({ navigation }) => {
         }
       })
       .catch((error) => {
-        errorToast(error?.message)
+        errorToast(error?.message);
       });
   };
 
@@ -206,7 +206,7 @@ const Home: React.FC<Props> = ({ navigation }) => {
   };
 
   const bookASession = async () => {
-    if (!session?.data) return
+    if (!session?.data) return;
     setPersonalInfoData(session?.data.personal_info);
     setProfessionalData(session?.data.profession_info);
     setFilterData(session?.data.classes);
@@ -283,13 +283,7 @@ const Home: React.FC<Props> = ({ navigation }) => {
                   <FontAwesome name="search" size={24} color="#fff" />
                 </View>
                 <View style={styles.textinputview}>
-                  <TextInput
-                    placeholder="Search by class"
-                    placeholderTextColor={"#fff"}
-                    style={styles.textinputstyle}
-                    value={search}
-                    onChangeText={(e) => find(e)}
-                  />
+                  <TextInput placeholder="Search by class" placeholderTextColor={"#fff"} style={styles.textinputstyle} value={search} onChangeText={(e) => find(e)} />
                 </View>
                 <Pressable
                   style={styles.closeiconview}
@@ -320,39 +314,39 @@ const Home: React.FC<Props> = ({ navigation }) => {
       </View>
       <ScrollView showsVerticalScrollIndicator={false} style={styles.main}>
         {filterData ? (
-            <ScrollView horizontal={true} showsHorizontalScrollIndicator={false} style={styles.main}>
-              {filterData.map((item: TrainerClassInterfaceInTraineeScreenInterface, i: number) => (
-                <Pressable onPress={() => handlePressOnCard(item)} style={styles.boxview} key={i}>
-                  <ImageBackground imageStyle={{ borderRadius: 10 }} style={styles.ImageBackgroundstyle} source={{ uri: item.image } ?? dummyImageSource}>
-                    <View style={styles.TopView}>
-                      <View style={styles.topView}>
-                        <View style={styles.RowView}>
-                          <View style={styles.inImageView}>
-                            <View style={styles.BoxViews}>
-                              <Text style={styles.TextStyle}>
-                                <AntDesign name="star" size={15} color={"#000"} /> {item?.averageRating?.toFixed(1)}
-                              </Text>
-                            </View>
+          <ScrollView horizontal={true} showsHorizontalScrollIndicator={false} style={styles.main}>
+            {filterData.map((item: TrainerClassInterfaceInTraineeScreenInterface, i: number) => (
+              <Pressable onPress={() => handlePressOnCard(item)} style={styles.boxview} key={i}>
+                <ImageBackground imageStyle={{ borderRadius: 10 }} style={styles.ImageBackgroundstyle} source={{ uri: item.image } ?? dummyImageSource}>
+                  <View style={styles.TopView}>
+                    <View style={styles.topView}>
+                      <View style={styles.RowView}>
+                        <View style={styles.inImageView}>
+                          <View style={styles.BoxViews}>
+                            <Text style={styles.TextStyle}>
+                              <AntDesign name="star" size={15} color={"#000"} /> {item?.averageRating?.toFixed(1)}
+                            </Text>
                           </View>
-                          <View style={styles.inImageView1}>
-                            <View style={styles.BoxView1}>
-                              <Text style={styles.TextStyle}>$ {item?.price} / Session</Text>
-                            </View>
+                        </View>
+                        <View style={styles.inImageView1}>
+                          <View style={styles.BoxView1}>
+                            <Text style={styles.TextStyle}>$ {item?.price} / Session</Text>
                           </View>
                         </View>
                       </View>
                     </View>
-                  </ImageBackground>
-                  <View style={styles.jumerNameView}>
-                    <Text style={styles.jamesnameText}>{item.class_title}</Text>
-                    <View style={{ width: "100%", flexDirection: "row" }}>
-                      <EvilIcons name="location" size={20} color="black" />
-                      <Text style={styles.kmtextstyle}>{item.session_type.desc} km from you</Text>
-                    </View>
                   </View>
-                </Pressable>
-              ))}
-            </ScrollView>
+                </ImageBackground>
+                <View style={styles.jumerNameView}>
+                  <Text style={styles.jamesnameText}>{item.class_title}</Text>
+                  <View style={{ width: "100%", flexDirection: "row" }}>
+                    <EvilIcons name="location" size={20} color="black" />
+                    <Text style={styles.kmtextstyle}>{item?.session_type?.desc} km from you</Text>
+                  </View>
+                </View>
+              </Pressable>
+            ))}
+          </ScrollView>
         ) : (
           <View
             style={{
@@ -372,44 +366,83 @@ const Home: React.FC<Props> = ({ navigation }) => {
             </Text>
           </View>
         )}
-        {recommended ? <Recommended navigation={navigation} superLong={undefined} superLat={undefined} /> : null}
+        {recommended && <Recommended navigation={navigation} superLong={undefined} superLat={undefined} />}
       </ScrollView>
-    <Modal
-      animationType="fade"
-            transparent={true}
-            visible={modalVisible}
-            onRequestClose={() => setModalVisible(false)}
-      >
-              <View style={styles.bottomView}>
-                <View style={styles.modalContainer}>
-                    <Header label={"Filter"} hideBackButton showCloseButton lableStyle={{marginBottom: 30}} onClose={() => setModalVisible(false)} />
-                      <View style={styles.toptabmainview}>
-                          <Typography style={filterType === FilterTypes.SORT ? {
-                            borderBottomColor: Colors.redColor,
-                            borderBottomWidth: 2
-                          } : {}} color={filterType === FilterTypes.SORT ? "redColor" : "black"} size="medium" onPress={() => setFilterType(FilterTypes.SORT)} pressAble>Sort</Typography>
-                          <Typography style={filterType === FilterTypes.SPORT ? {
-                            borderBottomColor: Colors.redColor,
-                            borderBottomWidth: 2
-                          } : {}} color={filterType === FilterTypes.SPORT ? "redColor" : "black"} size="medium" onPress={() => setFilterType(FilterTypes.SPORT)} pressAble>Sports</Typography>
-                          <Typography style={filterType === FilterTypes.PRICE ? {
-                            borderBottomColor: Colors.redColor,
-                            borderBottomWidth: 2
-                          } : {}} color={filterType === FilterTypes.PRICE ? "redColor" : "black"} size="medium" onPress={() => setFilterType(FilterTypes.PRICE)} pressAble>Price</Typography>
-                          <Typography style={filterType === FilterTypes.TYPE ? {
-                            borderBottomColor: Colors.redColor,
-                            borderBottomWidth: 2
-                          } : {}} color={filterType === FilterTypes.TYPE ? "redColor" : "black"} size="medium" onPress={() => setFilterType(FilterTypes.TYPE)} pressAble>Type</Typography>
-                      </View>
-                      <ScrollView showsVerticalScrollIndicator={false}>
-                        {filterType === FilterTypes.SORT ? <Sort ClassSorts={classSorts} /> : null}
-                        {filterType === FilterTypes.SPORT ? <Sports navigation={navigation} handleSportsData={handleSportsData} /> : null}
-                        {filterType === FilterTypes.PRICE ? <Price navigation={navigation} MinPriceData={minPriceData} MaxPriceData={maxPriceData} /> : null}
-                        {filterType === FilterTypes.TYPE ? <Type navigation={navigation} ClassType={handleClassType} /> : null}
-                      </ScrollView>
-                  </View>
-                </View>
-    </Modal>
+      <Modal animationType="fade" transparent={true} visible={modalVisible} onRequestClose={() => setModalVisible(false)}>
+        <View style={styles.bottomView}>
+          <View style={styles.modalContainer}>
+            <Header label={"Filter"} hideBackButton showCloseButton lableStyle={{ marginBottom: 30 }} onClose={() => setModalVisible(false)} />
+            <View style={styles.toptabmainview}>
+              <Typography
+                style={
+                  filterType === FilterTypes.SORT
+                    ? {
+                        borderBottomColor: Colors.redColor,
+                        borderBottomWidth: 2,
+                      }
+                    : {}
+                }
+                color={filterType === FilterTypes.SORT ? "redColor" : "black"}
+                size="medium"
+                onPress={() => setFilterType(FilterTypes.SORT)}
+                pressAble
+              >
+                Sort
+              </Typography>
+              <Typography
+                style={
+                  filterType === FilterTypes.SPORT
+                    ? {
+                        borderBottomColor: Colors.redColor,
+                        borderBottomWidth: 2,
+                      }
+                    : {}
+                }
+                color={filterType === FilterTypes.SPORT ? "redColor" : "black"}
+                size="medium"
+                onPress={() => setFilterType(FilterTypes.SPORT)}
+                pressAble
+              >
+                Sports
+              </Typography>
+              <Typography
+                style={
+                  filterType === FilterTypes.PRICE && {
+                    borderBottomColor: Colors.redColor,
+                    borderBottomWidth: 2,
+                  }
+                }
+                color={filterType === FilterTypes.PRICE ? "redColor" : "black"}
+                size="medium"
+                onPress={() => setFilterType(FilterTypes.PRICE)}
+                pressAble
+              >
+                Price
+              </Typography>
+              <Typography
+                style={
+                  filterType === FilterTypes.TYPE && {
+                    borderBottomColor: Colors.redColor,
+                    borderBottomWidth: 2,
+                  }
+                }
+                color={filterType === FilterTypes.TYPE ? "redColor" : "black"}
+                size="medium"
+                onPress={() => setFilterType(FilterTypes.TYPE)}
+                pressAble
+              >
+                Type
+              </Typography>
+            </View>
+            <ScrollView showsVerticalScrollIndicator={false}>
+              {filterType === FilterTypes.SORT && <Sort ClassSorts={classSorts} />}
+              {filterType === FilterTypes.SPORT && <Sports navigation={navigation} handleSportsData={handleSportsData} />}
+              {filterType === FilterTypes.PRICE && <Price navigation={navigation} MinPriceData={minPriceData} MaxPriceData={maxPriceData} />}
+              {filterType === FilterTypes.TYPE && <Type navigation={navigation} ClassType={handleClassType} />}
+            </ScrollView>
+          </View>
+        </View>
+      </Modal>
     </Container>
   );
 };
@@ -423,7 +456,7 @@ const styles = StyleSheet.create({
   },
   bottomView: {
     flex: 1,
-    justifyContent: 'flex-end',
+    justifyContent: "flex-end",
     backgroundColor: Colors.transparentBlack,
   },
   modalContainer: {
@@ -439,7 +472,7 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.25,
     shadowRadius: 6.84,
     elevation: 9,
-    height: 500
+    height: 500,
   },
   header: {
     width: "100%",
@@ -457,7 +490,7 @@ const styles = StyleSheet.create({
   TopView: {
     width: "100%",
     alignItems: "center",
-    marginTop: 20
+    marginTop: 20,
   },
   topView: {
     width: "90%",
@@ -552,7 +585,7 @@ const styles = StyleSheet.create({
     // flex: 1,
     justifyContent: "space-between",
     alignItems: "center",
-    marginBottom: 10
+    marginBottom: 10,
   },
   mainclassesview: {
     width: "25%",
