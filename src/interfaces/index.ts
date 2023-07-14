@@ -86,3 +86,136 @@ export interface UserInterface {
 export interface UserDetail {
   userInfo: UserMeApiResponse
 }
+
+export interface TrainerSessionApiResultInterface {
+  statusCode: number;
+  success: boolean;
+  message: string;
+  data: Data;
+}
+
+interface Data {
+  classes: TrainerClassInterfaceInTraineeScreenInterface[];
+  personal_info: TrainerPersonalinfoInTraineeScreenInterface[];
+  profession_info: TrainerProfessioninfoInTraineeScreen[];
+}
+
+export interface TrainerProfessioninfoInTraineeScreen {
+  verification_status: string;
+  _id: string;
+  experience_year: number;
+  experience_note: string;
+  qualification: Qualification[];
+  user: string;
+  createdAt: string;
+  updatedAt: string;
+  __v: number;
+}
+
+interface Qualification {
+  _id: string;
+  id: number;
+  degree: string;
+  degree_note: string;
+}
+
+export interface TrainerPersonalinfoInTraineeScreenInterface {
+  _id: string;
+  name: string;
+  date_of_birth: string;
+  country: string;
+  state: string;
+  city: string;
+  gender: string;
+  user: string; // ˚˚˚˚˚˚˚˚˚˚˚˚˚˚˚˚˚˚˚˚˚˚˚˚˚˚
+  profileImage: string;
+  phoneNumber: number;
+  createdAt: string;
+  updatedAt: string;
+  __v: number;
+}
+
+export interface TrainerClassInterfaceInTraineeScreenInterface {
+  image: string;
+  numReviews: number;
+  averageRating: number;
+  _id: string;
+  session_title: string;
+  class_title: string;
+  select_date: string;
+  class_time: string;
+  duration: number;
+  equipment: Equipment[];
+  session_type: Sessiontype;
+  sports: string;
+  details: string;
+  price: number;
+  no_of_slots: number;
+  user?: User; // ˚˚˚˚˚˚˚˚˚˚˚˚˚˚˚˚˚˚˚˚˚˚˚˚˚˚˚˚˚˚˚˚˚
+  createdAt: string;
+}
+
+interface User {
+  services_offered: Servicesoffered;
+  role: string;
+  isVerified: boolean;
+  amount: number;
+  emailVerified: boolean;
+  suspended: boolean;
+  reset_password: boolean;
+  trainerVerified: string;
+  accountVerified: string;
+  numReviews: number;
+  averageRating: number;
+  cardCreated: boolean;
+  _id: string;
+  email: string;
+  password: string;
+  createdAt: string;
+  updatedAt: string;
+  __v: number;
+  personal: string;
+  profession: string;
+}
+
+interface Servicesoffered {
+  value: string;
+  key: string;
+}
+
+interface Sessiontype {
+  _id: string;
+  type: string;
+  lat?: number;
+  lng?: number;
+  meetingLink?: string;
+  recordCategory: string;
+  no_of_play: string;
+  videoTitle: string;
+  videoLink?: string;
+  desc?: string;
+}
+
+interface Equipment {
+  _id: string;
+  value: string;
+}
+
+export interface MessageInterface {
+  status: false,
+  _id: string,
+  roomId: string,
+  userId: string,
+  message: string,
+  createdAt: string,
+  updatedAt: string,
+}
+
+export interface RoomMessagesResponse {
+  data: {
+    messages: MessageInterface[];
+  };
+  statusCode: number;
+  message: string;
+  success: boolean;
+}

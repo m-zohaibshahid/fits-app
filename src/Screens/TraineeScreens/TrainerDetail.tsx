@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import {
   Text,
   View,
@@ -6,8 +6,6 @@ import {
   StyleSheet,
   TextInput,
   Modal,
-  ToastAndroid,
-  ActivityIndicator,
   Platform
 } from "react-native";
 import { ScrollView } from "react-native-gesture-handler";
@@ -19,15 +17,12 @@ import About from "./About";
 import Videos2 from "./Videos2";
 import Ratings from "./Ratings";
 import Schedule from "./Schedule";
-import { url } from "../../constants/url";
 import { useRoute } from "@react-navigation/native";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import FastImage from "react-native-fast-image";
 import Entypo from "react-native-vector-icons/Entypo";
-import Pressable from "react-native/Libraries/Components/Pressable/Pressable";
 import { useSelector } from "react-redux";
-import { UserDetail, UserDetailInfoInterface } from "../../interfaces";
-import { useCreateChatRoomMutation, useGetUserMeQuery } from "../../slice/FitsApi.slice";
+import { UserDetail } from "../../interfaces";
+import { useCreateChatRoomMutation } from "../../slice/FitsApi.slice";
 import { NavigationSwitchProp } from "react-navigation";
 import { errorToast } from "../../utils/toast";
 
@@ -48,7 +43,7 @@ const TrainerDetail = ({ navigation }: PropsInterface) => {
   const [activeTab, setActiveTab] = useState<Tab>(Tab.ABOUT);
   const [message, setMessage] = useState("");
   const [mutateAsyncChatRoomCreate] = useCreateChatRoomMutation()
-  const trainerId = route?.params?.personalData?.check?._id
+  const trainerId = route?.params?.personalData.user
   const { userInfo } = useSelector((state: { fitsStore: Partial<UserDetail> }) => state.fitsStore);
   const token = useSelector((state: { token: string }) => state.token);
 
@@ -95,7 +90,7 @@ const TrainerDetail = ({ navigation }: PropsInterface) => {
         <FastImage
           style={styles.Imagestyle}
           source={{
-            uri: `${route?.params.userData.item.image}`,
+            uri: `${route.params.userData?.image}`,
             headers: { Authorization: "someAuthToken" },
             priority: FastImage.priority.normal,
           }}
@@ -170,21 +165,21 @@ const TrainerDetail = ({ navigation }: PropsInterface) => {
         <View style={styles.header}>
           <View style={styles.TopView}>
             <View style={styles.topView1}>
-              <Text style={styles.NameText}>{route?.params.personalData.check.name}</Text>
+              <Text style={styles.NameText}>{route?.params?.personalData.name}</Text>
               <View style={styles.BtnmainrowView}>
                 <View style={styles.BtnviewView}>
                   <Text style={styles.sessionText}>
-                    <Text style={styles.Boldtextstyle}>{route?.params.userData.item.price}$</Text>
+                    <Text style={styles.Boldtextstyle}>{route?.params?.userData.price}$</Text>
                     /session
                   </Text>
                 </View>
                 <View style={styles.Btnmain2View}>
                   <Text style={styles.sessionText}>
                     <Text style={styles.Boldtextstyle}>
-                      {route?.params?.userData?.item?.averageRating?.toFixed(1)}{" "}
+                      {route?.params?.userData.averageRating}{" "}
                       <AntDesign name="star" color={"#000"} size={15} />
                     </Text>
-                    ({route?.params?.userData?.item?.numReviews} Reviews)
+                    ({route?.params?.userData.numReviews} Reviews)
                   </Text>
                 </View>
               </View>

@@ -100,7 +100,7 @@ const WalletForTrainee: React.FC<Props> = ({ navigation }) => {
   }, []);
   return (
     <View style={styles.container}>
-      <Header label={"Wallet"} subLabel={"Add cash to your account by selecting any plan."} navigation={navigation} doubleHeader={true} />
+      <Header label={"Wallet"} subLabel={"Add cash to your account by selecting any plan."} navigation={navigation} />
 
       {/*End Header*/}
       <ScrollView showsVerticalScrollIndicator={false} style={styles.main}>

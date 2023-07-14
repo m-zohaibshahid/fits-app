@@ -33,7 +33,7 @@ const AccountUpdate = () => {
   const [cloudImageUrl, setCloudImageUrl] = useState("");
   const [isCountryVisible, setIsCountryVisible] = React.useState(false);
   const { data: userMeData, refetch, isLoading } = useGetUserMeQuery({});
-  const [personalInfoUpdate, { data: personallInfo, isLoading: isLoading1 }] = usePersonalInfoUpdateMutation();
+  const [personalInfoUpdate, { isLoading: isLoading1 }] = usePersonalInfoUpdateMutation();
   const [load, setLoad] = useState(false);
   const [loadx, setLoadx] = useState(false);
   const [userId, setUserId] = useState("");
@@ -43,6 +43,8 @@ const AccountUpdate = () => {
       userMe();
     });
   }, []);
+
+  console.log(isLoading);
 
   const onPressFlag = () => {
     setIsCountryVisible(true);

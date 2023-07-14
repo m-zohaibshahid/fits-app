@@ -1,20 +1,13 @@
-import React, { useState } from "react";
-import {
-  Text,
-  View,
- 
-  StyleSheet,
- 
-} from "react-native";
+import React from "react";
+import { Text, View, StyleSheet } from "react-native";
 import FontAwesome from "react-native-vector-icons/FontAwesome";
 import {  RFValue } from "react-native-responsive-fontsize";
 import { useRoute } from "@react-navigation/native";
 import { heightPercentageToDP } from "react-native-responsive-screen";
 import moment from "moment";
 
-const About = ({ navigation }:any) => {
+const About = ({navigation}: any) => {
   const route = useRoute();
-
   return (
     <View style={styles.container}>
       {/*Start BoxView*/}
@@ -28,7 +21,7 @@ const About = ({ navigation }:any) => {
               <View style={{ width: "90%" }}>
                 <Text style={styles.textstyleBold}>Age</Text>
                 <Text style={styles.textstyle}>
-                  {moment(route?.params?.personalData?.check?.date_of_birth)
+                  {moment(route?.params?.personalData?.date_of_birth)
                     .month(0)
                     .from(moment().month(0))}
                 </Text>
@@ -41,7 +34,7 @@ const About = ({ navigation }:any) => {
               <View style={{ width: "90%" }}>
                 <Text style={styles.textstyleBold}>Experience</Text>
                 <Text style={styles.textstyle}>
-                  {route.params.professionalData.checkx.experience_year}
+                  {route.params.professionalData.experience_year}
                 </Text>
               </View>
             </View>
@@ -53,9 +46,9 @@ const About = ({ navigation }:any) => {
                 <Text style={styles.textstyleBold}>
                   Qualifications
                   {"\n"}
-                  {route?.params?.professionalData?.checkx?.qualification[0]
+                  {route?.params?.professionalData.qualification[0]
                     ?.degree === "" &&
-                    route?.params?.professionalData?.checkx?.qualification[0]
+                    route?.params?.professionalData.qualification[0]
                       ?.degree_note === "" ? (
                     <Text style={styles.textstyle}>
                       No Qualification Entered
@@ -63,13 +56,12 @@ const About = ({ navigation }:any) => {
                   ) : (
                     <Text style={styles.textstyles}>
                       {
-                        route?.params?.professionalData?.checkx
+                        route?.params?.professionalData
                           ?.qualification[0]?.degree
                       }
                       {"\n"}
                       {
-                        route?.params?.professionalData?.checkx
-                          ?.qualification[0]?.degree_note
+                        route?.params?.professionalData.qualification[0]?.degree_note
                       }
                     </Text>
                   )}
@@ -84,7 +76,7 @@ const About = ({ navigation }:any) => {
                 <Text style={styles.textstyleBold}>
                   Category{"\n"}
                   <Text style={styles.textstyle}>
-                    {route.params.userData.item.category}
+                    {route?.params?.userData.category}
                   </Text>
                 </Text>
               </View>

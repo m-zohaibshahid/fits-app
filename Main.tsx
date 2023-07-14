@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useEffect } from "react";
+import React, { createContext, useContext, useEffect, useState } from "react";
 import { SafeAreaView, View } from "react-native";
 import { NavigationContainer } from "@react-navigation/native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -9,9 +9,12 @@ import { styles } from "./style";
 import { UnauthenticatedStack } from "./src/stacks/unauthenticated.stack";
 import AuthenticatedStack from "./src/stacks/authenticated.stack";
 import { setToken } from "./src/slice/token.slice";
-import { getUserAsyncStroage, getUserAsyncStroageToken } from "./src/utils/async-storage";
+import { clearUnReadMessageFromAsyncStorage, getUnReadMessagesFromAsyncStorage, getUserAsyncStroage, getUserAsyncStroageToken, storeUnReadMessageInAsyncStorage } from "./src/utils/async-storage";
 import { errorToast } from "./src/utils/toast";
 import { setUserInfo } from "./src/slice/FitsSlice.store";
+import useSocket from "./src/hooks/use-socket";
+import { UserDetail } from "./src/interfaces";
+import { MessageState, clearUnReadMessages, setUnReadMessage } from "./src/slice/messages.slice";
 
 export const AuthContext = createContext({});
 
@@ -27,7 +30,14 @@ export function LoginNow() {
 
 const App = () => {
   const token: string = useSelector((state: { token: string }) => state.token);
-  const userDispatch = useDispatch();
+  const { userInfo } = useSelector((state: { fitsStore: Partial<UserDetail> }) => state.fitsStore);
+  const { socket } = useSocket(userInfo?.user?._id || '')
+  const dispatch = useDispatch();
+
+  socket.on("receive-message", async () => {
+    await storeUnReadMessageInAsyncStorage()
+    dispatch(setUnReadMessage())
+    })
 
   useEffect(() => {
     bootstrapAsync();
@@ -36,9 +46,12 @@ const App = () => {
   const bootstrapAsync = async () => {
     try {
       const tokenResult = await getUserAsyncStroageToken();
+      dispatch(setToken(tokenResult));
       const userResult = await getUserAsyncStroage();
-      userDispatch(setToken(tokenResult));
-      userDispatch(setUserInfo(userResult));
+      dispatch(setUserInfo(userResult));
+      const unreadMessagesExist = await getUnReadMessagesFromAsyncStorage();
+      if (unreadMessagesExist) dispatch(setUnReadMessage())
+      else dispatch(clearUnReadMessages())
     } catch (e) {
       errorToast(e?.message);
     }

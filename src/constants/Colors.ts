@@ -54,6 +54,7 @@ const Colors = {
   bgRedBtn: '#FF0000',
   redColor: '#e40b0b',
   lightbule: '#130F26',
+  darkGreen: '#013701',
 };
 
 export default Colors;

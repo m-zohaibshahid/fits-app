@@ -1,5 +1,5 @@
 import React from 'react';
-import { Text as RNText, TextStyle } from 'react-native';
+import { Pressable, Text as RNText, TextStyle } from 'react-native';
 import Colors from '../../constants/Colors';
 
 const Typography: React.FC<TypographyProps> = ({
@@ -11,6 +11,8 @@ const Typography: React.FC<TypographyProps> = ({
   bottom = 0,
   style,
   children,
+  pressAble,
+  onPress
 }) => {
   const getStyles = (): TextStyle => {
     switch (variant) {
@@ -43,11 +45,19 @@ const Typography: React.FC<TypographyProps> = ({
 
   const textStyle = getStyles();
 
-  return <RNText style={[textStyle, style]}>{children}</RNText>;
+  return <>
+    {!!pressAble ? (
+      <Pressable onPress={onPress}>
+        <RNText style={[textStyle, style]}>{children}</RNText>
+      </Pressable>
+    ) : <RNText style={[textStyle, style]}>{children}</RNText>
+    }
+  </>;
 };
 
 const getSize = (size: keyof SizeVariant | number): number => {
   const sizeVariant: SizeVariant = {
+    extraSmall: 10,
     small: 12,
     medium: 14,
     large: 20,
@@ -121,6 +131,7 @@ export default Typography;
 type weightInterface = | 'bold' | 'normal' | '100' | '200' | '300' | '400' | '500' | '600' | '700' | '800' | '900';
 
 interface SizeVariant {
+    extraSmall: number;
     small: number;
     medium: number;
     large: number;
@@ -152,6 +163,8 @@ interface TypographyProps {
     weight?: weightInterface;
     style?: TextStyle;
     children: React.ReactNode;
+    pressAble?: boolean;
+    onPress?: () => void;
 }
   
 interface MarginBottomVariants {

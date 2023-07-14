@@ -2,36 +2,48 @@ import React, { useState, useEffect } from "react";
 import { Text, View, TouchableOpacity, StyleSheet, TextInput, ScrollView, Image, ActivityIndicator, Platform } from "react-native";
 import EvilIcons from "react-native-vector-icons/EvilIcons";
 import { RFValue } from "react-native-responsive-fontsize";
-import { useNavigation, useRoute } from "@react-navigation/native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { NavigationSwitchProp } from "react-navigation";
-import { useGetChatRoomsQuery } from "../../slice/FitsApi.slice";
+import { useGetChatRoomsQuery, useGetRoomByIdMutation } from "../../slice/FitsApi.slice";
 import Typography from "../../Components/typography/text";
 import Container from "../../Components/Container";
 import Colors from "../../constants/Colors";
 import useSocket from "../../hooks/use-socket";
-import { useSelector } from "react-redux";
-import { UserDetail } from "../../interfaces";
+import { useDispatch, useSelector } from "react-redux";
+import { MessageInterface, UserDetail } from "../../interfaces";
+import { MessageState, clearUnReadMessages } from "../../slice/messages.slice";
+import { clearUnReadMessageFromAsyncStorage } from "../../utils/async-storage";
 
 interface PropsInterface {
   navigation: NavigationSwitchProp;
 }
 
 const Chat = ({ navigation }: PropsInterface) => {
-  const { data: getRoomsFromApi } = useGetChatRoomsQuery({});
+  const { data: getRoomsFromApi, refetch: refetchRooms } = useGetChatRoomsQuery({});
   const { userInfo } = useSelector((state: { fitsStore: Partial<UserDetail> }) => state.fitsStore);
   const [searchText, setSearchText] = useState("");
-  const { activeUsers } = useSocket(userInfo?.user._id || '')
+  const { activeUsers, socket } = useSocket(userInfo?.user?._id || '')
+  const dispatch = useDispatch();
+  const {unReadMessages} = useSelector((state: { messages: Partial<MessageState> }) => state.messages);
 
+  useEffect(() => {
+    socket.on("receive-message", () => {
+      refetchRooms();
+    });
+  }, []);
   
-  const handlePressOnRoom = (roomId: number) => {
-    navigation.navigate("EnterChatforTrainee", { roomId });
+    useEffect(() => {
+      navigation.addListener("focus", () => {
+      refetchRooms()
+      clearUnReadMessageFromAsyncStorage()
+      dispatch(clearUnReadMessages());
+    })
+  }, []) 
+
+  const handlePressOnRoom = (item: RoomDataInterface) => {
+    navigation.navigate("ChatBox", { roomId: item._id, linkedUser: item.linkedUser, status: !!activeUsers.some(user => user.userID === item.linkedUser.id) });
   };
   
-  console.log('====================================');
-  console.log(getRoomsFromApi?.data);
-  console.log('====================================');
-
   const filteredRooms = getRoomsFromApi?.data.filter((room: RoomDataInterface) =>
     room.linkedUser.name.toLowerCase().includes(searchText.toLowerCase())
   );
@@ -43,9 +55,8 @@ const Chat = ({ navigation }: PropsInterface) => {
           marginTop: 10,
           marginBottom: 20,
           marginLeft: 10,
-    fontSize: 40
-            }}>Chat</Typography>
-
+          fontSize: 40
+        }}>Chat</Typography>
           <View style={styles.searchBarMainView}>
           <EvilIcons name="search" size={30} style={{ color: "#fff" }} />
               <TextInput
@@ -66,25 +77,31 @@ const Chat = ({ navigation }: PropsInterface) => {
                 <Typography>No rooms found</Typography>
               </View>
             ) : (
-              filteredRooms?.map((item: any) => (
-                <TouchableOpacity
-                  key={item._id}
-                  style={styles.roomContainer}
-                  onPress={() => handlePressOnRoom(item._id)}
-                >
-                  <View style={styles.roomContent}>
-                    <Image
-                      style={styles.roomImage}
-                      source={{ uri: item?.linkedUser.image }}
-                    />
-                    <View style={styles.roomTextContent}>
-                      <Typography size="sectionTitle">{item.linkedUser.name}</Typography>
-                      <Typography size={'medium'}>{item.messages[0]?.message}</Typography>
+                filteredRooms?.map((item: RoomDataInterface) => {
+                  return <TouchableOpacity
+                    key={item._id}
+                    style={styles.roomContainer}
+                    onPress={() => handlePressOnRoom(item)}
+                  >
+                    <View style={styles.roomContent}>
+                      <Image
+                        style={styles.roomImage}
+                        source={{ uri: item?.linkedUser.image }}
+                      />
+                      <View style={styles.roomTextContent}>
+                        <View style={{ flexDirection: "row", alignItems: "center" }}>
+                        {activeUsers.some(user => user.userID === item.linkedUser.id) ? <View style={styles.activeDot} /> : null}
+                          <Typography size="sectionTitle">{item.linkedUser.name}</Typography>
+                        </View>
+                        <View style={{flexDirection: "row"}}>
+                          {userInfo?.user?._id === item.lastMessage?.userId ? <Typography size="medium" weight="800">You: </Typography> : null}{item.lastMessage ? <Typography size={'medium'} weight={!item.lastMessage.status ? "600" : "400" }>{item.lastMessage.message}</Typography> : null}
+                        </View>
+                        {item.unReadMessagesCount ? <View style={styles.unReadMessagesIcon}><Typography color="whiteRegular" size={"small"}>{item.unReadMessagesCount}</Typography></View> : null}
+                      </View>
                     </View>
-                  </View>
-                  {activeUsers.some(user => user.userID === item.linkedUser._id) ?  <View style={styles.activeDot} /> : null}
-                </TouchableOpacity>
-              ))
+                    
+                  </TouchableOpacity>
+                })
             )}
           </View>
         </View>
@@ -166,13 +183,24 @@ const styles = StyleSheet.create({
     color: "#000",
   },
   activeDot: {
-    position: "absolute",
-    top: 25,
-    right: 20,
     width: 10,
     height: 10,
     borderRadius: 5,
+    marginRight: 10,
+    borderColor: Colors.black,
+    borderWidth: 2,
     backgroundColor: Colors.success
+  },
+  unReadMessagesIcon: {
+    position: 'absolute',
+    width: 20,
+    height: 20,
+    right: '-95%',
+    justifyContent: 'center',
+    alignItems: 'center',
+    top: 25,
+    borderRadius: 10,
+    backgroundColor: Colors.bgRedBtn
   },
 });
 
@@ -187,4 +215,6 @@ interface RoomDataInterface {
     image: string;
     name: string;
   }
+  lastMessage?: MessageInterface;
+  unReadMessagesCount: number
 }
