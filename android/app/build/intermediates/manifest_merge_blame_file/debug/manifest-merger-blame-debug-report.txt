@@ -9,8 +9,8 @@
 9        android:targetSdkVersion="33" />
 10
 11    <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
-11-->/Users/zohaib.shahid/Downloads/works/fits-ts/android/app/src/debug/AndroidManifest.xml:5:5-77
-11-->/Users/zohaib.shahid/Downloads/works/fits-ts/android/app/src/debug/AndroidManifest.xml:5:22-75
+11-->/Users/ebryx/Downloads/ReactNative/Fits-latest/fits-ts/android/app/src/debug/AndroidManifest.xml:5:5-77
+11-->/Users/ebryx/Downloads/ReactNative/Fits-latest/fits-ts/android/app/src/debug/AndroidManifest.xml:5:22-75
 12    <uses-permission android:name="android.permission.INTERNET" />
 12-->/Users/zohaib.shahid/Downloads/works/fits-ts/android/app/src/main/AndroidManifest.xml:3:5-67
 12-->/Users/zohaib.shahid/Downloads/works/fits-ts/android/app/src/main/AndroidManifest.xml:3:22-64

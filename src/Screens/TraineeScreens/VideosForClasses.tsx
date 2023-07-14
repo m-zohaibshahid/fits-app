@@ -6,7 +6,7 @@ import { RFValue } from "react-native-responsive-fontsize";
 import VideoPlayer from "react-native-video-player";
 import { url } from "../../constants/url";
 import Colors from "../../constants/Colors";
-import { getUserAsyncStroage } from "../../common/AsyncStorage";
+import { getUserAsyncStroage } from "../../common/fetchApi";
 import { NavigationSwitchProp } from "react-navigation";
 import { useSelector } from "react-redux";
 import { useGetUserMeQuery } from "../../slice/FitsApi.slice";
@@ -17,7 +17,7 @@ interface Props {
 const VideosForClasses: React.FC<Props> = ({ navigation }) => {
   const token = useSelector((state: { token: string }) => state.token);
   const { userInfo } = useSelector((state: { fitsStore: Partial<UserDetail> }) => state.fitsStore);
-  const { data: userMeData } = useGetUserMeQuery({ id: userInfo?._id });
+  const { data: userMeData } = useGetUserMeQuery({});
   useEffect(() => {
     navigation.addListener("focus", () => {
       userMe();

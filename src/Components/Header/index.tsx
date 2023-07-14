@@ -6,7 +6,7 @@ import { useNavigation } from "@react-navigation/native";
 import Typography from "../typography/text";
 
 interface HeaderProps {
-  label: string;
+  label?: string;
   subLabel?: string;
   lableStyle?: TextStyle | ViewStyle;
   hideBackButton?: boolean;

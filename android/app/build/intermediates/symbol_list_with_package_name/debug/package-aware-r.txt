@@ -55,6 +55,7 @@ anim rns_slide_in_from_right
 anim rns_slide_out_to_bottom
 anim rns_slide_out_to_left
 anim rns_slide_out_to_right
+anim rns_standard_accelerate_interpolator
 anim ucrop_loader_circle_path
 anim ucrop_loader_circle_scale
 animator design_appbar_state_list_animator
