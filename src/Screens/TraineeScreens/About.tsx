@@ -6,7 +6,7 @@ import { useRoute } from "@react-navigation/native";
 import { heightPercentageToDP } from "react-native-responsive-screen";
 import moment from "moment";
 
-const About = () => {
+const About = ({navigation}: any) => {
   const route = useRoute();
   return (
     <View style={styles.container}>

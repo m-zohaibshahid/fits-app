@@ -160,7 +160,7 @@ const Home: React.FC<Props> = ({ navigation }) => {
               .catch((error: string) => Alert.alert(error));
           },
           (error) => {
-            console.log("Error while getting location:", error);
+            console.error("Error while getting location:", error);
           },
           { enableHighAccuracy: true, timeout: 15000, maximumAge: 10000 }
         );
@@ -168,7 +168,7 @@ const Home: React.FC<Props> = ({ navigation }) => {
         Alert.alert("Permission Access denied. Please Make Sure GPS Permission is enabled and then exit app and run again");
       }
     } catch (err) {
-      console.log("Error while requesting location permission:", err);
+      console.error("Error while requesting location permission:", err);
     }
   };
 
@@ -196,8 +196,6 @@ const Home: React.FC<Props> = ({ navigation }) => {
     if (!findProfessionalInfoById) {
       ToastAndroid.show("Failed to retrieve professional information. Please make sure the user has filled out their professional profile.", ToastAndroid.LONG);
     } else {
-      console.log();
-      
       navigation.navigate("TrainerDetail", {
         personalData: findPersonalInfoById,
         professionalData: findProfessionalInfoById,
@@ -234,7 +232,6 @@ const Home: React.FC<Props> = ({ navigation }) => {
   };
 
   const find = (t: any) => {
-    console.log("t", t);
     const words = [...filterData];
     setSearch(t);
     if (!t) {

@@ -1,11 +1,9 @@
 export interface ActiveUsersSocketResponse {
-    userID: number;
+    userID: string;
     socketID: string;
 }
 
 export interface SendMessageToSocketInterface {
-    userID: number,
-    text: string,
-    roomID: number,
-    linkedUserID: number
+    linkedUserId: string,
+    roomId: string
 }
