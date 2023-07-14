@@ -6,11 +6,11 @@ import { RFValue } from "react-native-responsive-fontsize";
 import VideoPlayer from "react-native-video-player";
 import { url } from "../../constants/url";
 import Colors from "../../constants/Colors";
-import { getUserAsyncStroage } from "../../common/fetchApi";
 import { NavigationSwitchProp } from "react-navigation";
 import { useSelector } from "react-redux";
 import { useGetUserMeQuery } from "../../slice/FitsApi.slice";
 import { UserDetail } from "../../interfaces";
+import { getUserAsyncStroage } from "../../utils/async-storage";
 interface Props {
   navigation: NavigationSwitchProp;
 }
@@ -138,7 +138,7 @@ const VideosForClasses: React.FC<Props> = ({ navigation }) => {
   const [videoId, setVideoId] = useState("");
   const getAllVideos = async () => {
     const userData = await getUserAsyncStroage();
-    setUserDatax(userData);
+    userData(userData);
     setLoad(true);
 
     await fetch(`${url}/video`, {

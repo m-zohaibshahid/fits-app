@@ -38,7 +38,7 @@ const ChatBox = ({ navigation }: PropsInterface) => {
   const [sendSocketMessage, setSendSocketMessage] = useState<SendMessageToSocketInterface | null>();
   const [messages, setMessages] = useState<MessageInterface[]>([]);
   const [message, setMessage] = useState("");
-  const { socket, sendMessageToSocket } = useSocket(userInfo?.user._id || "")
+  const { socket, sendMessageToSocket } = useSocket(userInfo?.user?._id || "")
 
   useEffect(() => {
     socket.on("receive-message", () => {
@@ -147,7 +147,7 @@ const ChatBox = ({ navigation }: PropsInterface) => {
         >
             {getUniqueMessageById(messages).map((item) => (
                 <View key={item._id} style={[item.userId === userInfo?.user._id ? styles.selfMessageStyle : styles.otherMessageStyle]}>
-                  <Typography color="whiteRegular" style={{marginBottom: 5}} size='medium'>
+                  <Typography color="whiteRegular" style={{marginBottom: 7}} size='medium'>
                     {item.message}
                   </Typography>
                   <Typography color="whiteRegular" size={'extraSmall'}>
@@ -227,10 +227,10 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   selfMessageStyle: {
-    width: "45%",
+    width: "70%",
     backgroundColor: Colors.black,
     marginBottom: 20,
-    padding: 10,
+    padding: 15,
     borderTopLeftRadius: 16,
     borderBottomLeftRadius: 16,
     borderTopRightRadius: 16,
@@ -238,10 +238,10 @@ const styles = StyleSheet.create({
     marginLeft: "auto",
   },
   otherMessageStyle: {
-    width: "45%",
+    width: "70%",
     marginBottom: 20,
     backgroundColor: Colors.bgRedBtn,
-    padding: 10,
+    padding: 15,
     paddingVertical: 10,
     borderTopLeftRadius: 16,
     borderBottomRightRadius: 16,
