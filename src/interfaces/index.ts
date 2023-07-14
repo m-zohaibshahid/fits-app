@@ -200,3 +200,22 @@ interface Equipment {
   _id: string;
   value: string;
 }
+
+export interface MessageInterface {
+  status: false,
+  _id: string,
+  roomId: string,
+  userId: string,
+  message: string,
+  createdAt: string,
+  updatedAt: string,
+}
+
+export interface RoomMessagesResponse {
+  data: {
+    messages: MessageInterface[];
+  };
+  statusCode: number;
+  message: string;
+  success: boolean;
+}

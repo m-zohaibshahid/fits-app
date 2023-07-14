@@ -3,7 +3,7 @@ import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 import { url } from "../constants/url";
 import { LoginInterface, UserMeApiResponse } from "./store.interface";
 import { getUserAsyncStroageToken } from "../utils/async-storage";
-import { TrainerSessionApiResultInterface } from "../interfaces";
+import { RoomMessagesResponse, TrainerSessionApiResultInterface } from "../interfaces";
 
 // Define a service using a base URL and expected endpoints
 export const fitsApi = createApi({
@@ -11,9 +11,7 @@ export const fitsApi = createApi({
   baseQuery: fetchBaseQuery({
     baseUrl: url,
     prepareHeaders: async (headers: Headers) => {
-      const token = await getUserAsyncStroageToken();
-      console.log(token);
-
+      const token = await getUserAsyncStroageToken()
       headers.set("Authorization", `Bearer ${token}`);
       return headers;
     },
@@ -73,6 +71,7 @@ export const fitsApi = createApi({
         body: body,
       }),
     }),
+
     personalInfo: builder.mutation<any, Partial<any>>({
       query: (body) => ({
         url: "/personal",
@@ -81,9 +80,25 @@ export const fitsApi = createApi({
       }),
     }),
 
+    personalInfoUpdate: builder.mutation<any, Partial<any>>({
+      query: ({ id: userId, body }) => ({
+        url: `/personal/${userId}`,
+        method: "PUT",
+        body: body,
+      }),
+    }),
+
     trainerProfessionalInfoCreate: builder.mutation<any, Partial<any>>({
       query: (body) => ({
         url: "/profession",
+        method: "POST",
+        body: body,
+      }),
+    }),
+
+    sendMessage: builder.mutation<any, Partial<any>>({
+      query: (body) => ({
+        url: "/chat/message/create",
         method: "POST",
         body: body,
       }),
@@ -194,10 +209,27 @@ export const fitsApi = createApi({
     trainerSession: builder.query<any, Partial<any>>({
       query: (id) => `/session/trainer/${id}`,
     }),
+    stripeCustomerGet: builder.query<any, Partial<any>>({
+      query: (id) => ({
+        url: `/stripe/customer/${id}`,
+        method: "GET",
+      }),
+    }),
+
+    getRoomMessages: builder.query<RoomMessagesResponse, Partial<any>>({
+      query: (id) => `chat/messages/${id}`,
+    }),
 
     personalInfoCreate: builder.mutation<any, Partial<any>>({
       query: (body) => ({
         url: "/personal",
+        method: "POST",
+        body: body,
+      }),
+    }),
+    rechargeStripe: builder.mutation<any, Partial<any>>({
+      query: ({ id, ...body }) => ({
+        url: `/stripe/recharge/${id}`,
         method: "POST",
         body: body,
       }),
@@ -215,6 +247,8 @@ export const {
   useUpdatePasswordMutation,
   useStripeCustomerMutation,
   useUpdateFilterMutation,
+  usePersonalInfoUpdateMutation,
+  useRechargeStripeMutation,
   useCreateStripeCardMutation,
   usePersonalInfoMutation,
   useCodeVerifyMutation,
@@ -232,4 +266,7 @@ export const {
   useSessionCreateMutation,
   useCreateChatRoomMutation,
   useGetChatRoomsQuery,
+  useStripeCustomerGetQuery,
+  useGetRoomMessagesQuery,
+  useSendMessageMutation
 } = fitsApi;

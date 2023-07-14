@@ -9,7 +9,7 @@ import FitnessGoal from "../Screens/AuthScreens/FitnessGoalScreen";
 import AccountUpdate from "../Screens/AuthScreens/AccountUpdate";
 import TrainerVerification from "../Screens/TrainerScreens/TrainerVerification";
 import UpdateProfessioninfo from "../Screens/AuthScreens/UpdateProfessioninfo";
-import EnterChatforTrainee from "../Screens/TraineeScreens/EnterChatforTrainee";
+import ChatBox from "../Screens/TraineeScreens/ChatBox";
 
 import TrainerTabb from "../Screens/TrainerScreens/TrainerBottomTabScreen";
 import CreateBookSession from "../Screens/TrainerScreens/CreateBookSessionScreen";
@@ -46,7 +46,7 @@ const AuthenticatedStack = () => (
     <Stack.Screen name="TrainerPayment" component={TrainerPayment} options={{ headerShown: false }} />
     <Stack.Screen name="VideoCreate" component={VideoCreate} options={{ headerShown: false }} />
     <Stack.Screen name="EnterChatTrainer" component={EnterChatTrainer} options={{ headerShown: false }} />
-    <Stack.Screen name="EnterChatforTrainee" component={EnterChatforTrainee} options={{ headerShown: false }} />
+    <Stack.Screen name="ChatBox" component={ChatBox} options={{ headerShown: false }} />
     <Stack.Screen name="TrainerWallet" component={TrainerWallet} options={{ headerShown: false }} />
     <Stack.Screen name="TrainerCreateCard" component={TrainerCreateCard} options={{ headerShown: false }} />
     <Stack.Screen name="TraineeTabb" component={TraineeTabb} options={{ headerShown: false }} />

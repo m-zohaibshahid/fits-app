@@ -14,7 +14,7 @@ import FastImage from "react-native-fast-image";
 import Entypo from "react-native-vector-icons/Entypo";
 import { useSelector } from "react-redux";
 import { UserDetail } from "../../interfaces";
-import { useCreateChatRoomMutation, useGetUserMeQuery } from "../../slice/FitsApi.slice";
+import { useCreateChatRoomMutation } from "../../slice/FitsApi.slice";
 import { NavigationSwitchProp } from "react-navigation";
 import { errorToast } from "../../utils/toast";
 
@@ -34,8 +34,8 @@ const TrainerDetail = ({ navigation }: PropsInterface) => {
   const [modalVisible, setModalVisible] = useState(false);
   const [activeTab, setActiveTab] = useState<Tab>(Tab.ABOUT);
   const [message, setMessage] = useState("");
-  const [mutateAsyncChatRoomCreate] = useCreateChatRoomMutation();
-  const trainerId = route?.params.personalData?._id;
+  const [mutateAsyncChatRoomCreate] = useCreateChatRoomMutation()
+  const trainerId = route?.params?.personalData.user
   const { userInfo } = useSelector((state: { fitsStore: Partial<UserDetail> }) => state.fitsStore);
   const token = useSelector((state: { token: string }) => state.token);
 
@@ -82,7 +82,7 @@ const TrainerDetail = ({ navigation }: PropsInterface) => {
         <FastImage
           style={styles.Imagestyle}
           source={{
-            uri: `${route?.params.userData.image}`,
+            uri: `${route.params.userData?.image}`,
             headers: { Authorization: "someAuthToken" },
             priority: FastImage.priority.normal,
           }}

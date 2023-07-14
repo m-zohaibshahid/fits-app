@@ -9,6 +9,7 @@ import { heightPercentageToDP } from "react-native-responsive-screen";
 import moment from "moment";
 import { useGetUserMeQuery } from "../../slice/FitsApi.slice";
 import { NavigationSwitchProp } from "react-navigation";
+import { getUserAsyncStroage } from "../../utils/async-storage";
 
 interface Props {
   navigation: NavigationSwitchProp;
@@ -16,24 +17,21 @@ interface Props {
 const Schedule: React.FC<Props> = ({ navigation }) => {
   const route: any = useRoute();
   const [details, setDetails] = useState(false);
-  const [currentDate, setCurrentDate] = useState<any>();
-  const [card, setCard] = useState("");
+  const [card, setCard] = useState(false);
+  const [currentDate, setCurrentDate] = useState('');
+
+  const { data: userMeData } = useGetUserMeQuery<any>({});
 
   const goToNextScreen = () => {
     navigation.navigate("BookSessionPayment", {
       data: route?.params,
     });
   };
-  const { data: userMeData, isLoading: isLoading1, error: error1, isSuccess } = useGetUserMeQuery<any>({});
-
-  useEffect(() => {
-    navigation.addListener("focus", () => {});
-  }, []);
 
   useEffect(() => {
     setCard(userMeData?.user?.cardCreated);
   }, [userMeData]);
-
+  
   return (
     <View style={styles.container}>
       <View style={styles.main}>
@@ -73,7 +71,7 @@ const Schedule: React.FC<Props> = ({ navigation }) => {
                     fontFamily: "Poppins-Regular",
                   }}
                 >
-                  ({moment(route?.params?.userData?.select_date).format("dddd")})
+                  ({moment(route.params?.userData?.select_date).format("dddd")})
                 </Text>
               </View>
               <View
@@ -159,11 +157,8 @@ const Schedule: React.FC<Props> = ({ navigation }) => {
                 <View style={styles.mainbtnView}>
                   <Pressable
                     onPress={() => {
-                      if (card) {
-                        goToNextScreen();
-                      } else {
-                        navigation.navigate("CreateCardTrainee");
-                      }
+                      if (card) goToNextScreen()
+                      else navigation.navigate("CreateCardTrainee");
                     }}
                     style={styles.ccbtnview}
                   >

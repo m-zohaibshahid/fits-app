@@ -56,7 +56,8 @@ const BookSessionPayment = () => {
         Authorization: `Bearer ${token}`,
       },
     })
-      .then((res) => res.json())
+      // .then((res) => res.json())
+
       .then((res2) => {
         setLoad(false);
         if (res2?.success) {

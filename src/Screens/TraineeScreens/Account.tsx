@@ -30,10 +30,8 @@ const Account: React.FC<Props> = ({ navigation }) => {
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const { userInfo } = useSelector((state: { fitsStore: Partial<UserDetail> }) => state.fitsStore);
-
   const { data: userMeData, isLoading: isLoading1, error: error1 } = useGetUserMeQuery({});
   const [updatePassword, { isLoading, error }] = useUpdatePasswordMutation();
-
   useEffect(() => {
     navigation.addListener("focus", () => {
       getUserInfo();
