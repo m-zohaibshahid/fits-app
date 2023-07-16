@@ -2,8 +2,9 @@
 import * as React from "react";
 import { View, ViewStyle, TextStyle, StyleSheet } from "react-native";
 import AntDesign from "react-native-vector-icons/AntDesign";
-import { useNavigation } from "@react-navigation/native";
+import { useNavigation } from '@react-navigation/native';
 import Typography from "../typography/text";
+import { NavigationSwitchProp } from "react-navigation";
 
 interface HeaderProps {
   label?: string;
@@ -11,13 +12,13 @@ interface HeaderProps {
   lableStyle?: TextStyle | ViewStyle;
   hideBackButton?: boolean;
   showCloseButton?: boolean;
-  navigation?: any;
   onClose?: () => void;
 }
 
-const Header = ({ label, subLabel, lableStyle, hideBackButton, showCloseButton, onClose, navigation }: HeaderProps) => {
+const Header = ({ label, subLabel, lableStyle, hideBackButton, showCloseButton, onClose }: HeaderProps) => {
+  const navigation = useNavigation();
   const goBack = () => {
-    navigation.goBack();
+    navigation.goBack()
   };
   return (
     <View>

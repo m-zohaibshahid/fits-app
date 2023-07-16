@@ -9,7 +9,9 @@ import { heightPercentageToDP } from "react-native-responsive-screen";
 import moment from "moment";
 import { useGetUserMeQuery } from "../../slice/FitsApi.slice";
 import { NavigationSwitchProp } from "react-navigation";
-import { getUserAsyncStroage } from "../../utils/async-storage";
+import Container from "../../Components/Container";
+import Typography from "../../Components/typography/text";
+import Button from "../../Components/Button";
 
 interface Props {
   navigation: NavigationSwitchProp;
@@ -31,13 +33,9 @@ const Schedule: React.FC<Props> = ({ navigation }) => {
   useEffect(() => {
     setCard(userMeData?.user?.cardCreated);
   }, [userMeData]);
-  
+
   return (
-    <View style={styles.container}>
-      <View style={styles.main}>
-        <View style={styles.TopView}>
-          <View style={styles.topView}>
-            <View>
+    <Container>
               <Calendar
                 markingType={"custom"}
                 onDayPress={(day: any) => {
@@ -48,15 +46,7 @@ const Schedule: React.FC<Props> = ({ navigation }) => {
                   [currentDate]: { selected: true, selectedColor: "red" },
                 }}
               />
-              {/* <View style={styles.borderView}></View> */}
-            </View>
-            <Text style={styles.upcomingtextstyle}>Upcoming Events</Text>
-          </View>
-        </View>
-
-        {/*start Totale */}
-
-        <View style={styles.TopView}>
+            <Typography size={"heading2"} style={{marginTop: 20}}>Upcoming Events</Typography>
           <View style={styles.marchmainview}>
             <View style={styles.marchmainview2}>
               <View style={{ width: "25%", alignItems: "center" }}>
@@ -90,7 +80,7 @@ const Schedule: React.FC<Props> = ({ navigation }) => {
               </View>
               <View style={{ width: "35%", flexDirection: "column" }}>
                 <Text style={styles.marchtext}>
-                  {route?.params?.userData?.class_title} {"\n"}
+                  {route?.params?.userData?.class_title.slice(0, 10)} {"...\n"}
                   <Text
                     style={{
                       color: "#fff",
@@ -136,12 +126,12 @@ const Schedule: React.FC<Props> = ({ navigation }) => {
                 </View>
               </Pressable>
             </View>
-            {/*end Yoga */}
             {details && (
               <View
                 style={{
                   width: "100%",
-                  paddingBottom: heightPercentageToDP(2),
+              padding: heightPercentageToDP(2),
+                
                 }}
               >
                 <View style={styles.dotmainview}>
@@ -150,28 +140,51 @@ const Schedule: React.FC<Props> = ({ navigation }) => {
                   </View>
                   <View style={{ width: "90%" }}>
                     <Text style={styles.textstyle}>
-                      Cost: {"\n"}${route?.params?.userData?.price}
+                      <Typography weight="700" color="white" size={"heading4"}>Cost:</Typography>{'\n'}<Typography weight="300" color="whiteRegular">{"          "}${route?.params?.userData?.price}</Typography>
                     </Text>
                   </View>
                 </View>
-                <View style={styles.mainbtnView}>
-                  <Pressable
-                    onPress={() => {
-                      if (card) goToNextScreen()
-                      else navigation.navigate("CreateCardTrainee");
-                    }}
-                    style={styles.ccbtnview}
-                  >
-                    <Text style={styles.btntextstyle}>Book Now</Text>
-                  </Pressable>
+                <View style={styles.dotmainview}>
+                  <View style={styles.dotview}>
+                    <FontAwesome name="circle" style={{ color: "#979797" }} />
+                  </View>
+                  <View style={{ width: "90%" }}>
+                    <Text style={styles.textstyle}>
+                      <Typography weight="700" color="white" size={"heading4"}>Title:</Typography>{'\n'}<Typography weight="300" color="whiteRegular">{"          "}{route?.params?.userData?.class_title}</Typography>
+                    </Text>
+                  </View>
                 </View>
+                <View style={styles.dotmainview}>
+                  <View style={styles.dotview}>
+                    <FontAwesome name="circle" style={{ color: "#979797" }} />
+                  </View>
+                  <View style={{ width: "90%" }}>
+                    <Text style={styles.textstyle}>
+                      <Typography weight="700" color="white" size={"heading4"}>Description:</Typography>{'\n'}<Typography weight="300" color="whiteRegular">{"          "}{route?.params?.userData?.details}</Typography>
+                    </Text>
+                  </View>
+                </View>
+                <View style={styles.dotmainview}>
+                  <View style={styles.dotview}>
+                    <FontAwesome name="circle" style={{ color: "#979797" }} />
+                  </View>
+                  <View style={{ width: "90%" }}>
+                    <Text style={styles.textstyle}>
+                      <Typography weight="700" color="white" size={"heading4"}>Type:</Typography>{'\n'}<Typography weight="300" color="whiteRegular">{"          "}{route?.params?.userData?.session_type.type}</Typography>
+                    </Text>
+                  </View>
+            </View>
+            <Button style={{marginLeft: 'auto'}} label="Book Now"
+                  onPress={() => {
+                    if (card) goToNextScreen()
+                    else navigation.navigate("CreateCardTrainee");
+              }}
+              variant="tini"
+            />
               </View>
             )}
           </View>
-        </View>
-        {/*end Totale */}
-      </View>
-    </View>
+    </Container>
   );
 };
 
@@ -213,17 +226,18 @@ const styles = StyleSheet.create({
   dotmainview: {
     width: "100%",
     flexDirection: "row",
+    marginVertical: 15
   },
   dotview: {
     width: "10%",
     alignItems: "center",
   },
   marchmainview: {
-    width: "90%",
+    marginTop: 20,
+    width: "100%",
     backgroundColor: "#000",
     justifyContent: "center",
     borderRadius: 20,
-    margin: 10,
   },
   marchmainview2: {
     width: "100%",

@@ -159,7 +159,7 @@ export const fitsApi = createApi({
       }),
     }),
 
-    sessionDel: builder.mutation<void, number>({
+    sessionDel: builder.mutation<void, string>({
       query: (id) => ({
         url: `/session/${id}`,
         method: "DELETE",
@@ -202,12 +202,16 @@ export const fitsApi = createApi({
       query: () => "/session",
     }),
 
-    connectAccountLink: builder.query<void, Partial<any>>({
+    connectAccountLink: builder.query<void, string>({
       query: () => "/stripe/connect/accountLink",
     }),
 
-    trainerSession: builder.query<any, Partial<any>>({
+    trainerSession: builder.query<any, string>({
       query: (id) => `/session/trainer/${id}`,
+    }),
+
+    getMyBookedClasses: builder.query<any, string>({
+      query: (id) => `/book-a-session/trainee/${id}`,
     }),
     stripeCustomerGet: builder.query<any, Partial<any>>({
       query: (id) => ({
@@ -268,5 +272,6 @@ export const {
   useGetChatRoomsQuery,
   useStripeCustomerGetQuery,
   useGetRoomMessagesQuery,
-  useSendMessageMutation
+  useSendMessageMutation,
+  useGetMyBookedClassesQuery
 } = fitsApi;

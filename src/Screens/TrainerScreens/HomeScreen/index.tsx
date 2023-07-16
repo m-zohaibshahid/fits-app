@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Text, View, TouchableOpacity, Image, ScrollView, Alert, PermissionsAndroid, ToastAndroid } from "react-native";
+import { Text, View, TouchableOpacity, Image, ScrollView, Alert, PermissionsAndroid, ToastAndroid, StyleSheet, Platform } from "react-native";
 import { widthPercentageToDP as wp } from "react-native-responsive-screen";
 import AntDesign from "react-native-vector-icons/AntDesign";
 import * as Images from "../../../constants/Images";
@@ -9,12 +9,15 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import Geolocation from "react-native-geolocation-service";
 import Geocoder from "react-native-geocoder";
 import FastImage from "react-native-fast-image";
-import styles from "./styles";
 import { Toast } from "react-native-toast-message/lib/src/Toast";
-import { useGetUserMeQuery, useSessionDelMutation, useStripeCustomerMutation, useTrainerSessionQuery } from "../../../slice/FitsApi.slice";
+import { useGetUserMeQuery, useStripeCustomerMutation, useTrainerSessionQuery } from "../../../slice/FitsApi.slice";
 import { useSelector } from "react-redux";
 import { UserDetail } from "../../../interfaces";
 import { NavigationSwitchProp } from "react-navigation";
+import Typography from "../../../Components/typography/text";
+import Container from "../../../Components/Container";
+import Colors from "../../../constants/Colors";
+import { RFValue } from "react-native-responsive-fontsize";
 
 interface Props {
   navigation: NavigationSwitchProp;
@@ -22,32 +25,19 @@ interface Props {
 
 const Home: React.FC<Props> = ({ navigation }) => {
   // Hooks
+  const { userInfo } = useSelector((state: { fitsStore: Partial<UserDetail> }) => state.fitsStore);
   const [classes, setClasses] = useState(true);
   const [reviews, setReviews] = useState(false);
   const [userData, setUserData] = useState([]);
   const [superLong, setSuperLong] = useState(55.9754);
   const [superLat, setSuperLat] = useState(21.4735);
-  const [search, setSearch] = useState("");
   const [load, setLoad] = useState(false);
-  const [loadx, setLoadx] = useState(false);
   const [dumdata, setDumData] = useState([]);
   const [classesData, setClassesData] = useState([]);
   const { data: userMeData } = useGetUserMeQuery({});
-  const { data: trainerSession } = useTrainerSessionQuery({});
-  const [sessionDel, { data: sessionDelete }] = useSessionDelMutation();
   const [stripeCustomer, { data: stripeCustomerData }] = useStripeCustomerMutation();
 
   // Functions
-  const userMe = async () => {
-    if (userMeData?.success) {
-      setUserData(userMeData);
-      getAllClasses();
-      createStripeAccount(userMeData);
-    } else {
-      ToastAndroid.show(userMeData?.message, ToastAndroid.LONG);
-    }
-  };
-
   const setForCareateStripeCall = async (data: any) => {
     await AsyncStorage.setItem("createStripeData", JSON.stringify(data));
   };
@@ -68,50 +58,6 @@ const Home: React.FC<Props> = ({ navigation }) => {
       .catch((error) => {
         setLoad(false);
       });
-  };
-
-  const find = (t: React.SetStateAction<string>) => {
-    const words = [...classesData];
-    setSearch(t);
-    if (t === "") {
-      setClassesData(dumdata);
-    } else {
-      const newData = words.filter((item) => {
-        const itemData = `${item?.item?.toUpperCase()} ${item?.class_title?.toUpperCase()}`;
-        const textData = t?.toUpperCase();
-        return itemData.indexOf(textData) > -1;
-      });
-      setClassesData(newData);
-    }
-  };
-
-  const deleteClass = async (item: { _id: number }) => {
-    setLoadx(true);
-    sessionDel(item._id)
-      .unwrap()
-      .then((res2) => {
-        setLoadx(false);
-        if (res2.succes === true) {
-          ToastAndroid.show("Deleted!", ToastAndroid.LONG);
-          getAllClasses();
-        } else {
-          ToastAndroid.show(res2.message, ToastAndroid.LONG);
-        }
-      })
-      .catch((error) => {
-        setLoadx(false);
-      });
-  };
-
-  const detailsInfoCall = (item: any, i: string | number) => {
-    let dummy = [...classesData];
-    if (dummy[i].status == true) {
-      dummy.forEach((item) => (item.status = false));
-    } else {
-      dummy.forEach((item) => (item.status = false));
-      dummy[i].status = true;
-    }
-    setClassesData(dummy);
   };
 
   const classestrueState = () => {
@@ -169,39 +115,23 @@ const Home: React.FC<Props> = ({ navigation }) => {
     }
   };
 
-  const getAllClasses = async () => {
-    if (trainerSession.success) {
-      setDumData(trainerSession?.data?.session);
-      setClassesData(trainerSession?.data?.session);
-    } else {
-    }
-  };
-
-  // Effects
 
   useEffect(() => {
     requestLocationPermission();
-    Toast.show({
-      type: "success",
-      text1: "Welcome",
-    });
-    navigation.addListener("focus", () => {
-      userMe();
-    });
   }, []);
 
   return (
-    <View style={styles.mainContainer}>
+    <Container>
       {/*Header rect start*/}
       <View style={styles.mainHeaderRect}>
         {/*First Header*/}
         <View style={styles.topHeaderRect}>
           <View style={{ width: "60%" }}>
-            <Text style={styles.homeTitleText}>Home</Text>
-            <Text style={styles.userTitleText}>Hello, {userData?.personal_info?.name}</Text>
+            <Typography variant="heading" size={"pageTitle"} style={{marginBottom: 10}} weight="800">Home</Typography>
+            <Typography >Hello, {userInfo?.personal_info?.name}</Typography>
           </View>
           <View style={styles.profileImageRect}>
-            {userData?.personal_info?.profileImage ? (
+            {userInfo?.personal_info?.profileImage ? (
               <FastImage
                 style={{
                   width: 70,
@@ -209,7 +139,7 @@ const Home: React.FC<Props> = ({ navigation }) => {
                   borderRadius: 200 / 2,
                 }}
                 source={{
-                  uri: `${userData?.personal_info?.profileImage}`,
+                  uri: `${userInfo?.personal_info?.profileImage}`,
                   headers: { Authorization: "someAuthToken" },
                   priority: FastImage.priority.normal,
                 }}
@@ -232,15 +162,10 @@ const Home: React.FC<Props> = ({ navigation }) => {
           </TouchableOpacity>
         </View>
       </View>
-      {/*Header rect end*/}
       <ScrollView showsVerticalScrollIndicator={false}>
-        <View style={styles.mainBody}>
-          {classes && <Classes deleteClass={deleteClass} detailsInfoCall={detailsInfoCall} loadx={loadx} load={load} data={classesData} />}
-          {reviews && <Reviews load={load} data={classesData} navigation={navigation} />}
-        </View>
-        <View style={{ marginVertical: 60 }}></View>
+          {classes && <Classes />}
+          {reviews && <Reviews />}
       </ScrollView>
-      {classes && (
         <View style={styles.footerRect}>
           <TouchableOpacity
             activeOpacity={0.8}
@@ -255,9 +180,99 @@ const Home: React.FC<Props> = ({ navigation }) => {
             <AntDesign name="plus" color={"#fff"} size={wp(6)} />
           </TouchableOpacity>
         </View>
-      )}
-    </View>
+    </Container>
   );
 };
 
 export default Home;
+
+
+const styles = StyleSheet.create({
+  mainContainer: {
+    flex: 1,
+    backgroundColor: Colors.white,
+    paddingTop: Platform.OS === "ios" ? 40 : 0,
+    paddingBottom: Platform.OS === "ios" ? 0 : 0,
+  },
+  mainHeaderRect: {
+    width: "100%",
+    height: 160,
+  },
+  topHeaderRect: {
+    height: 100,
+    width: "90%",
+    alignSelf: "center",
+    justifyContent: "center",
+    flexDirection: "row",
+    alignItems: "center",
+  },
+  homeTitleText: {
+    fontSize: RFValue(22, 580),
+    fontFamily: "Poppins-Bold",
+    color: Colors.black,
+    marginTop: 10,
+  },
+  userTitleText: {
+    fontFamily: "Poppins-Regular",
+    fontSize: RFValue(10, 580),
+    color: "#000",
+    textTransform: "capitalize",
+  },
+  profileImageRect: {
+    width: "40%",
+    alignItems: "flex-end",
+    justifyContent: "center",
+  },
+  imagestyles: {
+    width: 80,
+    height: 80,
+    borderRadius: 200 / 2,
+  },
+  secondHeaderRect: {
+    height: 35,
+    alignSelf: "center",
+    flexDirection: "row",
+    marginTop: 20,
+  },
+  titleText: {
+    fontSize: RFValue(12, 580),
+    color: "#ff0000",
+    fontFamily: "Poppins-Regular",
+  },
+  activeTitleText: {
+    fontSize: RFValue(12, 580),
+    color: "#000",
+    fontFamily: "Poppins-Regular",
+  },
+  mainclassesview: {
+    width: "50%",
+    alignItems: "center",
+  },
+  mainBody: {
+    width: "100%",
+  },
+  borderView: {
+    width: 30,
+    borderWidth: 1,
+    borderColor: "#ff0000",
+  },
+  footerRect: {
+    height: "16%",
+    bottom: 0,
+    alignItems: "flex-end",
+    paddingTop: 7,
+  },
+  addIconRect: {
+    width: 56,
+    height: 56,
+    borderRadius: 40,
+    backgroundColor: "#000",
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  seacherbariconview: {
+    width: "12%",
+    alignItems: "center",
+    justifyContent: "center",
+  },
+});

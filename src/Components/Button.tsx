@@ -1,57 +1,51 @@
 /* eslint-disable prettier/prettier */
 import * as React from "react";
-import { View, Text, StyleSheet, ActivityIndicator, TouchableOpacity, TouchableOpacityProps, ViewStyle } from "react-native";
+import { View, Text, StyleSheet, ActivityIndicator, TouchableOpacity, TouchableOpacityProps, ViewStyle, Pressable } from "react-native";
 import { RFValue } from "react-native-responsive-fontsize";
 import Colors from "../constants/Colors";
 import Typography from "./typography/text";
 
-const Button = ({ label, onPress, loader, disabled, style }: ButtonProps) => {
+const Button = ({ label, onPress, variant = 'default', loader, disabled, style }: ButtonProps) => {
   return (
-    <View style={[styles.MainResponsevieView, style]}>
-      <TouchableOpacity disabled={disabled} activeOpacity={0.8} style={[disabled ? styles.diableBtn : styles.btn]} onPress={onPress}>
-        {!loader ? <Typography style={styles.Textcreate}>{label}</Typography> : <ActivityIndicator size="small" color="#fff" />}
-      </TouchableOpacity>
-    </View>
+    <Pressable disabled={disabled} onPress={onPress} style={[variant === 'default' ? styles.MainResponsevieView: styles.smallButtonView, style, disabled && styles.diableBtn]}>
+        {!loader ? <Typography color="white" size={variant === 'default' ? 'buttonText' : 'small'} weight={variant === 'default' ? 'bold' : '600'}  style={styles.Textcreate}>{label}</Typography> : <ActivityIndicator size="small" color="#fff" />}
+    </Pressable>
   );
 };
 
 export default Button;
 
 const styles = StyleSheet.create({
-  btn: {
-    width: "100%",
-    height: 58,
-    borderRadius: 12,
-    color: Colors.infos,
-    backgroundColor: Colors.bgRedBtn,
-    alignItems: "center",
-    justifyContent: "center",
-  },
   diableBtn: {
-    width: "100%",
-    height: 58,
-    borderRadius: 12,
     color: Colors.infos,
     backgroundColor: Colors.disabled,
-    alignItems: "center",
-    justifyContent: "center",
   },
   Textcreate: {
-    color: Colors.white,
-    fontSize: RFValue(14, 580),
-    fontFamily: "Poppins-SemiBold",
-    fontWeight: "bold",
     letterSpacing: 1,
   },
   MainResponsevieView: {
     width: "100%",
+    backgroundColor: Colors.bgRedBtn,
+    paddingVertical: 20,
     alignItems: "center",
-    paddingVertical: 10,
+    justifyContent: "center",
+    color: Colors.infos,
+    borderRadius: 12,
+  },
+  smallButtonView: {
+    width: 120,
+    backgroundColor: Colors.bgRedBtn,
+    paddingVertical: 12,
+    alignItems: "center",
+    justifyContent: "center",
+    color: Colors.infos,
+    borderRadius: 10,
   },
 });
 
 interface ButtonProps extends TouchableOpacityProps {
-  label: string | Element;
+  label: string;
+  variant?: 'default' | 'tini';
   onPress: () => void;
   loader?: boolean;
   disabled?: boolean;

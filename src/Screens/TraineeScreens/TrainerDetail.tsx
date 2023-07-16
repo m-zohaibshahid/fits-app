@@ -17,6 +17,9 @@ import { UserDetail } from "../../interfaces";
 import { useCreateChatRoomMutation } from "../../slice/FitsApi.slice";
 import { NavigationSwitchProp } from "react-navigation";
 import { errorToast } from "../../utils/toast";
+import Typography from "../../Components/typography/text";
+import Colors from "../../constants/Colors";
+import Container from "../../Components/Container";
 
 enum Tab {
   ABOUT,
@@ -68,7 +71,7 @@ const TrainerDetail = ({ navigation }: PropsInterface) => {
       case Tab.SCHEDULE:
         return <Schedule navigation={navigation} />;
       case Tab.VIDEO:
-        return <Videos2 navigation={navigation} /* token={token} id={userInfo?.user._id} */ />;
+        return <Videos2 navigation={navigation} />;
       case Tab.RATINGS:
         return <Ratings navigation={navigation} token={token} id={userInfo?.user._id} />;
       default:
@@ -78,7 +81,7 @@ const TrainerDetail = ({ navigation }: PropsInterface) => {
 
   return (
     <View style={styles.container}>
-      <ScrollView showsVerticalScrollIndicator={false}>
+      <ScrollView>
         <FastImage
           style={styles.Imagestyle}
           source={{
@@ -88,8 +91,7 @@ const TrainerDetail = ({ navigation }: PropsInterface) => {
           }}
           resizeMode={FastImage.resizeMode.cover}
         >
-          <View style={{ width: "100%" }}>
-            <View style={{ width: "90%", alignSelf: "center", marginVertical: 10 }}>
+            <View style={{ alignSelf: "center", margin: 10 }}>
               <View style={{ width: "100%", flexDirection: "row" }}>
                 <View style={{ width: "20%" }}>
                   <TouchableOpacity onPress={GoBack}>
@@ -151,11 +153,9 @@ const TrainerDetail = ({ navigation }: PropsInterface) => {
                 </View>
               </View>
             </View>
-          </View>
         </FastImage>
 
-        <View style={styles.header}>
-          <View style={styles.TopView}>
+        <Container style={{ transform: [{translateY: -20}],borderTopLeftRadius: 20,overflow: "hidden", borderTopRightRadius:20, alignItems:'center'}}>
             <View style={styles.topView1}>
               <Text style={styles.NameText}>{route?.params?.personalData.name}</Text>
               <View style={styles.BtnmainrowView}>
@@ -217,30 +217,45 @@ const TrainerDetail = ({ navigation }: PropsInterface) => {
               </Modal>
             </View>
             <View style={styles.toptabmainview}>
-              <TouchableOpacity style={styles.mainclassesview} onPress={() => handleTabPress(Tab.ABOUT)}>
-                <Text style={[activeTab === Tab.ABOUT ? styles.topbartext : styles.topbartext1]}>About</Text>
-                {activeTab === Tab.ABOUT ? <View style={styles.borderView} /> : null}
-              </TouchableOpacity>
-              <TouchableOpacity style={styles.mainclassesview} onPress={() => handleTabPress(Tab.SCHEDULE)}>
-                <Text style={[activeTab === Tab.SCHEDULE ? styles.topbartext : styles.topbartext1]}>Schedule</Text>
-                {activeTab === Tab.SCHEDULE ? <View style={styles.borderView} /> : null}
-              </TouchableOpacity>
-              <TouchableOpacity onPress={() => handleTabPress(Tab.VIDEO)} style={styles.mainclassesview}>
-                <Text style={[activeTab === Tab.VIDEO ? styles.topbartext : styles.topbartext1]}>Video</Text>
-                {activeTab === Tab.VIDEO ? <View style={styles.borderView} /> : null}
-              </TouchableOpacity>
-              <TouchableOpacity onPress={() => handleTabPress(Tab.RATINGS)} style={styles.mainclassesview}>
-                <Text style={[activeTab === Tab.RATINGS ? styles.topbartext : styles.topbartext1]}>Ratings</Text>
-                {activeTab === Tab.RATINGS ? <View style={styles.borderView} /> : null}
-              </TouchableOpacity>
+                <Typography pressAble onPress={() => handleTabPress(Tab.ABOUT)} color={activeTab=== Tab.ABOUT ? "redColor" : 'black'}  style={
+                  activeTab === Tab.ABOUT
+                    ? {
+                        borderBottomColor: Colors.redColor,
+                        borderBottomWidth: 2,
+                      }
+                    : {}
+                } >About</Typography>
+                <Typography pressAble onPress={() => handleTabPress(Tab.SCHEDULE)} color={activeTab=== Tab.SCHEDULE ? "redColor" : 'black'}  style={
+                  activeTab === Tab.SCHEDULE
+                    ? {
+                        borderBottomColor: Colors.redColor,
+                        borderBottomWidth: 2,
+                      }
+                    : {}
+                }>Schedule</Typography>
+                <Typography pressAble onPress={() => handleTabPress(Tab.VIDEO)} color={activeTab=== Tab.VIDEO ? "redColor" : 'black'}  style={
+                  activeTab === Tab.VIDEO
+                    ? {
+                        borderBottomColor: Colors.redColor,
+                        borderBottomWidth: 2,
+                      }
+                    : {}
+                } >Video</Typography>
+                <Typography pressAble onPress={() => handleTabPress(Tab.RATINGS)} color={activeTab=== Tab.RATINGS ? "redColor" : 'black'}  style={
+                  activeTab === Tab.RATINGS
+                    ? {
+                        borderBottomColor: Colors.redColor,
+                        borderBottomWidth: 2,
+                      }
+                    : {}
+                } >Ratings</Typography>
             </View>
-          </View>
-        </View>
+        </Container>
 
         {renderTabContent()}
         <View style={{ paddingVertical: 10 }} />
         <View style={{ paddingVertical: 10 }} />
-      </ScrollView>
+        </ScrollView>
     </View>
   );
 };
@@ -250,7 +265,6 @@ export default TrainerDetail;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#fff",
     paddingTop: Platform.OS === "ios" ? 40 : 0,
     paddingBottom: Platform.OS === "ios" ? 0 : 0,
   },
@@ -279,7 +293,7 @@ const styles = StyleSheet.create({
   },
   topView: { width: "90%" },
   topView1: {
-    width: "90%",
+  
     marginTop: 5,
     alignItems: "center",
   },
@@ -328,10 +342,13 @@ const styles = StyleSheet.create({
     fontSize: RFValue(10, 580),
     color: "#fff",
   },
-  toptabmainview: {
+   toptabmainview: {
     width: "100%",
     flexDirection: "row",
-    paddingVertical: 10,
+    // flex: 1,
+    justifyContent: "space-between",
+    alignItems: "center",
+    marginBottom: 10,
   },
   mainclassesview: {
     width: "25%",
@@ -395,7 +412,7 @@ const styles = StyleSheet.create({
     opacity: 0.9,
   },
   MoadalMainContainer: {
-    width: "90%",
+  
     alignSelf: "center",
   },
   ModalLabel: {

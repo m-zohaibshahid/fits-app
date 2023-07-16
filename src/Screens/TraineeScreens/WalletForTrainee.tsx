@@ -73,10 +73,8 @@ const WalletForTrainee: React.FC<Props> = ({ navigation }) => {
       source: addBalance?.id,
       description: "Recharge Account",
     };
-    console.log("recharge", body);
     rechargeStripe({ id: addBalance?.customer, ...body })
       .then((res2: any) => {
-        console.log("res2", res2);
         if (!res2.data.success) {
           ToastAndroid.show(res2?.message, ToastAndroid.SHORT);
         }
@@ -100,7 +98,7 @@ const WalletForTrainee: React.FC<Props> = ({ navigation }) => {
   }, []);
   return (
     <View style={styles.container}>
-      <Header label={"Wallet"} subLabel={"Add cash to your account by selecting any plan."} navigation={navigation} />
+      <Header label={"Wallet"} subLabel={"Add cash to your account by selecting any plan."} />
 
       {/*End Header*/}
       <ScrollView showsVerticalScrollIndicator={false} style={styles.main}>

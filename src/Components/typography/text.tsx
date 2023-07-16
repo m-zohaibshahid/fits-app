@@ -73,7 +73,7 @@ const getSize = (size: keyof SizeVariant | number): number => {
     label: 12,
     subtitle: 14,
     button: 16,
-    buttonText: 14,
+    buttonText: 17,
     title: 24,
     pageTitle: 30,
     pageSubTitle: 18,

@@ -6,6 +6,7 @@ import {
   Image,
   ToastAndroid,
   ActivityIndicator,
+  Platform,
 } from "react-native";
 import AntDesign from "react-native-vector-icons/AntDesign";
 import { RFPercentage, RFValue } from "react-native-responsive-fontsize";
@@ -14,38 +15,25 @@ import { url } from "../../constants/url";
 import { useRoute } from "@react-navigation/native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import Colors from "../../constants/Colors";
+import { useTrainerSessionQuery } from "../../slice/FitsApi.slice";
+import { useSelector } from "react-redux";
+import { UserDetail } from "../../interfaces";
+import Typography from "../../Components/typography/text";
 
-const Reviews = ({ navigation, data, load }) => {
+const Reviews = () => {
+  const { userInfo } = useSelector((state: { fitsStore: Partial<UserDetail> }) => state.fitsStore);
+  const { data: trainerSession } = useTrainerSessionQuery(userInfo?.user?._id || '');
 
   return (
     <View style={styles.container}>
       <View style={styles.main}>
         {/* Map */}
-        {load === false ? (
-          <ActivityIndicator size="large" color="black" />
-        ) : data?.length < 1 || data === undefined ? (
-          <View
-            style={{
-              width: "100%",
-              marginTop: "30%",
-              alignItems: "center",
-            }}
-          >
-            <Text
-              style={{
-                color: Colors.gray,
-                fontSize: RFValue(12, 580),
-                fontFamily: "Poppins-Regular",
-              }}
-            >
-              --- Data Not Available ---
-            </Text>
-          </View>
-        ) : (
-          <View>
-            {data.map((item, i) => (
-              <View key={i}>
-                {item?.session?.reviews[0] == null ? null : (
+            {trainerSession?.data.session.map((item: SessionItemType) => (
+              <View key={item._id}>
+                <Typography>
+                  {item.class_time}
+                </Typography>
+                {/* {item?.session?.reviews[0] == null ? null : (
                   <View style={styles.TopView}>
                     <View style={styles.topView}>
                       <View style={styles.BoxMianView}>
@@ -78,11 +66,9 @@ const Reviews = ({ navigation, data, load }) => {
                       </View>
                     </View>
                   </View>
-                )}
+                )} */}
               </View>
             ))}
-          </View>
-        )}
         {/* Map */}
       </View>
     </View>
@@ -159,3 +145,69 @@ const styles = StyleSheet.create({
     textAlign: "auto",
   },
 });
+
+
+export interface SessionItemType {
+  image: string
+  numReviews: number
+  averageRating: number
+  _id: string
+  session_title: string
+  class_title: string
+  select_date: string
+  class_time: string
+  duration: number
+  equipment: Equipment[]
+  session_type: SessionType
+  sports: string
+  details: string
+  price: number
+  no_of_slots: number
+  user: User
+  createdAt: string
+}
+
+export interface Equipment {
+  _id: string
+  value: string
+}
+
+export interface SessionType {
+  _id: string
+  type: string
+  lat?: number
+  lng?: number
+  meetingLink?: string
+  recordCategory: string
+  no_of_play: string
+  videoTitle: string
+}
+
+export interface User {
+  services_offered: ServicesOffered
+  role: string
+  isVerified: boolean
+  amount: number
+  emailVerified: boolean
+  suspended: boolean
+  reset_password: boolean
+  trainerVerified: string
+  accountVerified: string
+  numReviews: number
+  averageRating: number
+  cardCreated: boolean
+  _id: string
+  email: string
+  password: string
+  createdAt: string
+  updatedAt: string
+  __v: number
+  personal: string
+  profession: string
+  cus_id: string
+}
+
+export interface ServicesOffered {
+  value: string
+  key: string
+}

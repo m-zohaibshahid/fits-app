@@ -1,120 +1,51 @@
-import React, { useState, useEffect } from "react";
-import { Text, View, StyleSheet, Pressable, ToastAndroid, ActivityIndicator, Platform } from "react-native";
+import React, { useEffect } from "react";
+import { Text, View, StyleSheet, Pressable,  ActivityIndicator } from "react-native";
 import AntDesign from "react-native-vector-icons/AntDesign";
 import { RFValue } from "react-native-responsive-fontsize";
 import FontAwesome from "react-native-vector-icons/FontAwesome";
-import { url } from "../../constants/url";
 import moment from "moment";
-import AsyncStorage from "@react-native-async-storage/async-storage";
+import { NavigationSwitchProp } from "react-navigation";
+import { useSelector } from "react-redux";
+import { UserDetail } from "../../interfaces";
+import { useGetMyBookedClassesQuery } from "../../slice/FitsApi.slice";
+import Container from "../../Components/Container";
+import Typography from "../../Components/typography/text";
 
-const ScheduledClasses = ({ navigation }) => {
-  const [data, setData] = useState();
-  const [load, setLoad] = useState(false);
-  const [loadx, setLoadx] = useState(false);
-  const [token, setToken] = useState("");
-  const [id, setId] = useState("");
+interface PropsInterface {
+  navigation: NavigationSwitchProp;
+}
+const ScheduledClasses = ({ navigation }: PropsInterface) => {
+  const { userInfo } = useSelector((state: { fitsStore: Partial<UserDetail> }) => state.fitsStore);
 
-  useEffect(() => {
-    navigation.addListener("focus", () => {
-      getUserInfo();
-    });
-  }, [getUserInfo]);
+  const {data: myBookedClassesApiResponse, refetch, isLoading} = useGetMyBookedClassesQuery(userInfo?.user?._id || "")
 
-  const getUserInfo = async () => {
-    const userData = await AsyncStorage.getItem("userData");
-    let userDatax = JSON.parse(userData);
-    setToken(userDatax?.access_token);
-    setId(userDatax?.data?._id);
-  };
 
   useEffect(() => {
     navigation.addListener("focus", () => {
-      getAllClassesTrainee();
+      refetch()
     });
   }, []);
 
-  const getAllClassesTrainee = async () => {
-    const userData = await AsyncStorage.getItem("userData");
-    let userDatax = JSON.parse(userData);
-
-    setLoad(true);
-
-    await fetch(`${url}/book-a-session/trainee/${userDatax?.data?._id}`, {
-      method: "GET",
-      headers: {
-        Accept: "application/json",
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${userDatax?.access_token}`,
-      },
-    })
-      .then((res) => res.json())
-      .then((res2) => {
-        setLoad(false);
-        if (res2.success === true) {
-          // ToastAndroid.show("Done", ToastAndroid.LONG);
-          setData(res2?.data?.booking);
-        } else {
-          //Alert.alert(res2.errors);
-        }
-      })
-      .catch((error) => {
-        setLoad(false);
-        Alert.alert("Something Went Wrong");
-      });
-  };
-  const deleteBooking = async (item) => {
-    const userData = await AsyncStorage.getItem("userData");
-    let userDatax = JSON.parse(userData);
-
-    setLoadx(true);
-    {
-    }
-
-    await fetch(`${url}/book-a-session/trainee/${item?._id}`, {
+   /*  await fetch(`${url}/book-a-session/trainee/${item?._id}`, {
       method: "DELETE",
-      headers: {
-        Accept: "application/json",
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${userDatax?.access_token}`,
-      },
-    })
-      .then((res) => res.json())
-      .then((res2) => {
-        setLoadx(false);
-        if (res2.success === true) {
-          ToastAndroid.show(res2.message, ToastAndroid.LONG);
-          getAllClassesTrainee();
-
-          navigation.navigate("BookSessionPayment");
-        } else {
-          ToastAndroid.show(res2.message, ToastAndroid.LONG);
-        }
-      })
-      .catch((error) => {
-        setLoadx(false);
-        Alert.alert("Something Went Wrong");
-      });
-  };
-  const detailsInfoCall = (item, i) => {
-    let dummy = [...data];
+      }); */
+  const detailsInfoCall = (item: any, i: number) => {
+    let dummy = [...myBookedClassesApiResponse];
     if (dummy[i].status == true) {
       dummy.forEach((item) => (item.status = false));
     } else {
       dummy.forEach((item) => (item.status = false));
       dummy[i].status = true;
     }
-    setData(dummy);
   };
+
+  if (isLoading) {
+    return <ActivityIndicator size="large" color="black" />
+  }
   return (
-    <View style={styles.container}>
-      {/*start Totale */}
-      <View style={styles.main}>
-        {load === true ? (
-          <ActivityIndicator size="large" color="black" />
-        ) : (
-          <View>
-            {data?.map((item, i) => (
-              <View style={styles.TopView} key={i}>
+    <Container>
+            {myBookedClassesApiResponse?.data.booking ? <View style={{display: 'flex', justifyContent: 'center', alignItems: "center", height: '100%'}}><Typography style={{marginBottom: 30}}>---You dont have any Class yet---</Typography></View> : myBookedClassesApiResponse?.data.booking.map((item, i) => (
+              <View style={styles.TopView} key={item._id}>
                 {item.session === null ? null : (
                   <View style={styles.marchmainview}>
                     <View style={styles.marchmainview2}>
@@ -208,17 +139,12 @@ const ScheduledClasses = ({ navigation }) => {
                           </View>
                         </View>
                         <View style={styles.mainbtnView}>
-                          <Pressable
-                            onPress={() => {
-                              if (loadx === true) {
-                              } else {
-                                deleteBooking(item);
-                              }
-                            }}
+                         {/*  <Pressable
+                            onPress={() => deleteBooking(item)}
                             style={styles.ccbtnview}
                           >
                             {loadx === true ? <ActivityIndicator size="small" color="#fff" /> : <Text style={styles.btntextstyle}>Cancel</Text>}
-                          </Pressable>
+                          </Pressable> */}
                         </View>
                       </View>
                     )}
@@ -226,25 +152,10 @@ const ScheduledClasses = ({ navigation }) => {
                 )}
               </View>
             ))}
-          </View>
-        )}
-        {/*end Totale */}
-      </View>
-      <View style={{ marginVertical: 20 }} />
-    </View>
+    </Container>
   );
 };
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "#ffffff",
-    paddingTop: Platform.OS === "ios" ? 40 : 0,
-    paddingBottom: Platform.OS === "ios" ? 0 : 0,
-  },
-  header: {
-    width: "100%",
-    height: 120,
-  },
   fixeheight: {
     height: 50,
     justifyContent: "center",

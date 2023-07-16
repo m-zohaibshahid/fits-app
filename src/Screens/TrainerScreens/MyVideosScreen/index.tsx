@@ -13,39 +13,20 @@ import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import {RFValue} from 'react-native-responsive-fontsize';
 import VideoPlayer from 'react-native-video-player';
 import Colors from '../../../constants/Colors';
+import Typography from '../../../Components/typography/text';
+import Container from '../../../Components/Container';
+import Header from '../../../Components/Header';
 
-const MyVideos = ({navigation, data, load}: any) => {
+const MyVideos = () => {
   return (
-    <View style={styles.container}>
-      {/*All videos*/}
-      <View style={styles.main}>
-        {load === true ? (
-          <ActivityIndicator size="large" color="black" />
-        ) : data?.length < 1 || data === undefined ? (
-          <View
-            style={{
-              width: '100%',
-              marginTop: '30%',
-              height: 25,
-              alignItems: 'center',
-            }}>
-            <Text
-              style={{
-                color: Colors.gray,
-                fontSize: RFValue(12, 580),
-                fontFamily: 'Poppins-Regular',
-              }}>
-              -- Videos Not Available --
-            </Text>
-          </View>
-        ) : (
-          <View style={{width: '100%', alignItems: 'center'}}>
-            {data.map((item, i) => (
+    <Container>
+      <Header label='My Classes' />
+            {[]?.map((item, i) => (
               <View style={styles.topView1} key={i}>
                 <View style={styles.VideoView}>
                   <VideoPlayer
                     video={{
-                      uri: `${item.video_links[0]}`,
+                      uri: `${item?.video_links[0]}`,
                     }}
                     filterEnabled={true}
                     videoWidth={900}
@@ -170,10 +151,7 @@ const MyVideos = ({navigation, data, load}: any) => {
                 </View>
               </View>
             ))}
-          </View>
-        )}
-      </View>
-    </View>
+    </Container>
   );
 };
 const styles = StyleSheet.create({

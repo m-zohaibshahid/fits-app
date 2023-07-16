@@ -148,7 +148,6 @@ const BookSessionPayment = () => {
       userMe();
     });
   }, []);
-  console.log("cardData", cardData, data?.stripe?.card?.customer);
   let wallet = Number(cardData?.balance === undefined ? 0 : cardData?.balance);
   let cost = Number(bookSessionParams.userData?.price);
   let balance = Number(wallet - cost);

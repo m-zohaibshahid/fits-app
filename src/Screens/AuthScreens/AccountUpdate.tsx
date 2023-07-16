@@ -129,7 +129,6 @@ const AccountUpdate = () => {
   const handleOptionPress = (
     genderSelect: number | boolean | React.SetStateAction<string> | React.ReactElement<any, string | React.JSXElementConstructor<any>> | Iterable<React.ReactNode> | null | undefined
   ) => {
-    console.log("gender", genderSelect);
     setGender(genderSelect);
     setModalVisible(false);
   };

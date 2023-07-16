@@ -6,12 +6,12 @@ import {
   View,
   TouchableOpacity,
   StyleSheet,
-  TextInput,
   Image,
   ToastAndroid,
   ScrollView,
   ActivityIndicator,
   Pressable,
+  Platform,
 } from 'react-native';
 import AntDesign from 'react-native-vector-icons/AntDesign';
 import EvilIcons from 'react-native-vector-icons/EvilIcons';
@@ -26,6 +26,12 @@ import {url} from '../../../constants/url';
 import FastImage from 'react-native-fast-image';
 import {Toast} from 'react-native-toast-message/lib/src/Toast';
 import { useUpdatePasswordMutation } from '../../../slice/FitsApi.slice';
+import Container from '../../../Components/Container';
+import Header from '../../../Components/Header';
+import Typography from '../../../Components/typography/text';
+import Colors from '../../../constants/Colors';
+import TextInput from '../../../Components/Input';
+import Button from '../../../Components/Button';
 
 const AccountScreen = ({navigation}) => {
   const [hidePass, setHidePass] = useState(true);
@@ -166,47 +172,10 @@ const AccountScreen = ({navigation}) => {
   };
 
   return (
-    <View style={styles.container}>
-      <View style={styles.header}>
-        <View style={styles.fixeheight1}>
-          <View
-            style={{
-              width: '100%',
-              alignItems: 'center',
-            }}>
-            <View style={{width: '90%'}}>
-              <Text
-                style={{
-                  color: '#000000',
-                  fontSize: RFValue(26, 580),
-                  marginTop: 10,
-                  fontFamily: 'Poppins-Bold',
-                }}>
-                My Account
-              </Text>
-            </View>
-          </View>
-        </View>
-      </View>
-      {loadx === true ? (
-        <View style={{width: '100%', marginTop: 100, alignItems: 'center'}}>
-          <FastImage
-            style={{
-              width: 50,
-              height: 50,
-            }}
-            source={{
-              uri: 'https://i.gifer.com/ZZ5H.gif',
-              headers: {Authorization: 'someAuthToken'},
-              priority: FastImage.priority.normal,
-            }}
-            resizeMode={FastImage.resizeMode.cover}
-          />
-        </View>
-      ) : (
-        <ScrollView showsVerticalScrollIndicator={false}>
-          <View style={styles.main}>
-            <View style={{width: '100%', alignItems: 'center'}}>
+    <Container>
+      <Header label='Settings' lableStyle={{fontSize: 20}} />
+         <ScrollView showsVerticalScrollIndicator={false}>
+            <View style={{alignItems: 'center'}}>
               <View
                 style={{
                   width: '90%',
@@ -236,7 +205,7 @@ const AccountScreen = ({navigation}) => {
                 )}
               </View>
             </View>
-            <View style={{width: '100%', alignItems: 'center', marginTop: 10}}>
+            <View style={{alignItems: 'center', marginTop: 10}}>
               <View style={{width: '90%', alignItems: 'center', marginTop: 5}}>
                 <Text
                   style={{
@@ -249,7 +218,7 @@ const AccountScreen = ({navigation}) => {
                 </Text>
               </View>
             </View>
-            <View style={{width: '100%', alignItems: 'center'}}>
+            <View style={{alignItems: 'center'}}>
               <View
                 style={{
                   width: '90%',
@@ -279,7 +248,7 @@ const AccountScreen = ({navigation}) => {
                 </View>
               </View>
             </View>
-            <View style={{width: '100%', alignItems: 'center', marginTop: 10}}>
+            <View style={{alignItems: 'center', marginTop: 10}}>
               <Pressable
                 onPress={() => navigation.navigate('TrainerVerification')}
                 style={{
@@ -330,8 +299,7 @@ const AccountScreen = ({navigation}) => {
                 </View>
               </Pressable>
             </View>
-            {/*Start Profile */}
-            <View style={{width: '100%', alignItems: 'center', marginTop: 30}}>
+            <View style={{alignItems: 'center', marginTop: 30}}>
               <View
                 style={{
                   width: '90%',
@@ -341,7 +309,7 @@ const AccountScreen = ({navigation}) => {
                   paddingBottom: 10,
                   borderRadius: 14,
                 }}>
-                <View style={{width: '100%', alignItems: 'center'}}>
+                <View style={{alignItems: 'center'}}>
                   <View style={{width: '90%', alignItems: 'center'}}>
                     <View
                       style={{
@@ -408,39 +376,12 @@ const AccountScreen = ({navigation}) => {
                         </Text>
                       </View>
                     </View>
-                    {/* <View
-                    style={{
-                      marginTop: 10,
-                      width: '100%',
-                      flexDirection: 'row',
-                    }}>
-                    <View style={{width: '50%'}}>
-                      <Text
-                        style={{
-                          color: '#fff',
-                          fontSize: RFValue(15, 580),
-                          fontFamily: 'Poppins-Regular',
-                        }}>
-                        Username
-                      </Text>
-                    </View>
-                    <View style={{width: '50%', alignItems: 'flex-end'}}>
-                      <Text
-                        style={{
-                          color: '#fff',
-                          fontSize: RFValue(12, 580),
-                          fontFamily: 'Poppins-Regular',
-                        }}>
-                        Saif908
-                      </Text>
-                    </View>
-                  </View> */}
                     <View
                       style={{
                         marginTop: 10,
                         width: '100%',
                       }}>
-                      <View style={{width: '100%', alignItems: 'flex-start'}}>
+                      <View style={{alignItems: 'flex-start'}}>
                         <Text
                           style={{
                             color: '#fff',
@@ -450,7 +391,7 @@ const AccountScreen = ({navigation}) => {
                           E-mail
                         </Text>
                       </View>
-                      <View style={{width: '100%', alignItems: 'flex-end'}}>
+                      <View style={{alignItems: 'flex-end'}}>
                         <Text
                           style={{
                             color: '#fff',
@@ -573,9 +514,7 @@ const AccountScreen = ({navigation}) => {
                 </View>
               </View>
             </View>
-            {/*End Profile */}
-            {/*Start Wallet */}
-            <View style={{width: '100%', alignItems: 'center', marginTop: 30}}>
+            <View style={{alignItems: 'center', marginTop: 30}}>
               <TouchableOpacity
                 activeOpacity={0.8}
                 onPress={() => {
@@ -591,7 +530,7 @@ const AccountScreen = ({navigation}) => {
                   backgroundColor: '#000',
                   borderRadius: 14,
                 }}>
-                <View style={{width: '100%', alignItems: 'center'}}>
+                <View style={{alignItems: 'center'}}>
                   <View style={{width: '90%', alignItems: 'center'}}>
                     <View
                       style={{
@@ -618,304 +557,61 @@ const AccountScreen = ({navigation}) => {
                 </View>
               </TouchableOpacity>
             </View>
-            {/*End Wallet */}
-            {/*Start Password */}
-            <View style={{width: '100%', alignItems: 'center', marginTop: 30}}>
-              <View
-                style={{
-                  width: '90%',
-                  alignItems: 'center',
-                  backgroundColor: '#000',
-                  borderRadius: 14,
-                }}>
-                <View style={{width: '100%', alignItems: 'center'}}>
-                  <View
-                    style={{
-                      width: '90%',
-                      alignItems: 'center',
-                    }}>
-                    <View
+            <View style={{ backgroundColor: Colors.black, alignItems: "center", borderRadius: 10, marginTop: 30 }}>
+                    <Pressable
+                      onPress={() => setChangePassword(!ChangePassword)}
                       style={{
-                        width: '100%',
-                        height: 60,
-                        justifyContent: 'center',
                         flexDirection: 'row',
-                      }}>
-                      <View style={{width: '15%', justifyContent: 'center'}}>
-                        <Fontisto name="key" size={25} color={'#fff'} />
-                      </View>
-                      <View style={{width: '70%', justifyContent: 'center'}}>
-                        <Text
-                          style={{
-                            color: '#fff',
-                            fontSize: RFValue(13, 580),
-                            fontFamily: 'Poppins-SemiBold',
-                          }}>
-                          Change password
-                        </Text>
-                      </View>
-                      <Pressable
-                        onPress={() => setChangePassword(!ChangePassword)}
-                        style={{
-                          width: '15%',
-                          justifyContent: 'center',
-                          alignItems: 'flex-end',
-                        }}>
+                        justifyContent: 'space-between',
+                        width: '100%',
+                        padding: 15
+                    }}>
+                      <View style={{ flexDirection: 'row' }}>
+                        <Entypo
+                          name={'key'}
+                          size={25}
+                          color={'#fff'}
+                        />
+                        <Typography style={{marginLeft: 10}} color="white">
+                          Change Password
+                        </Typography>
+                        </View>
                         <Entypo
                           name={ChangePassword ? 'chevron-up' : 'chevron-down'}
                           size={25}
                           color={'#fff'}
                         />
-                      </Pressable>
-                    </View>
-                  </View>
-                </View>
-                {ChangePassword && (
-                  <View
-                    style={{
-                      width: '100%',
-                      borderTopColor: '#fff',
-                      borderTopWidth: 1,
-                    }}>
-                    <View
-                      style={{
-                        width: '100%',
-                        alignItems: 'center',
-                        marginTop: 30,
-                      }}>
-                      <View
-                        style={{
-                          width: '90%',
-                          backgroundColor: '#414143',
-                          borderRadius: 8,
-                          height: 58,
-                        }}>
-                        <View
-                          style={{
-                            width: '100%',
-                            marginTop: 3,
-                            paddingLeft: 10,
-                            borderRadius: 8,
-                          }}>
-                          <Text
-                            style={{
-                              color: '#ffffff',
-                              fontFamily: 'Poppins-Regular',
-                              fontSize: RFValue(9, 580),
-                            }}>
-                            Old Password
-                          </Text>
-                        </View>
-                        <View
-                          style={{
-                            width: '100%',
-                            borderColor: '#fff',
-                            flexDirection: 'row',
-                          }}>
-                          <View
-                            style={{
-                              width: '90%',
-                              borderColor: '#fff',
-                            }}>
-                            <TextInput
-                              style={styles.inputPassword}
-                              label="password"
-                              placeholder="Old Password"
-                              secureTextEntry={hidePass ? true : false}
-                              value={oldPassword}
-                              onChangeText={setOldPassword}
-                            />
-                          </View>
-                          <View
-                            style={{
-                              width: '10%',
-                              alignItems: 'center',
-                            }}>
-                            <Ionicons
-                              name={hidePass ? 'eye-off' : 'eye'}
-                              onPress={() => setHidePass(!hidePass)}
-                              size={20}
-                              color="#fff"
-                            />
-                          </View>
-                        </View>
-                      </View>
-                    </View>
-                    <View
-                      style={{
-                        width: '100%',
-                        alignItems: 'center',
-                        marginTop: 30,
-                      }}>
-                      <View
-                        style={{
-                          width: '90%',
-                          backgroundColor: '#414143',
-                          borderRadius: 8,
-                          height: 58,
-                        }}>
-                        <View
-                          style={{
-                            width: '100%',
-                            marginTop: 3,
-                            paddingLeft: 10,
-                            borderRadius: 8,
-                          }}>
-                          <Text
-                            style={{
-                              color: '#ffffff',
-                              fontFamily: 'Poppins-Regular',
-                              fontSize: RFValue(9, 580),
-                            }}>
-                            New Password
-                          </Text>
-                        </View>
-                        <View
-                          style={{
-                            width: '100%',
-                            borderColor: '#fff',
-                            flexDirection: 'row',
-                          }}>
-                          <View
-                            style={{
-                              width: '90%',
-                              borderColor: '#fff',
-                            }}>
-                            <TextInput
-                              style={styles.inputPassword}
-                              label="password"
-                              placeholder="Enter Password"
-                              secureTextEntry={hidePass ? true : false}
-                              value={newPassword}
-                              onChangeText={setNewPassword}
-                            />
-                          </View>
-                          <View
-                            style={{
-                              width: '10%',
-                              alignItems: 'center',
-                            }}>
-                            <Ionicons
-                              name={hidePass ? 'eye-off' : 'eye'}
-                              onPress={() => setHidePass(!hidePass)}
-                              size={20}
-                              color="#fff"
-                            />
-                          </View>
-                        </View>
-                      </View>
-                    </View>
-                    <View
-                      style={{
-                        width: '100%',
-                        alignItems: 'center',
-                        marginTop: 30,
-                      }}>
-                      <View
-                        style={{
-                          width: '90%',
-                          height: 58,
-                          backgroundColor: '#414143',
-                          borderRadius: 8,
-                        }}>
-                        <View
-                          style={{
-                            width: '100%',
-                            marginTop: 3,
-                            paddingLeft: 10,
-                            borderRadius: 8,
-                          }}>
-                          <Text
-                            style={{
-                              color: '#ffffff',
-                              fontSize: RFValue(9, 580),
-                              fontFamily: 'Poppins-Regular',
-                            }}>
-                            Crofirm Password
-                          </Text>
-                        </View>
-                        <View
-                          style={{
-                            width: '100%',
-                            borderColor: '#fff',
-                            flexDirection: 'row',
-                          }}>
-                          <View
-                            style={{
-                              width: '90%',
-                              borderColor: '#fff',
-                            }}>
-                            <TextInput
-                              style={styles.inputPassword}
-                              label="password"
-                              placeholder="Enter Password"
-                              secureTextEntry={hidePass ? true : false}
-                              value={confirmPassword}
-                              onChangeText={setConfirmPassword}
-                            />
-                          </View>
-                          <View
-                            style={{
-                              width: '10%',
-                              alignItems: 'center',
-                            }}>
-                            <Ionicons
-                              name={hidePass ? 'eye-off' : 'eye'}
-                              onPress={() => setHidePass(!hidePass)}
-                              size={20}
-                              color="#fff"
-                            />
-                          </View>
-                        </View>
-                      </View>
-                    </View>
-                    <View
-                      style={{
-                        width: '100%',
-                        alignItems: 'center',
-                        marginTop: 10,
-                      }}>
-                      <Pressable
-                        navigation={navigation}
-                        onPress={() => {
-                          if (load === true) {
-                          } else {
-                            UpdatePassword();
-                            setConfirmPassword('');
-                            setNewPassword('');
-                            setOldPassword('');
-                          }
-                        }}
-                        style={{
-                          width: '30%',
-                          backgroundColor: '#FF0000',
-                          height: 40,
-                          justifyContent: 'center',
-                          alignItems: 'center',
-                          borderRadius: 10,
-                        }}>
-                        <Text
-                          style={{
-                            fontFamily: 'Poppins-Regular',
-                            fontSize: RFValue(12, 580),
-                            color: '#fff',
-                          }}>
-                          {load === true ? (
-                            <ActivityIndicator size="small" color="#fff" />
-                          ) : (
-                            'Save'
-                          )}
-                        </Text>
-                      </Pressable>
-                    </View>
-                    <View style={{marginVertical: 9}} />
-                  </View>
-                )}
+                    </Pressable>
+               {ChangePassword && (
+                 <View
+                   style={{
+                   width: "100%",
+              padding: 20,
+                   backgroundColor: Colors.white90
+                   }}
+                 >
+                        <TextInput label="Old Password" placeholder="" secureTextEntry value={oldPassword} onChangeText={setOldPassword} />
+                        <TextInput
+                          style={styles.inputPassword}
+                          label="New Password"
+                          placeholder="Enter Password"
+                          secureTextEntry
+                          value={newPassword}
+                          onChangeText={setNewPassword}
+                        />
+                        <TextInput
+                          style={styles.inputPassword}
+                          label="New Password"
+                          placeholder="Enter Password"
+                          secureTextEntry
+                          value={confirmPassword}
+                          onChangeText={setConfirmPassword}
+                />
+                <Button style={{marginLeft: 'auto'}} variant="tini" label={"Change"} onPress={UpdatePassword} />
               </View>
+            )}
             </View>
-            {/*End Password */}
-            {/*Start Services offered */}
-            <View style={{width: '100%', alignItems: 'center', marginTop: 30}}>
+            <View style={{alignItems: 'center', marginTop: 30}}>
               <TouchableOpacity
                 activeOpacity={0.8}
                 onPress={() =>
@@ -930,7 +626,7 @@ const AccountScreen = ({navigation}) => {
                   backgroundColor: '#000',
                   borderRadius: 14,
                 }}>
-                <View style={{width: '100%', alignItems: 'center'}}>
+                <View style={{alignItems: 'center'}}>
                   <View style={{width: '90%', alignItems: 'center'}}>
                     <View
                       style={{
@@ -961,9 +657,7 @@ const AccountScreen = ({navigation}) => {
                 </View>
               </TouchableOpacity>
             </View>
-            {/*End Services offered */}
-            {/*Start Qualifications & Experience */}
-            <View style={{width: '100%', alignItems: 'center', marginTop: 30}}>
+            <View style={{alignItems: 'center', marginTop: 30}}>
               <TouchableOpacity
                 activeOpacity={0.8}
                 onPress={() =>
@@ -978,7 +672,7 @@ const AccountScreen = ({navigation}) => {
                   backgroundColor: '#000',
                   borderRadius: 14,
                 }}>
-                <View style={{width: '100%', alignItems: 'center'}}>
+                <View style={{alignItems: 'center'}}>
                   <View style={{width: '90%', alignItems: 'center'}}>
                     <View
                       style={{
@@ -1009,9 +703,7 @@ const AccountScreen = ({navigation}) => {
                 </View>
               </TouchableOpacity>
             </View>
-            {/*End Qualifications & Experience */}
-            {/*Start Sign out */}
-            <View style={{width: '100%', alignItems: 'center', marginTop: 30}}>
+            <View style={{alignItems: 'center', marginTop: 30}}>
               <TouchableOpacity
                 activeOpacity={0.8}
                 style={{
@@ -1023,7 +715,7 @@ const AccountScreen = ({navigation}) => {
                 onPress={() => {
                   logOut();
                 }}>
-                <View style={{width: '100%', alignItems: 'center'}}>
+                <View style={{alignItems: 'center'}}>
                   <View style={{width: '90%', alignItems: 'center'}}>
                     <View
                       style={{
@@ -1050,13 +742,10 @@ const AccountScreen = ({navigation}) => {
                 </View>
               </TouchableOpacity>
             </View>
-            {/*End Sign out */}
-          </View>
           <View style={{marginVertical: 50}} />
         </ScrollView>
-      )}
       <View style={styles.footer} />
-    </View>
+    </Container>
   );
 };
 const styles = StyleSheet.create({

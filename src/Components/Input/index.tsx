@@ -8,7 +8,7 @@ import { RFValue } from "react-native-responsive-fontsize";
 interface TextInputProps {
   keyboard?: "default" | "email-address" | "numeric" | "phone-pad";
   label: string;
-  placeholder: string;
+  placeholder?: string;
   placeholderTextColor?: string;
   secureTextEntry?: boolean;
   value: string;
@@ -37,6 +37,7 @@ const TextInput: React.FC<TextInputProps> = ({
   error,
   isEditable,
   handleOnPress,
+  maxLength
 }) => {
   const [hidePass, setHidePass] = useState(true);
 
@@ -56,6 +57,7 @@ const TextInput: React.FC<TextInputProps> = ({
             secureTextEntry={secureTextEntry && hidePass}
             value={value}
             onChangeText={onChangeText}
+            maxLength={maxLength}
           />
           {secureTextEntry && (
             <View style={styles.hideIconView}>

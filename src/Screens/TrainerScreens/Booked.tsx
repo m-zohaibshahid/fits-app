@@ -1,8 +1,4 @@
-<<<<<<< HEAD
 import React, { useState } from 'react';
-=======
-import React, {useState} from 'react'
->>>>>>> API-1804
 import {
   Text,
   View,
@@ -14,7 +10,8 @@ import {
   Modal,
   Image,
   ScrollView,
-  Pressable
+  Pressable,
+  Platform
 } from 'react-native';
 import AntDesign from 'react-native-vector-icons/AntDesign';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';

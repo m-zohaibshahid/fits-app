@@ -20,7 +20,7 @@ import Colors from "../../constants/Colors";
 import Typography from "../../Components/typography/text";
 import Divider from "../../Components/Divider";
 import { MessageInterface, UserDetail } from "../../interfaces";
-import { useGetRoomByIdMutation, useGetRoomMessagesQuery, useSendMessageMutation } from "../../slice/FitsApi.slice";
+import { useGetRoomMessagesQuery, useSendMessageMutation } from "../../slice/FitsApi.slice";
 import { useSelector } from "react-redux";
 import useSocket from "../../hooks/use-socket";
 import { SendMessageToSocketInterface } from "../../hooks/types";
@@ -227,7 +227,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   selfMessageStyle: {
-    width: "45%",
+    width: "80%",
     backgroundColor: Colors.black,
     marginBottom: 20,
     padding: 10,
@@ -238,7 +238,7 @@ const styles = StyleSheet.create({
     marginLeft: "auto",
   },
   otherMessageStyle: {
-    width: "45%",
+    width: "80%",
     marginBottom: 20,
     backgroundColor: Colors.bgRedBtn,
     padding: 10,
