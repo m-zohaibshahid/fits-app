@@ -28,37 +28,12 @@ const Home: React.FC<Props> = ({ navigation }) => {
   const { userInfo } = useSelector((state: { fitsStore: Partial<UserDetail> }) => state.fitsStore);
   const [classes, setClasses] = useState(true);
   const [reviews, setReviews] = useState(false);
-  const [userData, setUserData] = useState([]);
   const [superLong, setSuperLong] = useState(55.9754);
   const [superLat, setSuperLat] = useState(21.4735);
-  const [load, setLoad] = useState(false);
-  const [dumdata, setDumData] = useState([]);
-  const [classesData, setClassesData] = useState([]);
-  const { data: userMeData } = useGetUserMeQuery({});
-  const [stripeCustomer, { data: stripeCustomerData }] = useStripeCustomerMutation();
+  const [stripeCustomer] = useStripeCustomerMutation();
 
   // Functions
-  const setForCareateStripeCall = async (data: any) => {
-    await AsyncStorage.setItem("createStripeData", JSON.stringify(data));
-  };
 
-  const createStripeAccount = async (data: { personal_info: { name: any; phoneNumber: any }; user: { email: any } }) => {
-    setLoad(true);
-    stripeCustomer({
-      name: data?.personal_info?.name,
-      email: data?.user?.email,
-      phone: data?.personal_info?.phoneNumber,
-    })
-      .unwrap()
-      .then((res2) => {
-        if (res2?.message === "success" || res2?.message === "customer already exists") {
-          setForCareateStripeCall(res2?.data);
-        }
-      })
-      .catch((error) => {
-        setLoad(false);
-      });
-  };
 
   const classestrueState = () => {
     setClasses(true);

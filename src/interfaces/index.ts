@@ -151,7 +151,7 @@ export interface TrainerClassInterfaceInTraineeScreenInterface {
   details: string;
   price: number;
   no_of_slots: number;
-  user?: User; // ˚˚˚˚˚˚˚˚˚˚˚˚˚˚˚˚˚˚˚˚˚˚˚˚˚˚˚˚˚˚˚˚˚
+  user?: User;
   createdAt: string;
 }
 

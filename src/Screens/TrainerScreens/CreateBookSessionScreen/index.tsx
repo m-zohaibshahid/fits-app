@@ -668,9 +668,9 @@ const BookSession = ({ navigation }: any) => {
         <View style={{ marginVertical: "20%" }}></View>
       </ScrollView>
       {/*start btn*/}
-      <View style={styles.rowView}>
-        <Button onPress={callBookSession} disabled={!sport || !currentDate || !description || !image || !time || !value || !slots || !duration || !price} label={"Create"} />
-      </View>
+      <Button style={{
+          marginVertical: 20
+        }} onPress={callBookSession} disabled={!sport || !currentDate || !description || !image || !time || !value || !slots || !duration || !price} label={"Create"} />
       {/*end btn*/}
       <DateTimePickerModal isVisible={isDatePickerVisible} mode="time" onConfirm={handleConfirm} onCancel={hideDatePicker} />
       {/*filter option model  Start*/}

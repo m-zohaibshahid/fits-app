@@ -14,7 +14,7 @@ import { errorToast } from "./src/utils/toast";
 import { setUserInfo } from "./src/slice/FitsSlice.store";
 import useSocket from "./src/hooks/use-socket";
 import { UserDetail } from "./src/interfaces";
-import { MessageState, clearUnReadMessages, setUnReadMessage } from "./src/slice/messages.slice";
+import { clearUnReadMessages, setUnReadMessage } from "./src/slice/messages.slice";
 
 export const AuthContext = createContext({});
 

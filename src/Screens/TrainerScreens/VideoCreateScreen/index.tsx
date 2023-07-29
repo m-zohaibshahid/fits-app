@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Text, View, Pressable, StyleSheet, TextInput, ScrollView, ToastAndroid, ActivityIndicator, Platform } from "react-native";
+import { Text, View, Pressable, StyleSheet, TextInput, ScrollView, ToastAndroid, ActivityIndicator, Platform, Image } from "react-native";
 import Colors from "../../../constants/Colors";
 import VideoPlayer from "react-native-video-player";
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from "react-native-responsive-screen";
@@ -7,28 +7,22 @@ import ImagePicker from "react-native-image-crop-picker";
 import { RFValue } from "react-native-responsive-fontsize";
 import Header from "../../../Components/Header";
 import Button from "../../../Components/Button";
-import { url } from "../../../constants/url";
+import { url } from "../../../constants/url"; 
 import SimpleLineIcons from "react-native-vector-icons/SimpleLineIcons";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { NavigationSwitchProp } from "react-navigation";
+import {useUploadVideoMutation} from '../../../slice/FitsApi.slice'
+import Container from "../../../Components/Container";
+import Typography from "../../../Components/typography/text";
+import { errorToast } from "../../../utils/toast";
+import { boolean } from "yup";
 
-const VideoCreateScreen = ({ navigation }) => {
-  const GoBack = () => {
-    navigation.goBack();
-  };
+interface PropsInterface {
+  navigation: NavigationSwitchProp;
+}
+const VideoCreateScreen = ({ navigation }: PropsInterface) => {
 
-  useEffect(() => {
-    navigation.addListener("focus", () => {
-      getUserInfo();
-    });
-  }, [getUserInfo]);
-
-  const [token, setToken] = useState("");
-  const getUserInfo = async () => {
-    const userData = await AsyncStorage.getItem("userData");
-    let userDatax = JSON.parse(userData);
-    setToken(userDatax?.access_token);
-  };
-
+  const [mutateAsyncVideoUpload, { isLoading }] = useUploadVideoMutation()
   const [statusOne, setStatusOne] = useState(false);
   const [statusTwo, setStatusTwo] = useState(false);
   const [statusThree, setStatusThree] = useState(false);
@@ -38,31 +32,32 @@ const VideoCreateScreen = ({ navigation }) => {
 
   const [details, setDetails] = useState("");
   const [video, setVideo] = useState("");
-  const [image, setImage] = useState("");
-  const [price, setPrice] = useState();
-  const [videoTitle, setVideoTitle] = useState();
-  const [videoLink, setVideoLink] = useState([]);
+  const [price, setPrice] = useState('');
+  const [uploadOnCloudLoading, setUploadOnCLoudLoading] = useState<{video: boolean, image: boolean}>({image: false, video: false});
+  const [videoTitle, setVideoTitle] = useState('');
+  const [cloudVideoUrl, setCloudVideoLink] = useState([]);
+  const [cloudImageUrl, setCloudImageUrl] = useState('');
   const [value, setValue] = useState("");
 
-  const [load, setLoad] = useState(false);
-  const [loadx, setLoadx] = useState(false);
-
-  const choosePhotoFromCamera = () => {
+  const chooseVideoFromGallery = () => {
     ImagePicker.openPicker({
       mediaType: "video",
     })
-      .then((file) => {
-        let newFile = {
-          uri: file.path,
-          type: "video/mp4",
-          name: `video.mp4`,
-        };
-        uploadImageOnCloud(newFile);
+    .then((file) => {
+      let newFile = {
+        uri: file.path,
+        type: "video/mp4",
+        name: `video.mp4`,
+      };
+      setUploadOnCLoudLoading({ ...uploadOnCloudLoading, video: true })
+      console.log(":::::::::::::::::::::::::::::::::::");
+      
+        uploadVideoOnCloud(newFile);
         setVideo(file.path);
       })
   };
 
-  const chooseImageFromCamera = () => {
+  const chooseImageFromGallery = () => {
     ImagePicker.openPicker({
       mediaType: "photo",
     })
@@ -73,212 +68,134 @@ const VideoCreateScreen = ({ navigation }) => {
           name: `photo.jpg`,
         };
         uploadImageOnCloud(newFile);
-        setImage(file.path);
+        setUploadOnCLoudLoading({...uploadOnCloudLoading, image:true})
       })
   };
 
-  const uploadImageOnCloud = async (image) => {
-    setLoadx(true);
-    const zzz = new FormData();
-    zzz.append("file", image);
-    zzz.append("upload_preset", "employeeApp");
-    zzz.append("cloud_name", "ZACodders");
-
-    await fetch("https://api.cloudinary.com/v1_1/ZACodders/video/upload", {
+  const uploadImageOnCloud = async (image: { uri: string; type: string; name: string }) => {
+    const imageUploadOnCloud = new FormData();
+    imageUploadOnCloud.append("file", image);
+    imageUploadOnCloud.append("upload_preset", "employeeApp");
+    imageUploadOnCloud.append("cloud_name", "ZACodders");
+    await fetch("https://api.cloudinary.com/v1_1/ZACodders/image/upload", {
       method: "POST",
-      body: zzz,
+      body: imageUploadOnCloud,
     })
       .then((res) => res.json())
       .then((res2) => {
-        setLoadx(false);
-        setVideoLink([res2?.url]);
+        setCloudImageUrl(res2?.url);
       })
-      .catch((err) => {
-        setLoadx(false);
+      .catch((error) => {
+        ToastAndroid.show(error, ToastAndroid.LONG);
       });
+      setUploadOnCLoudLoading({...uploadOnCloudLoading, image:false})
   };
-  const upLoadVideoInfo = async () => {
-    if (videoTitle === "") {
-      ToastAndroid.show("Please Enter Video Title here.", ToastAndroid.SHORT);
-    } else if (details === "") {
-      ToastAndroid.show("Please Enter Details.", ToastAndroid.SHORT);
-    } else if (value === "") {
-      ToastAndroid.show("Please select the Category.", ToastAndroid.SHORT);
-    } else if (price === "") {
-      ToastAndroid.show("Please enter the Price.", ToastAndroid.SHORT);
-    } else {
-      setLoad(true);
-      await fetch(`${url}/video`, {
-        method: "POST",
-        headers: {
-          Accept: "application/json",
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify({
-          sessionId: "N/A",
-          topic: videoTitle,
-          video_links: videoLink,
-          video_category: value,
-          video_details: details,
-          price: price,
-        }),
-      })
-        .then((res) => res.json())
-        .then((res2) => {
-          setLoad(false);
 
-          if (res2.message === "created successfully") {
-            GoBack();
-          } else {
-            Alert.alert(res2?.errors?.email);
-          }
-        })
-        .catch((error) => {
-          setLoad(false);
-        });
+  const handleUploadVideo = async () => {
+    const body = {
+      topic: videoTitle,
+      video_links: cloudVideoUrl,
+      video_category: value,
+      video_details: details,
+      price: price,
+      video_thumbnail: cloudImageUrl
     }
+    const result = await mutateAsyncVideoUpload(body)
+
+    if (result?.data) navigation.navigate("Home");
+    if (result?.error) errorToast(result?.error?.data.message)
+  }
+
+  const uploadVideoOnCloud = async (video: any) => {
+    const formData = new FormData();
+    formData.append("file", video);
+    formData.append("upload_preset", "employeeApp");
+    formData.append("cloud_name", "ZACodders");
+
+    await fetch("https://api.cloudinary.com/v1_1/ZACodders/video/upload", {
+      method: "POST",
+      body: formData,
+    })
+      .then((res) => res.json())
+      .then((res2) => {
+        setUploadOnCLoudLoading({...uploadOnCloudLoading, video:false})
+        setCloudVideoLink([res2?.url]);
+      })
   };
+
+  console.log('====================================');
+  console.log(cloudVideoUrl);
+  console.log('====================================');
 
   return (
-    <View style={styles.container}>
-      <Header label={"Upload Video"} navigation={navigation} />
-
-      {loadx === true ? (
-        <ActivityIndicator size="large" color="#000" />
-      ) : (
+    <Container>
+      <Header label={"Upload Video"} />
         <ScrollView showsVerticalScrollIndicator={false}>
           <View style={styles.mainBody}>
             {video === "" ? (
               <View
                 style={{
-                  width: "90%",
+                  width: "100%",
                   backgroundColor: "#979797",
-                  height: 180,
-                  borderRadius: 10,
+                  height: 200,
                   alignItems: "center",
                   justifyContent: "center",
                   alignSelf: "center",
                 }}
               >
-                <SimpleLineIcons name="cloud-upload" size={40} color={"#000"} />
-                <Text
-                  style={{
-                    fontFamily: "Poppins-Regular",
-                    fontSize: RFValue(15, 580),
-                    color: Colors.Black,
-                  }}
-                >
-                  Tap to upload video file
-                </Text>
-                <Pressable
-                  style={{
-                    marginTop: 20,
-                    width: "35%",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    backgroundColor: "#FF0000",
-                    borderRadius: 10,
-                    paddingVertical: 10,
-                  }}
-                  onPress={() => {
-                    choosePhotoFromCamera();
-                  }}
-                >
-                  <Text
-                    style={{
-                      color: "#fff",
-                      fontFamily: "Poppins-SemiBold",
-                    }}
-                  >
-                    Upload Video
-                  </Text>
-                </Pressable>
+                <SimpleLineIcons name="cloud-upload" size={80} color={"#000"} />
+                <Typography
+                size={'heading2'}
+              style={{marginBottom: 20}}
+              >
+                  Tap to upload Video
+                </Typography>
+              <Button label="Upload Video" onPress={chooseVideoFromGallery} variant="tini" />
               </View>
             ) : (
-              <View style={{ width: "90%", alignSelf: "center" }}>
+                uploadOnCloudLoading.video ? <ActivityIndicator style={{marginVertical: 60}} /> : <View style={{ width: "100%", alignSelf: "center", position: 'relative' }}>
+                <Pressable onPress={chooseVideoFromGallery} style={{paddingVertical: 5, paddingHorizontal: 10, backgroundColor: Colors.grayTransparent, position: 'absolute', top: 5, left: 5, borderRadius: 5}}><Typography color="white" size={'small'}>Another</Typography></Pressable>
                 <VideoPlayer
-                  video={{
-                    uri: video,
-                  }}
+                  video={{ uri: video }}
                   filterEnabled={true}
                   videoWidth={1600}
                   videoHeight={900}
                   fullscreenAutorotate={false}
-                  //thumbnail={Images.videoImage}
                   style={{ borderRadius: 10, alignSelf: "center" }}
                 />
               </View>
             )}
-            <View style={{ marginHorizontal: 20, marginVertical: 15 }}>
-              <Text
-                style={{
-                  fontSize: 25,
-                  fontWeight: "bold",
-                  color: "black",
-                }}
-              >
-                Upload Thumbnil <Text style={{ fontSize: 16 }}>(optional)</Text>
-              </Text>
-            </View>
-            <View
-              style={{
-                width: "90%",
+            {!cloudImageUrl ? <View
+            style={{
+                marginTop: 20,
+                width: "100%",
                 backgroundColor: "#979797",
-                height: 180,
-                borderRadius: 10,
+                height: 200,
                 alignItems: "center",
                 justifyContent: "center",
                 alignSelf: "center",
               }}
             >
-              <SimpleLineIcons name="cloud-upload" size={30} color={"#000"} />
-              <Text
-                style={{
-                  fontFamily: "Poppins-Regular",
-                  fontSize: RFValue(15, 580),
-                  color: Colors.Black,
-                }}
-              >
-                Tap to upload image file
-              </Text>
-              <Pressable
-                style={{
-                  marginTop: 20,
-                  width: "35%",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  backgroundColor: "#FF0000",
-                  borderRadius: 10,
-                  paddingVertical: 10,
-                }}
-                onPress={() => {
-                  chooseImageFromCamera();
-                }}
-              >
-                <Text
-                  style={{
-                    color: "#fff",
-                    fontFamily: "Poppins-SemiBold",
-                  }}
+              <SimpleLineIcons name="cloud-upload" size={50} color={"#000"} />
+              <Typography
+              size={'heading2'}
+              style={{marginBottom: 20}}
                 >
-                  Upload Thumbnil
-                </Text>
-              </Pressable>
-            </View>
+                Tap to upload Thumbnail
+              </Typography>
+             <Button variant="tini" onPress={chooseImageFromGallery} label="Thumbnail" />
+          </View> : uploadOnCloudLoading.image ? <ActivityIndicator style={{marginVertical: 60}} /> : <Pressable onPress={chooseImageFromGallery}><Image style={{
+                marginVertical: 30,
+                    width: "100%",
+                    height: 200,
+              }} source={{
+                uri: cloudImageUrl
+              }} /></Pressable>
+              }
 
-            <View style={{ width: "90%", alignSelf: "center", marginTop: 10 }}>
+            <View style={{ width: "100%", alignSelf: "center", marginTop: 10 }}>
               {/*start pricing */}
-              <Text
-                style={{
-                  fontSize: RFValue(16, 580),
-                  fontFamily: "Poppins-Bold",
-                  color: "#000",
-                  fontWeight: "700",
-                }}
-              >
-                Video Title
-              </Text>
+            <Typography size={'heading3'}>Video Title</Typography>
               <View
                 style={{
                   width: "100%",
@@ -295,10 +212,10 @@ const VideoCreateScreen = ({ navigation }) => {
                     borderRadius: 10,
                     width: "100%",
                     paddingLeft: 10,
-                    fontSize: RFValue(15, 580),
+                    fontSize: RFValue(12, 580),
                     color: Colors.white,
                   }}
-                  placeholderTextColor={"#fff"}
+                placeholderTextColor={Colors.white80}
                   value={videoTitle}
                   onChangeText={setVideoTitle}
                 />
@@ -306,7 +223,7 @@ const VideoCreateScreen = ({ navigation }) => {
               {/*end pricing */}
             </View>
             <View style={{ width: "100%", alignItems: "center", marginTop: 20 }}>
-              <View style={{ width: "90%" }}>
+              <View style={{ width: "100%" }}>
                 <View style={{ width: "100%", flexDirection: "row" }}>
                   <View style={{ width: "60%" }}>
                     <Text
@@ -339,7 +256,7 @@ const VideoCreateScreen = ({ navigation }) => {
               </View>
             </View>
             <View style={styles.mainBoxView}>
-              <View style={{ width: "90%", flexDirection: "row" }}>
+              <View style={{ width: "100%", flexDirection: "row" }}>
                 <View style={styles.BoxviewWidth1}>
                   <Pressable
                     style={statusOne ? styles.BoxShadowView : styles.BoxShadowViewBorder}
@@ -393,7 +310,7 @@ const VideoCreateScreen = ({ navigation }) => {
               </View>
             </View>
             <View style={styles.mainBoxView}>
-              <View style={{ width: "90%", flexDirection: "row" }}>
+              <View style={{ width: "100%", flexDirection: "row" }}>
                 <View style={styles.BoxviewWidth1}>
                   <Pressable
                     style={statusFour ? styles.BoxShadowView : styles.BoxShadowViewBorder}
@@ -450,114 +367,39 @@ const VideoCreateScreen = ({ navigation }) => {
                 </View>
               </View>
             </View>
-            <View style={{ width: "100%", alignItems: "center", marginTop: 40 }}>
-              <View style={{ width: "90%" }}>
-                <Text style={{ fontSize: RFValue(18, 580), color: "#000" }}>Any specific details</Text>
-              </View>
-            </View>
-            <View
-              style={{
-                width: "100%",
-                alignItems: "center",
-                marginTop: 10,
-              }}
-            >
-              <View
-                style={{
-                  width: "90%",
-                  backgroundColor: "#414143",
-                  borderRadius: 8,
-                  flexDirection: "column",
-                  height: 130,
-                }}
-              >
-                <TextInput
-                  multiline={true}
-                  numberOfLines={5}
-                  maxLength={500}
-                  placeholder="Write your specific detail here....."
-                  placeholderTextColor={"#fff"}
-                  style={{
-                    height: 200,
-                    textAlignVertical: "top",
-                    fontFamily: "Poppins-Regular",
-                    color: "#fff",
-                  }}
-                  value={details}
-                  onChangeText={setDetails}
-                />
-              </View>
-            </View>
-            <View style={{ width: "90%", alignSelf: "center", marginTop: 10 }}>
-              {/*start pricing */}
-              <Text
-                style={{
-                  fontSize: RFValue(16, 580),
-                  fontFamily: "Poppins-Bold",
-                  color: "#000",
-                  fontWeight: "700",
-                }}
-              >
-                Total Cost
-              </Text>
-              <View
-                style={{
-                  width: "70%",
-                  backgroundColor: "#414143",
-                  borderRadius: 9,
-                  marginTop: 10,
-                  height: 50,
-                  justifyContent: "center",
-                  marginBottom: -10,
-                }}
-              >
-                <TextInput
-                  placeholder=" Please Enter Cost"
-                  style={{
-                    borderRadius: 10,
-                    width: "100%",
-                    paddingLeft: 10,
-                    fontSize: RFValue(15, 580),
-                    color: Colors.white,
-                  }}
-                  placeholderTextColor={"#fff"}
-                  value={price}
-                  keyboardType="numeric"
-                  maxLength={19}
-                />
-              </View>
-              {/*end pricing */}
-            </View>
+                <Typography style={{marginTop: 15}}  size={'heading3'}>Any specific details</Typography>
+            <View style={styles.InputView}>
+            <TextInput
+              multiline={true}
+              numberOfLines={5}
+              maxLength={500}
+              placeholder="Write your decription here....."
+              placeholderTextColor={"#fff"}
+              value={details}
+              onChangeText={setDetails}
+              style={styles.Input}
+            />
+          </View>
+            <Typography style={{marginTop: 15}} size={'heading3'}>Total Cost</Typography>
+
+          <View style={styles.TextInput}>
+            <Text style={styles.dolarText}>$</Text>
+            <TextInput style={styles.inputEmail} placeholderTextColor={"#fff"} value={price} keyboardType="numeric" maxLength={5} onChangeText={setPrice}/>
+          </View>
 
             <View style={{ marginVertical: 60 }}></View>
           </View>
         </ScrollView>
-      )}
-      <View
+      <Button
         style={{
-          width: "100%",
-          alignItems: "center",
-          justifyContent: "center",
-          backgroundColor: "#fff",
-          height: "14%",
-          marginBottom: 0,
-          bottom: 0,
-          position: "absolute",
+          marginVertical: 20
         }}
-      >
-        <Button
-          navigation={navigation}
-          loader={load}
-          label={"Done"}
-          disabled={!video || !videoTitle || !value || !price || !details}
-          onPress={() => {
-            if (!load) {
-              upLoadVideoInfo();
-            }
-          }}
+          label={"Upload"}
+          loader={isLoading}
+          disabled={!video || !videoTitle || !value || !price || !details || !cloudImageUrl || !cloudVideoUrl.length}
+          onPress={handleUploadVideo}
         />
-      </View>
-    </View>
+    </Container>
   );
 };
 
@@ -566,7 +408,7 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: "#ffffff",
     paddingTop: Platform.OS === "ios" ? 40 : 0,
-    paddingBottom: Platform.OS === "ios" ? 0 : 0,
+    paddingBottom: 0,
   },
   header: {
     width: "100%",
@@ -601,7 +443,7 @@ const styles = StyleSheet.create({
   btn: {
     padding: 10,
     margin: 10,
-    width: "90%",
+    width: "100%",
     borderRadius: 10,
     color: "#6698FF",
     backgroundColor: "#FF0000",
@@ -655,6 +497,47 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     paddingVertical: hp(1),
     paddingHorizontal: wp(1),
+  },
+  inputEmail: {
+    borderRadius: 10,
+    width: "100%",
+    paddingLeft: 10,
+    fontSize: RFValue(14, 580),
+    color: Colors.white,
+  },
+  TextInput: {
+    width: "100%",
+    alignSelf: "center",
+    backgroundColor: Colors.black,
+    borderRadius: 9,
+    marginTop: 5,
+    height: 50,
+    justifyContent: "center",
+    marginBottom: 40,
+    flexDirection: "row",
+  },
+  dolarText: {
+    marginLeft: 30,
+    color: Colors.white,
+    marginTop: 10,
+    fontSize: 20,
+  },
+  InputView: {
+    width: "100%",
+    backgroundColor: "#414143",
+    borderRadius: 8,
+    alignSelf: "center",
+    flexDirection: "column",
+    height: 130,
+    marginVertical: hp(1),
+  },
+  Input: {
+    height: 200,
+    textAlignVertical: "top",
+    fontFamily: "Poppins-Regular",
+    color: "#fff",
+    fontSize: RFValue(12, 580),
+    left: 10,
   },
 });
 

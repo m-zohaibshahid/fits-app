@@ -11,17 +11,13 @@ import {
   ToastAndroid,
   Image,
   ScrollView,
-  ActivityIndicator,
   Platform,
-  Alert,
-  Clipboard
-} from "react-native";
+  Alert} from "react-native";
 import AntDesign from "react-native-vector-icons/AntDesign";
 import EvilIcons from "react-native-vector-icons/EvilIcons";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import Entypo from "react-native-vector-icons/Entypo";
 import Fontisto from "react-native-vector-icons/Fontisto";
-import Ionicons from "react-native-vector-icons/Ionicons";
 import {
   RFValue
 } from "react-native-responsive-fontsize";
@@ -35,22 +31,16 @@ import {
 import {
   useSelector
 } from "react-redux";
-import {
-  UserDataInterface,
-  UserDetail
-} from "../../interfaces";
-import {
-  NavigationSwitchProp
-} from "react-navigation";
-import {
-  getUserAsyncStroage
-} from "../../utils/async-storage";
+import { UserDataInterface, UserDetail } from "../../interfaces";
+import { NavigationSwitchProp } from "react-navigation";
+import { getUserAsyncStroage } from "../../utils/async-storage";
 import TextInput from "../../Components/Input";
 import Button from "../../Components/Button";
 import Colors from "../../constants/Colors";
 import Header from "../../Components/Header";
 import Typography from "../../Components/typography/text";
 import Container from "../../Components/Container";
+import { onLogout } from "../../utils/logout";
 interface Props {
   navigation: NavigationSwitchProp;
 }
@@ -127,10 +117,6 @@ const Account: React.FC < Props > = ({
                   Alert.alert("Something Went Wrong");
               });
       }
-  };
-  const logOut = async () => {
-      await AsyncStorage.clear();
-      navigation.navigate("logoutNow");
   };
   return (<Container>
     <Header label='Settings' lableStyle={{fontSize: 20}} />
@@ -633,9 +619,7 @@ const Account: React.FC < Props > = ({
               backgroundColor: "#000",
               borderRadius: 14,
             }}
-            onPress={() => {
-              logOut();
-            }}
+            onPress={onLogout}
           >
             <View style={{ width: "100%", alignItems: "center" }}>
               <View style={{ width: "90%", alignItems: "center" }}>

@@ -38,7 +38,7 @@ const Classes = () => {
     return trainerSession?.data.session.filter((item: SessionItemType) => {
       return item.session_title.toLowerCase().includes(searchText.toLowerCase())
     })
-  }, [trainerSession])
+  }, [trainerSession, refetchSessions])
 
   useEffect(() => {
     navigation.addListener('focus', () => {
@@ -84,7 +84,7 @@ const Classes = () => {
               }}
             />
       </View>
-      {!filteredClasses.length ? <Typography style={{marginTop: 50}} align="center">---You dont have any class yet---</Typography> : 
+      {!filteredClasses?.length ? <Typography style={{marginTop: 50}} align="center">---You dont have any class yet---</Typography> : 
         filteredClasses?.map((item: SessionItemType) => {
         return     <View style={styles.marchmainview}>
         <View style={styles.marchmainview2}>

@@ -10,16 +10,13 @@ import AccountUpdate from "../Screens/AuthScreens/AccountUpdate";
 import TrainerVerification from "../Screens/TrainerScreens/TrainerVerification";
 import UpdateProfessioninfo from "../Screens/AuthScreens/UpdateProfessioninfo";
 import ChatBox from "../Screens/TraineeScreens/ChatBox";
-
 import TrainerTabb from "../Screens/TrainerScreens/TrainerBottomTabScreen";
 import CreateBookSession from "../Screens/TrainerScreens/CreateBookSessionScreen";
 import CreateRecorderClass from "../Screens/TrainerScreens/CreateRecorderSession";
 import VideoCreate from "../Screens/TrainerScreens/VideoCreateScreen";
-import EnterChatTrainer from "../Screens/TrainerScreens/EnterChatScreen";
 import TrainerPayment from "../Screens/TrainerScreens/TrainerPaymentScreen";
 import TrainerWallet from "../Screens/TrainerScreens/WalletScreen";
 import TrainerCreateCard from "../Screens/TrainerScreens/CreateCardScreen";
-
 import TraineeTabb from "../Screens/TraineeScreens/TraineeBottomTabScreen";
 import TrainerDetail from "../Screens/TraineeScreens/TrainerDetail";
 import BookSessionPayment from "../Screens/TraineeScreens/BookSessionPayment";
@@ -45,7 +42,6 @@ const AuthenticatedStack = () => (
     <Stack.Screen name="CreateRecorderClass" component={CreateRecorderClass} options={{ headerShown: false }} />
     <Stack.Screen name="TrainerPayment" component={TrainerPayment} options={{ headerShown: false }} />
     <Stack.Screen name="VideoCreate" component={VideoCreate} options={{ headerShown: false }} />
-    <Stack.Screen name="EnterChatTrainer" component={EnterChatTrainer} options={{ headerShown: false }} />
     <Stack.Screen name="ChatBox" component={ChatBox} options={{ headerShown: false }} />
     <Stack.Screen name="TrainerWallet" component={TrainerWallet} options={{ headerShown: false }} />
     <Stack.Screen name="TrainerCreateCard" component={TrainerCreateCard} options={{ headerShown: false }} />

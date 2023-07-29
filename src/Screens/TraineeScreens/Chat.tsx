@@ -13,6 +13,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { MessageInterface, UserDetail } from "../../interfaces";
 import { MessageState, clearUnReadMessages } from "../../slice/messages.slice";
 import { clearUnReadMessageFromAsyncStorage } from "../../utils/async-storage";
+import Header from "../../Components/Header";
 
 interface PropsInterface {
   navigation: NavigationSwitchProp;
@@ -50,25 +51,7 @@ const Chat = ({ navigation }: PropsInterface) => {
 
   return (
     <Container>
-      <View style={styles.header}>
-        <Typography style={{
-          marginTop: 10,
-          marginBottom: 20,
-          marginLeft: 10,
-          fontSize: 40
-        }}>Chat</Typography>
-          <View style={styles.searchBarMainView}>
-          <EvilIcons name="search" size={30} style={{ color: "#fff" }} />
-              <TextInput
-                numberOfLines={1}
-                placeholder="Search... "
-                placeholderTextColor="#fff"
-                value={searchText}
-                onChangeText={setSearchText}
-                style={styles.searchBarTextInput}
-              />
-          </View>
-        </View>
+      <Header label="Chat with others" />
       <ScrollView showsVerticalScrollIndicator={false}>
         <View style={styles.main}>
           <View style={styles.topView}>

@@ -25,3 +25,6 @@ export const getUnReadMessagesFromAsyncStorage = async (): Promise<boolean> => {
 export const clearUnReadMessageFromAsyncStorage = async () => {
     AsyncStorage.removeItem('unReadMessage');
 };
+export const clearAsyncStorage = async () => {
+    AsyncStorage.clear()
+};

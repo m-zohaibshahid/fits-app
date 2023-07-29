@@ -387,6 +387,17 @@
 205-->[com.google.android.gms:play-services-basement:18.1.0] /Users/zohaib.shahid/.gradle/caches/transforms-3/67ca49f2262aa7a0144e62f9d757168e/transformed/jetified-play-services-basement-18.1.0/AndroidManifest.xml:22:13-58
 206            android:value="@integer/google_play_services_version" />
 206-->[com.google.android.gms:play-services-basement:18.1.0] /Users/zohaib.shahid/.gradle/caches/transforms-3/67ca49f2262aa7a0144e62f9d757168e/transformed/jetified-play-services-basement-18.1.0/AndroidManifest.xml:23:13-66
-207    </application>
-208
-209</manifest>
+207
+208        <activity
+208-->[com.jakewharton:process-phoenix:2.1.2] /Users/zohaib.shahid/.gradle/caches/transforms-3/0befe56332c2f681723b611d6c9dd607/transformed/jetified-process-phoenix-2.1.2/AndroidManifest.xml:8:9-12:75
+209            android:name="com.jakewharton.processphoenix.ProcessPhoenix"
+209-->[com.jakewharton:process-phoenix:2.1.2] /Users/zohaib.shahid/.gradle/caches/transforms-3/0befe56332c2f681723b611d6c9dd607/transformed/jetified-process-phoenix-2.1.2/AndroidManifest.xml:9:13-73
+210            android:exported="false"
+210-->[com.jakewharton:process-phoenix:2.1.2] /Users/zohaib.shahid/.gradle/caches/transforms-3/0befe56332c2f681723b611d6c9dd607/transformed/jetified-process-phoenix-2.1.2/AndroidManifest.xml:10:13-37
+211            android:process=":phoenix"
+211-->[com.jakewharton:process-phoenix:2.1.2] /Users/zohaib.shahid/.gradle/caches/transforms-3/0befe56332c2f681723b611d6c9dd607/transformed/jetified-process-phoenix-2.1.2/AndroidManifest.xml:11:13-39
+212            android:theme="@android:style/Theme.Translucent.NoTitleBar" />
+212-->[com.jakewharton:process-phoenix:2.1.2] /Users/zohaib.shahid/.gradle/caches/transforms-3/0befe56332c2f681723b611d6c9dd607/transformed/jetified-process-phoenix-2.1.2/AndroidManifest.xml:12:13-72
+213    </application>
+214
+215</manifest>

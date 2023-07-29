@@ -3,7 +3,7 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import { widthPercentageToDP as wp } from 'react-native-responsive-screen';
 import { Platform, StyleSheet, View } from 'react-native';
-import MyVideos from '../MyVideosScreen/index';
+import TrainerVideoScreen from '../TrainerVideoScreen';
 import AccountScreen from '../AccountScreen/index';
 import Home from '../HomeScreen';
 import Chat from '../../TraineeScreens/Chat';
@@ -64,8 +64,8 @@ const TrainerBottomTabScreen = () => {
       },
     }}>
       <Tab.Screen name="Home" component={Home} options={{ headerShown: false }} />
-      <Tab.Screen name="Video" component={MyVideos} options={{ headerShown: false }} />
-      <Tab.Screen name="Chat" component={Chat} options={{ title: "Chat" }} />
+      <Tab.Screen name="Video" component={TrainerVideoScreen} options={{ headerShown: false }} />
+      <Tab.Screen name="Chat" component={Chat} options={{ headerShown: false }} />
       <Tab.Screen name="Account" component={AccountScreen} options={{ headerShown: false }} />
   </Tab.Navigator>
   )

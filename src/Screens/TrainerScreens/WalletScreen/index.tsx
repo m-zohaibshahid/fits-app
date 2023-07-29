@@ -8,42 +8,16 @@ import Button from "../../../Components/Button";
 import { url } from "../../../constants/url";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { NavigationSwitchProp } from "react-navigation";
+import { UserDetail } from "../../../interfaces";
+import { useSelector } from "react-redux";
 interface Props {
   navigation: NavigationSwitchProp;
 }
 const WalletScreen: React.FC<Props> = ({ navigation }) => {
   const [details, setDetails] = useState(false);
-  const [load, setLoad] = useState(false);
+  const { userInfo } = useSelector((state: { fitsStore: Partial<UserDetail> }) => state.fitsStore);
 
-  const [email, setEmail] = useState("");
-  const [cardData, setCardData] = useState();
-  const userMe = async () => {
-    setLoad(true);
-    const userData = await AsyncStorage.getItem("userData");
-    let userDatax = JSON.parse(userData);
 
-    if (userDatax) {
-      await fetch(`${url}/user/me/${userDatax?.data?._id}`, {
-        method: "GET",
-        headers: {
-          Accept: "application/json",
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${userDatax?.access_token}`,
-        },
-      })
-        .then((res) => res.json())
-        .then((res2) => {
-          if (res2?.success === true) {
-            getStripeCard(res2?.stripe?.customer.id);
-            setEmail(res2?.user?.email);
-          } else {
-          }
-        })
-        .catch((error) => {
-          setLoad(false);
-        });
-    }
-  };
 
   const getStripeCard = async (id: string) => {
     setLoad(true);
@@ -72,7 +46,7 @@ const WalletScreen: React.FC<Props> = ({ navigation }) => {
     }
   };
 
-  const Payout = async () => {
+ /*  const Payout = async () => {
     const userData = await AsyncStorage.getItem("userData");
     let userDatax = JSON.parse(userData);
     setLoad(true);
@@ -99,20 +73,14 @@ const WalletScreen: React.FC<Props> = ({ navigation }) => {
           text1: "Something went wrong",
         });
       });
-  };
+  }; */
 
   // Effects
-  useEffect(() => {
-    navigation.addListener("focus", () => {
-      userMe();
-    });
-  }, []);
+  // if (load) return <ActivityIndicator />
+
   return (
     <View style={styles.container}>
-      <Header label={"Wallet"} navigation={navigation} />
-      {load ? (
-        <ActivityIndicator color="#000" size="large" />
-      ) : (
+      <Header label={"Wallet"} />
         <View style={styles.container}>
           <ScrollView showsVerticalScrollIndicator={false}>
             {/*start Totale */}
@@ -128,7 +96,7 @@ const WalletScreen: React.FC<Props> = ({ navigation }) => {
                         fontFamily: "Poppins-Bold",
                       }}
                     >
-                      $ {cardData?.balance}
+                      $ {}
                     </Text>
                   </View>
                 </View>
@@ -278,7 +246,6 @@ const WalletScreen: React.FC<Props> = ({ navigation }) => {
             <View style={styles.TopView}>{<Button label={"Withdraw Funds"} onPress={() => navigation.navigate("WalletForTrainee")} />}</View>
           </View>
         </View>
-      )}
     </View>
   );
 };

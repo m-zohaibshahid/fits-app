@@ -104,6 +104,14 @@ export const fitsApi = createApi({
       }),
     }),
 
+    uploadVideo: builder.mutation<any, Partial<any>>({
+      query: (body) => ({
+        url: "/video",
+        method: "POST",
+        body: body,
+      }),
+    }),
+
     fitnessLevelChoose: builder.mutation<any, Partial<any>>({
       query: (body) => ({
         url: `/user/fitness/choose`,
@@ -210,6 +218,10 @@ export const fitsApi = createApi({
       query: (id) => `/session/trainer/${id}`,
     }),
 
+    getMyAllCreatedVideos: builder.query<any, any>({
+      query: () => `/video`,
+    }),
+
     getMyBookedClasses: builder.query<any, string>({
       query: (id) => `/book-a-session/trainee/${id}`,
     }),
@@ -262,6 +274,7 @@ export const {
   useGetUserMeQuery,
   useGetUsersQuery,
   useTrainerSessionQuery,
+  useGetMyAllCreatedVideosQuery,
   usePersonalInfoCreateMutation,
   useTrainerProfessionalInfoCreateMutation,
   useFitnessLevelChooseMutation,
@@ -273,5 +286,6 @@ export const {
   useStripeCustomerGetQuery,
   useGetRoomMessagesQuery,
   useSendMessageMutation,
-  useGetMyBookedClassesQuery
+  useGetMyBookedClassesQuery,
+  useUploadVideoMutation
 } = fitsApi;

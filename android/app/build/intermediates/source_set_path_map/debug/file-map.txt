@@ -50,7 +50,8 @@ com.awesomeproject.app-packaged_res-48 /Users/zohaib.shahid/Downloads/works/fits
 com.awesomeproject.app-packaged_res-49 /Users/zohaib.shahid/Downloads/works/fits-ts/node_modules/react-native-gesture-handler/android/build/intermediates/packaged_res/debug
 com.awesomeproject.app-packaged_res-50 /Users/zohaib.shahid/Downloads/works/fits-ts/node_modules/react-native-image-crop-picker/android/build/intermediates/packaged_res/debug
 com.awesomeproject.app-packaged_res-51 /Users/zohaib.shahid/Downloads/works/fits-ts/node_modules/react-native-maps/android/build/intermediates/packaged_res/debug
-com.awesomeproject.app-packaged_res-52 /Users/zohaib.shahid/Downloads/works/fits-ts/node_modules/react-native-safe-area-context/android/build/intermediates/packaged_res/debug
-com.awesomeproject.app-packaged_res-53 /Users/zohaib.shahid/Downloads/works/fits-ts/node_modules/react-native-screens/android/build/intermediates/packaged_res/debug
-com.awesomeproject.app-packaged_res-54 /Users/zohaib.shahid/Downloads/works/fits-ts/node_modules/react-native-vector-icons/android/build/intermediates/packaged_res/debug
-com.awesomeproject.app-packaged_res-55 /Users/zohaib.shahid/Downloads/works/fits-ts/node_modules/react-native-video/android/build/intermediates/packaged_res/debug
+com.awesomeproject.app-packaged_res-52 /Users/zohaib.shahid/Downloads/works/fits-ts/node_modules/react-native-restart/android/build/intermediates/packaged_res/debug
+com.awesomeproject.app-packaged_res-53 /Users/zohaib.shahid/Downloads/works/fits-ts/node_modules/react-native-safe-area-context/android/build/intermediates/packaged_res/debug
+com.awesomeproject.app-packaged_res-54 /Users/zohaib.shahid/Downloads/works/fits-ts/node_modules/react-native-screens/android/build/intermediates/packaged_res/debug
+com.awesomeproject.app-packaged_res-55 /Users/zohaib.shahid/Downloads/works/fits-ts/node_modules/react-native-vector-icons/android/build/intermediates/packaged_res/debug
+com.awesomeproject.app-packaged_res-56 /Users/zohaib.shahid/Downloads/works/fits-ts/node_modules/react-native-video/android/build/intermediates/packaged_res/debug

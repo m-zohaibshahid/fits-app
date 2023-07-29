@@ -18,6 +18,7 @@ MERGED from [:react-native-geolocation-service] /Users/zohaib.shahid/Downloads/w
 MERGED from [:react-native-gesture-handler] /Users/zohaib.shahid/Downloads/works/fits-ts/node_modules/react-native-gesture-handler/android/build/intermediates/merged_manifest/debug/AndroidManifest.xml:2:1-9:12
 MERGED from [:react-native-image-crop-picker] /Users/zohaib.shahid/Downloads/works/fits-ts/node_modules/react-native-image-crop-picker/android/build/intermediates/merged_manifest/debug/AndroidManifest.xml:2:1-33:12
 MERGED from [:react-native-maps] /Users/zohaib.shahid/Downloads/works/fits-ts/node_modules/react-native-maps/android/build/intermediates/merged_manifest/debug/AndroidManifest.xml:2:1-9:12
+MERGED from [:react-native-restart] /Users/zohaib.shahid/Downloads/works/fits-ts/node_modules/react-native-restart/android/build/intermediates/merged_manifest/debug/AndroidManifest.xml:2:1-9:12
 MERGED from [:react-native-safe-area-context] /Users/zohaib.shahid/Downloads/works/fits-ts/node_modules/react-native-safe-area-context/android/build/intermediates/merged_manifest/debug/AndroidManifest.xml:2:1-9:12
 MERGED from [:react-native-screens] /Users/zohaib.shahid/Downloads/works/fits-ts/node_modules/react-native-screens/android/build/intermediates/merged_manifest/debug/AndroidManifest.xml:2:1-9:12
 MERGED from [:react-native-vector-icons] /Users/zohaib.shahid/Downloads/works/fits-ts/node_modules/react-native-vector-icons/android/build/intermediates/merged_manifest/debug/AndroidManifest.xml:2:1-9:12
@@ -96,6 +97,7 @@ MERGED from [androidx.arch.core:core-runtime:2.1.0] /Users/zohaib.shahid/.gradle
 MERGED from [com.github.henninghall:numberpickerview:v1.1.5] /Users/zohaib.shahid/.gradle/caches/transforms-3/7eea964a2059b2c870a9ce9145cce350/transformed/jetified-numberpickerview-v1.1.5/AndroidManifest.xml:2:1-11:12
 MERGED from [net.time4j:time4j-android:4.8-2021a] /Users/zohaib.shahid/.gradle/caches/transforms-3/7bb4b03d5cd81eb072f494acc57ebade/transformed/jetified-time4j-android-4.8-2021a/AndroidManifest.xml:2:1-13:12
 MERGED from [com.google.maps.android:android-maps-utils:3.4.0] /Users/zohaib.shahid/.gradle/caches/transforms-3/3cccd6753d2fedd81f73972015f35451/transformed/jetified-android-maps-utils-3.4.0/AndroidManifest.xml:2:1-15:12
+MERGED from [com.jakewharton:process-phoenix:2.1.2] /Users/zohaib.shahid/.gradle/caches/transforms-3/0befe56332c2f681723b611d6c9dd607/transformed/jetified-process-phoenix-2.1.2/AndroidManifest.xml:2:1-15:12
 MERGED from [com.facebook.fresco:fbcore:2.6.0] /Users/zohaib.shahid/.gradle/caches/transforms-3/68bcfb91eaf09d5b3ad76e71e3371ec2/transformed/jetified-fbcore-2.6.0/AndroidManifest.xml:2:1-9:12
 MERGED from [androidx.annotation:annotation-experimental:1.1.0] /Users/zohaib.shahid/.gradle/caches/transforms-3/2c406cc44c7e51a6483579314a113f0f/transformed/jetified-annotation-experimental-1.1.0/AndroidManifest.xml:17:1-24:12
 INJECTED from /Users/zohaib.shahid/Downloads/works/fits-ts/android/app/src/debug/AndroidManifest.xml:2:1-13:12
@@ -185,6 +187,8 @@ MERGED from [net.time4j:time4j-android:4.8-2021a] /Users/zohaib.shahid/.gradle/c
 MERGED from [net.time4j:time4j-android:4.8-2021a] /Users/zohaib.shahid/.gradle/caches/transforms-3/7bb4b03d5cd81eb072f494acc57ebade/transformed/jetified-time4j-android-4.8-2021a/AndroidManifest.xml:11:5-20
 MERGED from [com.google.maps.android:android-maps-utils:3.4.0] /Users/zohaib.shahid/.gradle/caches/transforms-3/3cccd6753d2fedd81f73972015f35451/transformed/jetified-android-maps-utils-3.4.0/AndroidManifest.xml:9:5-13:19
 MERGED from [com.google.maps.android:android-maps-utils:3.4.0] /Users/zohaib.shahid/.gradle/caches/transforms-3/3cccd6753d2fedd81f73972015f35451/transformed/jetified-android-maps-utils-3.4.0/AndroidManifest.xml:9:5-13:19
+MERGED from [com.jakewharton:process-phoenix:2.1.2] /Users/zohaib.shahid/.gradle/caches/transforms-3/0befe56332c2f681723b611d6c9dd607/transformed/jetified-process-phoenix-2.1.2/AndroidManifest.xml:7:5-13:19
+MERGED from [com.jakewharton:process-phoenix:2.1.2] /Users/zohaib.shahid/.gradle/caches/transforms-3/0befe56332c2f681723b611d6c9dd607/transformed/jetified-process-phoenix-2.1.2/AndroidManifest.xml:7:5-13:19
 	android:appComponentFactory
 		ADDED from [androidx.core:core:1.7.0] /Users/zohaib.shahid/.gradle/caches/transforms-3/3994986e4b6f29f228dfe8fb9122f0d7/transformed/core-1.7.0/AndroidManifest.xml:24:18-86
 	android:label
@@ -271,6 +275,8 @@ MERGED from [:react-native-image-crop-picker] /Users/zohaib.shahid/Downloads/wor
 MERGED from [:react-native-image-crop-picker] /Users/zohaib.shahid/Downloads/works/fits-ts/node_modules/react-native-image-crop-picker/android/build/intermediates/merged_manifest/debug/AndroidManifest.xml:5:5-7:41
 MERGED from [:react-native-maps] /Users/zohaib.shahid/Downloads/works/fits-ts/node_modules/react-native-maps/android/build/intermediates/merged_manifest/debug/AndroidManifest.xml:5:5-7:41
 MERGED from [:react-native-maps] /Users/zohaib.shahid/Downloads/works/fits-ts/node_modules/react-native-maps/android/build/intermediates/merged_manifest/debug/AndroidManifest.xml:5:5-7:41
+MERGED from [:react-native-restart] /Users/zohaib.shahid/Downloads/works/fits-ts/node_modules/react-native-restart/android/build/intermediates/merged_manifest/debug/AndroidManifest.xml:5:5-7:41
+MERGED from [:react-native-restart] /Users/zohaib.shahid/Downloads/works/fits-ts/node_modules/react-native-restart/android/build/intermediates/merged_manifest/debug/AndroidManifest.xml:5:5-7:41
 MERGED from [:react-native-safe-area-context] /Users/zohaib.shahid/Downloads/works/fits-ts/node_modules/react-native-safe-area-context/android/build/intermediates/merged_manifest/debug/AndroidManifest.xml:5:5-7:41
 MERGED from [:react-native-safe-area-context] /Users/zohaib.shahid/Downloads/works/fits-ts/node_modules/react-native-safe-area-context/android/build/intermediates/merged_manifest/debug/AndroidManifest.xml:5:5-7:41
 MERGED from [:react-native-screens] /Users/zohaib.shahid/Downloads/works/fits-ts/node_modules/react-native-screens/android/build/intermediates/merged_manifest/debug/AndroidManifest.xml:5:5-7:41
@@ -427,6 +433,8 @@ MERGED from [net.time4j:time4j-android:4.8-2021a] /Users/zohaib.shahid/.gradle/c
 MERGED from [net.time4j:time4j-android:4.8-2021a] /Users/zohaib.shahid/.gradle/caches/transforms-3/7bb4b03d5cd81eb072f494acc57ebade/transformed/jetified-time4j-android-4.8-2021a/AndroidManifest.xml:7:5-9:41
 MERGED from [com.google.maps.android:android-maps-utils:3.4.0] /Users/zohaib.shahid/.gradle/caches/transforms-3/3cccd6753d2fedd81f73972015f35451/transformed/jetified-android-maps-utils-3.4.0/AndroidManifest.xml:5:5-7:41
 MERGED from [com.google.maps.android:android-maps-utils:3.4.0] /Users/zohaib.shahid/.gradle/caches/transforms-3/3cccd6753d2fedd81f73972015f35451/transformed/jetified-android-maps-utils-3.4.0/AndroidManifest.xml:5:5-7:41
+MERGED from [com.jakewharton:process-phoenix:2.1.2] /Users/zohaib.shahid/.gradle/caches/transforms-3/0befe56332c2f681723b611d6c9dd607/transformed/jetified-process-phoenix-2.1.2/AndroidManifest.xml:5:5-44
+MERGED from [com.jakewharton:process-phoenix:2.1.2] /Users/zohaib.shahid/.gradle/caches/transforms-3/0befe56332c2f681723b611d6c9dd607/transformed/jetified-process-phoenix-2.1.2/AndroidManifest.xml:5:5-44
 MERGED from [com.facebook.fresco:fbcore:2.6.0] /Users/zohaib.shahid/.gradle/caches/transforms-3/68bcfb91eaf09d5b3ad76e71e3371ec2/transformed/jetified-fbcore-2.6.0/AndroidManifest.xml:5:5-7:41
 MERGED from [com.facebook.fresco:fbcore:2.6.0] /Users/zohaib.shahid/.gradle/caches/transforms-3/68bcfb91eaf09d5b3ad76e71e3371ec2/transformed/jetified-fbcore-2.6.0/AndroidManifest.xml:5:5-7:41
 MERGED from [androidx.annotation:annotation-experimental:1.1.0] /Users/zohaib.shahid/.gradle/caches/transforms-3/2c406cc44c7e51a6483579314a113f0f/transformed/jetified-annotation-experimental-1.1.0/AndroidManifest.xml:20:5-22:41
@@ -779,3 +787,13 @@ ADDED from [androidx.lifecycle:lifecycle-process:2.4.0] /Users/zohaib.shahid/.gr
 		ADDED from [androidx.lifecycle:lifecycle-process:2.4.0] /Users/zohaib.shahid/.gradle/caches/transforms-3/afe3a0cc82c76a7c864d2efd8324d92e/transformed/jetified-lifecycle-process-2.4.0/AndroidManifest.xml:33:17-49
 	android:name
 		ADDED from [androidx.lifecycle:lifecycle-process:2.4.0] /Users/zohaib.shahid/.gradle/caches/transforms-3/afe3a0cc82c76a7c864d2efd8324d92e/transformed/jetified-lifecycle-process-2.4.0/AndroidManifest.xml:32:17-78
+activity#com.jakewharton.processphoenix.ProcessPhoenix
+ADDED from [com.jakewharton:process-phoenix:2.1.2] /Users/zohaib.shahid/.gradle/caches/transforms-3/0befe56332c2f681723b611d6c9dd607/transformed/jetified-process-phoenix-2.1.2/AndroidManifest.xml:8:9-12:75
+	android:process
+		ADDED from [com.jakewharton:process-phoenix:2.1.2] /Users/zohaib.shahid/.gradle/caches/transforms-3/0befe56332c2f681723b611d6c9dd607/transformed/jetified-process-phoenix-2.1.2/AndroidManifest.xml:11:13-39
+	android:exported
+		ADDED from [com.jakewharton:process-phoenix:2.1.2] /Users/zohaib.shahid/.gradle/caches/transforms-3/0befe56332c2f681723b611d6c9dd607/transformed/jetified-process-phoenix-2.1.2/AndroidManifest.xml:10:13-37
+	android:theme
+		ADDED from [com.jakewharton:process-phoenix:2.1.2] /Users/zohaib.shahid/.gradle/caches/transforms-3/0befe56332c2f681723b611d6c9dd607/transformed/jetified-process-phoenix-2.1.2/AndroidManifest.xml:12:13-72
+	android:name
+		ADDED from [com.jakewharton:process-phoenix:2.1.2] /Users/zohaib.shahid/.gradle/caches/transforms-3/0befe56332c2f681723b611d6c9dd607/transformed/jetified-process-phoenix-2.1.2/AndroidManifest.xml:9:13-73

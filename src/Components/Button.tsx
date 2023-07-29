@@ -26,7 +26,7 @@ const styles = StyleSheet.create({
   MainResponsevieView: {
     width: "100%",
     backgroundColor: Colors.bgRedBtn,
-    paddingVertical: 20,
+    paddingVertical: 15,
     alignItems: "center",
     justifyContent: "center",
     color: Colors.infos,
