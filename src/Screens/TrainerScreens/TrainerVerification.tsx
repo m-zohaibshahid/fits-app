@@ -8,6 +8,8 @@ import Header from "../../Components/Header";
 import Button from "../../Components/Button";
 import { url } from "../../constants/url";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import Typography from "../../Components/typography/text";
+import Container from "../../Components/Container";
 
 const TrainerVerification = ({ navigation }) => {
   const GoBack = () => {
@@ -103,104 +105,34 @@ const TrainerVerification = ({ navigation }) => {
           })
           .catch((error) => {
             setLoad(false);
-            Alert.alert("Something Went Wrong");
           });
     }
   };
 
   return (
-    <View style={styles.container}>
-      <View style={styles.header}>
-        <View style={styles.fixeheight}>
-          <Header navigation={navigation} onPress={GoBack} />
-        </View>
-        <View style={styles.fixeheight1}>
-          <View style={styles.TopView}>
-            <View style={styles.topView}>
-              <Text
-                style={{
-                  color: "#000000",
-                  fontSize: RFValue(20, 580),
-                  fontFamily: "Poppins-Bold",
-                }}
-              >
-                Verification Process
-              </Text>
-            </View>
-          </View>
-        </View>
-      </View>
-      <View style={{ width: "100%", alignItems: "center" }}>
-        <View style={{ width: "90%" }}>
-          <Text
-            style={{
-              fontSize: RFValue(12, 580),
-              color: "#000",
-              fontFamily: "Poppins-SemiBold",
-            }}
-          >
-            Upload Verification document
-          </Text>
-          <Text
-            style={{
-              fontSize: RFValue(10, 580),
-              color: "#000",
-              fontFamily: "Poppins-Regular",
-              textAlign: "justify",
-              marginBottom: 5,
-            }}
-          >
-            Kindly upload verification document picture it could be national identity card, Utility bill, Phone bill, Driving license etc.
-          </Text>
-        </View>
-      </View>
-
+    <Container>
+          <Header lableStyle={{marginBottom: 10}} label="Verification Process" subLabel="Kindly upload verification document picture it could be national identity card, Utility bill, Phone bill, Driving license etc." />
       <ScrollView showsVerticalScrollIndicator={false}>
         <View style={styles.TopView}>
-          {image === "" ? (
+          {!image ? (
+            <>
             <View
               style={{
-                width: "90%",
-                backgroundColor: "#979797",
-                height: 200,
-              }}
-            >
-              <View
-                style={{
                   width: "100%",
+                  borderRadius: 20,
+                padding: 20,
+                backgroundColor: "#979797",
+                flexDirection: 'column',
                   alignItems: "center",
-                  justifyContent: "center",
-                }}
+                marginBottom: 20  
+              }}
               >
-                <Text style={{ fontSize: RFValue(15, 580) }}>yogavideo.mp4</Text>
-                <Image source={Images.Mp4} marginTop={15} />
-
-                <Pressable
-                  style={{
-                    marginTop: 20,
-                    width: "35%",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    backgroundColor: "#FF0000",
-                    borderRadius: 10,
-                    paddingVertical: 10,
-                  }}
-                  onPress={() => {
-                    choosePhotoFromCamera();
-                  }}
-                >
-                  <Text
-                    style={{
-                      color: "#fff",
-                      fontFamily: "Poppins-Regular",
-                    }}
-                  >
-                    Drop file
-                  </Text>
-                </Pressable>
-              </View>
-            </View>
-          ) : (
+                <Typography size={'heading3'} style={{marginBottom: 20}}>yogavideo.mp4</Typography>
+                <Image  source={Images.Mp4} />
+                <Button style={{marginTop: 20}} variant="tini" label={"Drop file"} onPress={choosePhotoFromCamera} />    
+                </View>
+                </>
+            ) : (
             <View
               style={{
                 width: "100%",
@@ -224,20 +156,9 @@ const TrainerVerification = ({ navigation }) => {
             </View>
           )}
         </View>
-        <View style={{ width: "100%", alignItems: "center" }}>
-          <View style={{ width: "90%" }}>
-            <Text
-              style={{
-                fontSize: RFValue(12, 580),
-                color: "#000",
-                fontFamily: "Poppins-SemiBold",
-                marginTop: 10,
-              }}
-            >
+            <Typography size={'heading3'}>
               Reason for Verification
-            </Text>
-          </View>
-        </View>
+            </Typography>
         <View
           style={{
             width: "100%",
@@ -247,9 +168,9 @@ const TrainerVerification = ({ navigation }) => {
         >
           <View
             style={{
-              width: "90%",
+              width: "100%",
               backgroundColor: "#414143",
-              borderRadius: 8,
+              borderRadius: 12,
               flexDirection: "column",
               height: 130,
             }}
@@ -274,34 +195,13 @@ const TrainerVerification = ({ navigation }) => {
         </View>
         <View style={{ marginVertical: 10 }}></View>
       </ScrollView>
-      <View
-        style={{
-          width: "100%",
-          alignItems: "center",
-        }}
-      >
-        <View
-          style={{
-            width: "100%",
-            marginBottom: 0,
-            bottom: 0,
-            position: "absolute",
-          }}
-        >
           <Button
-            navigation={navigation}
+        label="Upload"
+        style={{marginBottom: 18}}
             disabled={!details || !cloudImageUrl}
-            label={load === true ? <ActivityIndicator size="small" color="#fff" /> : "Next"}
-            onPress={() => {
-              if (load === true) {
-              } else {
-                upLoadVideoInfo();
-              }
-            }}
+            onPress={upLoadVideoInfo}
           />
-        </View>
-      </View>
-    </View>
+    </Container>
   );
 };
 
@@ -335,7 +235,7 @@ const styles = StyleSheet.create({
   },
   topView: { width: "90%" },
   topView1: {
-    width: "90%",
+    width: "100%",
     alignItems: "center",
   },
   main: {
