@@ -20,6 +20,7 @@ const TraineeBottomTabScreen = () => {
   const {unReadMessages} = useSelector((state: { messages: Partial<MessageState> }) => state.messages);
   return (
     <Tab.Navigator
+    options={{ headerShown: false }}
       screenOptions={({ route }) => ({
         tabBarIcon: ({ color }) => {
           let iconName;

@@ -1,12 +1,8 @@
 import React, { useState } from "react";
 import {
-  Text,
   View,
-  TouchableOpacity,
   StyleSheet,
-  ScrollView,
 } from "react-native";
-import {  RFValue } from "react-native-responsive-fontsize";
 import ScheduledClasses from "./ScheduledClasses";
 import VideosForClasses from "./VideosForClasses";
 import Typography from "../../Components/typography/text";

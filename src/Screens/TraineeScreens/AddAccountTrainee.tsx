@@ -1,13 +1,13 @@
 import React, { useState, useEffect } from "react";
-import { Text, View, StyleSheet, TextInput, ScrollView, ToastAndroid, ActivityIndicator, TouchableOpacity, Platform } from "react-native";
+import { Text, View, StyleSheet, TextInput, ScrollView, ToastAndroid, ActivityIndicator, TouchableOpacity, Platform, Alert } from "react-native";
 import { RFValue } from "react-native-responsive-fontsize";
 import Header from "../../Components/Header";
 import Colors from "../../constants/Colors";
 import Button from "../../Components/Button";
 import { url } from "../../constants/url";
 import { useGetUserMeQuery } from "../../slice/FitsApi.slice";
-import { getUserAsyncStroage } from "../../common/fetchApi";
 import { NavigationSwitchProp } from "react-navigation";
+import { getUserAsyncStroage } from "../../utils/async-storage";
 interface Props {
   navigation: NavigationSwitchProp;
 }
