@@ -1,18 +1,17 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable prettier/prettier */
-import React, {useState, useEffect} from 'react';
+import React, {useEffect, useState} from 'react';
 import {
   Text,
   View,
   TouchableOpacity,
   StyleSheet,
   Image,
-  ToastAndroid,
   ScrollView,
-  ActivityIndicator,
   Pressable,
   Platform,
 } from 'react-native';
+import Geocoder from 'react-native-geocoder';
 import AntDesign from 'react-native-vector-icons/AntDesign';
 import EvilIcons from 'react-native-vector-icons/EvilIcons';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
@@ -21,10 +20,7 @@ import Fontisto from 'react-native-vector-icons/Fontisto';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import {RFValue} from 'react-native-responsive-fontsize';
 import * as Images from '../../../constants/Images';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import {url} from '../../../constants/url';
 import FastImage from 'react-native-fast-image';
-import {Toast} from 'react-native-toast-message/lib/src/Toast';
 import { useUpdatePasswordMutation } from '../../../slice/FitsApi.slice';
 import Container from '../../../Components/Container';
 import Header from '../../../Components/Header';
@@ -36,6 +32,8 @@ import { NavigationSwitchProp } from 'react-navigation';
 import { useSelector } from 'react-redux';
 import { UserDetail } from '../../../interfaces';
 import { onLogout } from '../../../utils/logout';
+import { LocationState } from '../../../slice/location.slice';
+import { errorToast, successToast } from '../../../utils/toast';
 
 interface PropsInterface {
   navigation: NavigationSwitchProp
@@ -44,11 +42,34 @@ interface PropsInterface {
 const AccountScreen = ({navigation}: PropsInterface) => {
   const [ChangePassword, setChangePassword] = useState(false);
   const { userInfo } = useSelector((state: { fitsStore: Partial<UserDetail> }) => state.fitsStore);
-  const [userCurrentLocation, setUserCurrentLocation] = useState(''); // TODO: this should 
+  const { latitude, longitute } = useSelector((state: {location: LocationState}) => state.location);
+  const [userCurrentLocation, setUserCurrentLocation] = useState('');
   const [oldPassword, setOldPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
-  const [updatePassword] = useUpdatePasswordMutation();
+  const [updatePassword, {isLoading: passwordUpdateLoading}] = useUpdatePasswordMutation();
+
+  const getUserLocation = () => {
+    Geocoder.geocodePosition({
+      lat: latitude,
+      lng: longitute,
+    }).then((res) => {
+      if (res.length > 0) {
+        const address = res[0].formattedAddress;
+        setUserCurrentLocation(address);
+      } else {
+        setUserCurrentLocation('Location not available');
+      }
+    }).catch((error) => {
+      console.log('Error getting location: ', error.message);
+      setUserCurrentLocation('Location not available');
+    });
+  };
+
+  useEffect(() => {
+    getUserLocation();
+  }, []);
+
 
   const UpdatePassword = async () => {
       const body={
@@ -56,7 +77,12 @@ const AccountScreen = ({navigation}: PropsInterface) => {
         password: newPassword,
       }
       
-      await updatePassword({ id: userInfo?.user._id, ...body })
+    const result = await updatePassword({ id: userInfo?.user._id, data: body })
+    if (result.error) errorToast(result.error.data.message)
+    if (result.data) {
+      successToast('Password updated')
+      setChangePassword(false)
+    }
     }
 
   return (
@@ -106,35 +132,16 @@ const AccountScreen = ({navigation}: PropsInterface) => {
                 </Text>
               </View>
             </View>
-            <View style={{alignItems: 'center'}}>
-              <View
-                style={{
-                  width: '90%',
-                  alignItems: 'center',
-                  flexDirection: 'row',
-                }}>
-                <View
-                  style={{
-                    width: '6%',
-                    justifyContent: 'center',
-                  }}>
+            <View style={{alignItems: 'center',flexDirection: 'row', justifyContent: 'space-between', paddingVertical: 10, paddingHorizontal: 20}}>
                   <EvilIcons
                     name="location"
                     style={{color: '#000'}}
                     size={25}
                   />
-                </View>
-                <View style={{width: '94%'}}>
-                  <Text
-                    style={{
-                      fontSize: RFValue(12, 580),
-                      color: '#000',
-                    }}>
+          <Typography size={'medium'} style={{ marginLeft: 10}}>
                     {userCurrentLocation}
-                  </Text>
-                </View>
+                  </Typography>
               </View>
-            </View>
             <View style={{alignItems: 'center', marginTop: 10}}>
               <Pressable
                 onPress={() => navigation.navigate('TrainerVerification')}
@@ -363,7 +370,7 @@ const AccountScreen = ({navigation}: PropsInterface) => {
                           value={confirmPassword}
                           onChangeText={setConfirmPassword}
                 />
-                <Button style={{marginLeft: 'auto'}} variant="tini" label={"Change"} onPress={UpdatePassword} />
+                <Button loader={passwordUpdateLoading} style={{marginLeft: 'auto'}} variant="tini" label={"Change"} onPress={UpdatePassword} />
               </View>
             )}
             </View>
@@ -440,7 +447,7 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#ffffff',
     paddingTop: Platform.OS === 'ios' ? 40 : 0,
-    paddingBottom: Platform.OS === 'ios' ? 0 : 0,
+    paddingBottom: 0,
   },
   header: {
     width: '100%',

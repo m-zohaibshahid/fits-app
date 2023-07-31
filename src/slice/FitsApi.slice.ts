@@ -191,7 +191,7 @@ export const fitsApi = createApi({
     }),
 
     updatePassword: builder.mutation<void, Partial<any>>({
-      query: ({ id, ...data }) => ({
+      query: ({ id, data }) => ({
         url: `/profile/edit/password/${id}`,
         method: "PUT",
         body: data,

@@ -1,23 +1,20 @@
 import React, { useState, useEffect } from "react";
-import { Text, View, TouchableOpacity, Image, ScrollView, Alert, PermissionsAndroid, ToastAndroid, StyleSheet, Platform } from "react-native";
+import { Text, View, TouchableOpacity, Image, ScrollView, PermissionsAndroid, StyleSheet, Platform } from "react-native";
 import { widthPercentageToDP as wp } from "react-native-responsive-screen";
 import AntDesign from "react-native-vector-icons/AntDesign";
 import * as Images from "../../../constants/Images";
 import Classes from "../ClassesScreen";
 import Reviews from "../Reviews";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import Geolocation from "react-native-geolocation-service";
-import Geocoder from "react-native-geocoder";
 import FastImage from "react-native-fast-image";
-import { Toast } from "react-native-toast-message/lib/src/Toast";
-import { useGetUserMeQuery, useStripeCustomerMutation, useTrainerSessionQuery } from "../../../slice/FitsApi.slice";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { UserDetail } from "../../../interfaces";
 import { NavigationSwitchProp } from "react-navigation";
 import Typography from "../../../Components/typography/text";
 import Container from "../../../Components/Container";
 import Colors from "../../../constants/Colors";
 import { RFValue } from "react-native-responsive-fontsize";
+import { setLocationState } from "../../../slice/location.slice";
 
 interface Props {
   navigation: NavigationSwitchProp;
@@ -25,14 +22,10 @@ interface Props {
 
 const Home: React.FC<Props> = ({ navigation }) => {
   // Hooks
+  const dispatch = useDispatch()
   const { userInfo } = useSelector((state: { fitsStore: Partial<UserDetail> }) => state.fitsStore);
   const [classes, setClasses] = useState(true);
   const [reviews, setReviews] = useState(false);
-  const [superLong, setSuperLong] = useState(55.9754);
-  const [superLat, setSuperLat] = useState(21.4735);
-  const [stripeCustomer] = useStripeCustomerMutation();
-
-  // Functions
 
 
   const classestrueState = () => {
@@ -45,55 +38,31 @@ const Home: React.FC<Props> = ({ navigation }) => {
     setReviews(true);
   };
 
-  const setUserLocation = async (data: string) => {
-    await AsyncStorage.setItem("userLocation", JSON.stringify(data));
-  };
-
   const requestLocationPermission = async () => {
     try {
-      const granted = await PermissionsAndroid.request(PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION, {
-        title: "Location Access Required",
-        message: "This App needs to Access your location",
-        buttonPositive: "Allow Location",
-      });
-      if (granted === PermissionsAndroid.RESULTS.GRANTED) {
-        Geolocation.getCurrentPosition(
-          (position) => {
-            setSuperLong(position?.coords?.longitude);
-            setSuperLat(position?.coords?.latitude);
-            var pos = {
-              lat: position?.coords?.latitude,
-              lng: position?.coords?.longitude,
-            };
-
-            Geocoder.geocodePosition(pos).then(
-              (
-                res: {
-                  subLocality: string;
-                  locality: string;
-                  adminArea: string;
-                  country: string;
-                }[]
-              ) => {
-                setUserLocation(res[0].subLocality + " " + res[0].locality + " ," + res[0].adminArea + "-" + res[0].country);
-              }
-            );
-          },
-          (error) => {
-            console.error(error.code, error?.message);
-          },
-          { enableHighAccuracy: true, timeout: 15000, maximumAge: 10000 }
+      const granted = await PermissionsAndroid.request(
+        PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION
         );
-      }
-    } catch (error) {
-      console.error(error?.message);
-    }
-  };
-
-
+        if (granted === PermissionsAndroid.RESULTS.GRANTED) {
+          Geolocation.getCurrentPosition(
+            (position) => {
+              dispatch(setLocationState({ longitute: position?.coords?.longitude, latitude: position?.coords?.latitude}))
+            },
+            (error) => console.log("Error:", error.message),
+            { enableHighAccuracy: true, timeout: 20000, maximumAge: 1000 }
+            );
+          } else {
+            console.log("Location permission denied");
+          }
+        } catch (error) {
+          console.error(error.message);
+        }
+      };
+      
   useEffect(() => {
-    requestLocationPermission();
+      requestLocationPermission();
   }, []);
+
 
   return (
     <Container>
@@ -144,12 +113,7 @@ const Home: React.FC<Props> = ({ navigation }) => {
         <View style={styles.footerRect}>
           <TouchableOpacity
             activeOpacity={0.8}
-            onPress={() =>
-              navigation.navigate("CreateBookSession", {
-                superLong: superLong,
-                superLat: superLat,
-              })
-            }
+            onPress={() => navigation.navigate("CreateBookSession")}
             style={styles.addIconRect}
           >
             <AntDesign name="plus" color={"#fff"} size={wp(6)} />

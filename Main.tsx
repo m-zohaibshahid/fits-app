@@ -9,12 +9,13 @@ import { styles } from "./style";
 import { UnauthenticatedStack } from "./src/stacks/unauthenticated.stack";
 import AuthenticatedStack from "./src/stacks/authenticated.stack";
 import { setToken } from "./src/slice/token.slice";
-import { clearUnReadMessageFromAsyncStorage, getUnReadMessagesFromAsyncStorage, getUserAsyncStroage, getUserAsyncStroageToken, storeUnReadMessageInAsyncStorage } from "./src/utils/async-storage";
+import { clearAsyncStorage, clearUnReadMessageFromAsyncStorage, getUnReadMessagesFromAsyncStorage, getUserAsyncStroage, getUserAsyncStroageToken, storeUnReadMessageInAsyncStorage } from "./src/utils/async-storage";
 import { errorToast } from "./src/utils/toast";
 import { setUserInfo } from "./src/slice/FitsSlice.store";
 import useSocket from "./src/hooks/use-socket";
 import { UserDetail } from "./src/interfaces";
 import { clearUnReadMessages, setUnReadMessage } from "./src/slice/messages.slice";
+import { onLogout } from "./src/utils/logout";
 
 export const AuthContext = createContext({});
 
@@ -53,6 +54,7 @@ const App = () => {
       if (unreadMessagesExist) dispatch(setUnReadMessage())
       else dispatch(clearUnReadMessages())
     } catch (e) {
+      if (e?.message === 'unAuthorized') onLogout()
       errorToast(e?.message);
     }
   };

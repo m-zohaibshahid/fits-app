@@ -9,6 +9,7 @@ import {
   ActivityIndicator,
   TouchableOpacity,
   ScrollView,
+  Alert,
 } from 'react-native';
 import AntDesign from 'react-native-vector-icons/AntDesign';
 import { RFValue } from 'react-native-responsive-fontsize';
@@ -20,6 +21,7 @@ import { useGetMyAllCreatedVideosQuery } from '../../../slice/FitsApi.slice';
 import Typography from '../../../Components/typography/text';
 import { NavigationSwitchProp } from 'react-navigation';
 import Entypo from 'react-native-vector-icons/Entypo';
+import Button from '../../../Components/Button';
 
 interface PropsInterface {
   navigation: NavigationSwitchProp;
@@ -67,7 +69,7 @@ const TrainerVideoScreen = ({ navigation }: PropsInterface) => {
                 <View style={{
                   width: '100%',
                   flexDirection: 'column',
-                  marginVertical: 10
+                  marginVertical: 5
                 }}>
                   <Typography color='white' size={'regularText'}>
                     Trainer Name:
@@ -79,7 +81,7 @@ const TrainerVideoScreen = ({ navigation }: PropsInterface) => {
                 <View style={{
                   width: '100%',
                   flexDirection: 'column',
-                  marginVertical: 10
+                  marginVertical: 5
                 }}>
                   <Typography color='white' size={'regularText'}>
                     Class Rating:
@@ -95,7 +97,7 @@ const TrainerVideoScreen = ({ navigation }: PropsInterface) => {
                 <View style={{
                   width: '100%',
                   flexDirection: 'column',
-                  marginVertical: 10
+                  marginVertical: 5
                 }}>
                   <Typography color='white' size={'regularText'}>
                     Topic:
@@ -107,7 +109,7 @@ const TrainerVideoScreen = ({ navigation }: PropsInterface) => {
                 <View style={{
                   width: '100%',
                   flexDirection: 'column',
-                  marginVertical: 10
+                  marginVertical: 5
                 }}>
                   <Typography color='white' size={'regularText'}>
                     Duration:
@@ -119,7 +121,7 @@ const TrainerVideoScreen = ({ navigation }: PropsInterface) => {
                 <View style={{
                   width: '100%',
                   flexDirection: 'column',
-                  marginVertical: 10
+                  marginVertical: 5
                 }}>
                   <Typography color='white' size={'regularText'}>
                     Description:
@@ -127,7 +129,11 @@ const TrainerVideoScreen = ({ navigation }: PropsInterface) => {
                   <Typography color='white90' style={{marginLeft: 30, marginTop: 5}} size={'medium'}>
                     {item.video_details}
                   </Typography>
-                </View>
+                  </View>
+                  <View style={{flexDirection: 'row', justifyContent: 'space-around', marginTop: 20}}>
+                <Button  variant='tini' label='Delete' onPress={() => Alert.alert('Clicked')} />
+                    <Button style={{backgroundColor: '#3b3b3be3'}} variant='tini' label='Edit' onPress={() => Alert.alert('Clicked')} />
+                  </View>
               </View>
               </View>
             );

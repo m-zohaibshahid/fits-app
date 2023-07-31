@@ -1,39 +1,17 @@
-import React, {
-  useState,
-  useEffect
-} from "react";
-import {
-  Text,
-  View,
-  Pressable,
-  StyleSheet,
-  Modal,
-  ToastAndroid,
-  Image,
-  ScrollView,
-  Platform,
-  Alert} from "react-native";
+import React, { useState } from "react";
+import { Text, View, Pressable, StyleSheet, Modal, Image, ScrollView, Platform, Alert} from "react-native";
 import AntDesign from "react-native-vector-icons/AntDesign";
 import EvilIcons from "react-native-vector-icons/EvilIcons";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import Entypo from "react-native-vector-icons/Entypo";
 import Fontisto from "react-native-vector-icons/Fontisto";
-import {
-  RFValue
-} from "react-native-responsive-fontsize";
+import { RFValue } from "react-native-responsive-fontsize";
 import * as Images from "../../constants/Images";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import FastImage from "react-native-fast-image";
-import {
-  useGetUserMeQuery,
-  useUpdatePasswordMutation
-} from "../../slice/FitsApi.slice";
-import {
-  useSelector
-} from "react-redux";
-import { UserDataInterface, UserDetail } from "../../interfaces";
+import { useUpdatePasswordMutation} from "../../slice/FitsApi.slice";
+import { useSelector } from "react-redux";
+import { UserDetail } from "../../interfaces";
 import { NavigationSwitchProp } from "react-navigation";
-import { getUserAsyncStroage } from "../../utils/async-storage";
 import TextInput from "../../Components/Input";
 import Button from "../../Components/Button";
 import Colors from "../../constants/Colors";
@@ -41,83 +19,37 @@ import Header from "../../Components/Header";
 import Typography from "../../Components/typography/text";
 import Container from "../../Components/Container";
 import { onLogout } from "../../utils/logout";
+import { errorToast, successToast } from "../../utils/toast";
 interface Props {
   navigation: NavigationSwitchProp;
 }
-const Account: React.FC < Props > = ({
-  navigation
-}) => {
-  const [hidePass, setHidePass] = React.useState(true);
+
+const Account: React.FC < Props > = ({ navigation }) => {
   const [ChangePassword, setChangePassword] = useState(false);
   const [getLink, setGetLink] = useState(false);
   const [modalVisible, setModalVisible] = useState(false);
-  const [id, setId] = useState("");
-  const [userDatax, setUserDatax] = useState < {
-      data: UserDataInterface
-  } > ();
   const [userCurrentLocation, setUserCurrentLocation] = useState("");
   const [oldPassword, setOldPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
-  const {
-      userInfo
-  } = useSelector((state: {
-      fitsStore: Partial < UserDetail >
-  }) => state.fitsStore);
-  const {
-      data: userMeData,
-      isLoading: isLoading1,
-      error: error1
-  } = useGetUserMeQuery({});
-  const [updatePassword, {
-      isLoading,
-      error
-  }] = useUpdatePasswordMutation();
-  useEffect(() => {
-      navigation.addListener("focus", () => {
-          getUserInfo();
-      });
-  }, []);
-  const getUserInfo = async () => {
-      const userMeData = await getUserAsyncStroage();
-      setUserDatax(userMeData);
-      setId(userInfo?.user?._id ?? "");
-      const userLoc: string | null = await AsyncStorage.getItem("userLocation");
-      let userLocx = JSON.parse(userLoc ?? "");
-      setUserCurrentLocation(userLocx);
-  };
-  
+  const { userInfo } = useSelector((state: { fitsStore: Partial <UserDetail>}) => state.fitsStore);
+  const [updatePassword, { isLoading: isPasswordUpdateLoading }] = useUpdatePasswordMutation();
+
   const UpdatePassword = async () => {
-    if (oldPassword === "") {
-      ToastAndroid.show("Please Enter your old Password.", ToastAndroid.SHORT);
-    } else if (newPassword === "") {
-      ToastAndroid.show("Please Enter your new Password.", ToastAndroid.SHORT);
-    } else if (newPassword !== confirmPassword) {
-      ToastAndroid.show("Your password and confirmation password do not match.", ToastAndroid.SHORT);
-    } else {
-      const body = {
-        oldPassword: oldPassword,
-        password: newPassword,
-      };
-      await updatePassword({
-        id,
-                  ...body
-                })
-                // .unwrap()
-                .then((res2: any) => {
-                  if (res2?.data.success) {
-                    ToastAndroid.show("Password updated", ToastAndroid.LONG);
-                    setConfirmPassword("");
-                    setNewPassword("");
-                    setOldPassword("");
-                  } else {
-                      Alert.alert(res2?.data?.message);
-                  }
-              }).catch((error) => {
-                  Alert.alert("Something Went Wrong");
-              });
-      }
-  };
+    const body={
+      oldPassword: oldPassword,
+      password: newPassword,
+    }
+    
+  const result = await updatePassword({ id: userInfo?.user._id, data: body })
+  if (result.error) errorToast(result.error.data.message)
+  if (result.data) {
+    successToast('Password updated')
+    setChangePassword(false)
+  }
+  }
+    
+
   return (<Container>
     <Header label='Settings' lableStyle={{fontSize: 20}} />
     <ScrollView showsVerticalScrollIndicator={false}>
@@ -130,7 +62,7 @@ const Account: React.FC < Props > = ({
               alignItems: "center",
             }}
           >
-            {userMeData?.personal_info?.profileImage ? (
+            {userInfo?.personal_info?.profileImage ? (
               <FastImage
                 style={{
                   width: 165,
@@ -138,7 +70,7 @@ const Account: React.FC < Props > = ({
                   borderRadius: 200 / 2,
                 }}
                 source={{
-                  uri: `${userMeData?.personal_info?.profileImage}`,
+                  uri: `${userInfo?.personal_info?.profileImage}`,
                   headers: { Authorization: "someAuthToken" },
                   priority: FastImage.priority.normal,
                 }}
@@ -159,7 +91,7 @@ const Account: React.FC < Props > = ({
                 textTransform: "capitalize",
               }}
             >
-              {userMeData?.personal_info?.name}
+              {userInfo?.personal_info?.name}
             </Text>
           </View>
         </View>
@@ -255,7 +187,7 @@ const Account: React.FC < Props > = ({
                         textTransform: "capitalize",
                       }}
                     >
-                      {userMeData?.personal_info?.name}
+                      {userInfo?.personal_info?.name}
                     </Text>
                   </View>
                 </View>
@@ -285,7 +217,7 @@ const Account: React.FC < Props > = ({
                         fontFamily: "Poppins-Regular",
                       }}
                     >
-                      {userMeData?.user?.email}
+                      {userInfo?.user?.email}
                     </Text>
                   </View>
                 </View>
@@ -315,7 +247,7 @@ const Account: React.FC < Props > = ({
                         fontFamily: "Poppins-Regular",
                       }}
                     >
-                      {userMeData?.personal_info?.country}
+                      {userInfo?.personal_info?.country}
                     </Text>
                   </View>
                 </View>
@@ -345,7 +277,7 @@ const Account: React.FC < Props > = ({
                         fontFamily: "Poppins-Regular",
                       }}
                     >
-                      {userMeData?.personal_info?.state}
+                      {userInfo?.personal_info?.state}
                     </Text>
                   </View>
                 </View>
@@ -375,7 +307,7 @@ const Account: React.FC < Props > = ({
                         fontFamily: "Poppins-Regular",
                       }}
                     >
-                      {userMeData?.personal_info?.city}
+                      {userInfo?.personal_info?.city}
                     </Text>
                   </View>
                 </View>
@@ -405,7 +337,7 @@ const Account: React.FC < Props > = ({
                         fontFamily: "Poppins-Regular",
                       }}
                     >
-                      {userMeData?.personal_info?.gender}
+                      {userInfo?.personal_info?.gender}
                     </Text>
                   </View>
                 </View>
@@ -435,7 +367,7 @@ const Account: React.FC < Props > = ({
                         fontFamily: "Poppins-Regular",
                       }}
                     >
-                      {userMeData?.user?.fitness_level?.key}
+                      {userInfo?.user?.fitness_level?.key}
                     </Text>
                   </View>
                 </View>
@@ -465,60 +397,40 @@ const Account: React.FC < Props > = ({
                         fontFamily: "Poppins-Regular",
                       }}
                     >
-                      {userMeData?.user?.fitness_goal?.key}
+                      {userInfo?.user?.fitness_goal?.key}
                     </Text>
                   </View>
                 </View>
               </View>
             </View>
           </View>
-        </View>
-        <View style={{ width: "100%", alignItems: "center", marginTop: 30 }}>
-          <Pressable
-            onPress={() => {
-              if (userMeData?.stripe?.card) {
-                navigation.navigate("WalletForTrainee");
-              } else {
-                navigation.navigate("CreateCardTrainee");
-              }
-            }}
-            style={{
-              width: "90%",
-              alignItems: "center",
-              backgroundColor: "#000",
-              borderRadius: 14,
-            }}
-          >
-            <View style={{ width: "100%", alignItems: "center" }}>
-              <View style={{ width: "90%", alignItems: "center" }}>
-                <View
-                  style={{
-                    width: "100%",
-                    height: 60,
-                    justifyContent: "center",
-                    flexDirection: "row",
-                  }}
-                >
-                  <View style={{ width: "15%", justifyContent: "center" }}>
-                    <Fontisto name="wallet" size={25} color={"#fff"} />
-                  </View>
-                  <View style={{ width: "80%", justifyContent: "center" }}>
-                    <Text
-                      style={{
-                        color: "#fff",
-                        fontSize: RFValue(13, 580),
-                        fontFamily: "Poppins-SemiBold",
-                      }}
-                    >
-                      Wallet
-                    </Text>
-                  </View>
+      </View>
+      <Pressable
+        onPress={() => {
+          if (userInfo?.stripe?.card) {
+            navigation.navigate("WalletForTrainee");
+          } else {
+            navigation.navigate("CreateCardTrainee");
+          }
+                }}
+                style={{
+                  width: '100%',
+                  alignItems: 'center',
+                  backgroundColor: '#000',
+                  borderRadius: 12,
+                  flexDirection: 'row',
+                  justifyContent: 'space-between',
+                  padding: 15,
+                  marginVertical: 5
+            }}>
+            <View style={{ flexDirection: 'row' }}>
+            <Fontisto name="wallet" size={25} color={"#fff"} />
+                <Typography style={{marginLeft: 10}} color="white">
+                Wallet
+                </Typography>
                 </View>
-              </View>
-            </View>
-          </Pressable>
-        </View>
-        <View style={{ backgroundColor: Colors.black, alignItems: "center", borderRadius: 10, marginTop: 30 }}>
+              </Pressable>
+        <View style={{ backgroundColor: Colors.black, alignItems: "center", borderRadius: 12, marginVertical: 5 }}>
                     <Pressable
                       onPress={() => setChangePassword(!ChangePassword)}
                       style={{
@@ -551,7 +463,7 @@ const Account: React.FC < Props > = ({
                    backgroundColor: Colors.white90
                    }}
                  >
-                        <TextInput label="Old Password" placeholder="" secureTextEntry value={oldPassword} onChangeText={setOldPassword} />
+                        <TextInput placeholder="Enter Password" label="Old Password" secureTextEntry value={oldPassword} onChangeText={setOldPassword} />
                         <TextInput
                           style={styles.inputPassword}
                           label="New Password"
@@ -568,33 +480,36 @@ const Account: React.FC < Props > = ({
                           value={confirmPassword}
                           onChangeText={setConfirmPassword}
                 />
-                <Button style={{marginLeft: 'auto'}} variant="tini" label={"Change"} onPress={UpdatePassword} />
+                <Button loader={isPasswordUpdateLoading} style={{marginLeft: 'auto'}} variant="tini" label={"Change"} onPress={UpdatePassword} />
                    
               </View>
             )}
         </View>
-        <View style={{ backgroundColor: Colors.black, alignItems: "center", borderRadius: 10, marginTop: 30 }}>
                     <Pressable
                       onPress={() => setGetLink(!getLink)}
                       style={{
+                        width: '100%',
+                        alignItems: 'center',
+                        backgroundColor: '#000',
+                        borderRadius: 12,
                         flexDirection: 'row',
                         justifyContent: 'space-between',
-                        width: '100%',
-                        padding: 20
+                        padding: 15,
+                        marginVertical: 5
                     }}>
-                      <View style={{ flexDirection: 'row' }}>
+                      <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                         <Entypo
                           name={'link'}
-                          size={25}
+                          size={22}
                           color={'#fff'}
                         />
-                        <Typography style={{marginLeft: 10}} color="white">
-                        Get referral link{"\n"}
+                        <Typography style={{marginLeft: 10 }} color="white">
+                        Get referral link
                         </Typography>
                         </View>
                         <Entypo
                           name={getLink ? 'chevron-up' : 'chevron-down'}
-                          size={25}
+                          size={22}
                           color={'#fff'}
                         />
                     </Pressable>
@@ -610,46 +525,25 @@ const Account: React.FC < Props > = ({
                 <Button style={{marginLeft: 'auto'}} variant="tini" label={"Copy"} onPress={() => Alert.alert('Text Copied')} />
               </View>
             }
-        </View>
-        <View style={{ width: "100%", alignItems: "center", marginTop: 30 }}>
           <Pressable
-            style={{
-              width: "90%",
-              alignItems: "center",
-              backgroundColor: "#000",
-              borderRadius: 14,
-            }}
-            onPress={onLogout}
-          >
-            <View style={{ width: "100%", alignItems: "center" }}>
-              <View style={{ width: "90%", alignItems: "center" }}>
-                <View
-                  style={{
-                    width: "100%",
-                    height: 60,
-                    justifyContent: "center",
-                    flexDirection: "row",
-                  }}
-                >
-                  <View style={{ width: "15%", justifyContent: "center" }}>
-                    <Entypo name="log-out" size={25} color={"#fff"} />
-                  </View>
-                  <View style={{ width: "80%", justifyContent: "center" }}>
-                    <Text
-                      style={{
-                        color: "#fff",
-                        fontSize: RFValue(13, 580),
-                        fontFamily: "Poppins-SemiBold",
-                      }}
-                    >
-                      Sign out
-                    </Text>
-                  </View>
+                onPress={onLogout}
+                style={{
+                  width: '100%',
+                  alignItems: 'center',
+                  backgroundColor: '#000',
+                  borderRadius: 12,
+                  flexDirection: 'row',
+                  justifyContent: 'space-between',
+                  padding: 15,
+                  marginVertical: 5
+            }}>
+            <View style={{ flexDirection: 'row' }}>
+            <Entypo name="log-out" size={22} color={'#fff'} />
+                <Typography style={{marginLeft: 10}} color="white">
+                  Sign out
+                </Typography>
                 </View>
-              </View>
-            </View>
-          </Pressable>
-        </View>
+              </Pressable>
       <View style={{ marginVertical: 45 }} />
     </ScrollView>
 
