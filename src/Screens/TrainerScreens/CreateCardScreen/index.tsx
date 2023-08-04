@@ -1,19 +1,18 @@
 import React, { useState } from "react";
-import { Text, View, ScrollView, ToastAndroid, TouchableOpacity, Alert } from "react-native";
+import { StyleSheet, View } from "react-native";
 import Header from "../../../Components/Header";
 import Button from "../../../Components/Button";
-import { url } from "../../../constants/url";
 import DateTimePickerModal from "react-native-modal-datetime-picker";
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import styles from "./styles";
+import RNRestart from 'react-native-restart';
 import moment from "moment";
-import { Toast } from "react-native-toast-message/lib/src/Toast";
 import { NavigationSwitchProp } from "react-navigation";
 import TextInput from "../../../Components/Input";
 import Container from "../../../Components/Container";
 import { useSelector } from "react-redux";
-import { useCreateStripeCardMutation } from "../../../slice/FitsApi.slice";
+import { useCreateStripeCardMutation, useGetUserMeQuery } from "../../../slice/FitsApi.slice";
 import { errorToast } from "../../../utils/toast";
+import { storeUserDataInAsyncStorage } from "../../../utils/async-storage";
+import { handleConfirmAlert } from "../../../utils/handle-confirm";
 
 interface Props {
   navigation: NavigationSwitchProp;
@@ -28,6 +27,7 @@ const CreateCardScreen: React.FC<Props> = ({ navigation }) => {
   const [cvc, setCVC] = useState("");
   const [isDatePickerVisible, setDatePickerVisibility] = useState(false);
   const { createStripeData } = useSelector((state: any) => state.fitsStore);
+  const { refetch: getUserInfoFromUserMe, data: userInfo } = useGetUserMeQuery({});
   const [createStripeCard, { isLoading }] = useCreateStripeCardMutation();
   
   const handleConfirm = (date: moment.MomentInput) => {
@@ -43,7 +43,15 @@ const CreateCardScreen: React.FC<Props> = ({ navigation }) => {
     else if (cardNumber.length === 14) setCardNumber(cardNumber + " ");
   }, [cardNumber]);
 
-  const createCall = async () => {
+  const updateUserInfoInAsyncStorage = async () => {
+    const result = await getUserInfoFromUserMe()
+    if (result?.data) {
+      await storeUserDataInAsyncStorage(JSON.stringify(result.data))
+      handleConfirmAlert("You must restart your app",() => RNRestart.restart());      
+    }
+  }
+
+  const addCraditCard = async () => {
     if (createStripeData) {
         const body = {
           card_number: cardNumber.replace(/\s/g, ""),
@@ -51,18 +59,20 @@ const CreateCardScreen: React.FC<Props> = ({ navigation }) => {
           exp_year: expYear,
           cvc: cvc,
         };
-        const result = await createStripeCard({
-          id: createStripeData?.cus_id,
-          ...body,
-        })
-        if (result?.data) navigation.goBack();
-        else if (result?.error) errorToast(result.error.data.message)
+        const result = await createStripeCard({ id: userInfo?.user.cus_id, body})
+      if (result?.error) {
+        errorToast(result.error?.data.message);
+      } else if (result?.data) {  
+        updateUserInfoInAsyncStorage()
+      }
     }
   };
 
+
+
   return (
     <Container>
-      <Header label={"Create Card"}/>
+      <Header label={"Add Payment Card"}/>
 
         <View style={styles.mainBody}>
                 <TextInput
@@ -95,10 +105,17 @@ const CreateCardScreen: React.FC<Props> = ({ navigation }) => {
       <Button
         loader={isLoading}
         label={"Create"}
-        disabled={!cardNumber || !expDate || !cvc} onPress={createCall}
+        disabled={!cardNumber || !expDate || !cvc} onPress={addCraditCard}
       />
       <DateTimePickerModal isVisible={isDatePickerVisible} mode="date" onConfirm={handleConfirm} onCancel={() => setDatePickerVisibility(false)} />
     </Container>
   );
 };
 export default CreateCardScreen;
+
+
+const styles = StyleSheet.create({
+  mainBody: {
+    width: "100%",
+  },
+});

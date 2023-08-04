@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { Text, View, Pressable, StyleSheet, TextInput, ScrollView, ToastAndroid, ActivityIndicator, Platform, Image } from "react-native";
 import Colors from "../../../constants/Colors";
 import VideoPlayer from "react-native-video-player";
@@ -7,15 +7,12 @@ import ImagePicker from "react-native-image-crop-picker";
 import { RFValue } from "react-native-responsive-fontsize";
 import Header from "../../../Components/Header";
 import Button from "../../../Components/Button";
-import { url } from "../../../constants/url"; 
 import SimpleLineIcons from "react-native-vector-icons/SimpleLineIcons";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import { NavigationSwitchProp } from "react-navigation";
 import {useUploadVideoMutation} from '../../../slice/FitsApi.slice'
 import Container from "../../../Components/Container";
 import Typography from "../../../Components/typography/text";
 import { errorToast } from "../../../utils/toast";
-import { boolean } from "yup";
 
 interface PropsInterface {
   navigation: NavigationSwitchProp;
@@ -50,8 +47,6 @@ const VideoCreateScreen = ({ navigation }: PropsInterface) => {
         name: `video.mp4`,
       };
       setUploadOnCLoudLoading({ ...uploadOnCloudLoading, video: true })
-      console.log(":::::::::::::::::::::::::::::::::::");
-      
         uploadVideoOnCloud(newFile);
         setVideo(file.path);
       })
@@ -109,6 +104,9 @@ const VideoCreateScreen = ({ navigation }: PropsInterface) => {
   const uploadVideoOnCloud = async (video: any) => {
     const formData = new FormData();
     formData.append("file", video);
+    console.log('====================================');
+    console.log(video);
+    console.log('====================================');
     formData.append("upload_preset", "employeeApp");
     formData.append("cloud_name", "ZACodders");
 
@@ -122,10 +120,6 @@ const VideoCreateScreen = ({ navigation }: PropsInterface) => {
         setCloudVideoLink([res2?.url]);
       })
   };
-
-  console.log('====================================');
-  console.log(cloudVideoUrl);
-  console.log('====================================');
 
   return (
     <Container>

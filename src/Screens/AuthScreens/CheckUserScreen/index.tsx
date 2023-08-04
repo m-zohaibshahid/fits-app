@@ -2,20 +2,23 @@ import React, { useEffect, useState } from "react";
 import { View, StatusBar } from "react-native";
 import FastImage from "react-native-fast-image";
 import styles from "./styles";
-import { useGetUserMeQuery } from "../../../slice/FitsApi.slice";
+import { useGetUserMeQuery, useStripeCustomerMutation } from "../../../slice/FitsApi.slice";
 import { storeUserDataInAsyncStorage } from "../../../utils/async-storage";
 import { NavigationSwitchProp } from "react-navigation";
 import { errorToast } from "../../../utils/toast";
 import { UserMeApiResponse } from "../../../slice/store.interface";
+import { onLogout } from "../../../utils/logout";
+import { useDispatch } from "react-redux";
 
 interface PropsInterface {
   navigation: NavigationSwitchProp
 }
 
 const CheckUser = ({ navigation }: PropsInterface) => {
-  
+  const dispatch=useDispatch()
   const { refetch: getUserInfoFromUserMe, isLoading } = useGetUserMeQuery({});
   const [userInfo, setUserInfo] = useState<UserMeApiResponse>() as any
+  const [stripeCustomer] = useStripeCustomerMutation({});
 
   const setDataInAsyncStorageAndUpdateState = async (data: UserMeApiResponse) => {
     await storeUserDataInAsyncStorage(JSON.stringify(data))
@@ -25,13 +28,25 @@ const CheckUser = ({ navigation }: PropsInterface) => {
 
   const handleGetUserFromUserMeApi = async () => {
     let result = await getUserInfoFromUserMe()
-
     if (result.data) {
-      setDataInAsyncStorageAndUpdateState(result.data)
+      if (!result.data?.stripe?.customer?.id) {
+        createStripeAccount(result.data?.personal_info.name, result.data?.user.email, result.data?.personal_info.phoneNumber)
+      } else {
+        await setDataInAsyncStorageAndUpdateState(result.data)
+      }
+      }
+    if (result?.error?.data?.message === 'unAuthorized') {
+      onLogout()
     }
-    if (result?.error) errorToast(result?.error?.data?.message) 
   }
-  
+
+  const createStripeAccount = async( name: string, email: string, phone: number ) => {
+    const body = { name, email, phone }
+    const result: any = await stripeCustomer(body)
+    if (result?.error) errorToast(result?.error?.data?.message)   
+    else handleGetUserFromUserMeApi()
+      
+  };
   useEffect(() => {
     navigation.addListener("focus", () => {
       handleGetUserFromUserMeApi();
@@ -39,7 +54,7 @@ const CheckUser = ({ navigation }: PropsInterface) => {
   }, [navigation]);
   
   useEffect(() => {
-    if (!!userInfo) {
+    if (userInfo) {
       getUserInfo(userInfo?.profile_status);
     }
   }, [userInfo]);

@@ -51,8 +51,6 @@ const Home: React.FC<Props> = ({ navigation }) => {
             (error) => console.log("Error:", error.message),
             { enableHighAccuracy: true, timeout: 20000, maximumAge: 1000 }
             );
-          } else {
-            console.log("Location permission denied");
           }
         } catch (error) {
           console.error(error.message);

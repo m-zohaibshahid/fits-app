@@ -8,7 +8,7 @@ import Fontisto from "react-native-vector-icons/Fontisto";
 import { RFValue } from "react-native-responsive-fontsize";
 import * as Images from "../../constants/Images";
 import FastImage from "react-native-fast-image";
-import { useUpdatePasswordMutation} from "../../slice/FitsApi.slice";
+import { useGetUserMeQuery, useUpdatePasswordMutation} from "../../slice/FitsApi.slice";
 import { useSelector } from "react-redux";
 import { UserDetail } from "../../interfaces";
 import { NavigationSwitchProp } from "react-navigation";
@@ -32,16 +32,17 @@ const Account: React.FC < Props > = ({ navigation }) => {
   const [oldPassword, setOldPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
-  const { userInfo } = useSelector((state: { fitsStore: Partial <UserDetail>}) => state.fitsStore);
+  // const { userMeData } = useSelector((state: { fitsStore: Partial <UserDetail>}) => state.fitsStore);
   const [updatePassword, { isLoading: isPasswordUpdateLoading }] = useUpdatePasswordMutation();
-
+  const { data: userMeData, isLoading } = useGetUserMeQuery({});
+ 
   const UpdatePassword = async () => {
     const body={
       oldPassword: oldPassword,
       password: newPassword,
     }
     
-  const result = await updatePassword({ id: userInfo?.user._id, data: body })
+  const result = await updatePassword({ id: userMeData?.user._id, data: body })
   if (result.error) errorToast(result.error.data.message)
   if (result.data) {
     successToast('Password updated')
@@ -62,7 +63,7 @@ const Account: React.FC < Props > = ({ navigation }) => {
               alignItems: "center",
             }}
           >
-            {userInfo?.personal_info?.profileImage ? (
+            {userMeData?.personal_info?.profileImage ? (
               <FastImage
                 style={{
                   width: 165,
@@ -70,7 +71,7 @@ const Account: React.FC < Props > = ({ navigation }) => {
                   borderRadius: 200 / 2,
                 }}
                 source={{
-                  uri: `${userInfo?.personal_info?.profileImage}`,
+                  uri: `${userMeData?.personal_info?.profileImage}`,
                   headers: { Authorization: "someAuthToken" },
                   priority: FastImage.priority.normal,
                 }}
@@ -91,7 +92,7 @@ const Account: React.FC < Props > = ({ navigation }) => {
                 textTransform: "capitalize",
               }}
             >
-              {userInfo?.personal_info?.name}
+              {userMeData?.personal_info?.name}
             </Text>
           </View>
         </View>
@@ -187,7 +188,7 @@ const Account: React.FC < Props > = ({ navigation }) => {
                         textTransform: "capitalize",
                       }}
                     >
-                      {userInfo?.personal_info?.name}
+                      {userMeData?.personal_info?.name}
                     </Text>
                   </View>
                 </View>
@@ -217,7 +218,7 @@ const Account: React.FC < Props > = ({ navigation }) => {
                         fontFamily: "Poppins-Regular",
                       }}
                     >
-                      {userInfo?.user?.email}
+                      {userMeData?.user?.email}
                     </Text>
                   </View>
                 </View>
@@ -247,7 +248,7 @@ const Account: React.FC < Props > = ({ navigation }) => {
                         fontFamily: "Poppins-Regular",
                       }}
                     >
-                      {userInfo?.personal_info?.country}
+                      {userMeData?.personal_info?.country}
                     </Text>
                   </View>
                 </View>
@@ -277,7 +278,7 @@ const Account: React.FC < Props > = ({ navigation }) => {
                         fontFamily: "Poppins-Regular",
                       }}
                     >
-                      {userInfo?.personal_info?.state}
+                      {userMeData?.personal_info?.state}
                     </Text>
                   </View>
                 </View>
@@ -307,7 +308,7 @@ const Account: React.FC < Props > = ({ navigation }) => {
                         fontFamily: "Poppins-Regular",
                       }}
                     >
-                      {userInfo?.personal_info?.city}
+                      {userMeData?.personal_info?.city}
                     </Text>
                   </View>
                 </View>
@@ -337,7 +338,7 @@ const Account: React.FC < Props > = ({ navigation }) => {
                         fontFamily: "Poppins-Regular",
                       }}
                     >
-                      {userInfo?.personal_info?.gender}
+                      {userMeData?.personal_info?.gender}
                     </Text>
                   </View>
                 </View>
@@ -367,7 +368,7 @@ const Account: React.FC < Props > = ({ navigation }) => {
                         fontFamily: "Poppins-Regular",
                       }}
                     >
-                      {userInfo?.user?.fitness_level?.key}
+                      {userMeData?.user?.fitness_level?.key}
                     </Text>
                   </View>
                 </View>
@@ -397,7 +398,7 @@ const Account: React.FC < Props > = ({ navigation }) => {
                         fontFamily: "Poppins-Regular",
                       }}
                     >
-                      {userInfo?.user?.fitness_goal?.key}
+                      {userMeData?.user?.fitness_goal?.key}
                     </Text>
                   </View>
                 </View>
@@ -407,10 +408,10 @@ const Account: React.FC < Props > = ({ navigation }) => {
       </View>
       <Pressable
         onPress={() => {
-          if (userInfo?.stripe?.card) {
+          if (userMeData?.stripe?.card) {
             navigation.navigate("WalletForTrainee");
           } else {
-            navigation.navigate("CreateCardTrainee");
+            navigation.navigate("CreateCardScreen");
           }
                 }}
                 style={{

@@ -8,20 +8,22 @@ import Container from '../../../Components/Container';
 import * as Yup from 'yup'
 import { SignUpFormValidationErrors, SignUpFormValidationResult, SignUpFormValues } from '../types';
 import { validateForm } from '../../../utils/validation';
-import { useRegisterUserMutation } from '../../../slice/FitsApi.slice';
+import { useRegisterUserMutation, useStripeCustomerMutation } from '../../../slice/FitsApi.slice';
 import { errorToast } from '../../../utils/toast';
 import VarificationModal from '../../../Components/VerificationModal';
 import { NavigationSwitchProp } from 'react-navigation';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { setToken } from '../../../slice/token.slice';
 import { storeUserTokenInAsyncStorage } from '../../../utils/async-storage';
+import { setCreateStripeData } from '../../../slice/FitsSlice.store';
+import { UserDetail } from '../../../interfaces';
 
 interface PropsInterface {
   navigation: NavigationSwitchProp
 }
 
 const SignUpScreen = ({navigation}: PropsInterface) => {
-  const route = useRoute();
+  const route:any = useRoute();
   const dispatch = useDispatch()
   const [email, setEmail] = useState<string>('');
   const [password, setPassword] = useState<string>('');
@@ -30,6 +32,7 @@ const SignUpScreen = ({navigation}: PropsInterface) => {
   const [isVarificationModalVisible,setIsVarificationModalVisible] = useState<boolean>(false);
   const [userToken,setUserToken] = useState<string>("");
   const [registerUser, { isLoading, isError, error, data: userRegisterApiResponse }] = useRegisterUserMutation()
+ 
 
   const signupCall = async () => {
     const formValues: SignUpFormValues = {
@@ -52,7 +55,7 @@ const SignUpScreen = ({navigation}: PropsInterface) => {
       if (result.error) errorToast(result.error.data.message)
     }
   }
-
+ 
   useEffect(() => {
     if (!!isError) errorToast(error?.data?.message)
   }, [isError])

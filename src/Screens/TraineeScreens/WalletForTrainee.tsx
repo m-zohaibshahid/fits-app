@@ -1,391 +1,91 @@
-import React, { useState, useEffect } from "react";
-import { Text, View, TouchableOpacity, StyleSheet, ScrollView, ActivityIndicator, Platform, ToastAndroid } from "react-native";
+import React, { useEffect, useState } from "react";
+import { View, TouchableOpacity, StyleSheet, ScrollView, ActivityIndicator, Platform, FlatList } from "react-native";
 import { RFValue } from "react-native-responsive-fontsize";
 import Header from "../../Components/Header";
-import { Toast } from "react-native-toast-message/lib/src/Toast";
 import { NavigationSwitchProp } from "react-navigation";
-import { useGetUserMeQuery, useRechargeStripeMutation } from "../../slice/FitsApi.slice";
+import { useRechargeStripeMutation, useStripeCustomerGetQuery } from "../../slice/FitsApi.slice";
 import { useSelector } from "react-redux";
-import { getApi } from "../../common/fetchApi";
+import Typography from "../../Components/typography/text";
+import Container from "../../Components/Container";
+import { UserDetail } from "../../interfaces";
+import { errorToast } from "../../utils/toast";
 
 interface Props {
   navigation: NavigationSwitchProp;
 }
 
 const WalletForTrainee: React.FC<Props> = ({ navigation }) => {
-  // Hooks
-  const [load, setLoad] = useState(false);
+  const { userInfo } = useSelector((state: { fitsStore: Partial<UserDetail> }) => state.fitsStore);
+  const [rechargeStripeMutate, { isLoading: isUpdateLoading }] = useRechargeStripeMutation();
   const [cardData, setCardData] = useState();
-  const [addBalance, setAddBalance] = useState<any>({});
-  const { data, isLoading } = useGetUserMeQuery<any>({});
-  const [rechargeStripe, { isLoading: isLoading1 }] = useRechargeStripeMutation();
-  const token = useSelector((state: { token: string }) => state.token);
-  // Functions
+  const { refetch: getStripeCustomer } = useStripeCustomerGetQuery(userInfo?.user.cus_id ?? '')
 
-  const userMe = async (msg?: string) => {
-    setLoad(true);
-
-    if (data?.success) {
-      getStripeCard(data?.stripe?.card?.customer, msg);
-      setAddBalance(data?.stripe?.card);
-    } else {
-      Toast.show({
-        type: "error",
-        text1: "Something went wrong!",
-      });
+  const getStripeCard = async () => {
+    const result = await getStripeCustomer()
+    if (result?.data) {
+      setCardData(result.data.data)
+    } else if (result?.error) {
+      errorToast(result.error?.data?.message)
     }
   };
 
-  const getStripeCard = async (id: string, msg?: string) => {
-    setLoad(true);
-    getApi(id, token)
-      .then((res) => res.json())
-      .then((res2) => {
-        setLoad(false);
+  useEffect(() => {
+    navigation.addListener('focus', () => {
+      getStripeCard();
+    })
+  }, []);
 
-        if (res2?.success) {
-          Toast.show({
-            type: "success",
-            text1: msg ? "Balance successfully updated" : "Balance get successfully",
-          });
-          setCardData(res2?.data);
-        } else {
-          Toast.show({
-            type: "error",
-            text1: "Something went wrong",
-          });
-        }
-      })
-      .catch(() => {
-        setLoad(false);
-        Toast.show({
-          type: "error",
-          text1: "Something went wrong",
-        });
-      });
-  };
-
-  const callRecharge = async (amount: number) => {
-    setLoad(true);
+  const rechargeAccount = async (amount: number) => {
     const body = {
       amount: amount,
       currency: "USD",
-      source: addBalance?.id,
+      source: cardData?.default_source, // userInfo?.stripe.card.id,
       description: "Recharge Account",
     };
-    rechargeStripe({ id: addBalance?.customer, ...body })
-      .then((res2: any) => {
-        if (!res2.data.success) {
-          ToastAndroid.show(res2?.message, ToastAndroid.SHORT);
-        }
-        userMe("update");
-        setLoad(false);
-      })
-      .catch(() => {
-        setLoad(false);
-        Toast.show({
-          type: "error",
-          text1: "Something went wrong!",
-        });
-      });
+
+    const result = await rechargeStripeMutate({ id: userInfo?.user.cus_id, body })
+    if (result.data) getStripeCard()
+    if (result?.error) errorToast(result.error?.data?.message);
   };
 
-  // Effects
-  useEffect(() => {
-    navigation.addListener("focus", () => {
-      userMe();
-    });
-  }, []);
-  return (
-    <View style={styles.container}>
-      <Header label={"Wallet"} subLabel={"Add cash to your account by selecting any plan."} />
-
-      {/*End Header*/}
-      <ScrollView showsVerticalScrollIndicator={false} style={styles.main}>
-        {load || isLoading || isLoading1 ? (
-          <View style={{ marginTop: 20 }}>
-            <ActivityIndicator size="large" color="red" />
-          </View>
-        ) : (
-          <>
-            <View
-              style={{
-                width: "90%",
-                marginTop: 10,
-                alignSelf: "center",
-                flexDirection: "row",
-              }}
-            >
-              <View style={styles.Totalblcview}>
-                <Text style={styles.totalTextstyle}>Total balance</Text>
-              </View>
-              <View style={styles.moneyview}>
-                <Text style={styles.moneyTextstyle}>$ {cardData?.balance}</Text>
-              </View>
-            </View>
-            <View
-              style={{
-                width: "90%",
-                marginTop: 10,
-                marginBottom: 10,
-                alignSelf: "center",
-              }}
-            >
-              <Text style={styles.SelectText}>Select Wallet Top Up Amount</Text>
-            </View>
-            <View style={styles.TopView}>
-              <View style={styles.topView}>
-                {/*start Box View*/}
-                <View style={styles.FlexView}>
-                  {/*start left box*/}
-                  <TouchableOpacity
-                    onPress={() => {
-                      callRecharge(30);
-                    }}
-                    activeOpacity={0.8}
-                    style={styles.Totalblcview}
-                  >
-                    <View style={styles.boxView}>
-                      <View style={styles.topView}>
-                        <View style={styles.FlexboxView}>
-                          <View style={styles.Totalblcview}>
-                            <Text style={styles.BoxText}>Add</Text>
-                          </View>
-                          <View style={styles.moneyview}>
-                            <Text style={styles.BoxText}>$ 30</Text>
-                          </View>
-                        </View>
-                      </View>
-                    </View>
-                  </TouchableOpacity>
-                  {/*end left box*/}
-                  {/*start right box*/}
-                  <TouchableOpacity
-                    activeOpacity={0.8}
-                    style={styles.moneyview}
-                    onPress={() => {
-                      callRecharge(60);
-                    }}
-                  >
-                    <View style={styles.boxView}>
-                      <View style={styles.topView}>
-                        <View style={styles.FlexboxView}>
-                          <View style={styles.Totalblcview}>
-                            <Text style={styles.BoxText}>Add</Text>
-                          </View>
-                          <View style={styles.moneyview}>
-                            <Text style={styles.BoxText}>${""} 60</Text>
-                          </View>
-                        </View>
-                      </View>
-                    </View>
-                  </TouchableOpacity>
-                  {/*end right box*/}
-                </View>
-                {/*start Box View*/}
-                {/*start Box View*/}
-                <View style={styles.FlexView}>
-                  {/*start left box*/}
-                  <TouchableOpacity
-                    onPress={() => {
-                      callRecharge(100);
-                    }}
-                    activeOpacity={0.8}
-                    style={styles.Totalblcview}
-                  >
-                    <View style={styles.boxView}>
-                      <View style={styles.topView}>
-                        <View style={styles.FlexboxView}>
-                          <View style={styles.Totalblcview}>
-                            <Text style={styles.BoxText}>Add</Text>
-                          </View>
-                          <View style={styles.moneyview}>
-                            <Text style={styles.BoxText}>${""} 100</Text>
-                          </View>
-                        </View>
-                      </View>
-                    </View>
-                  </TouchableOpacity>
-                  {/*end left box*/}
-                  {/*start right box*/}
-                  <TouchableOpacity
-                    activeOpacity={0.8}
-                    onPress={() => {
-                      callRecharge(130);
-                    }}
-                    style={styles.moneyview}
-                  >
-                    <View style={styles.boxView}>
-                      <View style={styles.topView}>
-                        <View style={styles.FlexboxView}>
-                          <View style={styles.Totalblcview}>
-                            <Text style={styles.BoxText}>Add</Text>
-                          </View>
-                          <View style={styles.moneyview}>
-                            <Text style={styles.BoxText}>${""} 130</Text>
-                          </View>
-                        </View>
-                      </View>
-                    </View>
-                  </TouchableOpacity>
-                  {/*end right box*/}
-                </View>
-                {/*start Box View*/}
-                {/*start Box View*/}
-                {/*start Box View*/}
-                <View style={styles.FlexView}>
-                  {/*start left box*/}
-                  <TouchableOpacity
-                    onPress={() => {
-                      callRecharge(150);
-                    }}
-                    activeOpacity={0.8}
-                    style={styles.Totalblcview}
-                  >
-                    <View style={styles.boxView}>
-                      <View style={styles.topView}>
-                        <View style={styles.FlexboxView}>
-                          <View style={styles.Totalblcview}>
-                            <Text style={styles.BoxText}>Add</Text>
-                          </View>
-                          <View style={styles.moneyview}>
-                            <Text style={styles.BoxText}>${""} 150</Text>
-                          </View>
-                        </View>
-                      </View>
-                    </View>
-                  </TouchableOpacity>
-                  {/*end left box*/}
-                  {/*start right box*/}
-                  <TouchableOpacity
-                    activeOpacity={0.8}
-                    onPress={() => {
-                      callRecharge(170);
-                    }}
-                    style={styles.moneyview}
-                  >
-                    <View style={styles.boxView}>
-                      <View style={styles.topView}>
-                        <View style={styles.FlexboxView}>
-                          <View style={styles.Totalblcview}>
-                            <Text style={styles.BoxText}>Add</Text>
-                          </View>
-                          <View style={styles.moneyview}>
-                            <Text style={styles.BoxText}>${""} 170</Text>
-                          </View>
-                        </View>
-                      </View>
-                    </View>
-                  </TouchableOpacity>
-                  {/*end right box*/}
-                </View>
-
-                <View style={styles.FlexView}>
-                  {/*start left box*/}
-                  <TouchableOpacity
-                    activeOpacity={0.8}
-                    onPress={() => {
-                      callRecharge(200);
-                    }}
-                    style={styles.Totalblcview}
-                  >
-                    <View style={styles.boxView}>
-                      <View style={styles.topView}>
-                        <View style={styles.FlexboxView}>
-                          <View style={styles.Totalblcview}>
-                            <Text style={styles.BoxText}>Add</Text>
-                          </View>
-                          <View style={styles.moneyview}>
-                            <Text style={styles.BoxText}>${""} 200</Text>
-                          </View>
-                        </View>
-                      </View>
-                    </View>
-                  </TouchableOpacity>
-                  {/*end left box*/}
-                  {/*start right box*/}
-                  <TouchableOpacity
-                    activeOpacity={0.8}
-                    onPress={() => {
-                      callRecharge(230);
-                    }}
-                    style={styles.moneyview}
-                  >
-                    <View style={styles.boxView}>
-                      <View style={styles.topView}>
-                        <View style={styles.FlexboxView}>
-                          <View style={styles.Totalblcview}>
-                            <Text style={styles.BoxText}>Add</Text>
-                          </View>
-                          <View style={styles.moneyview}>
-                            <Text style={styles.BoxText}>${""} 230</Text>
-                          </View>
-                        </View>
-                      </View>
-                    </View>
-                  </TouchableOpacity>
-                  {/*end right box*/}
-                </View>
-                {/*start Box View*/}
-                {/*start Box View*/}
-                {/*start Box View*/}
-                <View style={styles.FlexView}>
-                  {/*start left box*/}
-                  <TouchableOpacity
-                    activeOpacity={0.8}
-                    onPress={() => {
-                      callRecharge(260);
-                    }}
-                    style={styles.Totalblcview}
-                  >
-                    <View style={styles.boxView}>
-                      <View style={styles.topView}>
-                        <View style={styles.FlexboxView}>
-                          <View style={styles.Totalblcview}>
-                            <Text style={styles.BoxText}>Add</Text>
-                          </View>
-                          <View style={styles.moneyview}>
-                            <Text style={styles.BoxText}>${""} 260</Text>
-                          </View>
-                        </View>
-                      </View>
-                    </View>
-                  </TouchableOpacity>
-                  {/*end left box*/}
-                  {/*start right box*/}
-                  <TouchableOpacity
-                    activeOpacity={0.8}
-                    onPress={() => {
-                      callRecharge(300);
-                    }}
-                    style={styles.moneyview}
-                  >
-                    <View style={styles.boxView}>
-                      <View style={styles.topView}>
-                        <View style={styles.FlexboxView}>
-                          <View style={styles.Totalblcview}>
-                            <Text style={styles.BoxText}>Add</Text>
-                          </View>
-                          <View style={styles.moneyview}>
-                            <Text style={styles.BoxText}>${""} 300</Text>
-                          </View>
-                        </View>
-                      </View>
-                    </View>
-                  </TouchableOpacity>
-                  {/*end right box*/}
-                </View>
-                {/*start Box View*/}
-              </View>
-            </View>
-          </>
-        )}
-        <View style={{ paddingVertical: 40 }}></View>
-      </ScrollView>
-      {/*start Add btn*/}
-
-      {/*End Add btn*/}
+  const renderRechargeOption = ({ item }: {  item: { amount1: number, amount2: number }}) => {
+    return (
+    <View style={{flexDirection: "row", justifyContent: "space-between"}}>
+      <TouchableOpacity
+        activeOpacity={0.8}
+        onPress={() => rechargeAccount(item.amount1)}
+        style={styles.boxView}
+        >
+          {isUpdateLoading ? <ActivityIndicator /> : <><Typography size={'heading4'} color="white">Add</Typography>
+          <Typography size={'heading4'} color="whiteRegular">$ {item.amount1}</Typography></>}
+      </TouchableOpacity>
+      <TouchableOpacity
+        activeOpacity={0.8}
+        onPress={() => rechargeAccount(item.amount2)}
+        style={styles.boxView}
+        >
+          {isUpdateLoading ? <ActivityIndicator /> : <><Typography size={'heading4'} color="white">Add</Typography>
+          <Typography size={'heading4'} color="whiteRegular">$ {item.amount2}</Typography></>}
+      </TouchableOpacity>
     </View>
+    );
+  };
+
+  return (
+    <Container>
+      <Header label={"Wallet"} subLabel={"Add cash to your account by selecting any plan."} />
+      <ScrollView showsVerticalScrollIndicator={false} style={styles.main}>
+            <View style={{ marginBottom: 20, justifyContent: 'space-between', flexDirection: "row" }}>
+                <Typography weight="700" size={'large'}>Total balance</Typography>
+                <Typography weight="500" size={'large'}>$ {cardData?.balance}</Typography>
+            </View>
+              <Typography bottom={"mb10"} weight="700" size={'regularText'} >Select Wallet Top Up Amount</Typography>
+                <FlatList
+                  data={rechargeOptions}
+                  renderItem={renderRechargeOption}
+                />
+      </ScrollView>
+    </Container>
   );
 };
 
@@ -394,12 +94,10 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: "#ffffff",
     paddingTop: Platform.OS === "ios" ? 40 : 0,
-    paddingBottom: Platform.OS === "ios" ? 0 : 0,
   },
   header: {
     width: "100%",
     height: 250,
-    // borderWidth:1
   },
   fixeheight: {
     height: 50,
@@ -424,15 +122,9 @@ const styles = StyleSheet.create({
     alignItems: "center",
     position: "absolute",
     backgroundColor: "#fff",
-    // borderWidth:1,
   },
-  TopView: {
-    width: "100%",
-    alignItems: "center",
-  },
-  topView: { width: "90%" },
   topView1: {
-    width: "90%",
+    width: "100%",
     alignItems: "center",
   },
   WalletText: {
@@ -449,13 +141,6 @@ const styles = StyleSheet.create({
     width: "100%",
     flexDirection: "row",
     marginTop: 15,
-  },
-  Totalblcview: {
-    width: "50%",
-  },
-  moneyview: {
-    width: "50%",
-    alignItems: "flex-end",
   },
   totalTextstyle: {
     fontFamily: "Poppins-SemiBold",
@@ -479,30 +164,31 @@ const styles = StyleSheet.create({
     marginTop: 30,
   },
   boxView: {
-    width: 149,
-    height: 55,
-    borderRadius: 15,
+    width: 150,
+    borderRadius: 20,
+    marginVertical: 5,
     backgroundColor: "#000",
-    justifyContent: "center",
+    justifyContent: "space-between",
+    padding: 20,
     alignItems: "center",
-  },
-  BoxText: {
-    color: "#fff",
+    flexDirection: 'row'
   },
   FlexboxView: {
     width: "100%",
     flexDirection: "row",
-  },
-  btn: {
-    padding: 10,
-    margin: 10,
-    width: "90%",
-    borderRadius: 10,
-    color: "#6698FF",
-    backgroundColor: "#FF0000",
-    alignItems: "center",
-    justifyContent: "center",
+    padding: 20,
+    justifyContent: 'space-between',
+    alignItems: 'center'
   },
 });
 
 export default WalletForTrainee;
+
+
+const rechargeOptions = [
+  { amount1: 30, amount2: 60 },
+  { amount1: 100, amount2: 130 },
+  { amount1: 150, amount2: 170 },
+  { amount1: 200, amount2: 230 },
+  { amount1: 260, amount2: 300 },
+];

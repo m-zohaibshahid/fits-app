@@ -26,9 +26,6 @@ const ScheduledClasses = ({ navigation }: PropsInterface) => {
     });
   }, []);
 
-   /*  await fetch(`${url}/book-a-session/trainee/${item?._id}`, {
-      method: "DELETE",
-      }); */
   const detailsInfoCall = (item: any, i: number) => {
     let dummy = [...myBookedClassesApiResponse];
     if (dummy[i].status == true) {
@@ -139,12 +136,6 @@ const ScheduledClasses = ({ navigation }: PropsInterface) => {
                           </View>
                         </View>
                         <View style={styles.mainbtnView}>
-                         {/*  <Pressable
-                            onPress={() => deleteBooking(item)}
-                            style={styles.ccbtnview}
-                          >
-                            {loadx === true ? <ActivityIndicator size="small" color="#fff" /> : <Text style={styles.btntextstyle}>Cancel</Text>}
-                          </Pressable> */}
                         </View>
                       </View>
                     )}

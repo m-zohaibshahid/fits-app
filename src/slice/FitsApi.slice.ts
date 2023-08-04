@@ -3,7 +3,7 @@ import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 import { url } from "../constants/url";
 import { LoginInterface, UserMeApiResponse } from "./store.interface";
 import { getUserAsyncStroageToken } from "../utils/async-storage";
-import { RoomMessagesResponse, TrainerSessionApiResultInterface } from "../interfaces";
+import { RoomMessagesResponse, TrainerSessionApiResultInterface, TrainerVideosForTrainerDetailsApiResponse } from "../interfaces";
 
 // Define a service using a base URL and expected endpoints
 export const fitsApi = createApi({
@@ -12,6 +12,8 @@ export const fitsApi = createApi({
     baseUrl: url,
     prepareHeaders: async (headers: Headers) => {
       const token = await getUserAsyncStroageToken()
+      console.log(token);
+
       headers.set("Authorization", `Bearer ${token}`);
       return headers;
     },
@@ -153,10 +155,18 @@ export const fitsApi = createApi({
     }),
 
     createStripeCard: builder.mutation<any, Partial<any>>({
-      query: ({ id, ...data }) => ({
+      query: ({ id, body }) => ({
         url: `/stripe/card/${id}`,
         method: "POST",
-        body: data,
+        body,
+      }),
+    }),
+
+    stripePaymentTransfer: builder.mutation<any, Partial<any>>({
+      query: (body) => ({
+        url: `/stripe/transfer`,
+        method: "POST",
+        body,
       }),
     }),
 
@@ -199,7 +209,7 @@ export const fitsApi = createApi({
     }),
 
     bookASession: builder.mutation<void, Partial<any>>({
-      query: ({ id, ...data }) => ({
+      query: (data) => ({
         url: `/book-a-session`,
         method: "POST",
         body: data,
@@ -225,15 +235,36 @@ export const fitsApi = createApi({
     getMyBookedClasses: builder.query<any, string>({
       query: (id) => `/book-a-session/trainee/${id}`,
     }),
-    stripeCustomerGet: builder.query<any, Partial<any>>({
+
+    stripeCustomerGet: builder.query<any, string>({
       query: (id) => ({
         url: `/stripe/customer/${id}`,
         method: "GET",
       }),
     }),
 
+    videoSubscribe: builder.mutation<void, Partial<any>>({
+      query: (body) => ({
+        url: `/subscription/videos`,
+        method: "POST",
+        body: body,
+      }),
+    }),
+
     getRoomMessages: builder.query<RoomMessagesResponse, Partial<any>>({
       query: (id) => `chat/messages/${id}`,
+    }),
+
+    getTrainerVideosForTrainerDetails: builder.query<TrainerVideosForTrainerDetailsApiResponse, Partial<any>>({
+      query: (id) => `video/${id}`,
+    }),
+
+    getSubscribedVideos: builder.query<any, Partial<any>>({
+      query: (id) => `subscription/videos/${id}`
+    }),
+
+    getStripeUser: builder.query<any, string>({
+      query: (id) => `stripe/customer/${id}`
     }),
 
     personalInfoCreate: builder.mutation<any, Partial<any>>({
@@ -244,7 +275,7 @@ export const fitsApi = createApi({
       }),
     }),
     rechargeStripe: builder.mutation<any, Partial<any>>({
-      query: ({ id, ...body }) => ({
+      query: ({ id, body }) => ({
         url: `/stripe/recharge/${id}`,
         method: "POST",
         body: body,
@@ -287,5 +318,10 @@ export const {
   useGetRoomMessagesQuery,
   useSendMessageMutation,
   useGetMyBookedClassesQuery,
-  useUploadVideoMutation
+  useUploadVideoMutation,
+  useGetTrainerVideosForTrainerDetailsQuery,
+  useGetSubscribedVideosQuery,
+  useGetStripeUserQuery,
+  useStripePaymentTransferMutation,
+  useVideoSubscribeMutation
 } = fitsApi;

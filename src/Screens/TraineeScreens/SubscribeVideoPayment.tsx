@@ -1,47 +1,55 @@
 import React, { useEffect, useMemo, useState } from "react";
-import { Text, View, StyleSheet, ScrollView, Pressable, Platform } from "react-native";
-import moment from "moment";
-import FontAwesome from "react-native-vector-icons/FontAwesome";
+import { Text, View, StyleSheet, ScrollView, Pressable, Platform, Alert } from "react-native";
 import { RFValue } from "react-native-responsive-fontsize";
 import { useSelector } from "react-redux";
 import { RouteProp, useRoute } from "@react-navigation/native";
-import { StripeCustomerInterface, UserDetail } from "../../interfaces";
-import { useBookASessionMutation, useGetStripeUserQuery, useStripePaymentTransferMutation, } from "../../slice/FitsApi.slice";
-import { errorToast, successToast } from "../../utils/toast";
+import FontAwesome from "react-native-vector-icons/FontAwesome";
+import VideoPlayer from "react-native-video-player";
 import Container from "../../Components/Container";
-import Typography from "../../Components/typography/text";
-import { heightPercentageToDP } from "react-native-responsive-screen";
-import Entypo from "react-native-vector-icons/Entypo";
-import { NavigationSwitchProp } from "react-navigation";
 import Header from "../../Components/Header";
 import Button from "../../Components/Button";
+import Typography from "../../Components/typography/text";
+import { heightPercentageToDP } from "react-native-responsive-screen";
+import { NavigationSwitchProp } from "react-navigation";
+import {
+  StripeCustomerInterface,
+  UserDetail,
+} from "../../interfaces";
+import {
+  useBookASessionMutation,
+  useGetStripeUserQuery,
+  useStripePaymentTransferMutation,
+  useVideoSubscribeMutation,
+} from "../../slice/FitsApi.slice";
+import { TrainerData, Video } from "./types";
+import { errorToast } from "../../utils/toast";
 
 type RootStackParamList = {
-  BookSessionPaymentScreen: BookSessionPaymentParams;
+  SubscribeVideoPaymentScreen: {
+    trainerData: TrainerData;
+    video: Video;
+  };
 };
 
 interface PropsInterface {
   navigation: NavigationSwitchProp;
 }
 
-type BookSessionPaymentParams = {
-  data: any;
-};
+const SubscribeVideoPayment = ({ navigation }: PropsInterface) => {
+  const { userInfo } = useSelector(
+    (state: { fitsStore: Partial<UserDetail> }) => state.fitsStore
+  );
+  const [cardData, setCardData] = useState<StripeCustomerInterface | null>(
+    null
+  );
+  const route = useRoute<RouteProp<RootStackParamList, "SubscribeVideoPaymentScreen">>();
+  const { trainerData, video } = route.params;
 
-const BookSessionPayment = ({ navigation }: PropsInterface) => {
-  const { userInfo } = useSelector((state: { fitsStore: Partial<UserDetail> }) => state.fitsStore);
-  const [isDetailsShow, setIsDetailsShow] = useState(false);
-  const [cardData, setCardData] = useState<StripeCustomerInterface | null>();
-  const route = useRoute<RouteProp<RootStackParamList, "BookSessionPaymentScreen">>();
-  const bookSessionParams = route?.params?.data;
-  const receiverCustomerId = bookSessionParams.userData?.user?.cus_id;
-  const trainerId = bookSessionParams.userData.user._id;
-  const sessionId = bookSessionParams.sessionId
-  const [bookSessionMutation,  {isLoading: isLoadingBookSession}] = useBookASessionMutation();
+  const [bookSessionMutation, { isLoading: isLoadingBookSession }] = useVideoSubscribeMutation();
   const [tripePaymentTransferMutation, { isLoading: isLoadingTransferStripe }] = useStripePaymentTransferMutation();
-  const { refetch: refetchStripeUser } = useGetStripeUserQuery(userInfo?.stripe?.card?.customer || '');
+  const { refetch: refetchStripeUser } = useGetStripeUserQuery( userInfo?.stripe?.card?.customer || "" );
 
-  const cost = +bookSessionParams.userData?.price;
+  const videoPrice = video.price;
   const walletAmount = useMemo(() => cardData?.balance ?? 0, [cardData]);
 
   const getStripeCard = async () => {
@@ -49,24 +57,32 @@ const BookSessionPayment = ({ navigation }: PropsInterface) => {
     if (result?.data) setCardData(result.data.data);
   };
 
+  
+
+  useEffect(() => {
+    navigation.addListener("focus", () => {
+      getStripeCard();
+    });
+  }, []);
 
   const goToWalletUpdateScreen = () => {
     navigation.navigate("WalletForTrainee");
   };
 
-  useEffect(() => {
-    navigation.addListener('focus', () => {
-      getStripeCard();
-    })
-  }, []);
+  const handleSubscribeVideo = async () => {
+    const result = await bookSessionMutation({ video_links: route.params.video.video_links[0] })
+    if (result.error) errorToast(result.error.data.message)
+    else if (result?.data) transferPayment()
+    console.log('“sasa”', JSON.stringify(result),"");
+  };
 
   const transferPayment = async () => {
     const body = {
-      sender: userInfo?.stripe.card.customer,
-      reciver: receiverCustomerId,
+      sender: userInfo?.user.cus_id,
+      reciver: route.params.trainerData.userData.user.cus_id,
       currency: "usd",
-      amount: -cost,
-      subamount: cost,
+      amount: -route.params.video.price,
+      subamount: route.params.video.price,
     };
     try {
       const result = await tripePaymentTransferMutation(body);
@@ -76,165 +92,95 @@ const BookSessionPayment = ({ navigation }: PropsInterface) => {
           deepCopy.balance = +deepCopy.balance - +result.data.reciver.amount;
           return deepCopy;
         });
-        successToast('Booking Successfully')
-        navigation.navigate("Home");
       }
     } catch (error) {
       errorToast(error?.data?.message);
     }
   };
 
-  const BookASession = async () => {
-    const body = {
-      sessionId,
-      trainerId,
-      sender: userInfo?.stripe.card.customer,
-      receiver: receiverCustomerId,
-      currency: "usd",
-      amount: -cost,
-      subamount: cost
-    }
-   const result = await bookSessionMutation(body)
-    if (result.data) {
-      transferPayment()
-    } else if (result.error) {
-      errorToast(result.error?.data.message);
-    }
-    }
-
-
   const renderDetails = () => {
     return (
       <View style={{ padding: heightPercentageToDP(2) }}>
-        <DetailItem label="Cost" value={`$${route?.params?.data?.userData?.price}`} />
         <DetailItem
-          label="Type"
-          value={route?.params?.data?.userData?.session_type.type}
+          label="Class Rating"
+          value={`$${video.averageRating} 🔘 ${video.numReviews} Reviews`}
         />
-        <DetailItem
-          label="Title"
-          value={route?.params?.data?.userData?.class_title}
-        />
-        <DetailItem
-          label="Description"
-          value={route?.params?.data?.userData?.details}
-        />
+        <DetailItem label="Trainer name" value={trainerData.personalData.name} />
+        <DetailItem label="Topic" value={video.topic} />
+        <DetailItem label="Description" value={video.video_details} />
       </View>
     );
   };
 
   return (
     <Container>
-      <Header label={"Payment"} subLabel={"Pay before the class starts"} />
-      <ScrollView showsVerticalScrollIndicator={false}>
-        <View style={styles.marchmainview}>
-          <View style={styles.marchmainview2}>
-            <View style={{ width: "27%", alignItems: "center" }}>
-              <Text style={styles.marchtext}>
-                {moment(bookSessionParams.userData?.select_date).format("DD MMMM")}
-              </Text>
-              <Typography color="white" children={moment(bookSessionParams.userData?.select_date).format("ddd")} />
-            </View>
-            <View style={{ width: "5%", alignItems: "center" }}>
-              <View
-                style={{
-                  width: 2,
-                  height: 50,
-                  backgroundColor: "#fff",
-                }}
-              />
-            </View>
-            <View style={{ width: "30%", flexDirection: "column" }}>
-              <Text
-                style={{
-                  color: "#fff",
-                  fontSize: RFValue(10, 580),
-                  fontFamily: "Poppins-Regular",
-                }}
-              >
-                {moment(bookSessionParams.userData?.class_time).format('hh:mm A')}
-              </Text>
-            </View>
-            <Pressable
-              onPress={() => setIsDetailsShow(!isDetailsShow)}
-              style={{
-                width: "30%",
-                backgroundColor: "#414143",
-                alignItems: "center",
-                borderRadius: 12,
-                height: 50,
-                justifyContent: "center",
-              }}
-            >
-              <View
-                style={{
-                  width: "100%",
-                  alignItems: "center",
-                  flexDirection: "row",
-                }}
-              >
-                <View style={{ width: "80%", justifyContent: "center" }}>
-                  <Text
-                    style={{
-                      color: "#fff",
-                      fontSize: RFValue(14, 580),
-                      fontFamily: "Poppins-Regular",
-                      textAlign: "center",
-                    }}
-                  >
-                    Details
-                  </Text>
-                </View>
-                <Entypo name={isDetailsShow ? "chevron-up" : "chevron-down"} size={18} color={"#fff"} />
-              </View>
-            </Pressable>
-          </View>
-          {isDetailsShow && renderDetails()}
-        </View>
-
-        <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: "center", marginTop: 10 }}>
-          <Typography size={"heading2"} weight="600">Total Cost</Typography>
-          <Typography size={"heading2"} weight="600">$ {cost}</Typography>
-        </View>
-        <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: "center", marginTop: 5 }}>
-          <Typography size={"heading3"} style={styles.walletText}>Wallet</Typography>
-          <Typography size={"heading3"} style={styles.walletText}>$ {cardData?.balance}</Typography>
-        </View>
-        </ScrollView>
-        {walletAmount < cost ? (
-          <Typography
-            style={{ marginBottom: 30, textTransform: 'uppercase' }}
-            size={'heading4'}
-            align="center"
-            weight="bold"
-            color="grayTransparent"
-            children={`You have insufficient balance`}
-          />
-        ) : null}
-          <Button
-            style={{ marginBottom: 12 }}
-            disabled={isLoadingTransferStripe || isLoadingBookSession}
-            loader={isLoadingTransferStripe || isLoadingBookSession}
-            label={walletAmount < cost ? "Tap to Recharge" : "Pay Now"}
-            onPress={() => {
-              if (walletAmount < cost) {
-                goToWalletUpdateScreen();
-              } else {
-                BookASession();
-              }
+      <Header label={"Payment"} style={{ marginBottom: 8 }} subLabel={"Pay before the class starts"} />
+      <ScrollView style={{marginBottom: 20}}>
+        <View style={styles.mainView}>
+          <VideoPlayer
+            video={{
+              uri: video.video_links[0],
+            }}
+            videoWidth={900}
+            videoHeight={500}
+            thumbnail={{
+              uri: video.video_thumbnail,
             }}
           />
+          {renderDetails()}
+        </View>
+
+        <View style={styles.rowView}>
+          <Typography size={"heading2"} weight="700">
+            Total video Price
+          </Typography>
+          <Typography size={"heading2"} weight="700">
+            $ {videoPrice}
+          </Typography>
+        </View>
+        <View style={[styles.rowView, {marginBottom: 30}]}>
+          <Typography size={"heading3"} style={styles.walletText}>
+            Wallet
+          </Typography>
+          <Typography size={"heading3"} style={styles.walletText}>
+            $ {cardData?.balance}
+          </Typography>
+        </View>
+      </ScrollView>
+      {walletAmount < videoPrice ? (
+        <Typography
+        style={{ marginBottom: 30, textTransform: 'uppercase' }}
+        size={'heading4'}
+        align="center"
+        weight="bold"
+        color="grayTransparent"
+        children={`You have insufficient balance`}
+        />
+        ) : null}
+      <Button
+        style={{ marginBottom: 12 }}
+        disabled={isLoadingTransferStripe || isLoadingBookSession}
+        loader={isLoadingTransferStripe || isLoadingBookSession}
+        label={walletAmount < videoPrice ? "Tap to Recharge" : "Pay Now"}
+        onPress={() => {
+          if (walletAmount < videoPrice) {
+            goToWalletUpdateScreen();
+          } else {
+            handleSubscribeVideo();
+          }
+        }}
+      />
     </Container>
   );
 };
 
 const DetailItem = ({ label, value }: { label: string; value: string }) => (
-  <View style={styles.dotmainview}>
-    <View style={styles.dotview}>
+  <View style={styles.detailItem}>
+    <View style={styles.dotView}>
       <FontAwesome name="circle" style={{ color: "#979797" }} />
     </View>
     <View style={{ width: "90%" }}>
-      <Text style={styles.textstyle}>
+      <Text style={styles.textStyle}>
         <Typography weight="700" color="white" size={"heading4"}>{label}:</Typography>
         {"\n"}
         <Typography weight="300" color="whiteRegular">{"          "}{value}</Typography>
@@ -244,139 +190,32 @@ const DetailItem = ({ label, value }: { label: string; value: string }) => (
 );
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "#ffffff",
-    paddingTop: Platform.OS === "ios" ? 40 : 0,
-    paddingBottom: 0,
-  },
-  header: {
-    width: "100%",
-    height: 120,
-  },
-  fixeheight: {
-    height: 50,
-    justifyContent: "center",
-    borderBottomWidth: 0.5,
-    borderColor: "lightgrey",
-    width: "100%",
-    alignItems: "center",
-  },
-  fixeheight1: {
-    height: 70,
-    width: "100%",
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  main: {
-    width: "100%",
-    height: "100%",
-    paddingVertical: 10,
-  },
-  TopView: {
-    width: "100%",
-    alignItems: "center",
-  },
-  topView: {
-    width: "100%",
-  },
-  rowView: {
-    width: "100%",
-    flexDirection: "row",
-  },
-  borderView: {
-    width: "100%",
-    borderWidth: 1,
-    bordercolor: "#000",
-  },
-  textstyle: {
-    color: "#979797",
-    fontSize: RFValue(12, 580),
-    fontFamily: "Poppins-Regular",
-  },
-  dotmainview: {
-    width: "100%",
-    flexDirection: "row",
-    marginBottom: 10
-  },
-  dotview: {
-    width: "10%",
-    alignItems: "center",
-  },
-  marchmainview: {
+  mainView: {
     width: "100%",
     backgroundColor: "#000",
     justifyContent: "center",
     borderRadius: 14,
+    overflow: 'hidden'
   },
-  marchmainview2: {
+  detailItem: {
     width: "100%",
-    alignItems: "center",
-    justifyContent: "center",
     flexDirection: "row",
-    paddingVertical: 9,
+    marginBottom: 18,
   },
-  marchtext: {
-    color: "#fff",
-    fontSize: RFValue(12, 580),
-    fontFamily: "Poppins-SemiBold",
-  },
-  mainbtnView: {
-    width: "50%",
+  dotView: {
+    width: "10%",
     alignItems: "center",
-    justifyContent: "center",
-    borderColor: "#fff",
   },
-  ccbtnview: {
-    backgroundColor: "#ff0000",
-    width: 100,
-    height: 45,
-    borderRadius: 14,
+  rowView: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
     alignItems: "center",
-    justifyContent: "center",
+    marginTop: 10,
   },
-  profilebtnview: {
-    backgroundColor: "#ff0000",
-    width: 100,
-    height: 45,
-    borderRadius: 14,
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  btntextstyle: {
-    color: "#fff",
-    fontSize: RFValue(10, 580),
-    fontFamily: "Poppins-Regular",
-  },
-  upcomingtextstyle: {
-    fontSize: RFValue(17, 580),
-    fontFamily: "Poppins-SemiBold",
-    color: "#000",
-  },
-  paymenttextstyle: {
-    fontSize: RFValue(20, 580),
-    fontFamily: "Poppins-Bold",
-    color: "#000000",
-    lineHeight: 51,
-  },
-  beforclasstextstyle: {
+  textStyle: {
+    color: "#979797",
     fontSize: RFValue(12, 580),
     fontFamily: "Poppins-Regular",
-    color: "#000000",
-    lineHeight: 25,
-  },
-  totalView: {
-    width: "50%",
-  },
-  $10View: {
-    width: "50%",
-    alignItems: "flex-end",
-  },
-  totalText: {
-    fontFamily: "Poppins-Bold",
-    fontSize: RFValue(17, 580),
-    lineHeight: 50,
-    color: "#000",
   },
   walletText: {
     fontFamily: "Poppins-Regular",
@@ -384,24 +223,6 @@ const styles = StyleSheet.create({
     lineHeight: 40,
     color: "#000",
   },
-  footer: {
-    width: "100%",
-    marginBottom: 0,
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  btn: {
-    padding: 10,
-    width: "90%",
-    borderRadius: 10,
-    backgroundColor: "#FF0000",
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  paytextstyle: {
-    color: "#FFFFFF",
-    fontSize: RFValue(12, 580),
-    fontFamily: "Poppins-SemiBold",
-  },
 });
-export default BookSessionPayment;
+
+export default SubscribeVideoPayment;

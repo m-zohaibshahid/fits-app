@@ -202,7 +202,6 @@ const VideosForClasses: React.FC<Props> = ({ navigation }) => {
                       videoWidth={1600}
                       videoHeight={900}
                       fullscreenAutorotate={false}
-                      // thumbnail={Images.videoImage}
                       style={{
                         borderTopRightRadius: 16,
                         borderTopLeftRadius: 16,

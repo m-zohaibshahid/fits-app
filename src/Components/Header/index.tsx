@@ -10,12 +10,13 @@ interface HeaderProps {
   label?: string;
   subLabel?: string;
   lableStyle?: TextStyle | ViewStyle;
+  style?: TextStyle;
   hideBackButton?: boolean;
   showCloseButton?: boolean;
   onClose?: () => void;
 }
 
-const Header = ({ label, subLabel, lableStyle, hideBackButton, showCloseButton, onClose }: HeaderProps) => {
+const Header = ({ label, subLabel, lableStyle, style, hideBackButton, showCloseButton, onClose }: HeaderProps) => {
   const navigation = useNavigation();
   const goBack = () => {
     navigation.goBack()
@@ -64,9 +65,9 @@ const Header = ({ label, subLabel, lableStyle, hideBackButton, showCloseButton, 
         {subLabel ? (
           <Typography
             size="pageSubTitle"
-            style={{
+            style={style ? style :{
               marginBottom: 50,
-            }}
+            } }
             weight="500"
             color="blackishGray"
           >

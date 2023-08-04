@@ -6,7 +6,7 @@ import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityI
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
 import { RFValue } from "react-native-responsive-fontsize";
 import About from "./About";
-import Videos2 from "./Videos2";
+import VideosTab from "./VideosTab";
 import Ratings from "./Ratings";
 import Schedule from "./Schedule";
 import { useRoute } from "@react-navigation/native";
@@ -71,7 +71,7 @@ const TrainerDetail = ({ navigation }: PropsInterface) => {
       case Tab.SCHEDULE:
         return <Schedule navigation={navigation} />;
       case Tab.VIDEO:
-        return <Videos2 navigation={navigation} />;
+        return <VideosTab navigation={navigation} />;
       case Tab.RATINGS:
         return <Ratings navigation={navigation} token={token} id={userInfo?.user._id} />;
       default:
@@ -217,7 +217,7 @@ const TrainerDetail = ({ navigation }: PropsInterface) => {
               </Modal>
             </View>
             <View style={styles.toptabmainview}>
-                <Typography pressAble onPress={() => handleTabPress(Tab.ABOUT)} color={activeTab=== Tab.ABOUT ? "redColor" : 'black'}  style={
+                <Typography pressAble size={"large"} onPress={() => handleTabPress(Tab.ABOUT)} color={activeTab=== Tab.ABOUT ? "redColor" : 'black'}  style={
                   activeTab === Tab.ABOUT
                     ? {
                         borderBottomColor: Colors.redColor,
@@ -225,7 +225,7 @@ const TrainerDetail = ({ navigation }: PropsInterface) => {
                       }
                     : {}
                 } >About</Typography>
-                <Typography pressAble onPress={() => handleTabPress(Tab.SCHEDULE)} color={activeTab=== Tab.SCHEDULE ? "redColor" : 'black'}  style={
+                <Typography pressAble size={"large"} onPress={() => handleTabPress(Tab.SCHEDULE)} color={activeTab=== Tab.SCHEDULE ? "redColor" : 'black'}  style={
                   activeTab === Tab.SCHEDULE
                     ? {
                         borderBottomColor: Colors.redColor,
@@ -233,7 +233,7 @@ const TrainerDetail = ({ navigation }: PropsInterface) => {
                       }
                     : {}
                 }>Schedule</Typography>
-                <Typography pressAble onPress={() => handleTabPress(Tab.VIDEO)} color={activeTab=== Tab.VIDEO ? "redColor" : 'black'}  style={
+                <Typography pressAble size={"large"} onPress={() => handleTabPress(Tab.VIDEO)} color={activeTab=== Tab.VIDEO ? "redColor" : 'black'}  style={
                   activeTab === Tab.VIDEO
                     ? {
                         borderBottomColor: Colors.redColor,
@@ -241,7 +241,7 @@ const TrainerDetail = ({ navigation }: PropsInterface) => {
                       }
                     : {}
                 } >Video</Typography>
-                <Typography pressAble onPress={() => handleTabPress(Tab.RATINGS)} color={activeTab=== Tab.RATINGS ? "redColor" : 'black'}  style={
+                <Typography pressAble size={"large"} onPress={() => handleTabPress(Tab.RATINGS)} color={activeTab=== Tab.RATINGS ? "redColor" : 'black'}  style={
                   activeTab === Tab.RATINGS
                     ? {
                         borderBottomColor: Colors.redColor,
@@ -345,7 +345,7 @@ const styles = StyleSheet.create({
    toptabmainview: {
     width: "100%",
     flexDirection: "row",
-    // flex: 1,
+    marginTop: 20,
     justifyContent: "space-between",
     alignItems: "center",
     marginBottom: 10,

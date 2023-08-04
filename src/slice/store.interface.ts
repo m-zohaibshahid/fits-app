@@ -16,12 +16,42 @@ export interface UserMeApiResponse {
   profile_completed: boolean
   profile_status: ProfileStatus
   user: User
-  personal_info: any
-  profession_info: any
+  personal_info: PersonalInfo
+  profession_info: ProfessionInfo
   reviews: any[]
   services: any[]
   session: Session
   stripe: Stripe
+}
+
+export interface PersonalInfo {
+  _id: string
+  name: string
+  date_of_birth: string
+  country: string
+  state: string
+  city: string
+  gender: string
+  user: string
+  profileImage: string
+  phoneNumber: number
+  createdAt: string
+}
+export interface ProfessionInfo {
+  verification_status: string
+  _id: string
+  experience_year: number
+  experience_note: string
+  qualification: Qualification[]
+  user: string
+  createdAt: string
+}
+
+export interface Qualification {
+  _id: string
+  id: number
+  degree: string
+  degree_note: string
 }
 
 export interface ProfileStatus {
@@ -38,6 +68,7 @@ export interface User {
   suspended: boolean
   reset_password: boolean
   trainerVerified: string
+  cus_id: string;
   accountVerified: string
   numReviews: number
   averageRating: number
@@ -53,6 +84,72 @@ export interface Session {
 }
 
 export interface Stripe {
-  card: any;
+  card: Card
+  customer: Customer
   message: string
 }
+
+export interface Card {
+  address_city: any
+  address_country: any
+  address_line1: any
+  address_line1_check: any
+  address_line2: any
+  address_state: any
+  address_zip: any
+  address_zip_check: any
+  brand: string
+  country: string
+  customer: string
+  cvc_check: string
+  dynamic_last4: any
+  exp_month: number
+  exp_year: number
+  fingerprint: string
+  funding: string
+  id: string
+  last4: string
+  metadata: Metadata
+  name: any
+  object: string
+  tokenization_method: any
+  wallet: any
+}
+
+export interface Metadata { }
+
+export interface Customer {
+  address: any
+  balance: number
+  created: number
+  currency: any
+  default_currency: any
+  default_source: string
+  delinquent: boolean
+  description: any
+  discount: any
+  email: string
+  id: string
+  invoice_prefix: string
+  invoice_settings: InvoiceSettings
+  livemode: boolean
+  metadata: Metadata2
+  name: string
+  next_invoice_sequence: number
+  object: string
+  phone: string
+  preferred_locales: any[]
+  shipping: any
+  tax_exempt: string
+  test_clock: any
+}
+
+export interface InvoiceSettings {
+  custom_fields: any
+  default_payment_method: any
+  footer: any
+  rendering_options: any
+}
+
+export interface Metadata2 { }
+

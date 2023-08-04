@@ -1,355 +1,255 @@
-import React, { useState, useEffect } from "react";
-import { Text, View, StyleSheet, ScrollView, Pressable, ActivityIndicator, Platform } from "react-native";
+import React, { useEffect, useMemo, useState } from "react";
+import { Text, View, StyleSheet, ScrollView, Pressable, Platform } from "react-native";
 import moment from "moment";
-import AntDesign from "react-native-vector-icons/AntDesign";
 import FontAwesome from "react-native-vector-icons/FontAwesome";
 import { RFValue } from "react-native-responsive-fontsize";
-import Header from "../../Components/Header";
-import { url } from "../../constants/url";
-import Button from "../../Components/Button";
-import { RouteProp, useNavigation, useRoute } from "@react-navigation/native";
-
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import { Toast } from "react-native-toast-message/lib/src/Toast";
 import { useSelector } from "react-redux";
-import { UserDetail, UserDetailInfoInterface, UserInterface } from "../../interfaces";
-import { useBookASessionMutation, useGetUserMeQuery } from "../../slice/FitsApi.slice";
+import { RouteProp, useRoute } from "@react-navigation/native";
+import { StripeCustomerInterface, UserDetail } from "../../interfaces";
+import { useBookASessionMutation, useGetStripeUserQuery, useStripePaymentTransferMutation, } from "../../slice/FitsApi.slice";
+import { errorToast, successToast } from "../../utils/toast";
+import Container from "../../Components/Container";
+import Typography from "../../Components/typography/text";
+import { heightPercentageToDP } from "react-native-responsive-screen";
+import Entypo from "react-native-vector-icons/Entypo";
+import { NavigationSwitchProp } from "react-navigation";
+import Header from "../../Components/Header";
+import Button from "../../Components/Button";
 
 type RootStackParamList = {
   BookSessionPaymentScreen: BookSessionPaymentParams;
-  // Define other screens and their respective route params here
 };
+
+interface PropsInterface {
+  navigation: NavigationSwitchProp;
+}
 
 type BookSessionPaymentParams = {
   data: any;
 };
 
-const BookSessionPayment = () => {
-  const navigation = useNavigation();
-  const [details, setDetails] = useState(false);
-  const [load, setLoad] = useState(false);
-  const [cardData, setCardData] = useState();
-  const [senderId, setSenderId] = useState();
+const BookSessionPayment = ({ navigation }: PropsInterface) => {
+  const { userInfo } = useSelector((state: { fitsStore: Partial<UserDetail> }) => state.fitsStore);
+  const [isDetailsShow, setIsDetailsShow] = useState(false);
+  const [cardData, setCardData] = useState<StripeCustomerInterface | null>();
   const route = useRoute<RouteProp<RootStackParamList, "BookSessionPaymentScreen">>();
   const bookSessionParams = route?.params?.data;
-  const reciverId = bookSessionParams.userData?.user?.cus_id;
-  const token = useSelector((state: { token: string }) => state.token);
-  const { data, isLoading, error, isSuccess } = useGetUserMeQuery({});
-  const [bookASession] = useBookASessionMutation();
+  const receiverCustomerId = bookSessionParams.userData?.user?.cus_id;
+  const trainerId = bookSessionParams.userData.user._id;
+  const sessionId = bookSessionParams.sessionId
+  const [bookSessionMutation,  {isLoading: isLoadingBookSession}] = useBookASessionMutation();
+  const [tripePaymentTransferMutation, { isLoading: isLoadingTransferStripe }] = useStripePaymentTransferMutation();
+  const { refetch: refetchStripeUser } = useGetStripeUserQuery(userInfo?.stripe.customer.id || '');
 
-  const userMe = async () => {
-    setLoad(true);
-    if (data?.success) {
-      getStripeCard(data?.stripe?.card?.customer);
-      setSenderId(data?.stripe?.card?.customer);
+  const cost = +bookSessionParams.userData?.price;
+  const walletAmount = useMemo(() => cardData?.balance ?? 0, [cardData]);
+
+  const getStripeCard = async () => {
+    const result = await refetchStripeUser();
+    if (result?.data) setCardData(result.data.data);
+  };
+
+
+  const goToWalletUpdateScreen = () => {
+    navigation.navigate("WalletForTrainee");
+  };
+
+
+  useEffect(() => {
+    navigation.addListener('focus', () => {
+      getStripeCard();
+    })
+  }, []);
+
+  const transferPayment = async () => {
+    const body = {
+      sender: userInfo?.stripe.card.customer,
+      reciver: receiverCustomerId,
+      currency: "usd",
+      amount: -cost,
+      subamount: cost,
+    };
+    try {
+      const result = await tripePaymentTransferMutation(body);
+      if (result.data) {
+        setCardData((pre) => {
+          const deepCopy = { ...pre } as StripeCustomerInterface;
+          deepCopy.balance = +deepCopy.balance - +result.data.reciver.amount;
+          return deepCopy;
+        });
+        BookASession()
+      }
+    } catch (error) {
+      errorToast(error?.data?.message);
     }
   };
 
-  const getStripeCard = async (id: string) => {
-    setLoad(true);
-
-    await fetch(`${url}/stripe/customer/${id}`, {
-      method: "GET",
-      headers: {
-        Accept: "application/json",
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
-    })
-      // .then((res) => res.json())
-
-      .then((res2) => {
-        setLoad(false);
-        if (res2?.success) {
-          setCardData(res2?.data);
-        }
-      })
-      .catch(() => {
-        setLoad(false);
-      });
-  };
   const BookASession = async () => {
-    // await fetch(`${url}/book-a-session`, {
-    //   method: "POST",
-    //   headers: {
-    //     Accept: "application/json",
-    //     "Content-Type": "application/json",
-    //     Authorization: `Bearer ${userInfo?.access_token}`,
-    //   },
-    //   body: JSON.stringify({
-    //     sessionId: route?.params?.data?.sessionId,
-    //     trainerId: route?.params?.data?.trainerId,
-    //   }),
-    // })
     const body = {
-      sessionId: route?.params?.data?.sessionId,
-      trainerId: route?.params?.data?.trainerId,
-    };
-    bookASession(body)
-      .then((res2) => {
-        if (res2.data.success) {
-          setLoad(false);
-          navigation.navigate("Home");
-          Toast.show({
-            type: "success",
-            text1: "Session booked successfully",
-          });
-        } else {
-          setLoad(false);
-          Toast.show({
-            type: "error",
-            text1: "Something went wrong",
-          });
-        }
-      })
-      .catch(() => {
-        setLoad(false);
-        Toast.show({
-          type: "error",
-          text1: "Something went wrong",
-        });
-      });
+      sessionId,
+      trainerId,
+      sender: userInfo?.stripe.card.customer,
+      receiver: receiverCustomerId,
+      currency: "usd",
+      amount: -cost,
+      subamount: cost
+    }
+   const result = await bookSessionMutation(body)
+    if (result.data) {
+      successToast('Booking Successfully')
+        navigation.navigate("Home");
+    } else if (result.error) {
+      errorToast(result.error?.data.message);
+    }
+    }
+
+
+  const renderDetails = () => {
+    return (
+      <View style={{ padding: heightPercentageToDP(2) }}>
+        <DetailItem label="Cost" value={`$${route?.params?.data?.userData?.price}`} />
+        <DetailItem
+          label="Type"
+          value={route?.params?.data?.userData?.session_type.type}
+        />
+        <DetailItem
+          label="Title"
+          value={route?.params?.data?.userData?.class_title}
+        />
+        <DetailItem
+          label="Description"
+          value={route?.params?.data?.userData?.details}
+        />
+      </View>
+    );
   };
 
-  const transferPayment = async () => {
-    setLoad(true);
-    const userData = await AsyncStorage.getItem("userData");
-    let userDatax = JSON.parse(userData);
-    await fetch(`${url}/stripe/transfer`, {
-      method: "POST",
-      headers: {
-        Accept: "application/json",
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${userDatax?.access_token}`,
-      },
-      body: JSON.stringify({
-        sender: senderId,
-        reciver: reciverId,
-        currency: "usd",
-        amount: -cost,
-        subamount: cost,
-      }),
-    })
-      .then((res) => res.json())
-      .then((res2) => {
-        if (res2?.reciver && res2?.sender) {
-          BookASession();
-        } else {
-          Toast.show({
-            type: error,
-            text1: "Something went Wrong",
-          });
-        }
-      });
-  };
-  // Effects
-  useEffect(() => {
-    navigation.addListener("focus", () => {
-      userMe();
-    });
-  }, []);
-  let wallet = Number(cardData?.balance === undefined ? 0 : cardData?.balance);
-  let cost = Number(bookSessionParams.userData?.price);
-  let balance = Number(wallet - cost);
   return (
-    <View style={styles.container}>
-      <Header label={"Payment"} subLabel={"Pay before the class starts"} navigation={navigation} doubleHeader={true} />
-      <ScrollView showsVerticalScrollIndicator={false} style={styles.main}>
-        {/*start Totale */}
-        {load ? (
-          <View style={{ marginTop: 30 }}>
-            <ActivityIndicator color="red" size="large" />
+    <Container>
+      <Header label={"Payment"} subLabel={"Pay before the class starts"} />
+      <ScrollView showsVerticalScrollIndicator={false}>
+        <View style={styles.marchmainview}>
+          <View style={styles.marchmainview2}>
+            <View style={{ width: "27%", alignItems: "center" }}>
+              <Text style={styles.marchtext}>
+                {moment(bookSessionParams.userData?.select_date).format("DD MMMM")}
+              </Text>
+              <Typography color="white" children={moment(bookSessionParams.userData?.select_date).format("ddd")} />
+            </View>
+            <View style={{ width: "5%", alignItems: "center" }}>
+              <View
+                style={{
+                  width: 2,
+                  height: 50,
+                  backgroundColor: "#fff",
+                }}
+              />
+            </View>
+            <View style={{ width: "30%", flexDirection: "column" }}>
+              <Text
+                style={{
+                  color: "#fff",
+                  fontSize: RFValue(10, 580),
+                  fontFamily: "Poppins-Regular",
+                }}
+              >
+                {moment(bookSessionParams.userData?.class_time).format('hh:mm A')}
+              </Text>
+            </View>
+            <Pressable
+              onPress={() => setIsDetailsShow(!isDetailsShow)}
+              style={{
+                width: "30%",
+                backgroundColor: "#414143",
+                alignItems: "center",
+                borderRadius: 12,
+                height: 50,
+                justifyContent: "center",
+              }}
+            >
+              <View
+                style={{
+                  width: "100%",
+                  alignItems: "center",
+                  flexDirection: "row",
+                }}
+              >
+                <View style={{ width: "80%", justifyContent: "center" }}>
+                  <Text
+                    style={{
+                      color: "#fff",
+                      fontSize: RFValue(14, 580),
+                      fontFamily: "Poppins-Regular",
+                      textAlign: "center",
+                    }}
+                  >
+                    Details
+                  </Text>
+                </View>
+                <Entypo name={isDetailsShow ? "chevron-up" : "chevron-down"} size={18} color={"#fff"} />
+              </View>
+            </Pressable>
           </View>
-        ) : (
-          <>
-            <View style={styles.TopView}>
-              <View style={styles.marchmainview}>
-                <View style={styles.marchmainview2}>
-                  <View style={{ width: "25%", alignItems: "center" }}>
-                    <Text style={styles.marchtext}>
-                      {moment(bookSessionParams.userData?.select_date).format("DD ")}
-                      {moment(bookSessionParams.userData?.select_date).format("MMMM")}
-                    </Text>
-                  </View>
-                  <View
-                    style={{
-                      width: "5%",
-                      alignItems: "center",
-                    }}
-                  >
-                    <View
-                      style={{
-                        width: 2,
-                        height: 50,
-                        backgroundColor: "#fff",
-                      }}
-                    ></View>
-                  </View>
-                  <View style={{ width: "35%", flexDirection: "column" }}>
-                    <Text style={styles.marchtext}>{bookSessionParams.userData?.category}</Text>
-                    <Text
-                      style={{
-                        color: "#fff",
-                        fontSize: RFValue(10, 580),
-                        fontFamily: "Poppins-Regular",
-                      }}
-                    >
-                      {bookSessionParams.userData?.class_time.slice(0, 10)}
-                    </Text>
-                  </View>
-                  <Pressable
-                    onPress={() => setDetails(!details)}
-                    style={{
-                      width: "30%",
-                      backgroundColor: "#414143",
-                      alignItems: "center",
-                      borderRadius: 10,
-                      height: 50,
-                      justifyContent: "center",
-                    }}
-                  >
-                    <View
-                      style={{
-                        width: "100%",
-                        alignItems: "center",
-                        flexDirection: "row",
-                      }}
-                    >
-                      <View style={{ width: "80%", justifyContent: "center" }}>
-                        <Text
-                          style={{
-                            color: "#fff",
-                            fontSize: RFValue(14, 580),
-                            fontFamily: "Poppins-Regular",
-                            textAlign: "center",
-                          }}
-                        >
-                          Details
-                        </Text>
-                      </View>
-                      <AntDesign name={details ? "up" : "down"} size={15} color={"#fff"} />
-                    </View>
-                  </Pressable>
-                </View>
-                {/*end Yoga */}
-                {details && (
-                  <View style={{ width: "100%", paddingBottom: 18 }}>
-                    <View style={{ width: "90%" }}>
-                      <View style={styles.dotmainview}>
-                        <View style={styles.dotview}>
-                          <FontAwesome name="circle" style={{ color: "#979797" }} />
-                        </View>
-                        <View style={{ width: "90%" }}>
-                          <Text style={styles.textstyle}>
-                            Type:{"\n"} {bookSessionParams.userData?.session_type.type}
-                          </Text>
-                        </View>
-                      </View>
-                      <View style={styles.dotmainview}>
-                        <View style={styles.dotview}>
-                          <FontAwesome name="circle" style={{ color: "#979797" }} />
-                        </View>
-                        <View style={{ width: "90%" }}>
-                          <Text style={styles.textstyle}>
-                            Cost: {"\n"}$ {bookSessionParams.userData?.price}
-                          </Text>
-                        </View>
-                      </View>
-                      <View style={styles.dotmainview}>
-                        <View style={styles.dotview}>
-                          <FontAwesome name="circle" style={{ color: "#979797" }} />
-                        </View>
-                        <View style={{ width: "90%" }}>
-                          <Text style={styles.textstyle}>
-                            Trainee name:{"\n"}
-                            {bookSessionParams.personalData.check.name}
-                          </Text>
-                        </View>
-                      </View>
-                      <View style={styles.dotmainview}>
-                        <View style={styles.dotview}>
-                          <FontAwesome name="circle" style={{ color: "#979797" }} />
-                        </View>
-                        <View style={{ width: "90%" }}>
-                          <Text style={styles.textstyle}>
-                            Description:{"\n"}
-                            {cardData?.description}
-                          </Text>
-                        </View>
-                      </View>
-                    </View>
-                  </View>
-                )}
-              </View>
-            </View>
-            {/*end total */}
+          {isDetailsShow && renderDetails()}
+        </View>
 
-            <View style={styles.TopView}>
-              <View style={styles.topView}>
-                {/*start pay*/}
-                <View style={styles.rowView}>
-                  <View style={styles.totalView}>
-                    <Text style={styles.totalText}>Total Cost</Text>
-                  </View>
-                  <View style={styles.$10View}>
-                    <Text style={styles.totalText}>$ {bookSessionParams.userData?.price}</Text>
-                  </View>
-                </View>
-                {/*end pay*/}
-                {/*start pay*/}
-                <View style={styles.rowView}>
-                  <View style={styles.totalView}>
-                    <Text style={styles.walletText}>Wallet</Text>
-                  </View>
-                  <View style={styles.$10View}>
-                    <Text style={styles.walletText}>$ {wallet}</Text>
-                  </View>
-                </View>
-                <View style={styles.rowView}>
-                  <View style={styles.totalView}>
-                    <Text style={styles.walletText}>Balance</Text>
-                  </View>
-                  <View style={styles.$10View}>
-                    <Text style={styles.walletText}>$ {balance}</Text>
-                  </View>
-                </View>
-                {/*end pay*/}
-              </View>
-            </View>
-            <View style={{ paddingVertical: 40 }}></View>
-          </>
-        )}
-      </ScrollView>
-      <View style={styles.footer}>
-        <View style={styles.TopView}>
+        <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: "center", marginTop: 10 }}>
+          <Typography size={"heading2"} weight="600">Total Cost</Typography>
+          <Typography size={"heading2"} weight="600">$ {cost}</Typography>
+        </View>
+        <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: "center", marginTop: 5 }}>
+          <Typography size={"heading3"} style={styles.walletText}>Wallet</Typography>
+          <Typography size={"heading3"} style={styles.walletText}>$ {cardData?.balance}</Typography>
+        </View>
+        </ScrollView>
+        {walletAmount < cost ? (
+          <Typography
+            style={{ marginBottom: 30, textTransform: 'uppercase' }}
+            size={'heading4'}
+            align="center"
+            weight="bold"
+            color="grayTransparent"
+            children={`You have insufficient balance`}
+          />
+        ) : null}
           <Button
-            disabled={load}
-            loader={load}
-            navigation={navigation}
-            label={wallet < cost ? "Please Recharge" : "Pay Now"}
+            style={{ marginBottom: 12 }}
+            disabled={isLoadingTransferStripe || isLoadingBookSession}
+            loader={isLoadingTransferStripe || isLoadingBookSession}
+            label={walletAmount < cost ? "Tap to Recharge" : "Pay Now"}
             onPress={() => {
-              if (wallet > cost) {
-                transferPayment();
+              if (walletAmount < cost) {
+                goToWalletUpdateScreen();
               } else {
-                Toast.show({
-                  type: "error",
-                  text1: "Please recharge account",
-                });
+                transferPayment();
               }
             }}
           />
-        </View>
-      </View>
-    </View>
+    </Container>
   );
 };
+
+const DetailItem = ({ label, value }: { label: string; value: string }) => (
+  <View style={styles.dotmainview}>
+    <View style={styles.dotview}>
+      <FontAwesome name="circle" style={{ color: "#979797" }} />
+    </View>
+    <View style={{ width: "90%" }}>
+      <Text style={styles.textstyle}>
+        <Typography weight="700" color="white" size={"heading4"}>{label}:</Typography>
+        {"\n"}
+        <Typography weight="300" color="whiteRegular">{"          "}{value}</Typography>
+      </Text>
+    </View>
+  </View>
+);
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "#ffffff",
     paddingTop: Platform.OS === "ios" ? 40 : 0,
-    paddingBottom: Platform.OS === "ios" ? 0 : 0,
+    paddingBottom: 0,
   },
   header: {
     width: "100%",
@@ -379,9 +279,8 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   topView: {
-    width: "90%",
+    width: "100%",
   },
-
   rowView: {
     width: "100%",
     flexDirection: "row",
@@ -399,17 +298,17 @@ const styles = StyleSheet.create({
   dotmainview: {
     width: "100%",
     flexDirection: "row",
+    marginBottom: 10
   },
   dotview: {
     width: "10%",
     alignItems: "center",
   },
   marchmainview: {
-    width: "90%",
+    width: "100%",
     backgroundColor: "#000",
     justifyContent: "center",
     borderRadius: 14,
-    marginTop: 20,
   },
   marchmainview2: {
     width: "100%",
@@ -489,10 +388,8 @@ const styles = StyleSheet.create({
   footer: {
     width: "100%",
     marginBottom: 0,
-    bottom: 10,
     alignItems: "center",
     justifyContent: "center",
-    position: "absolute",
   },
   btn: {
     padding: 10,

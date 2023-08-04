@@ -219,3 +219,57 @@ export interface RoomMessagesResponse {
   message: string;
   success: boolean;
 }
+export interface TrainerVideosForTrainerDetailsApiResponse {
+  statusCode: number
+  data: VideosData[]
+  success: boolean
+}
+
+export interface VideosData {
+  video_links: string[]
+  numReviews: number
+  averageRating: number
+  video_thumbnail: string
+  _id: string
+  topic: string
+  video_category: string
+  video_details: string
+  price: number
+  user: string
+  createdAt: string
+  updatedAt: string
+  __v: number
+}
+
+
+export interface StripeCustomerInterface {
+  address: any
+  balance: number
+  created: number
+  currency: string
+  default_currency: string
+  default_source: string
+  delinquent: boolean
+  description: any
+  discount: any
+  email: string
+  id: string
+  invoice_prefix: string
+  invoice_settings: InvoiceSettings
+  livemode: boolean
+  name: string
+  next_invoice_sequence: number
+  object: string
+  phone: string
+  preferred_locales: any[]
+  shipping: any
+  tax_exempt: string
+  test_clock: any
+}
+
+export interface InvoiceSettings {
+  custom_fields: any
+  default_payment_method: any
+  footer: any
+  rendering_options: any
+}

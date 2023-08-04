@@ -17,7 +17,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import Geolocation from "react-native-geolocation-service";
 import Geocoder from "react-native-geocoder";
 import FastImage from "react-native-fast-image";
-import { useSessionsQuery, useStripeCustomerMutation, useUpdateFilterMutation } from "../../slice/FitsApi.slice";
+import { useGetUserMeQuery, useSessionsQuery, useStripeCustomerMutation, useUpdateFilterMutation } from "../../slice/FitsApi.slice";
 import { useDispatch, useSelector } from "react-redux";
 import { TrainerClassInterfaceInTraineeScreenInterface, TrainerPersonalinfoInTraineeScreenInterface, TrainerProfessioninfoInTraineeScreen, UserDetail } from "../../interfaces";
 import { setCreateStripeData } from "../../slice/FitsSlice.store";
@@ -48,11 +48,12 @@ const Home: React.FC<Props> = ({ navigation }) => {
   const [recommended, setRecommended] = useState(false);
   const [superLong, setSuperLong] = useState(55.9754);
   const [superLat, setSuperLat] = useState(21.4735);
+  const { refetch: getUserInfoFromUserMe,data, isLoading } = useGetUserMeQuery({});
 
   const { data: session, refetch: sessionRefetch } = useSessionsQuery({});
   const [stripeCustomer] = useStripeCustomerMutation({});
   const [updateFilter] = useUpdateFilterMutation({});
-
+const {createStripeData}=useSelector((state:any)=> state.fitsStore)
   const handleSportsData = (item: { name: null }) => {
     setModalVisible(false);
     setSportData(item?.name);
@@ -88,7 +89,7 @@ const Home: React.FC<Props> = ({ navigation }) => {
 
   useEffect(() => {
     navigation.addListener("focus", () => {
-      createStripeAccount(userInfo?.personal_info);
+      // createStripeAccount();
       requestLocationPermission();
       sessionRefetch();
     });
@@ -172,22 +173,24 @@ const Home: React.FC<Props> = ({ navigation }) => {
     }
   };
 
-  const setForCareateStripeCall = async (filterData: any) => {
-    dispatch(setCreateStripeData(filterData));
-  };
+  // const setForCareateStripeCall = async (filterData: any) => {
+  //   dispatch(setCreateStripeData(filterData));
+  // };
 
-  const createStripeAccount = async (filterData: { personal_info: { name: string; phoneNumber: string }; user: { email: any } }) => {
-    stripeCustomer({ name: filterData?.personal_info?.name, email: filterData?.user?.email, phone: filterData?.personal_info?.phoneNumber })
-      // .unwrap()
-      .then((res2: any) => {
-        if (res2?.data?.message === "success" || res2?.error?.data?.message === "customer already exists") {
-          setForCareateStripeCall(res2?.error?.data?.data ?? res2?.data?.data);
-        }
-      })
-      .catch((error) => {
-        errorToast(error?.message);
-      });
-  };
+  // const createStripeAccount = async () => {
+  //   const body = { name: userInfo?.personal_info?.name, email: userInfo?.user?.email, phone: userInfo?.personal_info?.phoneNumber }
+  //   const result = await stripeCustomer(body)
+  //   if (result?.error) errorToast(result?.error?.data?.message)
+  //     // .unwrap()
+  //     // .then((res2: any) => {
+  //     //   if (res2?.data?.message === "success" || res2?.error?.data?.message === "customer already exists") {
+  //         setForCareateStripeCall(res2?.error?.data?.data ?? res2?.data?.data);
+  //     //   }
+  //     // })
+  //     // .catch((error) => {
+  //     //   errorToast(error?.message);
+  //     // });
+  // };
 
   const handlePressOnCard = (item: TrainerClassInterfaceInTraineeScreenInterface) => {
     const findPersonalInfoById = personalInfoData.find((data: TrainerPersonalinfoInTraineeScreenInterface) => data.user === item.user?._id);

@@ -53,15 +53,14 @@ const AccountScreen = ({navigation}: PropsInterface) => {
     Geocoder.geocodePosition({
       lat: latitude,
       lng: longitute,
-    }).then((res) => {
+    }).then((res: string | any[]) => {
       if (res.length > 0) {
         const address = res[0].formattedAddress;
         setUserCurrentLocation(address);
       } else {
         setUserCurrentLocation('Location not available');
       }
-    }).catch((error) => {
-      console.log('Error getting location: ', error.message);
+    }).catch((error: any) => {
       setUserCurrentLocation('Location not available');
     });
   };
@@ -77,7 +76,7 @@ const AccountScreen = ({navigation}: PropsInterface) => {
         password: newPassword,
       }
       
-    const result = await updatePassword({ id: userInfo?.user._id, data: body })
+    const result:any = await updatePassword({ id: userInfo?.user._id, data: body })
     if (result.error) errorToast(result.error.data.message)
     if (result.data) {
       successToast('Password updated')
@@ -196,7 +195,7 @@ const AccountScreen = ({navigation}: PropsInterface) => {
             <View style={{alignItems: 'center'}}>
               <View
             style={{
-                  marginTop: 30,
+                  marginVertical: 5,
                   width: '100%',
                   backgroundColor: '#000',
                   padding: 20,
@@ -297,11 +296,11 @@ const AccountScreen = ({navigation}: PropsInterface) => {
                     </View>
                   </View>
             </View>
-            <View style={{ alignItems: 'center', marginTop: 30 }}>
+            <View style={{ alignItems: 'center', marginVertical: 5 }}>
               <Pressable
                 onPress={() => {
                   if (userInfo?.stripe.card) navigation.navigate('TrainerWallet');
-                  else navigation.navigate('TrainerCreateCard');
+                  else navigation.navigate('CreateCardScreen');
                 }}
                 style={{
                   width: '100%',
@@ -320,7 +319,7 @@ const AccountScreen = ({navigation}: PropsInterface) => {
                 </View>
               </Pressable>
             </View>
-            <View style={{ backgroundColor: Colors.black, alignItems: "center", borderRadius: 10, marginTop: 30 }}>
+            <View style={{ backgroundColor: Colors.black, alignItems: "center", borderRadius: 10, marginVertical: 5 }}>
                     <Pressable
                       onPress={() => setChangePassword(!ChangePassword)}
                       style={{
@@ -374,7 +373,7 @@ const AccountScreen = ({navigation}: PropsInterface) => {
               </View>
             )}
             </View>
-            <View style={{ alignItems: 'center', marginTop: 30 }}>
+            <View style={{ alignItems: 'center', marginVertical: 5 }}>
               <Pressable
                 onPress={() => navigation.navigate('ServicesOffered')}
                 style={{
@@ -394,7 +393,7 @@ const AccountScreen = ({navigation}: PropsInterface) => {
                 </View>
               </Pressable>
             </View>
-            <View style={{ alignItems: 'center', marginTop: 30 }}>
+            <View style={{ alignItems: 'center', marginVertical: 5 }}>
               <Pressable
                  onPress={() =>
                   navigation.navigate('UpdateProfessioninfo')
@@ -416,7 +415,7 @@ const AccountScreen = ({navigation}: PropsInterface) => {
                 </View>
               </Pressable>
             </View>
-            <View style={{ alignItems: 'center', marginTop: 30 }}>
+            <View style={{ alignItems: 'center', marginVertical: 5 }}>
               <Pressable
                 onPress={onLogout}
                 style={{

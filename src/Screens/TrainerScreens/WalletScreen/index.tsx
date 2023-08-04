@@ -1,388 +1,168 @@
 import React, { useState, useEffect } from "react";
-import { Text, View, StyleSheet, ScrollView, Pressable, ActivityIndicator, Platform, Linking } from "react-native";
-import AntDesign from "react-native-vector-icons/AntDesign";
-import FontAwesome from "react-native-vector-icons/FontAwesome";
+import { Text, View, StyleSheet, ScrollView, Pressable, ActivityIndicator, Linking } from "react-native";
+import Entypo from "react-native-vector-icons/Entypo";
+import moment from "moment";
 import { RFValue } from "react-native-responsive-fontsize";
 import Header from "../../../Components/Header";
 import Button from "../../../Components/Button";
-import { url } from "../../../constants/url";
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import { NavigationSwitchProp } from "react-navigation";
-import { UserDetail } from "../../../interfaces";
+import Container from "../../../Components/Container";
+import Colors from "../../../constants/Colors";
+import Typography from "../../../Components/typography/text";
 import { useSelector } from "react-redux";
+import { useGetStripeUserQuery } from "../../../slice/FitsApi.slice";
+import { NavigationSwitchProp } from "react-navigation";
+import { StripeCustomerInterface, UserDetail, Transaction } from "../../../interfaces";
+
 interface Props {
   navigation: NavigationSwitchProp;
 }
+
 const WalletScreen: React.FC<Props> = ({ navigation }) => {
   const [details, setDetails] = useState(false);
   const { userInfo } = useSelector((state: { fitsStore: Partial<UserDetail> }) => state.fitsStore);
+  const [cardData, setCardData] = useState<StripeCustomerInterface | null>();
+  const { refetch: refetchStripeUser, isLoading } = useGetStripeUserQuery(userInfo?.stripe?.card?.customer || '');
 
+  useEffect(() => {
+    navigation.addListener('focus', () => {
+      getStripeCard();
+    });
+  }, []);
 
+  console.log('====================================');
+  console.log(userInfo?.user.cus_id);
+  console.log('====================================');
 
-  const getStripeCard = async (id: string) => {
-    setLoad(true);
-    const userData = await AsyncStorage.getItem("userData");
-    let userDatax = JSON.parse(userData);
-    if (userDatax) {
-      await fetch(`${url}/stripe/customer/${id}`, {
-        method: "GET",
-        headers: {
-          Accept: "application/json",
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${userDatax?.access_token}`,
-        },
-      })
-        .then((res) => res.json())
-        .then((res2) => {
-          setLoad(false);
-          if (res2?.message === "Stripe Customer Found Successfully!") {
-            setCardData(res2?.data);
-          } else {
-          }
-        })
-        .catch((error) => {
-          setLoad(false);
-        });
+  const getStripeCard = async () => {
+    try {
+      const result = await refetchStripeUser();
+      if (result?.data) setCardData(result.data.data);
+    } catch (error) {
+      // Handle error here
     }
   };
 
- /*  const Payout = async () => {
-    const userData = await AsyncStorage.getItem("userData");
-    let userDatax = JSON.parse(userData);
-    setLoad(true);
-    await fetch(`${url}/stripe/connect/accountLink`, {
-      method: "POST",
-      headers: {
-        Accept: "application/json",
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${userDatax?.access_token}`,
-      },
-      body: JSON.stringify({
-        email: email,
-      }),
-    })
-      .then((res) => res.json())
-      .then((res2) => {
-        setLoad(false);
-        Linking.openURL(res2?.data?.url);
-      })
-      .catch((error) => {
-        setLoad(false);
-        Toast.show({
-          type: "error",
-          text1: "Something went wrong",
-        });
-      });
-  }; */
+  // Render transaction history
+  const renderTransactionHistory = (transactions: Transaction[] | undefined) => {
+    if (!transactions) return null;
+    return transactions.map((transaction, index) => (
+      <View key={index} style={styles.transactionItem}>
+        <View style={styles.dateView}>
+          <Typography color="white" size="heading4" weight="500">
+            {moment(transaction.createdAt).format('DD-MMMM')}
+          </Typography>
+        </View>
+        <View style={styles.separator} />
+        <View style={styles.transactionInfo}>
+          <Text style={styles.transactionText}>
+            {transaction.name}
+            <Text style={styles.transactionDetail}>
+              {`\n          ${transaction.description}`}
+            </Text>
+          </Text>
+        </View>
+        <Pressable
+          onPress={() => setDetails(!details)}
+          style={styles.detailsButton}
+        >
+          <View style={styles.detailsButtonView}>
+            <Text style={styles.detailsButtonText}>
+              Details
+            </Text>
+            <Entypo name={details ? "chevron-up" : "chevron-down"} size={18} color={"#fff"} />
+          </View>
+        </Pressable>
+      </View>
+    ));
+  };
 
-  // Effects
-  // if (load) return <ActivityIndicator />
+  if (isLoading) return <ActivityIndicator />
 
   return (
-    <View style={styles.container}>
+    <Container>
       <Header label={"Wallet"} />
-        <View style={styles.container}>
-          <ScrollView showsVerticalScrollIndicator={false}>
-            {/*start Totale */}
-            <View style={styles.TopView}>
-              <View style={styles.walletboxView}>
-                <View style={styles.TopView}>
-                  <View style={styles.walletboxtextview}>
-                    <Text style={styles.tbtextstyle}>Total balance</Text>
-                    <Text
-                      style={{
-                        color: "#fff",
-                        fontSize: RFValue(20, 580),
-                        fontFamily: "Poppins-Bold",
-                      }}
-                    >
-                      $ {}
-                    </Text>
-                  </View>
-                </View>
-              </View>
-            </View>
-            {/*end total */}
-            {/*start Income */}
-            <View
-              style={{
-                width: "100%",
-                alignItems: "center",
-                marginTop: 20,
-              }}
-            >
-              <View style={{ width: "90%" }}>
-                <Text
-                  style={{
-                    color: "#000",
-                    fontSize: RFValue(20, 580),
-                    fontFamily: "Poppins-Bold",
-                  }}
-                >
-                  Transactions Details
-                </Text>
-              </View>
-            </View>
-            {/*start Totale */}
-            <View style={styles.TopView}>
-              <View style={styles.marchmainview}>
-                <View style={styles.marchmainview2}>
-                  <View style={{ width: "25%", alignItems: "center" }}>
-                    <Text style={styles.marchtext}>5-March</Text>
-                  </View>
-                  <View
-                    style={{
-                      width: "5%",
-                      alignItems: "center",
-                    }}
-                  >
-                    <View
-                      style={{
-                        width: 2,
-                        height: 50,
-                        backgroundColor: "#fff",
-                      }}
-                    ></View>
-                  </View>
-                  <View style={{ width: "35%", flexDirection: "column" }}>
-                    <Text style={styles.marchtext}>
-                      Yoga Defence {"\n"}
-                      <Text
-                        style={{
-                          color: "#fff",
-                          fontSize: RFValue(10, 580),
-                          fontFamily: "Poppins-Regular",
-                        }}
-                      >
-                        5 PM - 6 PM
-                      </Text>
-                    </Text>
-                  </View>
-                  <Pressable
-                    onPress={() => setDetails(!details)}
-                    style={{
-                      width: "30%",
-                      backgroundColor: "#414143",
-                      alignItems: "center",
-                      borderRadius: 12,
-                      height: 50,
-                      justifyContent: "center",
-                    }}
-                  >
-                    <View
-                      style={{
-                        width: "100%",
-                        alignItems: "center",
-                        flexDirection: "row",
-                      }}
-                    >
-                      <View style={{ width: "80%", justifyContent: "center" }}>
-                        <Text
-                          style={{
-                            color: "#fff",
-                            fontSize: RFValue(14, 580),
-                            fontFamily: "Poppins-Regular",
-                            textAlign: "center",
-                          }}
-                        >
-                          Details
-                        </Text>
-                      </View>
-                      <AntDesign name={details ? "up" : "down"} size={15} color={"#fff"} />
-                    </View>
-                  </Pressable>
-                </View>
-                {/*end Yoga */}
-                {details && (
-                  <View style={{ width: "100%", paddingBottom: 18 }}>
-                    <View style={styles.dotmainview}>
-                      <View style={styles.dotview}>
-                        <FontAwesome name="circle" style={{ color: "#979797" }} />
-                      </View>
-                      <View style={{ width: "90%" }}>
-                        <Text style={styles.textstyle}>Type: Online session</Text>
-                      </View>
-                    </View>
-                    <View style={styles.dotmainview}>
-                      <View style={styles.dotview}>
-                        <FontAwesome name="circle" style={{ color: "#979797" }} />
-                      </View>
-                      <View style={{ width: "90%", flexDirection: "row" }}>
-                        <Text style={styles.textstyle}>Cost: $48 (per person)</Text>
-                      </View>
-                    </View>
-                    <View style={styles.dotmainview}>
-                      <View style={styles.dotview}>
-                        <FontAwesome name="circle" style={{ color: "#979797" }} />
-                      </View>
-                      <View style={{ width: "90%" }}>
-                        <Text style={styles.textstyle}>28 people attend this sessions</Text>
-                      </View>
-                    </View>
-                    <View style={styles.dotmainview}>
-                      <View style={styles.dotview}>
-                        <FontAwesome name="circle" style={{ color: "#979797" }} />
-                      </View>
-                      <View style={{ width: "90%" }}>
-                        <Text style={styles.textstyle}>Total Income: $ 1344</Text>
-                      </View>
-                    </View>
-                    <View style={styles.dotmainview}>
-                      <View style={styles.dotview}>
-                        <FontAwesome name="circle" style={{ color: "#979797" }} />
-                      </View>
-                      <View style={{ width: "90%" }}>
-                        <Text style={styles.textstyle}>App Fees: $ 150</Text>
-                      </View>
-                    </View>
-                  </View>
-                )}
-              </View>
-            </View>
-            {/*end total */}
-            <View style={{ marginVertical: 10 }}></View>
-          </ScrollView>
-          <View style={styles.footer}>
-            <View style={styles.TopView}>{<Button label={"Withdraw Funds"} onPress={() => navigation.navigate("WalletForTrainee")} />}</View>
-          </View>
+      <ScrollView showsVerticalScrollIndicator={false}>
+        <View style={styles.walletBoxTextView}>
+          <Typography color="white" size="heading1">Total balance</Typography>
+          <Typography color="white" size="heading1" weight="900">$ {cardData?.balance ?? 0}</Typography>
         </View>
-    </View>
+        <View style={styles.transactionHistoryView}>
+          {/* {renderTransactionHistory(userInfo?.transactions)} */}
+        </View>
+      </ScrollView>
+      <Button
+        disabled={!cardData?.balance}
+        style={{ marginBottom: 10 }}
+        label={"Withdraw Funds"}
+        onPress={() => navigation.navigate("WalletForTrainee")}
+      />
+    </Container>
   );
 };
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "#ffffff",
-    paddingTop: Platform.OS === "ios" ? 40 : 0,
-    paddingBottom: Platform.OS === "ios" ? 0 : 0,
-  },
-  header: {
-    width: "100%",
-    height: 120,
-  },
-  fixeheight: {
-    height: 50,
+  walletBoxTextView: {
     justifyContent: "center",
-    borderBottomWidth: 0.5,
-    borderColor: "lightgrey",
-    width: "100%",
     alignItems: "center",
+    rowGap: 15,
+    backgroundColor: Colors.black,
+    borderRadius: 12,
+    height: 150,
   },
-  fixeheight1: {
-    height: 70,
-    width: "100%",
-    justifyContent: "center",
-    // alignItems: 'center',
-  },
-  main: {
-    width: "100%",
-  },
-  footer: {
-    width: "100%",
-    marginBottom: 0,
-    bottom: 0,
-    justifyContent: "center",
-    position: "absolute",
-    backgroundColor: "#fff",
-  },
-  backTopView: {
-    width: "100%",
-    alignItems: "center",
+  transactionHistoryView: {
     marginTop: 20,
-  },
-  backtopviews: {
-    width: "90%",
-    flexDirection: "row",
-  },
-  widthViewsback: {
-    width: "10%",
-    justifyContent: "center",
-  },
-  TopView: {
     width: "100%",
-    alignItems: "center",
-  },
-  topView: { width: "90%" },
-  topView1: {
-    width: "90%",
-    alignItems: "center",
-  },
-  walletsText: {
-    fontFamily: "Poppins-Bold",
-    fontSize: RFValue(24, 580),
-    color: "#000",
-  },
-  walletboxView: {
-    width: "90%",
-    backgroundColor: "#000",
-    height: 170,
-    justifyContent: "center",
-    borderRadius: 14,
-  },
-  walletboxtextview: {
-    width: "90%",
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  tbtextstyle: {
-    color: "#fff",
-    fontSize: RFValue(20, 580),
-    fontFamily: "Poppins-Bold",
-  },
-  textstyle: {
-    color: "#fff",
-    fontSize: RFValue(12, 580),
-    fontFamily: "Poppins-Regular",
-  },
-  dotmainview: {
-    width: "100%",
-    // borderWidth:1,
-    borderColor: "#fff",
-    flexDirection: "row",
-    marginTop: 10,
-  },
-  dotview: {
-    width: "10%",
-    alignItems: "center",
-    marginTop: 5,
-  },
-  marchmainview: {
-    width: "90%",
     backgroundColor: "#000",
     justifyContent: "center",
     borderRadius: 12,
-    marginTop: 20,
   },
-  marchmainview2: {
-    width: "100%",
-    alignItems: "center",
-    justifyContent: "center",
-    paddingVertical: 9,
+  transactionItem: {
     flexDirection: "row",
+    alignItems: "center",
+    paddingVertical: 9,
   },
-  marchtext: {
+  dateView: {
+    width: "20%",
+    alignItems: "center",
+    backgroundColor: 'red',
+  },
+  separator: {
+    width: 2,
+    height: 50,
+    backgroundColor: "#fff",
+  },
+  transactionInfo: {
+    width: "35%",
+    flexDirection: "column",
+  },
+  transactionText: {
     color: "#fff",
     fontSize: RFValue(12, 580),
     fontFamily: "Poppins-SemiBold",
   },
-  perText: {
-    color: "#979797",
-    fontSize: RFValue(9, 580),
+  transactionDetail: {
+    color: "#fff",
+    fontSize: RFValue(10, 580),
     fontFamily: "Poppins-Regular",
   },
-  TopView: {
-    width: "100%",
+  detailsButton: {
+    width: "30%",
+    backgroundColor: "#414143",
     alignItems: "center",
-  },
-  footer: {
-    width: "100%",
-    marginBottom: 0,
-    bottom: 10,
-    alignItems: "center",
+    borderRadius: 12,
+    height: 50,
     justifyContent: "center",
-    position: "absolute",
-    backgroundColor: "#fff",
+  },
+  detailsButtonView: {
+    width: "100%",
+    alignItems: "center",
+    flexDirection: "row",
+  },
+  detailsButtonText: {
+    color: "#fff",
+    fontSize: RFValue(14, 580),
+    fontFamily: "Poppins-Regular",
+    textAlign: "center",
   },
 });
 

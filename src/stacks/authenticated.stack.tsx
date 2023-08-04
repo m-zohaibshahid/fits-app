@@ -16,13 +16,13 @@ import CreateRecorderClass from "../Screens/TrainerScreens/CreateRecorderSession
 import VideoCreate from "../Screens/TrainerScreens/VideoCreateScreen";
 import TrainerPayment from "../Screens/TrainerScreens/TrainerPaymentScreen";
 import TrainerWallet from "../Screens/TrainerScreens/WalletScreen";
-import TrainerCreateCard from "../Screens/TrainerScreens/CreateCardScreen";
+import CreateCardScreen from "../Screens/TrainerScreens/CreateCardScreen";
 import TraineeTabb from "../Screens/TraineeScreens/TraineeBottomTabScreen";
 import TrainerDetail from "../Screens/TraineeScreens/TrainerDetail";
 import BookSessionPayment from "../Screens/TraineeScreens/BookSessionPayment";
 import WalletForTrainee from "../Screens/TraineeScreens/WalletForTrainee";
-import CreateCardTrainee from "../Screens/TraineeScreens/CreateCardScreen";
 import { LogoutNow } from "../../Main";
+import SubscribeVideoPayment from "../Screens/TraineeScreens/SubscribeVideoPayment";
 
 const Stack = createStackNavigator();
 
@@ -44,12 +44,12 @@ const AuthenticatedStack = () => (
     <Stack.Screen name="VideoCreate" component={VideoCreate} options={{ headerShown: false }} />
     <Stack.Screen name="ChatBox" component={ChatBox} options={{ headerShown: false }} />
     <Stack.Screen name="TrainerWallet" component={TrainerWallet} options={{ headerShown: false }} />
-    <Stack.Screen name="TrainerCreateCard" component={TrainerCreateCard} options={{ headerShown: false }} />
+    <Stack.Screen name="CreateCardScreen" component={CreateCardScreen} options={{ headerShown: false }} />
     <Stack.Screen name="TraineeTabb" component={TraineeTabb} options={{ headerShown: false }} />
     <Stack.Screen name="TrainerDetail" component={TrainerDetail} options={{ headerShown: false }} />
     <Stack.Screen name="BookSessionPayment" component={BookSessionPayment} options={{ headerShown: false }} />
+    <Stack.Screen name="SubscribeVideoPayment" component={SubscribeVideoPayment} options={{ headerShown: false }} />
     <Stack.Screen name="WalletForTrainee" component={WalletForTrainee} options={{ headerShown: false }} />
-    <Stack.Screen name="CreateCardTrainee" component={CreateCardTrainee} options={{ headerShown: false }} />
     <Stack.Screen name="logoutNow" component={LogoutNow} options={{ headerShown: false }} />
   </Stack.Navigator>
 );

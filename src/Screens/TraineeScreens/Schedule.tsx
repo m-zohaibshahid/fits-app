@@ -12,6 +12,8 @@ import { NavigationSwitchProp } from "react-navigation";
 import Container from "../../Components/Container";
 import Typography from "../../Components/typography/text";
 import Button from "../../Components/Button";
+import { useSelector } from "react-redux";
+import { UserDetail } from "../../interfaces";
 
 interface Props {
   navigation: NavigationSwitchProp;
@@ -19,20 +21,12 @@ interface Props {
 const Schedule: React.FC<Props> = ({ navigation }) => {
   const route: any = useRoute();
   const [details, setDetails] = useState(false);
-  const [card, setCard] = useState(false);
   const [currentDate, setCurrentDate] = useState('');
-
-  const { data: userMeData } = useGetUserMeQuery<any>({});
+  const { userInfo } = useSelector((state: { fitsStore: Partial <UserDetail>}) => state.fitsStore);
 
   const goToNextScreen = () => {
-    navigation.navigate("BookSessionPayment", {
-      data: route?.params,
-    });
+    navigation.navigate("BookSessionPayment", { data: route?.params });
   };
-
-  useEffect(() => {
-    setCard(userMeData?.user?.cardCreated);
-  }, [userMeData]);
 
   return (
     <Container>
@@ -173,16 +167,16 @@ const Schedule: React.FC<Props> = ({ navigation }) => {
                       <Typography weight="700" color="white" size={"heading4"}>Type:</Typography>{'\n'}<Typography weight="300" color="whiteRegular">{"          "}{route?.params?.userData?.session_type.type}</Typography>
                     </Text>
                   </View>
-            </View>
-            <Button style={{marginLeft: 'auto'}} label="Book Now"
-                  onPress={() => {
-                    if (card) goToNextScreen()
-                    else navigation.navigate("CreateCardTrainee");
-              }}
-              variant="tini"
-            />
-              </View>
-            )}
+                </View>
+                <Button style={{marginLeft: 'auto'}} label="Book Now"
+                      onPress={() => {
+                        if (userInfo?.user.cus_id) goToNextScreen()
+                        else navigation.navigate("CreateCardScreen");
+                  }}
+                  variant="tini"
+                />
+                  </View>
+                )}
           </View>
     </Container>
   );
