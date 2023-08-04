@@ -104,9 +104,6 @@ const VideoCreateScreen = ({ navigation }: PropsInterface) => {
   const uploadVideoOnCloud = async (video: any) => {
     const formData = new FormData();
     formData.append("file", video);
-    console.log('====================================');
-    console.log(video);
-    console.log('====================================');
     formData.append("upload_preset", "employeeApp");
     formData.append("cloud_name", "ZACodders");
 
