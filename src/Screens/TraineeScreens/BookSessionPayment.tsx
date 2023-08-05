@@ -68,20 +68,6 @@ const BookSessionPayment = ({ navigation }: PropsInterface) => {
       subamount: cost,
     };
     BookASession();
-
-    // try {
-    //   const result = await tripePaymentTransferMutation(body);
-    //   if (result.data) {
-    //     setCardData((pre) => {
-    //       const deepCopy = { ...pre } as StripeCustomerInterface;
-    //       deepCopy.balance = +deepCopy.balance - +result.data.reciver.amount;
-    //       return deepCopy;
-    //     });
-    //     BookASession();
-    //   }
-    // } catch (error) {
-    //   errorToast(error?.data?.message);
-    // }
   };
 
   const BookASession = async () => {
