@@ -21,17 +21,14 @@ const WalletScreen: React.FC<Props> = ({ navigation }) => {
   const [details, setDetails] = useState(false);
   const { userInfo } = useSelector((state: { fitsStore: Partial<UserDetail> }) => state.fitsStore);
   const [cardData, setCardData] = useState<StripeCustomerInterface | null>();
-  const { refetch: refetchStripeUser, isLoading } = useGetStripeUserQuery(userInfo?.stripe?.card?.customer || '');
+  console.log("userInfo?.stripe?.card?.customer", userInfo?.stripe?.card?.customer);
+  const { refetch: refetchStripeUser, isLoading } = useGetStripeUserQuery(userInfo?.stripe?.card?.customer || "");
 
   useEffect(() => {
-    navigation.addListener('focus', () => {
+    navigation.addListener("focus", () => {
       getStripeCard();
     });
   }, []);
-
-  console.log('====================================');
-  console.log(userInfo?.user.cus_id);
-  console.log('====================================');
 
   const getStripeCard = async () => {
     try {
@@ -49,26 +46,19 @@ const WalletScreen: React.FC<Props> = ({ navigation }) => {
       <View key={index} style={styles.transactionItem}>
         <View style={styles.dateView}>
           <Typography color="white" size="heading4" weight="500">
-            {moment(transaction.createdAt).format('DD-MMMM')}
+            {moment(transaction.createdAt).format("DD-MMMM")}
           </Typography>
         </View>
         <View style={styles.separator} />
         <View style={styles.transactionInfo}>
           <Text style={styles.transactionText}>
             {transaction.name}
-            <Text style={styles.transactionDetail}>
-              {`\n          ${transaction.description}`}
-            </Text>
+            <Text style={styles.transactionDetail}>{`\n          ${transaction.description}`}</Text>
           </Text>
         </View>
-        <Pressable
-          onPress={() => setDetails(!details)}
-          style={styles.detailsButton}
-        >
+        <Pressable onPress={() => setDetails(!details)} style={styles.detailsButton}>
           <View style={styles.detailsButtonView}>
-            <Text style={styles.detailsButtonText}>
-              Details
-            </Text>
+            <Text style={styles.detailsButtonText}>Details</Text>
             <Entypo name={details ? "chevron-up" : "chevron-down"} size={18} color={"#fff"} />
           </View>
         </Pressable>
@@ -76,26 +66,23 @@ const WalletScreen: React.FC<Props> = ({ navigation }) => {
     ));
   };
 
-  if (isLoading) return <ActivityIndicator />
+  if (isLoading) return <ActivityIndicator />;
 
   return (
     <Container>
       <Header label={"Wallet"} />
       <ScrollView showsVerticalScrollIndicator={false}>
         <View style={styles.walletBoxTextView}>
-          <Typography color="white" size="heading1">Total balance</Typography>
-          <Typography color="white" size="heading1" weight="900">$ {cardData?.balance ?? 0}</Typography>
+          <Typography color="white" size="heading1">
+            Total balance
+          </Typography>
+          <Typography color="white" size="heading1" weight="900">
+            $ {cardData?.balance ?? 0}
+          </Typography>
         </View>
-        <View style={styles.transactionHistoryView}>
-          {/* {renderTransactionHistory(userInfo?.transactions)} */}
-        </View>
+        <View style={styles.transactionHistoryView}>{renderTransactionHistory(userInfo?.transactions)}</View>
       </ScrollView>
-      <Button
-        disabled={!cardData?.balance}
-        style={{ marginBottom: 10 }}
-        label={"Withdraw Funds"}
-        onPress={() => navigation.navigate("WalletForTrainee")}
-      />
+      <Button disabled={!cardData?.balance} style={{ marginBottom: 10 }} label={"Withdraw Funds"} onPress={() => navigation.navigate("WalletForTrainee")} />
     </Container>
   );
 };
@@ -124,7 +111,7 @@ const styles = StyleSheet.create({
   dateView: {
     width: "20%",
     alignItems: "center",
-    backgroundColor: 'red',
+    backgroundColor: "red",
   },
   separator: {
     width: 2,

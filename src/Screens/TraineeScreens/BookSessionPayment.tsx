@@ -6,7 +6,7 @@ import { RFValue } from "react-native-responsive-fontsize";
 import { useSelector } from "react-redux";
 import { RouteProp, useRoute } from "@react-navigation/native";
 import { StripeCustomerInterface, UserDetail } from "../../interfaces";
-import { useBookASessionMutation, useGetStripeUserQuery, useStripePaymentTransferMutation, } from "../../slice/FitsApi.slice";
+import { useBookASessionMutation, useGetStripeUserQuery, useStripePaymentTransferMutation } from "../../slice/FitsApi.slice";
 import { errorToast, successToast } from "../../utils/toast";
 import Container from "../../Components/Container";
 import Typography from "../../Components/typography/text";
@@ -36,10 +36,10 @@ const BookSessionPayment = ({ navigation }: PropsInterface) => {
   const bookSessionParams = route?.params?.data;
   const receiverCustomerId = bookSessionParams.userData?.user?.cus_id;
   const trainerId = bookSessionParams.userData.user._id;
-  const sessionId = bookSessionParams.sessionId
-  const [bookSessionMutation,  {isLoading: isLoadingBookSession}] = useBookASessionMutation();
+  const sessionId = bookSessionParams.sessionId;
+  const [bookSessionMutation, { isLoading: isLoadingBookSession }] = useBookASessionMutation();
   const [tripePaymentTransferMutation, { isLoading: isLoadingTransferStripe }] = useStripePaymentTransferMutation();
-  const { refetch: refetchStripeUser } = useGetStripeUserQuery(userInfo?.stripe.customer.id || '');
+  const { refetch: refetchStripeUser } = useGetStripeUserQuery(userInfo?.stripe.customer.id || "");
 
   const cost = +bookSessionParams.userData?.price;
   const walletAmount = useMemo(() => cardData?.balance ?? 0, [cardData]);
@@ -49,16 +49,14 @@ const BookSessionPayment = ({ navigation }: PropsInterface) => {
     if (result?.data) setCardData(result.data.data);
   };
 
-
   const goToWalletUpdateScreen = () => {
     navigation.navigate("WalletForTrainee");
   };
 
-
   useEffect(() => {
-    navigation.addListener('focus', () => {
+    navigation.addListener("focus", () => {
       getStripeCard();
-    })
+    });
   }, []);
 
   const transferPayment = async () => {
@@ -69,19 +67,21 @@ const BookSessionPayment = ({ navigation }: PropsInterface) => {
       amount: -cost,
       subamount: cost,
     };
-    try {
-      const result = await tripePaymentTransferMutation(body);
-      if (result.data) {
-        setCardData((pre) => {
-          const deepCopy = { ...pre } as StripeCustomerInterface;
-          deepCopy.balance = +deepCopy.balance - +result.data.reciver.amount;
-          return deepCopy;
-        });
-        BookASession()
-      }
-    } catch (error) {
-      errorToast(error?.data?.message);
-    }
+    BookASession();
+
+    // try {
+    //   const result = await tripePaymentTransferMutation(body);
+    //   if (result.data) {
+    //     setCardData((pre) => {
+    //       const deepCopy = { ...pre } as StripeCustomerInterface;
+    //       deepCopy.balance = +deepCopy.balance - +result.data.reciver.amount;
+    //       return deepCopy;
+    //     });
+    //     BookASession();
+    //   }
+    // } catch (error) {
+    //   errorToast(error?.data?.message);
+    // }
   };
 
   const BookASession = async () => {
@@ -92,34 +92,24 @@ const BookSessionPayment = ({ navigation }: PropsInterface) => {
       receiver: receiverCustomerId,
       currency: "usd",
       amount: -cost,
-      subamount: cost
-    }
-   const result = await bookSessionMutation(body)
+      subamount: cost,
+    };
+    const result = await bookSessionMutation(body);
     if (result.data) {
-      successToast('Booking Successfully')
-        navigation.navigate("Home");
+      successToast("Booking Successfully");
+      navigation.navigate("Home");
     } else if (result.error) {
       errorToast(result.error?.data.message);
     }
-    }
-
+  };
 
   const renderDetails = () => {
     return (
       <View style={{ padding: heightPercentageToDP(2) }}>
         <DetailItem label="Cost" value={`$${route?.params?.data?.userData?.price}`} />
-        <DetailItem
-          label="Type"
-          value={route?.params?.data?.userData?.session_type.type}
-        />
-        <DetailItem
-          label="Title"
-          value={route?.params?.data?.userData?.class_title}
-        />
-        <DetailItem
-          label="Description"
-          value={route?.params?.data?.userData?.details}
-        />
+        <DetailItem label="Type" value={route?.params?.data?.userData?.session_type.type} />
+        <DetailItem label="Title" value={route?.params?.data?.userData?.class_title} />
+        <DetailItem label="Description" value={route?.params?.data?.userData?.details} />
       </View>
     );
   };
@@ -131,9 +121,7 @@ const BookSessionPayment = ({ navigation }: PropsInterface) => {
         <View style={styles.marchmainview}>
           <View style={styles.marchmainview2}>
             <View style={{ width: "27%", alignItems: "center" }}>
-              <Text style={styles.marchtext}>
-                {moment(bookSessionParams.userData?.select_date).format("DD MMMM")}
-              </Text>
+              <Text style={styles.marchtext}>{moment(bookSessionParams.userData?.select_date).format("DD MMMM")}</Text>
               <Typography color="white" children={moment(bookSessionParams.userData?.select_date).format("ddd")} />
             </View>
             <View style={{ width: "5%", alignItems: "center" }}>
@@ -153,7 +141,7 @@ const BookSessionPayment = ({ navigation }: PropsInterface) => {
                   fontFamily: "Poppins-Regular",
                 }}
               >
-                {moment(bookSessionParams.userData?.class_time).format('hh:mm A')}
+                {moment(bookSessionParams.userData?.class_time).format("hh:mm A")}
               </Text>
             </View>
             <Pressable
@@ -193,38 +181,37 @@ const BookSessionPayment = ({ navigation }: PropsInterface) => {
           {isDetailsShow && renderDetails()}
         </View>
 
-        <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: "center", marginTop: 10 }}>
-          <Typography size={"heading2"} weight="600">Total Cost</Typography>
-          <Typography size={"heading2"} weight="600">$ {cost}</Typography>
+        <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "center", marginTop: 10 }}>
+          <Typography size={"heading2"} weight="600">
+            Total Cost
+          </Typography>
+          <Typography size={"heading2"} weight="600">
+            $ {cost}
+          </Typography>
         </View>
-        <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: "center", marginTop: 5 }}>
-          <Typography size={"heading3"} style={styles.walletText}>Wallet</Typography>
-          <Typography size={"heading3"} style={styles.walletText}>$ {cardData?.balance}</Typography>
+        <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "center", marginTop: 5 }}>
+          <Typography size={"heading3"} style={styles.walletText}>
+            Wallet
+          </Typography>
+          <Typography size={"heading3"} style={styles.walletText}>
+            $ {cardData?.balance}
+          </Typography>
         </View>
-        </ScrollView>
-        {walletAmount < cost ? (
-          <Typography
-            style={{ marginBottom: 30, textTransform: 'uppercase' }}
-            size={'heading4'}
-            align="center"
-            weight="bold"
-            color="grayTransparent"
-            children={`You have insufficient balance`}
-          />
-        ) : null}
-          <Button
-            style={{ marginBottom: 12 }}
-            disabled={isLoadingTransferStripe || isLoadingBookSession}
-            loader={isLoadingTransferStripe || isLoadingBookSession}
-            label={walletAmount < cost ? "Tap to Recharge" : "Pay Now"}
-            onPress={() => {
-              if (walletAmount < cost) {
-                goToWalletUpdateScreen();
-              } else {
-                transferPayment();
-              }
-            }}
-          />
+      </ScrollView>
+      {walletAmount < cost ? <Typography style={{ marginBottom: 30, textTransform: "uppercase" }} size={"heading4"} align="center" weight="bold" color="grayTransparent" children={`You have insufficient balance`} /> : null}
+      <Button
+        style={{ marginBottom: 12 }}
+        disabled={isLoadingTransferStripe || isLoadingBookSession}
+        loader={isLoadingTransferStripe || isLoadingBookSession}
+        label={walletAmount < cost ? "Tap to Recharge" : "Pay Now"}
+        onPress={() => {
+          if (walletAmount < cost) {
+            goToWalletUpdateScreen();
+          } else {
+            transferPayment();
+          }
+        }}
+      />
     </Container>
   );
 };
@@ -236,9 +223,14 @@ const DetailItem = ({ label, value }: { label: string; value: string }) => (
     </View>
     <View style={{ width: "90%" }}>
       <Text style={styles.textstyle}>
-        <Typography weight="700" color="white" size={"heading4"}>{label}:</Typography>
+        <Typography weight="700" color="white" size={"heading4"}>
+          {label}:
+        </Typography>
         {"\n"}
-        <Typography weight="300" color="whiteRegular">{"          "}{value}</Typography>
+        <Typography weight="300" color="whiteRegular">
+          {"          "}
+          {value}
+        </Typography>
       </Text>
     </View>
   </View>
@@ -298,7 +290,7 @@ const styles = StyleSheet.create({
   dotmainview: {
     width: "100%",
     flexDirection: "row",
-    marginBottom: 10
+    marginBottom: 10,
   },
   dotview: {
     width: "10%",

@@ -21,163 +21,193 @@ interface Props {
 const Schedule: React.FC<Props> = ({ navigation }) => {
   const route: any = useRoute();
   const [details, setDetails] = useState(false);
-  const [currentDate, setCurrentDate] = useState('');
-  const { userInfo } = useSelector((state: { fitsStore: Partial <UserDetail>}) => state.fitsStore);
-
+  const [currentDate, setCurrentDate] = useState("");
+  const { userInfo } = useSelector((state: { fitsStore: Partial<UserDetail> }) => state.fitsStore);
+  const { data: userMe } = useGetUserMeQuery({});
   const goToNextScreen = () => {
     navigation.navigate("BookSessionPayment", { data: route?.params });
   };
 
   return (
     <Container>
-              <Calendar
-                markingType={"custom"}
-                onDayPress={(day: any) => {
-                  setCurrentDate(day?.dateString);
+      <Calendar
+        markingType={"custom"}
+        onDayPress={(day: any) => {
+          setCurrentDate(day?.dateString);
+        }}
+        firstDay={1}
+        markedDates={{
+          [currentDate]: { selected: true, selectedColor: "red" },
+        }}
+      />
+      <Typography size={"heading2"} style={{ marginTop: 20 }}>
+        Upcoming Events
+      </Typography>
+      <View style={styles.marchmainview}>
+        <View style={styles.marchmainview2}>
+          <View style={{ width: "25%", alignItems: "center" }}>
+            <Text style={styles.marchtext}>
+              {moment(route.params?.userData?.select_date).format("DD ")}
+              {moment(route.params?.userData?.select_date).format("MMMM")}
+            </Text>
+            <Text
+              style={{
+                color: "#fff",
+                fontSize: RFValue(8, 580),
+                fontFamily: "Poppins-Regular",
+              }}
+            >
+              ({moment(route.params?.userData?.select_date).format("dddd")})
+            </Text>
+          </View>
+          <View
+            style={{
+              width: "5%",
+              alignItems: "center",
+            }}
+          >
+            <View
+              style={{
+                width: 2,
+                height: 50,
+                backgroundColor: "#fff",
+              }}
+            ></View>
+          </View>
+          <View style={{ width: "35%", flexDirection: "column" }}>
+            <Text style={styles.marchtext}>
+              {route?.params?.userData?.class_title.slice(0, 10)} {"...\n"}
+              <Text
+                style={{
+                  color: "#fff",
+                  fontSize: RFValue(10, 580),
+                  fontFamily: "Poppins-Regular",
                 }}
-                firstDay={1}
-                markedDates={{
-                  [currentDate]: { selected: true, selectedColor: "red" },
-                }}
-              />
-            <Typography size={"heading2"} style={{marginTop: 20}}>Upcoming Events</Typography>
-          <View style={styles.marchmainview}>
-            <View style={styles.marchmainview2}>
-              <View style={{ width: "25%", alignItems: "center" }}>
-                <Text style={styles.marchtext}>
-                  {moment(route.params?.userData?.select_date).format("DD ")}
-                  {moment(route.params?.userData?.select_date).format("MMMM")}
-                </Text>
+              >
+                {route?.params?.userData?.class_time.slice(0, 10)}
+              </Text>
+            </Text>
+          </View>
+          <Pressable
+            onPress={() => setDetails(!details)}
+            style={{
+              width: "30%",
+              backgroundColor: "#414143",
+              alignItems: "center",
+              borderRadius: 12,
+              height: 50,
+              justifyContent: "center",
+            }}
+          >
+            <View
+              style={{
+                width: "100%",
+                alignItems: "center",
+                flexDirection: "row",
+              }}
+            >
+              <View style={{ width: "80%", justifyContent: "center" }}>
                 <Text
                   style={{
                     color: "#fff",
-                    fontSize: RFValue(8, 580),
+                    fontSize: RFValue(14, 580),
                     fontFamily: "Poppins-Regular",
+                    textAlign: "center",
                   }}
                 >
-                  ({moment(route.params?.userData?.select_date).format("dddd")})
+                  Details
                 </Text>
               </View>
-              <View
-                style={{
-                  width: "5%",
-                  alignItems: "center",
-                }}
-              >
-                <View
-                  style={{
-                    width: 2,
-                    height: 50,
-                    backgroundColor: "#fff",
-                  }}
-                ></View>
-              </View>
-              <View style={{ width: "35%", flexDirection: "column" }}>
-                <Text style={styles.marchtext}>
-                  {route?.params?.userData?.class_title.slice(0, 10)} {"...\n"}
-                  <Text
-                    style={{
-                      color: "#fff",
-                      fontSize: RFValue(10, 580),
-                      fontFamily: "Poppins-Regular",
-                    }}
-                  >
-                    {route?.params?.userData?.class_time.slice(0, 10)}
-                  </Text>
-                </Text>
-              </View>
-              <Pressable
-                onPress={() => setDetails(!details)}
-                style={{
-                  width: "30%",
-                  backgroundColor: "#414143",
-                  alignItems: "center",
-                  borderRadius: 12,
-                  height: 50,
-                  justifyContent: "center",
-                }}
-              >
-                <View
-                  style={{
-                    width: "100%",
-                    alignItems: "center",
-                    flexDirection: "row",
-                  }}
-                >
-                  <View style={{ width: "80%", justifyContent: "center" }}>
-                    <Text
-                      style={{
-                        color: "#fff",
-                        fontSize: RFValue(14, 580),
-                        fontFamily: "Poppins-Regular",
-                        textAlign: "center",
-                      }}
-                    >
-                      Details
-                    </Text>
-                  </View>
-                  <Entypo name={details ? "chevron-up" : "chevron-down"} size={18} color={"#fff"} />
-                </View>
-              </Pressable>
+              <Entypo name={details ? "chevron-up" : "chevron-down"} size={18} color={"#fff"} />
             </View>
-            {details && (
-              <View
-                style={{
-                  width: "100%",
+          </Pressable>
+        </View>
+        {details && (
+          <View
+            style={{
+              width: "100%",
               padding: heightPercentageToDP(2),
-                
-                }}
-              >
-                <View style={styles.dotmainview}>
-                  <View style={styles.dotview}>
-                    <FontAwesome name="circle" style={{ color: "#979797" }} />
-                  </View>
-                  <View style={{ width: "90%" }}>
-                    <Text style={styles.textstyle}>
-                      <Typography weight="700" color="white" size={"heading4"}>Cost:</Typography>{'\n'}<Typography weight="300" color="whiteRegular">{"          "}${route?.params?.userData?.price}</Typography>
-                    </Text>
-                  </View>
-                </View>
-                <View style={styles.dotmainview}>
-                  <View style={styles.dotview}>
-                    <FontAwesome name="circle" style={{ color: "#979797" }} />
-                  </View>
-                  <View style={{ width: "90%" }}>
-                    <Text style={styles.textstyle}>
-                      <Typography weight="700" color="white" size={"heading4"}>Title:</Typography>{'\n'}<Typography weight="300" color="whiteRegular">{"          "}{route?.params?.userData?.class_title}</Typography>
-                    </Text>
-                  </View>
-                </View>
-                <View style={styles.dotmainview}>
-                  <View style={styles.dotview}>
-                    <FontAwesome name="circle" style={{ color: "#979797" }} />
-                  </View>
-                  <View style={{ width: "90%" }}>
-                    <Text style={styles.textstyle}>
-                      <Typography weight="700" color="white" size={"heading4"}>Description:</Typography>{'\n'}<Typography weight="300" color="whiteRegular">{"          "}{route?.params?.userData?.details}</Typography>
-                    </Text>
-                  </View>
-                </View>
-                <View style={styles.dotmainview}>
-                  <View style={styles.dotview}>
-                    <FontAwesome name="circle" style={{ color: "#979797" }} />
-                  </View>
-                  <View style={{ width: "90%" }}>
-                    <Text style={styles.textstyle}>
-                      <Typography weight="700" color="white" size={"heading4"}>Type:</Typography>{'\n'}<Typography weight="300" color="whiteRegular">{"          "}{route?.params?.userData?.session_type.type}</Typography>
-                    </Text>
-                  </View>
-                </View>
-                <Button style={{marginLeft: 'auto'}} label="Book Now"
-                      onPress={() => {
-                        if (userInfo?.user.cus_id) goToNextScreen()
-                        else navigation.navigate("CreateCardScreen");
-                  }}
-                  variant="tini"
-                />
-                  </View>
-                )}
+            }}
+          >
+            <View style={styles.dotmainview}>
+              <View style={styles.dotview}>
+                <FontAwesome name="circle" style={{ color: "#979797" }} />
+              </View>
+              <View style={{ width: "90%" }}>
+                <Text style={styles.textstyle}>
+                  <Typography weight="700" color="white" size={"heading4"}>
+                    Cost:
+                  </Typography>
+                  {"\n"}
+                  <Typography weight="300" color="whiteRegular">
+                    {"          "}${route?.params?.userData?.price}
+                  </Typography>
+                </Text>
+              </View>
+            </View>
+            <View style={styles.dotmainview}>
+              <View style={styles.dotview}>
+                <FontAwesome name="circle" style={{ color: "#979797" }} />
+              </View>
+              <View style={{ width: "90%" }}>
+                <Text style={styles.textstyle}>
+                  <Typography weight="700" color="white" size={"heading4"}>
+                    Title:
+                  </Typography>
+                  {"\n"}
+                  <Typography weight="300" color="whiteRegular">
+                    {"          "}
+                    {route?.params?.userData?.class_title}
+                  </Typography>
+                </Text>
+              </View>
+            </View>
+            <View style={styles.dotmainview}>
+              <View style={styles.dotview}>
+                <FontAwesome name="circle" style={{ color: "#979797" }} />
+              </View>
+              <View style={{ width: "90%" }}>
+                <Text style={styles.textstyle}>
+                  <Typography weight="700" color="white" size={"heading4"}>
+                    Description:
+                  </Typography>
+                  {"\n"}
+                  <Typography weight="300" color="whiteRegular">
+                    {"          "}
+                    {route?.params?.userData?.details}
+                  </Typography>
+                </Text>
+              </View>
+            </View>
+            <View style={styles.dotmainview}>
+              <View style={styles.dotview}>
+                <FontAwesome name="circle" style={{ color: "#979797" }} />
+              </View>
+              <View style={{ width: "90%" }}>
+                <Text style={styles.textstyle}>
+                  <Typography weight="700" color="white" size={"heading4"}>
+                    Type:
+                  </Typography>
+                  {"\n"}
+                  <Typography weight="300" color="whiteRegular">
+                    {"          "}
+                    {route?.params?.userData?.session_type.type}
+                  </Typography>
+                </Text>
+              </View>
+            </View>
+            <Button
+              style={{ marginLeft: "auto" }}
+              label="Book Now"
+              onPress={() => {
+                if (userMe?.user?.cus_id) goToNextScreen();
+                else navigation.navigate("CreateCardScreen");
+              }}
+              variant="tini"
+            />
           </View>
+        )}
+      </View>
     </Container>
   );
 };
@@ -220,7 +250,7 @@ const styles = StyleSheet.create({
   dotmainview: {
     width: "100%",
     flexDirection: "row",
-    marginVertical: 15
+    marginVertical: 15,
   },
   dotview: {
     width: "10%",

@@ -11,8 +11,7 @@ export const fitsApi = createApi({
   baseQuery: fetchBaseQuery({
     baseUrl: url,
     prepareHeaders: async (headers: Headers) => {
-      const token = await getUserAsyncStroageToken()
-      console.log(token);
+      const token = await getUserAsyncStroageToken();
 
       headers.set("Authorization", `Bearer ${token}`);
       return headers;
@@ -260,11 +259,11 @@ export const fitsApi = createApi({
     }),
 
     getSubscribedVideos: builder.query<any, Partial<any>>({
-      query: (id) => `subscription/videos/${id}`
+      query: (id) => `subscription/videos/${id}`,
     }),
 
     getStripeUser: builder.query<any, string>({
-      query: (id) => `stripe/customer/${id}`
+      query: (id) => `stripe/customer/${id}`,
     }),
 
     personalInfoCreate: builder.mutation<any, Partial<any>>({
@@ -323,5 +322,5 @@ export const {
   useGetSubscribedVideosQuery,
   useGetStripeUserQuery,
   useStripePaymentTransferMutation,
-  useVideoSubscribeMutation
+  useVideoSubscribeMutation,
 } = fitsApi;
