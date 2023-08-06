@@ -14,7 +14,7 @@ import { NavigationSwitchProp } from "react-navigation";
 import { StripeCustomerInterface, UserDetail } from "../../interfaces";
 import { useBookASessionMutation, useGetStripeUserQuery, useStripePaymentTransferMutation, useVideoSubscribeMutation } from "../../slice/FitsApi.slice";
 import { TrainerData, Video } from "./types";
-import { errorToast } from "../../utils/toast";
+import { errorToast, successToast } from "../../utils/toast";
 
 type RootStackParamList = {
   SubscribeVideoPaymentScreen: {
@@ -71,12 +71,11 @@ const SubscribeVideoPayment = ({ navigation }: PropsInterface) => {
     };
     try {
       const result = await tripePaymentTransferMutation(body);
+      console.log(result, '∏∏∏∏∏∏∏∏∏∏∏∏∏∏∏∏∏∏∏∏∏∏∏∏∏∏∏∏∏∏∏∏∏∏∏∏∏∏∏∏∏∏∏∏∏∏∏∏∏∏∏∏∏∏∏∏∏∏∏∏∏∏∏∏∏∏∏∏∏∏∏∏∏∏∏∏∏∏∏∏∏∏∏∏∏∏∏∏∏∏∏∏∏∏∏∏∏∏∏∏∏∏∏∏∏∏∏∏∏∏∏∏∏∏∏∏∏∏∏∏∏∏∏∏∏∏∏∏∏∏∏∏∏∏∏∏∏∏∏∏∏∏∏∏∏∏∏∏∏∏∏∏∏∏∏∏∏∏∏∏Ô');
+      
       if (result.data) {
-        setCardData((pre) => {
-          const deepCopy = { ...pre } as StripeCustomerInterface;
-          deepCopy.balance = +deepCopy.balance - +result.data.reciver.amount;
-          return deepCopy;
-        });
+        successToast("Subscription Successfully");
+        navigation.navigate("Home");
       }
     } catch (error) {
       errorToast(error?.data?.message);

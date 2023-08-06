@@ -1,7 +1,7 @@
 {
     "logs": [
         {
-            "outputFile": "com.awesomeproject.app-mergeDebugResources-37:/values-ko/values-ko.xml",
+            "outputFile": "com.awesomeproject.app-mergeDebugResources-36:/values-ko/values-ko.xml",
             "map": [
                 {
                     "source": "/Users/zohaib.shahid/.gradle/caches/transforms-3/b0135402789451705a6260c444ce419a/transformed/jetified-ucrop-2.2.6-native/res/values-ko/values-ko.xml",

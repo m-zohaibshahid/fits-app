@@ -1,7 +1,7 @@
 {
     "logs": [
         {
-            "outputFile": "com.awesomeproject.app-mergeDebugResources-37:/values-nn/values-nn.xml",
+            "outputFile": "com.awesomeproject.app-mergeDebugResources-36:/values-nn/values-nn.xml",
             "map": [
                 {
                     "source": "/Users/zohaib.shahid/Downloads/works/fits-ts/node_modules/react-native-date-picker/android/build/intermediates/packaged_res/debug/values-nn/values-nn.xml",
