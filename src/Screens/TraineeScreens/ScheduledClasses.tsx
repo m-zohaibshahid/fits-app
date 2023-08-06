@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { View, StyleSheet, Pressable, ActivityIndicator, Text } from "react-native";
+import { Text, View, StyleSheet, Pressable, ActivityIndicator } from "react-native";
 import AntDesign from "react-native-vector-icons/AntDesign";
 import { RFValue } from "react-native-responsive-fontsize";
 import FontAwesome from "react-native-vector-icons/FontAwesome";
@@ -7,32 +7,17 @@ import moment from "moment";
 import { NavigationSwitchProp } from "react-navigation";
 import { useSelector } from "react-redux";
 import { UserDetail } from "../../interfaces";
-import { useGetMyBookedClassesQuery, useGetUserMeQuery } from "../../slice/FitsApi.slice";
+import { useGetMyBookedClassesQuery } from "../../slice/FitsApi.slice";
 import Container from "../../Components/Container";
 import Typography from "../../Components/typography/text";
 
-interface Props {
+interface PropsInterface {
   navigation: NavigationSwitchProp;
 }
 
-interface MyBookedClass {
-  _id: React.Key | null | undefined;
-  session: {
-    select_date: moment.MomentInput;
-    class_title: string;
-    class_time: string;
-    price: string;
-    details: string;
-  } | null;
-  status: boolean;
-}
-
-const ScheduledClasses = ({ navigation }: Props) => {
+const ScheduledClasses = ({ navigation }: PropsInterface) => {
   const { userInfo } = useSelector((state: { fitsStore: Partial<UserDetail> }) => state.fitsStore);
-  const { data: userMe } = useGetUserMeQuery({});
-
-  const { data: myBookedClassesApiResponse, refetch, isLoading } = useGetMyBookedClassesQuery(userMe?.user?._id || "");
-
+  const { data: myBookedClassesApiResponse, refetch, isLoading } = useGetMyBookedClassesQuery(userInfo?.user?._id || "");
   const [expandedClassIndex, setExpandedClassIndex] = useState<number | null>(null);
 
   useEffect(() => {
@@ -42,11 +27,7 @@ const ScheduledClasses = ({ navigation }: Props) => {
   }, []);
 
   const handleDetailsToggle = (index: number) => {
-    if (expandedClassIndex === index) {
-      setExpandedClassIndex(null); // Collapse class details if already expanded
-    } else {
-      setExpandedClassIndex(index); // Expand class details
-    }
+    setExpandedClassIndex((prevIndex) => (prevIndex === index ? null : index));
   };
 
   if (isLoading) {
@@ -55,30 +36,27 @@ const ScheduledClasses = ({ navigation }: Props) => {
 
   return (
     <Container>
-      {!myBookedClassesApiResponse?.data.booking ? (
-        <View style={styles.emptyClassesView}>
-          <Typography style={styles.emptyClassesText}>---You don't have any Class yet---</Typography>
-        </View>
-      ) : (
-        myBookedClassesApiResponse?.data.booking.map((item: MyBookedClass, index: number) => (
+      {myBookedClassesApiResponse?.data.booking && myBookedClassesApiResponse?.data.booking.length > 0 ? (
+        myBookedClassesApiResponse?.data.booking.map((item: any, i: number) => (
           <View style={styles.cardContainer} key={item._id}>
-            {item.session === null ? null : (
-              <View style={[styles.card, { backgroundColor: expandedClassIndex === index ? "#F8F8F8" : "#FFF" }]}>
-                <View style={styles.dateContainer}>
-                  <Text style={styles.dateText}>{moment(item.session.select_date).format("DD MMMM")}</Text>
-                  <Text style={styles.dayText}>({moment(item.session.select_date).format("dddd")})</Text>
+            {item.session ? (
+              <View style={[styles.card, { backgroundColor: expandedClassIndex === i ? "#F8F8F8" : "#FFF" }]}>
+                <View style={styles.subCardContainer}>
+                  <View style={styles.dateContainer}>
+                    <Text style={styles.dateText}>{moment(item.session.select_date).format("DD MMMM")}</Text>
+                    <Text style={styles.dayText}>({moment(item.session.select_date).format("dddd")})</Text>
+                  </View>
                   <View style={styles.separator} />
                   <View style={styles.classInfoContainer}>
                     <Text style={styles.classNameText}>{item.session.class_title}</Text>
-                    <Text style={styles.classTimeText}>{moment(item.session.class_time).format("DD MMMM")}</Text>
+                    <Text style={styles.classTimeText}>{moment(item.session.class_time).format("h:mm A")}</Text>
                   </View>
-                  <Pressable onPress={() => handleDetailsToggle(index)} style={[styles.detailsButton, { backgroundColor: expandedClassIndex === index ? "#414143" : "#000" }]}>
+                  <Pressable onPress={() => handleDetailsToggle(i)} style={[styles.detailsButton, { backgroundColor: expandedClassIndex === i ? "#414143" : "#000" }]}>
                     <Text style={styles.detailsButtonText}>Details</Text>
-                    <AntDesign name={expandedClassIndex === index ? "up" : "down"} size={15} color={"#fff"} />
+                    <AntDesign name={expandedClassIndex === i ? "up" : "down"} size={15} color={"#fff"} />
                   </Pressable>
                 </View>
-
-                {expandedClassIndex === index && (
+                {expandedClassIndex === i && (
                   <View style={styles.detailsContainer}>
                     <View style={styles.detailItem}>
                       <FontAwesome name="circle" style={styles.dotIcon} />
@@ -93,9 +71,13 @@ const ScheduledClasses = ({ navigation }: Props) => {
                   </View>
                 )}
               </View>
-            )}
+            ) : null}
           </View>
         ))
+      ) : (
+        <View style={styles.emptyClassesView}>
+          <Typography style={styles.emptyClassesText}>---You don't have any Class yet---</Typography>
+        </View>
       )}
     </Container>
   );
@@ -110,11 +92,16 @@ const styles = StyleSheet.create({
   card: {
     width: "90%",
     borderRadius: 12,
-    elevation: 2,
+    elevation: 4,
     padding: 16,
+    backgroundColor: "#FFF",
+  },
+  subCardContainer: {
+    flexDirection: "row",
+    alignItems: "center",
   },
   dateContainer: {
-    flexDirection: "row",
+    flexDirection: "column",
     alignItems: "center",
   },
   dateText: {
@@ -126,6 +113,7 @@ const styles = StyleSheet.create({
     color: "#666",
     fontSize: RFValue(12),
     fontFamily: "Poppins-Regular",
+    marginLeft: 8,
   },
   separator: {
     height: 50,
@@ -161,7 +149,7 @@ const styles = StyleSheet.create({
     fontSize: RFValue(16),
     fontFamily: "Poppins-Regular",
     textAlign: "center",
-    marginRight: 10,
+    margin: 10,
   },
   detailsContainer: {
     marginTop: 20,
@@ -190,6 +178,7 @@ const styles = StyleSheet.create({
     marginBottom: 30,
     fontSize: RFValue(14),
     fontFamily: "Poppins-Regular",
+    textAlign: "center",
   },
 });
 
