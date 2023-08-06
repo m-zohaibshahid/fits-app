@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Text, View, StyleSheet, Pressable, ToastAndroid, ActivityIndicator, Platform, Alert } from "react-native";
+import { Text, View, StyleSheet, Pressable, ActivityIndicator } from "react-native";
 import AntDesign from "react-native-vector-icons/AntDesign";
 import { RFValue } from "react-native-responsive-fontsize";
 import FontAwesome from "react-native-vector-icons/FontAwesome";
@@ -14,232 +14,173 @@ import Typography from "../../Components/typography/text";
 interface PropsInterface {
   navigation: NavigationSwitchProp;
 }
+
 const ScheduledClasses = ({ navigation }: PropsInterface) => {
   const { userInfo } = useSelector((state: { fitsStore: Partial<UserDetail> }) => state.fitsStore);
 
   const {data: myBookedClassesApiResponse, refetch, isLoading} = useGetMyBookedClassesQuery({})
+  const [expandedClassIndex, setExpandedClassIndex] = useState<number | null>(null);
 
   useEffect(() => {
     navigation.addListener("focus", () => {
-      refetch()
+      refetch();
     });
   }, []);
 
-  console.log("|||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||", myBookedClassesApiResponse);
-  
-
-  const detailsInfoCall = (item: any, i: number) => {
-    let dummy = [...myBookedClassesApiResponse];
-    if (dummy[i].status == true) {
-      dummy.forEach((item) => (item.status = false));
-    } else {
-      dummy.forEach((item) => (item.status = false));
-      dummy[i].status = true;
-    }
+  const handleDetailsToggle = (index: number) => {
+    setExpandedClassIndex((prevIndex) => (prevIndex === index ? null : index));
   };
 
   if (isLoading) {
-    return <ActivityIndicator size="large" color="black" />
+    return <ActivityIndicator size="large" color="black" />;
   }
+
   return (
     <Container>
-            {myBookedClassesApiResponse?.data.booking ? <View style={{display: 'flex', justifyContent: 'center', alignItems: "center", height: '100%'}}><Typography style={{marginBottom: 30}}>---You dont have any Class yet---</Typography></View> : myBookedClassesApiResponse?.data.booking.map((item, i) => (
-              <View style={styles.TopView} key={item._id}>
-                {item.session === null ? null : (
-                  <View style={styles.marchmainview}>
-                    <View style={styles.marchmainview2}>
-                      <View style={{ width: "25%", alignItems: "center" }}>
-                        <Text style={styles.marchtext}>
-                          {moment(item?.session?.select_date).format("DD ")}
-                          {moment(item?.session?.select_date).format("MMMM")}
-                        </Text>
-                        <Text style={styles.Daytext}>({moment(item?.session?.select_date).format("dddd")})</Text>
-                      </View>
-                      <View
-                        style={{
-                          width: "5%",
-                          alignItems: "center",
-                        }}
-                      >
-                        <View
-                          style={{
-                            width: 2,
-                            height: 50,
-                            backgroundColor: "#fff",
-                          }}
-                        ></View>
-                      </View>
-                      <View style={{ width: "35%", flexDirection: "column" }}>
-                        <Text style={styles.marchtext}>{item?.session?.class_title}</Text>
-                        <Text
-                          style={{
-                            color: "#fff",
-                            fontSize: RFValue(8, 580),
-                            fontFamily: "Poppins-Regular",
-                          }}
-                        >
-                          {item?.session?.class_time}
-                        </Text>
-                      </View>
-                      <Pressable
-                        onPress={() => detailsInfoCall(item, i)}
-                        //onPress={() => setDetails(!details)}
-                        style={{
-                          width: "30%",
-                          backgroundColor: "#414143",
-                          alignItems: "center",
-                          borderRadius: 12,
-                          height: 50,
-                          justifyContent: "center",
-                        }}
-                      >
-                        <View
-                          style={{
-                            width: "100%",
-                            alignItems: "center",
-                            flexDirection: "row",
-                          }}
-                        >
-                          <View style={{ width: "80%", justifyContent: "center" }}>
-                            <Text
-                              style={{
-                                color: "#fff",
-                                fontSize: RFValue(14, 580),
-                                fontFamily: "Poppins-Regular",
-                                textAlign: "center",
-                              }}
-                            >
-                              Details
-                            </Text>
-                          </View>
-                          <AntDesign name={item.status ? "up" : "down"} size={15} color={"#fff"} />
-                        </View>
-                      </Pressable>
+      {myBookedClassesApiResponse?.data.booking && myBookedClassesApiResponse?.data.booking.length > 0 ? (
+        myBookedClassesApiResponse?.data.booking.map((item: any, i: number) => (
+          <View style={styles.cardContainer} key={item._id}>
+            {item.session ? (
+              <View style={[styles.card, { backgroundColor: expandedClassIndex === i ? "#F8F8F8" : "#FFF" }]}>
+                <View style={styles.subCardContainer}>
+                  <View style={styles.dateContainer}>
+                    <Text style={styles.dateText}>{moment(item.session.select_date).format("DD MMMM")}</Text>
+                    <Text style={styles.dayText}>({moment(item.session.select_date).format("dddd")})</Text>
+                  </View>
+                  <View style={styles.separator} />
+                  <View style={styles.classInfoContainer}>
+                    <Text style={styles.classNameText}>{item.session.class_title}</Text>
+                    <Text style={styles.classTimeText}>{moment(item.session.class_time).format("h:mm A")}</Text>
+                  </View>
+                  <Pressable onPress={() => handleDetailsToggle(i)} style={[styles.detailsButton, { backgroundColor: expandedClassIndex === i ? "#414143" : "#000" }]}>
+                    <Text style={styles.detailsButtonText}>Details</Text>
+                    <AntDesign name={expandedClassIndex === i ? "up" : "down"} size={15} color={"#fff"} />
+                  </Pressable>
+                </View>
+                {expandedClassIndex === i && (
+                  <View style={styles.detailsContainer}>
+                    <View style={styles.detailItem}>
+                      <FontAwesome name="circle" style={styles.dotIcon} />
+                      <Text style={styles.detailText}>
+                        Cost: {"\n"}$ {item.session.price}
+                      </Text>
                     </View>
-                    {/*end Yoga */}
-                    {item.status && (
-                      <View style={{ width: "100%", paddingBottom: 18 }}>
-                        <View style={styles.dotmainview}>
-                          <View style={styles.dotview}>
-                            <FontAwesome name="circle" style={{ color: "#979797" }} />
-                          </View>
-                          <View style={{ width: "90%" }}>
-                            <Text style={styles.textstyle}>
-                              Cost: {"\n"}$ {item?.session?.price}
-                            </Text>
-                          </View>
-                        </View>
-                        <View style={styles.dotmainview}>
-                          <View style={styles.dotview}>
-                            <FontAwesome name="circle" style={{ color: "#979797" }} />
-                          </View>
-                          <View style={{ width: "90%" }}>
-                            <Text style={styles.textstyle}>{item?.session?.details}.</Text>
-                          </View>
-                        </View>
-                        <View style={styles.mainbtnView}>
-                        </View>
-                      </View>
-                    )}
+                    <View style={styles.detailItem}>
+                      <FontAwesome name="circle" style={styles.dotIcon} />
+                      <Text style={styles.detailText}>{item.session.details}.</Text>
+                    </View>
                   </View>
                 )}
               </View>
-            ))}
+            ) : null}
+          </View>
+        ))
+      ) : (
+        <View style={styles.emptyClassesView}>
+          <Typography style={styles.emptyClassesText}>---You don't have any Class yet---</Typography>
+        </View>
+      )}
     </Container>
   );
 };
+
 const styles = StyleSheet.create({
-  fixeheight: {
-    height: 50,
-    justifyContent: "center",
-    borderBottomWidth: 0.5,
-    borderColor: "lightgrey",
+  cardContainer: {
     width: "100%",
     alignItems: "center",
+    marginBottom: 10,
   },
-  fixeheight1: {
-    height: 70,
-    width: "100%",
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  main: {
-    width: "100%",
-  },
-  footer: {
-    width: "100%",
-    marginBottom: 0,
-    bottom: 0,
-    alignItems: "center",
-    justifyContent: "center",
-    position: "absolute",
-  },
-  TopView: {
-    width: "100%",
-    alignItems: "center",
-  },
-  topView: { width: "90%" },
-  topView1: {
+  card: {
     width: "90%",
-    alignItems: "center",
+    borderRadius: 12,
+    elevation: 4,
+    padding: 16,
+    backgroundColor: "#FFF",
   },
-  textstyle: {
-    color: "#ffffff",
-    fontSize: RFValue(12, 580),
-    fontFamily: "Poppins-Regular",
-    marginTop: -5,
-  },
-  Daytext: {
-    color: "#fff",
-    fontSize: RFValue(8, 580),
-    fontFamily: "Poppins-Regular",
-  },
-  dotmainview: {
-    width: "100%",
+  subCardContainer: {
     flexDirection: "row",
-  },
-  dotview: {
-    width: "10%",
     alignItems: "center",
   },
-  marchmainview: {
-    width: "90%",
-    backgroundColor: "#000",
-    justifyContent: "center",
-    borderRadius: 14,
-    marginTop: 20,
-  },
-  marchmainview2: {
-    width: "100%",
+  dateContainer: {
+    flexDirection: "column",
     alignItems: "center",
-    justifyContent: "center",
-    flexDirection: "row",
-    paddingVertical: 9,
   },
-  marchtext: {
-    color: "#fff",
-    fontSize: RFValue(10, 580),
+  dateText: {
+    color: "#000",
+    fontSize: RFValue(18),
     fontFamily: "Poppins-SemiBold",
   },
-  mainbtnView: {
-    width: "100%",
-    alignItems: "center",
-    justifyContent: "center",
-    borderColor: "#fff",
-    marginTop: 20,
+  dayText: {
+    color: "#666",
+    fontSize: RFValue(12),
+    fontFamily: "Poppins-Regular",
+    marginLeft: 8,
   },
-  ccbtnview: {
-    backgroundColor: "red",
-    width: 140,
-    height: 45,
-    borderRadius: 14,
-    alignItems: "center",
-    justifyContent: "center",
+  separator: {
+    height: 50,
+    width: 2,
+    backgroundColor: "#666",
+    marginHorizontal: 10,
   },
-  btntextstyle: {
-    color: "#ffffff",
-    fontSize: RFValue(10, 580),
+  classInfoContainer: {
+    flex: 1,
+    flexDirection: "column",
+  },
+  classNameText: {
+    color: "#000",
+    fontSize: RFValue(18),
+    fontFamily: "Poppins-SemiBold",
+  },
+  classTimeText: {
+    color: "#666",
+    fontSize: RFValue(14),
     fontFamily: "Poppins-Regular",
   },
+  detailsButton: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: "#000",
+    borderRadius: 12,
+    height: 50,
+    marginTop: 10,
+  },
+  detailsButtonText: {
+    color: "#fff",
+    fontSize: RFValue(16),
+    fontFamily: "Poppins-Regular",
+    textAlign: "center",
+    margin: 10,
+  },
+  detailsContainer: {
+    marginTop: 20,
+  },
+  detailItem: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginBottom: 10,
+  },
+  dotIcon: {
+    color: "#979797",
+    fontSize: RFValue(10),
+    marginRight: 10,
+  },
+  detailText: {
+    color: "#666",
+    fontSize: RFValue(14),
+    fontFamily: "Poppins-Regular",
+  },
+  emptyClassesView: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  emptyClassesText: {
+    marginBottom: 30,
+    fontSize: RFValue(14),
+    fontFamily: "Poppins-Regular",
+    textAlign: "center",
+  },
 });
+
 export default ScheduledClasses;
