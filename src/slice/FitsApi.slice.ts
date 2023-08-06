@@ -4,6 +4,7 @@ import { url } from "../constants/url";
 import { LoginInterface, UserMeApiResponse } from "./store.interface";
 import { getUserAsyncStroageToken } from "../utils/async-storage";
 import { RoomMessagesResponse, TrainerSessionApiResultInterface, TrainerVideosForTrainerDetailsApiResponse } from "../interfaces";
+import { GetBookedVideosApiInterface } from "../Screens/TraineeScreens/MyBookedVideos";
 
 // Define a service using a base URL and expected endpoints
 export const fitsApi = createApi({
@@ -228,11 +229,15 @@ export const fitsApi = createApi({
     }),
 
     getMyAllCreatedVideos: builder.query<any, any>({
-      query: () => `/video`,
+      query: (id) => `/video/${id}`,
     }),
 
     getMyBookedClasses: builder.query({
       query: () => `/get-booked-sessions`,
+    }),
+
+    getMyBookedVideos: builder.query<GetBookedVideosApiInterface, any>({
+      query: (id) => `/subscription/videos/${id}`,
     }),
 
     stripeCustomerGet: builder.query<any, string>({
@@ -323,4 +328,5 @@ export const {
   useGetStripeUserQuery,
   useStripePaymentTransferMutation,
   useVideoSubscribeMutation,
+  useGetMyBookedVideosQuery
 } = fitsApi;

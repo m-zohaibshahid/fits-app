@@ -22,7 +22,6 @@ MERGED from [:react-native-restart] /Users/zohaib.shahid/Downloads/works/fits-ts
 MERGED from [:react-native-safe-area-context] /Users/zohaib.shahid/Downloads/works/fits-ts/node_modules/react-native-safe-area-context/android/build/intermediates/merged_manifest/debug/AndroidManifest.xml:2:1-9:12
 MERGED from [:react-native-screens] /Users/zohaib.shahid/Downloads/works/fits-ts/node_modules/react-native-screens/android/build/intermediates/merged_manifest/debug/AndroidManifest.xml:2:1-9:12
 MERGED from [:react-native-vector-icons] /Users/zohaib.shahid/Downloads/works/fits-ts/node_modules/react-native-vector-icons/android/build/intermediates/merged_manifest/debug/AndroidManifest.xml:2:1-9:12
-MERGED from [:react-native-video] /Users/zohaib.shahid/Downloads/works/fits-ts/node_modules/react-native-video/android/build/intermediates/merged_manifest/debug/AndroidManifest.xml:2:1-9:12
 MERGED from [com.facebook.react:react-android:0.71.8] /Users/zohaib.shahid/.gradle/caches/transforms-3/065ec53aec35c6822e50d60161b0331c/transformed/jetified-react-android-0.71.8-debug/AndroidManifest.xml:2:1-11:12
 MERGED from [androidx.swiperefreshlayout:swiperefreshlayout:1.1.0] /Users/zohaib.shahid/.gradle/caches/transforms-3/9f3f2c3188f38327ba24fabea0cd84f7/transformed/swiperefreshlayout-1.1.0/AndroidManifest.xml:17:1-24:12
 MERGED from [com.facebook.react:hermes-android:0.71.8] /Users/zohaib.shahid/.gradle/caches/transforms-3/4549c271d2cbb6a6292be62ad5c119c6/transformed/jetified-hermes-android-0.71.8-debug/AndroidManifest.xml:2:1-9:12
@@ -44,7 +43,6 @@ MERGED from [com.facebook.fresco:nativeimagetranscoder:2.6.0] /Users/zohaib.shah
 MERGED from [com.facebook.fresco:imagepipeline-base:2.6.0] /Users/zohaib.shahid/.gradle/caches/transforms-3/295d932b379575e3efb71d537e37240b/transformed/jetified-imagepipeline-base-2.6.0/AndroidManifest.xml:2:1-9:12
 MERGED from [com.github.yalantis:ucrop:2.2.6-native] /Users/zohaib.shahid/.gradle/caches/transforms-3/b0135402789451705a6260c444ce419a/transformed/jetified-ucrop-2.2.6-native/AndroidManifest.xml:2:1-11:12
 MERGED from [com.google.android.material:material:1.1.0] /Users/zohaib.shahid/.gradle/caches/transforms-3/c20482aa656a8f35781a177390b7232d/transformed/material-1.1.0/AndroidManifest.xml:17:1-24:12
-MERGED from [com.github.adityaxjha:Android-ScalableVideoView:10e7b4da8b] /Users/zohaib.shahid/.gradle/caches/transforms-3/ca63d6912da8bd8883d0b56d88c671a5/transformed/jetified-Android-ScalableVideoView-10e7b4da8b/AndroidManifest.xml:2:1-9:12
 MERGED from [androidx.appcompat:appcompat:1.4.1] /Users/zohaib.shahid/.gradle/caches/transforms-3/0719b87c056b907d84ca9a0c40cc4291/transformed/appcompat-1.4.1/AndroidManifest.xml:17:1-24:12
 MERGED from [androidx.work:work-runtime:2.7.1] /Users/zohaib.shahid/.gradle/caches/transforms-3/fd9dc4d0d85fd0495e580b582ff9a3c7/transformed/work-runtime-2.7.1/AndroidManifest.xml:17:1-145:12
 MERGED from [androidx.room:room-runtime:2.2.5] /Users/zohaib.shahid/.gradle/caches/transforms-3/229489cf0e331fbb0783dede15e429be/transformed/room-runtime-2.2.5/AndroidManifest.xml:17:1-31:12
@@ -283,8 +281,6 @@ MERGED from [:react-native-screens] /Users/zohaib.shahid/Downloads/works/fits-ts
 MERGED from [:react-native-screens] /Users/zohaib.shahid/Downloads/works/fits-ts/node_modules/react-native-screens/android/build/intermediates/merged_manifest/debug/AndroidManifest.xml:5:5-7:41
 MERGED from [:react-native-vector-icons] /Users/zohaib.shahid/Downloads/works/fits-ts/node_modules/react-native-vector-icons/android/build/intermediates/merged_manifest/debug/AndroidManifest.xml:5:5-7:41
 MERGED from [:react-native-vector-icons] /Users/zohaib.shahid/Downloads/works/fits-ts/node_modules/react-native-vector-icons/android/build/intermediates/merged_manifest/debug/AndroidManifest.xml:5:5-7:41
-MERGED from [:react-native-video] /Users/zohaib.shahid/Downloads/works/fits-ts/node_modules/react-native-video/android/build/intermediates/merged_manifest/debug/AndroidManifest.xml:5:5-7:41
-MERGED from [:react-native-video] /Users/zohaib.shahid/Downloads/works/fits-ts/node_modules/react-native-video/android/build/intermediates/merged_manifest/debug/AndroidManifest.xml:5:5-7:41
 MERGED from [com.facebook.react:react-android:0.71.8] /Users/zohaib.shahid/.gradle/caches/transforms-3/065ec53aec35c6822e50d60161b0331c/transformed/jetified-react-android-0.71.8-debug/AndroidManifest.xml:5:5-7:41
 MERGED from [com.facebook.react:react-android:0.71.8] /Users/zohaib.shahid/.gradle/caches/transforms-3/065ec53aec35c6822e50d60161b0331c/transformed/jetified-react-android-0.71.8-debug/AndroidManifest.xml:5:5-7:41
 MERGED from [androidx.swiperefreshlayout:swiperefreshlayout:1.1.0] /Users/zohaib.shahid/.gradle/caches/transforms-3/9f3f2c3188f38327ba24fabea0cd84f7/transformed/swiperefreshlayout-1.1.0/AndroidManifest.xml:20:5-22:41
@@ -327,8 +323,6 @@ MERGED from [com.github.yalantis:ucrop:2.2.6-native] /Users/zohaib.shahid/.gradl
 MERGED from [com.github.yalantis:ucrop:2.2.6-native] /Users/zohaib.shahid/.gradle/caches/transforms-3/b0135402789451705a6260c444ce419a/transformed/jetified-ucrop-2.2.6-native/AndroidManifest.xml:7:5-9:41
 MERGED from [com.google.android.material:material:1.1.0] /Users/zohaib.shahid/.gradle/caches/transforms-3/c20482aa656a8f35781a177390b7232d/transformed/material-1.1.0/AndroidManifest.xml:20:5-44
 MERGED from [com.google.android.material:material:1.1.0] /Users/zohaib.shahid/.gradle/caches/transforms-3/c20482aa656a8f35781a177390b7232d/transformed/material-1.1.0/AndroidManifest.xml:20:5-44
-MERGED from [com.github.adityaxjha:Android-ScalableVideoView:10e7b4da8b] /Users/zohaib.shahid/.gradle/caches/transforms-3/ca63d6912da8bd8883d0b56d88c671a5/transformed/jetified-Android-ScalableVideoView-10e7b4da8b/AndroidManifest.xml:5:5-7:41
-MERGED from [com.github.adityaxjha:Android-ScalableVideoView:10e7b4da8b] /Users/zohaib.shahid/.gradle/caches/transforms-3/ca63d6912da8bd8883d0b56d88c671a5/transformed/jetified-Android-ScalableVideoView-10e7b4da8b/AndroidManifest.xml:5:5-7:41
 MERGED from [androidx.appcompat:appcompat:1.4.1] /Users/zohaib.shahid/.gradle/caches/transforms-3/0719b87c056b907d84ca9a0c40cc4291/transformed/appcompat-1.4.1/AndroidManifest.xml:20:5-22:41
 MERGED from [androidx.appcompat:appcompat:1.4.1] /Users/zohaib.shahid/.gradle/caches/transforms-3/0719b87c056b907d84ca9a0c40cc4291/transformed/appcompat-1.4.1/AndroidManifest.xml:20:5-22:41
 MERGED from [androidx.work:work-runtime:2.7.1] /Users/zohaib.shahid/.gradle/caches/transforms-3/fd9dc4d0d85fd0495e580b582ff9a3c7/transformed/work-runtime-2.7.1/AndroidManifest.xml:21:5-23:41

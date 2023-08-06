@@ -4,7 +4,7 @@ import {
   StyleSheet,
 } from "react-native";
 import ScheduledClasses from "./ScheduledClasses";
-import VideosForClasses from "./VideosForClasses";
+import VideosForClasses from "./MyBookedVideos";
 import Typography from "../../Components/typography/text";
 import { NavigationSwitchProp } from "react-navigation";
 import Colors from "../../constants/Colors";

@@ -30,7 +30,7 @@ const ScheduledClasses = ({ navigation }: PropsInterface) => {
 
   const detailsInfoCall = (item: any, i: number) => {
     let dummy = [...myBookedClassesApiResponse];
-    if (dummy[i].status == true) {
+    if (dummy[i].status) {
       dummy.forEach((item) => (item.status = false));
     } else {
       dummy.forEach((item) => (item.status = false));

@@ -38,7 +38,6 @@ const BookSessionPayment = ({ navigation }: PropsInterface) => {
   const trainerId = bookSessionParams.userData.user._id;
   const sessionId = bookSessionParams.sessionId;
   const [bookSessionMutation, { isLoading: isLoadingBookSession }] = useBookASessionMutation();
-  const [tripePaymentTransferMutation, { isLoading: isLoadingTransferStripe }] = useStripePaymentTransferMutation();
   const { refetch: refetchStripeUser } = useGetStripeUserQuery(userInfo?.stripe.customer.id || "");
 
   const cost = +bookSessionParams.userData?.price;
@@ -58,21 +57,6 @@ const BookSessionPayment = ({ navigation }: PropsInterface) => {
       getStripeCard();
     });
   }, []);
-
-  const transferPayment = async () => {
-    const body = {
-      sender: userInfo?.stripe.card.customer,
-      reciver: receiverCustomerId,
-      currency: "usd",
-      amount: -cost,
-      subamount: cost,
-    };
-
-    const result = tripePaymentTransferMutation(body)
-
-    if (result.data) BookASession();
-    else if (result.error) errorToast(result.error.data.message)
-  };
 
   const BookASession = async () => {
     const body = {
@@ -191,14 +175,14 @@ const BookSessionPayment = ({ navigation }: PropsInterface) => {
       {walletAmount < cost ? <Typography style={{ marginBottom: 30, textTransform: "uppercase" }} size={"heading4"} align="center" weight="bold" color="grayTransparent" children={`You have insufficient balance`} /> : null}
       <Button
         style={{ marginBottom: 12 }}
-        disabled={isLoadingTransferStripe || isLoadingBookSession}
-        loader={isLoadingTransferStripe || isLoadingBookSession}
+        disabled={isLoadingBookSession}
+        loader={isLoadingBookSession}
         label={walletAmount < cost ? "Tap to Recharge" : "Pay Now"}
         onPress={() => {
           if (walletAmount < cost) {
             goToWalletUpdateScreen();
           } else {
-            transferPayment();
+            BookASession();
           }
         }}
       />

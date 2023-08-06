@@ -68,8 +68,6 @@ const CreateCardScreen: React.FC<Props> = ({ navigation }) => {
     }
   };
 
-
-
   return (
     <Container>
       <Header label={"Add Payment Card"}/>
