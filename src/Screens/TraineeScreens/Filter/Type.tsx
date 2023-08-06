@@ -14,10 +14,10 @@ const ClassesType = [
     Name: "Online",
   },
 ];
-const Type = (props, { navigation }) => {
+const Type = (props: { ClassType: any }) => {
   const { ClassType } = props;
-  const detailsInfoCall = (item) => {
-    if (item !== "") {
+  const detailsInfoCall = (item: { Name: string }) => {
+    if (item.Name !== "") {
       ClassType(item);
     }
   };
@@ -27,11 +27,7 @@ const Type = (props, { navigation }) => {
       <View style={styles.borderWidth} />
       {/*start flex box*/}
       {ClassesType.map((item, i) => (
-        <Pressable
-          onPress={() => detailsInfoCall(item, i)}
-          style={styles.flexDirectionView}
-          key={i}
-        >
+        <Pressable onPress={() => detailsInfoCall(item)} style={styles.flexDirectionView} key={i}>
           <View style={styles.titleView}>
             <Text style={styles.titleText}>{item.Name}</Text>
           </View>

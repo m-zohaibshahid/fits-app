@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Text, View, Pressable, StyleSheet, TextInput, Modal, ImageBackground, Image, ScrollView, ToastAndroid, Platform, PermissionsAndroid, Alert } from "react-native";
+import { Text, View, Pressable, StyleSheet, TextInput, Modal, ImageBackground, Image, ScrollView, ToastAndroid, Platform, PermissionsAndroid, Alert, ActivityIndicator } from "react-native";
 import { getDistance } from "geolib";
 import Feather from "react-native-vector-icons/Feather";
 import AntDesign from "react-native-vector-icons/AntDesign";
@@ -26,6 +26,7 @@ import { errorToast } from "../../utils/toast";
 import Container from "../../Components/Container";
 import Header from "../../Components/Header";
 import Typography from "../../Components/typography/text";
+import FullPageLoader from "../../Components/FullpageLoader";
 interface Props {
   navigation: NavigationSwitchProp;
 }
@@ -48,12 +49,12 @@ const Home: React.FC<Props> = ({ navigation }) => {
   const [recommended, setRecommended] = useState(false);
   const [superLong, setSuperLong] = useState(55.9754);
   const [superLat, setSuperLat] = useState(21.4735);
-  const { refetch: getUserInfoFromUserMe,data, isLoading } = useGetUserMeQuery({});
+  const { refetch: getUserInfoFromUserMe, data, isLoading } = useGetUserMeQuery({});
 
   const { data: session, refetch: sessionRefetch } = useSessionsQuery({});
   const [stripeCustomer] = useStripeCustomerMutation({});
-  const [updateFilter] = useUpdateFilterMutation({});
-const {createStripeData}=useSelector((state:any)=> state.fitsStore)
+  const [updateFilter, { isLoading: isLoading1 }] = useUpdateFilterMutation({});
+  const { createStripeData } = useSelector((state: any) => state.fitsStore);
   const handleSportsData = (item: { name: null }) => {
     setModalVisible(false);
     setSportData(item?.name);
@@ -83,13 +84,15 @@ const {createStripeData}=useSelector((state:any)=> state.fitsStore)
 
   useEffect(() => {
     if (sportData || minimumPrice || maximumPrice || classType || classSort) {
+      setClassSort(null);
+      setClassType(null);
+      setSportData(null);
       Filter();
     }
   }, [sportData, minimumPrice, maximumPrice, classType, classSort]);
 
   useEffect(() => {
     navigation.addListener("focus", () => {
-      // createStripeAccount();
       requestLocationPermission();
       sessionRefetch();
     });
@@ -108,8 +111,9 @@ const {createStripeData}=useSelector((state:any)=> state.fitsStore)
       type: classType,
       sort_by: classSort,
     };
-    const result: any = await updateFilter(data);
 
+    const result: any = await updateFilter(data);
+    console.log("result", result);
     if (result?.error) errorToast(result.error?.data?.message);
     if (result?.data) setFilterData(result.data?.data?.result);
   };
@@ -123,7 +127,9 @@ const {createStripeData}=useSelector((state:any)=> state.fitsStore)
     setNearyou(false);
     setRecommended(true);
   };
-
+  if (isLoading || isLoading1) {
+    return <FullPageLoader />;
+  }
   const setUserLocation = async (data: string) => {
     await AsyncStorage.setItem("userLocation", JSON.stringify(data));
   };
@@ -391,10 +397,12 @@ const {createStripeData}=useSelector((state:any)=> state.fitsStore)
               </Typography>
               <Typography
                 style={
-                  filterType === FilterTypes.PRICE && {
-                    borderBottomColor: Colors.redColor,
-                    borderBottomWidth: 2,
-                  }
+                  filterType === FilterTypes.PRICE
+                    ? {
+                        borderBottomColor: Colors.redColor,
+                        borderBottomWidth: 2,
+                      }
+                    : {}
                 }
                 color={filterType === FilterTypes.PRICE ? "redColor" : "black"}
                 size="medium"
@@ -405,10 +413,12 @@ const {createStripeData}=useSelector((state:any)=> state.fitsStore)
               </Typography>
               <Typography
                 style={
-                  filterType === FilterTypes.TYPE && {
-                    borderBottomColor: Colors.redColor,
-                    borderBottomWidth: 2,
-                  }
+                  filterType === FilterTypes.TYPE
+                    ? {
+                        borderBottomColor: Colors.redColor,
+                        borderBottomWidth: 2,
+                      }
+                    : undefined
                 }
                 color={filterType === FilterTypes.TYPE ? "redColor" : "black"}
                 size="medium"
@@ -420,9 +430,9 @@ const {createStripeData}=useSelector((state:any)=> state.fitsStore)
             </View>
             <ScrollView showsVerticalScrollIndicator={false}>
               {filterType === FilterTypes.SORT && <Sort ClassSorts={classSorts} />}
-              {filterType === FilterTypes.SPORT && <Sports navigation={navigation} handleSportsData={handleSportsData} />}
-              {filterType === FilterTypes.PRICE && <Price navigation={navigation} MinPriceData={minPriceData} MaxPriceData={maxPriceData} />}
-              {filterType === FilterTypes.TYPE && <Type navigation={navigation} ClassType={handleClassType} />}
+              {filterType === FilterTypes.SPORT && <Sports handleSportsData={handleSportsData} />}
+              {filterType === FilterTypes.PRICE && <Price MinPriceData={minPriceData} MaxPriceData={maxPriceData} />}
+              {filterType === FilterTypes.TYPE && <Type ClassType={handleClassType} />}
             </ScrollView>
           </View>
         </View>

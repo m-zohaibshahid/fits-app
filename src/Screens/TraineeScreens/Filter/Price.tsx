@@ -5,10 +5,10 @@ import Colors from "../../../constants/Colors";
 import Feather from "react-native-vector-icons/Feather";
 import { TextInput } from "react-native-gesture-handler";
 
-const Price = (props, { navigation }) => {
+const Price = (props: { MinPriceData?: any; MaxPriceData?: any }) => {
   const { MinPriceData } = props;
   const { MaxPriceData } = props;
-  const Value = (minPrice, maxPrice) => {
+  const Value = (minPrice: string, maxPrice: string) => {
     if (minPrice !== "") {
       MinPriceData(minPrice);
     }
@@ -28,15 +28,7 @@ const Price = (props, { navigation }) => {
           <Text style={styles.minText}>Minimum</Text>
         </View>
         <View style={styles.mininputView}>
-          <TextInput
-            placeholder="minimum"
-            placeholderTextColor={"#fff"}
-            keyboardType={"numeric"}
-            style={styles.minTextInput}
-            maxLength={10}
-            value={minPrice}
-            onChangeText={setMinPrice}
-          />
+          <TextInput placeholder="minimum" placeholderTextColor={"#fff"} keyboardType={"numeric"} style={styles.minTextInput} maxLength={10} value={minPrice} onChangeText={setMinPrice} />
         </View>
       </View>
       {/*End Minimum*/}
@@ -46,15 +38,7 @@ const Price = (props, { navigation }) => {
           <Text style={styles.minText}>Maximum</Text>
         </View>
         <View style={styles.mininputView}>
-          <TextInput
-            placeholder="maximum"
-            placeholderTextColor={"#fff"}
-            keyboardType={"numeric"}
-            style={styles.minTextInput}
-            maxLength={10}
-            value={maxPrice}
-            onChangeText={setMaxPrice}
-          />
+          <TextInput placeholder="maximum" placeholderTextColor={"#fff"} keyboardType={"numeric"} style={styles.minTextInput} maxLength={10} value={maxPrice} onChangeText={setMaxPrice} />
         </View>
       </View>
       {/*End Maximum*/}
@@ -72,10 +56,7 @@ const Price = (props, { navigation }) => {
         </View>*/}
         <View style={{ width: "67%" }} />
         <View style={styles.ViewWidth}>
-          <Pressable
-            onPress={() => Value(minPrice, maxPrice)}
-            style={styles.BtnView1}
-          >
+          <Pressable onPress={() => Value(minPrice, maxPrice)} style={styles.BtnView1}>
             <Text style={styles.textstyle}>$</Text>
           </Pressable>
         </View>

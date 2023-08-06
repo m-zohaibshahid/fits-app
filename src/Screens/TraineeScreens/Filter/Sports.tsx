@@ -68,7 +68,7 @@ const Sporst = [
     name: "Other",
   },
 ];
-const Sports = (props, { navigation }) => {
+const Sports = (props: { handleSportsData: any }) => {
   const { handleSportsData } = props;
   return (
     <View>
@@ -82,43 +82,18 @@ const Sports = (props, { navigation }) => {
           </Text>
         </View>
         <View style={styles.iconView}>
-          <Feather
-            name="check-circle"
-            color={"#000"}
-            //color={item.string ? "#ff0000" : "#000"}
-            size={25}
-          />
-        </View>
-        {/*
-      <View style={styles.iconView}>
           <Feather name="check-circle" color={"#000"} size={25} />
         </View>
-      */}
       </View>
-      {/*End flex box*/}
-      {/*start flex box*/}
+
       <View style={{ marginBottom: 100 }}>
         {Sporst.map((item, index) => (
-          <Pressable
-            key={index}
-            onPress={() => handleSportsData(item)}
-            style={styles.flexDirectionView}
-          >
+          <Pressable key={index} onPress={() => handleSportsData(item)} style={styles.flexDirectionView}>
             <View style={styles.titleView}>
-              <Text
-                // style={[item.status ? styles.titlText : styles.titleText]}
-                style={styles.titleText}
-              >
-                {item.name}
-              </Text>
+              <Text style={styles.titleText}>{item.name}</Text>
             </View>
             <View style={styles.iconView}>
-              <Feather
-                name="check-circle"
-                color={"#000"}
-                // color={item.status ? "#ff0000" : "#000"}
-                size={25}
-              />
+              <Feather name="check-circle" color={"#000"} size={25} />
             </View>
           </Pressable>
         ))}
