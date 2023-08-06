@@ -173,25 +173,6 @@ const {createStripeData}=useSelector((state:any)=> state.fitsStore)
     }
   };
 
-  // const setForCareateStripeCall = async (filterData: any) => {
-  //   dispatch(setCreateStripeData(filterData));
-  // };
-
-  // const createStripeAccount = async () => {
-  //   const body = { name: userInfo?.personal_info?.name, email: userInfo?.user?.email, phone: userInfo?.personal_info?.phoneNumber }
-  //   const result = await stripeCustomer(body)
-  //   if (result?.error) errorToast(result?.error?.data?.message)
-  //     // .unwrap()
-  //     // .then((res2: any) => {
-  //     //   if (res2?.data?.message === "success" || res2?.error?.data?.message === "customer already exists") {
-  //         setForCareateStripeCall(res2?.error?.data?.data ?? res2?.data?.data);
-  //     //   }
-  //     // })
-  //     // .catch((error) => {
-  //     //   errorToast(error?.message);
-  //     // });
-  // };
-
   const handlePressOnCard = (item: TrainerClassInterfaceInTraineeScreenInterface) => {
     const findPersonalInfoById = personalInfoData.find((data: TrainerPersonalinfoInTraineeScreenInterface) => data.user === item.user?._id);
     const findProfessionalInfoById = professionalData.find((data: TrainerProfessioninfoInTraineeScreen) => data.user === item.user?._id);

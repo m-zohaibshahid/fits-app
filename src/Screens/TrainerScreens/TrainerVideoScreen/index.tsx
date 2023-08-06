@@ -1,6 +1,6 @@
 /* eslint-disable quotes */
 /* eslint-disable prettier/prettier */
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   Text,
   View,
@@ -22,16 +22,26 @@ import Typography from '../../../Components/typography/text';
 import { NavigationSwitchProp } from 'react-navigation';
 import Entypo from 'react-native-vector-icons/Entypo';
 import Button from '../../../Components/Button';
+import { useSelector } from 'react-redux';
+import { UserDetail } from '../../../interfaces';
+import FullPageLoader from '../../../Components/FullpageLoader';
 
 interface PropsInterface {
   navigation: NavigationSwitchProp;
 }
 
 const TrainerVideoScreen = ({ navigation }: PropsInterface) => {
-  const { data: myAllVideos, isLoading } = useGetMyAllCreatedVideosQuery({});
+  const { userInfo } = useSelector((state: { fitsStore: Partial<UserDetail> }) => state.fitsStore);
+  const { data: myAllVideos,refetch: refetchMyAllVideos, isLoading } = useGetMyAllCreatedVideosQuery(userInfo?.user._id ?? '');
   const [thumbnailLoading, setThumbnailLoading] = useState(true);
 
-  if (isLoading) return <ActivityIndicator />;
+  useEffect(() => {
+    navigation.addListener('focus', () => {
+      refetchMyAllVideos()
+    })
+  }, [])
+
+  if (isLoading) return <FullPageLoader />;
 
   return (
     <Container style={{ marginBottom: 50 }}>
@@ -42,11 +52,10 @@ const TrainerVideoScreen = ({ navigation }: PropsInterface) => {
             ---You dont have any video yet---
           </Typography>
         ) : (
-          myAllVideos.data.map((item, i) => {
+          myAllVideos.data.map((item: VideoInterface) => {
             const duration = '1 hour';
-
             return (
-              <View style={styles.topView1} key={i}>
+              <View style={styles.topView1}>
                 <View style={styles.VideoView}>
                   <VideoPlayer
                     video={{
@@ -75,7 +84,7 @@ const TrainerVideoScreen = ({ navigation }: PropsInterface) => {
                     Trainer Name:
                   </Typography>
                   <Typography color='white90' style={{marginLeft: 30, marginTop: 5}} size={'medium'}>
-                  {item.trainer.personal.name}
+                  {userInfo?.personal_info.name}
                   </Typography>
                 </View>
                 <View style={{
@@ -214,3 +223,19 @@ const styles = StyleSheet.create({
 });
 
 export default TrainerVideoScreen;
+
+export interface VideoInterface {
+  __v: number
+  _id: string
+  averageRating: number
+  createdAt: string
+  numReviews: number
+  price: number
+  topic: string
+  updatedAt: string
+  user: string
+  video_category: string
+  video_details: string
+  video_links: string[]
+  video_thumbnail: string
+}
