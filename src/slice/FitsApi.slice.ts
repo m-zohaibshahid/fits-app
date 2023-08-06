@@ -219,8 +219,8 @@ export const fitsApi = createApi({
       query: () => "/session",
     }),
 
-    connectAccountLink: builder.query<void, string>({
-      query: () => "/stripe/connect/accountLink",
+    connectAccountLink: builder.mutation<void, Partial<any>>({
+      query: (body) => ({ url: `/stripe/connect/accountLink`, method: "POST", body: body }),
     }),
 
     trainerSession: builder.query<any, string>({
@@ -300,7 +300,7 @@ export const {
   useCodeVerifyMutation,
   useResendVarificationCodeMutation,
   useSessionsQuery,
-  useConnectAccountLinkQuery,
+  useConnectAccountLinkMutation,
   useGetUserMeQuery,
   useGetUsersQuery,
   useTrainerSessionQuery,

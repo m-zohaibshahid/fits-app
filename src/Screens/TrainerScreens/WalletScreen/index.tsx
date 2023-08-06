@@ -9,7 +9,7 @@ import Container from "../../../Components/Container";
 import Colors from "../../../constants/Colors";
 import Typography from "../../../Components/typography/text";
 import { useSelector } from "react-redux";
-import { useGetStripeUserQuery } from "../../../slice/FitsApi.slice";
+import { useConnectAccountLinkMutation, useGetStripeUserQuery } from "../../../slice/FitsApi.slice";
 import { NavigationSwitchProp } from "react-navigation";
 import { StripeCustomerInterface, UserDetail, Transaction } from "../../../interfaces";
 
@@ -21,8 +21,9 @@ const WalletScreen: React.FC<Props> = ({ navigation }) => {
   const [details, setDetails] = useState(false);
   const { userInfo } = useSelector((state: { fitsStore: Partial<UserDetail> }) => state.fitsStore);
   const [cardData, setCardData] = useState<StripeCustomerInterface | null>();
-  console.log("userInfo?.stripe?.card?.customer", userInfo?.stripe?.card?.customer);
+  console.log("userInfo?.stripe?.card?.customer", userInfo?.stripe?.card?.country);
   const { refetch: refetchStripeUser, isLoading } = useGetStripeUserQuery(userInfo?.stripe?.card?.customer || "");
+  const [connectAccountLink, { data, isLoading: isLoading1 }] = useConnectAccountLinkMutation();
 
   useEffect(() => {
     navigation.addListener("focus", () => {
@@ -36,6 +37,20 @@ const WalletScreen: React.FC<Props> = ({ navigation }) => {
       if (result?.data) setCardData(result.data.data);
     } catch (error) {
       // Handle error here
+    }
+  };
+  const handleWithDrawFunds = async () => {
+    const body = {
+      email: userInfo?.user?.email,
+      type: "express",
+      country: userInfo?.stripe?.card?.country,
+    };
+    const responseConnectAccountLink: any = await connectAccountLink(body).unwrap();
+    if (responseConnectAccountLink.data.url) {
+      await Linking.openURL(responseConnectAccountLink.data.url);
+    } else {
+      console.log("Already account link.");
+      navigation.navigate("WalletForTrainee");
     }
   };
 
@@ -66,7 +81,7 @@ const WalletScreen: React.FC<Props> = ({ navigation }) => {
     ));
   };
 
-  if (isLoading) return <ActivityIndicator />;
+  if (isLoading || isLoading1) return <ActivityIndicator />;
 
   return (
     <Container>
@@ -82,7 +97,7 @@ const WalletScreen: React.FC<Props> = ({ navigation }) => {
         </View>
         <View style={styles.transactionHistoryView}>{renderTransactionHistory(userInfo?.transactions)}</View>
       </ScrollView>
-      <Button disabled={!cardData?.balance} style={{ marginBottom: 10 }} label={"Withdraw Funds"} onPress={() => navigation.navigate("WalletForTrainee")} />
+      <Button disabled={!cardData?.balance} style={{ marginBottom: 10 }} label={"Withdraw Funds"} onPress={() => handleWithDrawFunds()} />
     </Container>
   );
 };
