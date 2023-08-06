@@ -87,12 +87,13 @@ const VideosTab = ({ navigation }: PropsInterface) => {
                 <Typography size={"heading2"} weight="600" color="white">Description</Typography>
                 <Typography size={"medium"} weight="600" color="white90">{video.video_details}</Typography>
               </View>
-              <Button
+              {<Button
                 style={{ alignSelf: 'center', marginVertical: 10 }}
                 variant="tini"
-                label={isAlreadySubscribed ? "Play" : "Book Now"}
+                disabled={isAlreadySubscribed}
+                label={isAlreadySubscribed ? "Subscribed" : "Book Now"}
                 onPress={() => goToNextScreen(video)}
-              />
+              />}
             </View>
           );
         })}

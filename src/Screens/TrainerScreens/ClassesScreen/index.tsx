@@ -72,17 +72,17 @@ const Classes = () => {
               />
       </View>
 
-          <View style={styles.CalendarView}>
-            <Calendar
-              markingType={"custom"}
-              onDayPress={(day) => {
-                setCurrentDate(day?.dateString);
-              }}
-              firstDay={1}
-              markedDates={{
-                [currentDate]: { selected: true, selectedColor: "red" },
-              }}
-            />
+      <View style={styles.CalendarView}>
+        <Calendar
+          markingType={"custom"}
+          onDayPress={(day) => {
+            setCurrentDate(day?.dateString);
+          }}
+          firstDay={1}
+          markedDates={{
+            [currentDate]: { selected: true, selectedColor: "red" },
+          }}
+        />
       </View>
       {!filteredClasses?.length ? <Typography style={{marginTop: 50}} align="center">---You dont have any class yet---</Typography> : 
         filteredClasses?.map((item: SessionItemType) => {
@@ -210,7 +210,7 @@ const Classes = () => {
             <Button disabled={isSessionDeleteLoading} loader={isSessionDeleteLoading} onPress={() => handleDeleteSession(item._id)} style={{marginLeft: 'auto'}} label="Cancle Class" variant="tini"/>
           </View>
         )}
-      </View>
+        </View>
             })}
       </View>
   );

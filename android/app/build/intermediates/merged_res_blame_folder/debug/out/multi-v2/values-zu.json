@@ -1,7 +1,7 @@
 {
     "logs": [
         {
-            "outputFile": "com.awesomeproject.app-mergeDebugResources-36:/values-zu/values-zu.xml",
+            "outputFile": "com.awesomeproject.app-mergeDebugResources-37:/values-zu/values-zu.xml",
             "map": [
                 {
                     "source": "/Users/zohaib.shahid/.gradle/caches/transforms-3/0719b87c056b907d84ca9a0c40cc4291/transformed/appcompat-1.4.1/res/values-zu/values-zu.xml",

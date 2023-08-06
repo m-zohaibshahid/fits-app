@@ -1,7 +1,7 @@
 {
     "logs": [
         {
-            "outputFile": "com.awesomeproject.app-mergeDebugResources-36:/values-sw600dp-v13/values-sw600dp-v13.xml",
+            "outputFile": "com.awesomeproject.app-mergeDebugResources-37:/values-sw600dp-v13/values-sw600dp-v13.xml",
             "map": [
                 {
                     "source": "/Users/zohaib.shahid/.gradle/caches/transforms-3/c20482aa656a8f35781a177390b7232d/transformed/material-1.1.0/res/values-sw600dp-v13/values-sw600dp-v13.xml",
