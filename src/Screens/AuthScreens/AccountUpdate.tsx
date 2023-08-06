@@ -3,7 +3,6 @@ import {
   Text,
   View,
   Pressable,
-  TextInput,
   Modal,
   Image,
   ScrollView,
@@ -20,6 +19,7 @@ import ImagePicker from "react-native-image-crop-picker";
 import moment from "moment";
 import { RFValue } from "react-native-responsive-fontsize";
 import Entypo from "react-native-vector-icons/Entypo";
+import RNRestart from 'react-native-restart';
 import DatePicker from "react-native-date-picker";
 import * as Images from "../../constants/Images";
 import Header from "../../Components/Header";
@@ -27,10 +27,28 @@ import Colors from "../../constants/Colors";
 import Button from "../../Components/Button";
 import { url } from "../../constants/url";
 import { useNavigation } from "@react-navigation/native";
+import * as Yup from "yup";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useGetUserMeQuery } from "../../slice/FitsApi.slice";
 import { genderOptions } from "../../constants/utilities";
 import { useSelector } from "react-redux";
+import Container from "../../Components/Container";
+import Typography from "../../Components/typography/text";
+import TextInput from "../../Components/Input";
+import { PersonalInfoValidateErrorsIntarface } from "./types";
+import { handleConfirmAlert } from "../../utils/handle-confirm";
+
+export const validationSchema = Yup.object().shape({
+  name: Yup.string().required("Name is required"),
+  date_of_birth: Yup.date().required("Date of birth is required"),
+  country: Yup.string().required("Country is required"),
+  phoneNumber: Yup.string().required("Phone number is required"),
+  state: Yup.string().required("State is required"),
+  city: Yup.string().required("City is required"),
+  gender: Yup.string().required("Gender is required"),
+  profileImage: Yup.string(),
+  confirmPassword: Yup.string().oneOf([Yup.ref("password")], "Passwords must match"),
+});
 
 const AccountUpdate = () => {
   const navigation = useNavigation();
@@ -45,6 +63,7 @@ const AccountUpdate = () => {
   const [date, setDate] = useState(new Date());
   const [image, setImage] = useState("");
   const [cloudImageUrl, setCloudImageUrl] = useState("");
+  const [validationErrors, setValidationErrors] = useState<PersonalInfoValidateErrorsIntarface>({});
   const [isCountryVisible, setIsCountryVisible] = React.useState(false);
   const [load, setLoad] = useState(false);
   const [loadx, setLoadx] = useState(false);
@@ -95,7 +114,7 @@ const AccountUpdate = () => {
           setLoad(false);
           if (res2.success) {
             userApiCalling(res2.data);
-            GoBack();
+            handleConfirmAlert('You must refresh your app', () => RNRestart.restart())
           } else {
             ToastAndroid.show(res2.message, ToastAndroid.LONG);
           }
@@ -217,52 +236,31 @@ const AccountUpdate = () => {
     }
   };
   return (
-    <View style={styles.container}>
-      {/*Header rect start*/}
-      <View style={styles.header}>
-        <View style={styles.fixeheight}>
-          <Header />
-        </View>
-        <View style={styles.fixeheight1}>
-          <View style={styles.PersonalinfoView}>
-            <View style={{ width: "60%", alignItems: "flex-start" }}>
-              <TouchableOpacity
-              
-              >
-                <Text style={styles.PersonalinfoText}>Personal Info</Text>
-              </TouchableOpacity>
-              <Text style={styles.filldetailsText}>Fill in your details</Text>
-            </View>
-            <View style={styles.imageView}>
-              <TouchableOpacity
-                onPress={() => {
-                  choosePhotoFromCamera();
-                }}
-              >
-                {!image ? (
-                  <Image
-                    style={{
-                      width: 80,
-                      height: 80,
-                      borderRadius: 200 / 2,
-                      overflow: "hidden",
-                      borderWidth: 1,
-                      borderColor: "grey",
-                    }}
-                    source={Images.Profile}
-                  />
-                ) : (
-                  <Image
-                    style={styles.imagestyle}
-                    source={{
-                      uri: image,
-                    }}
-                  />
-                )}
-              </TouchableOpacity>
-            </View>
-          </View>
-        </View>
+    <Container style={styles.container}>
+      <View style={{ position: "relative" }}>
+        <Header label={"Peronal Info"} subLabel={"Fill in your details "} />
+        <TouchableOpacity style={{ position: "absolute", top: 70, right: 10 }} onPress={choosePhotoFromCamera}>
+          {image === "" ? (
+            <Image
+              style={{
+                width: 80,
+                height: 80,
+                borderRadius: 200 / 2,
+                overflow: "hidden",
+                borderWidth: 1,
+                borderColor: "grey",
+              }}
+              source={Images.Profile}
+            />
+          ) : (
+            <Image
+              style={styles.imagestyle}
+              source={{
+                uri: image,
+              }}
+            />
+          )}
+        </TouchableOpacity>
       </View>
       {/*Header rect end*/}
       {loadx ? (
@@ -281,210 +279,107 @@ const AccountUpdate = () => {
           />
         </View>
       ) : (
-        <ScrollView showsVerticalScrollIndicator={false}>
-          <View style={styles.main}>
-            <View style={styles.inputTopView}>
-              <View style={styles.inputtopviews}>
-                <View style={styles.inputnameView}>
-                  <Text style={styles.inputnameText}>Fullname</Text>
-                </View>
-                <View style={styles.textinputView}>
-                  <TextInput style={styles.inputEmail} placeholder="Enter Full name" placeholderTextColor="white" value={fullName} onChangeText={setFullName} />
-                </View>
-              </View>
-            </View>
-
-            <View style={styles.inputTopView}>
-              <Pressable onPress={() => setModalVisibleDate(true)} style={styles.inputtopviews}>
-                <View style={styles.inputnameView}>
-                  <Text style={styles.inputnameText}>Date of birth</Text>
-                </View>
+          <ScrollView showsVerticalScrollIndicator={false}>
+             <ScrollView showsVerticalScrollIndicator={false}>
+        <TextInput error={validationErrors.name} placeholder="Enter Name" label="Full Name" value={fullName} onChangeText={setFullName} />
+        <TextInput
+          error={validationErrors.date_of_birth}
+          handleOnPress={() => setModalVisibleDate(true)}
+          placeholder="Select Date of Birth"
+          isEditable={false}
+          value={moment(date).format("DD-MM-YYYY")}
+          label={"Date of birth"}
+        />
+        <TextInput error={validationErrors.country} label="Country" placeholder="Select Your Country" value={country} isEditable={false} handleOnPress={onPressFlag} onChangeText={setCountry} />
+        <TextInput label="Phone Number" error={validationErrors.phoneNumber} keyboard={"numeric"} placeholder="Enter your Number" value={phoneNumber} onChangeText={setPhoneNumber} />
+        <TextInput error={validationErrors.state} placeholder="Enter Your State" value={state} onChangeText={setState} label={"State"} />
+        <TextInput error={validationErrors.city} placeholder="Enter Your City" value={city} onChangeText={setCity} label={"City"} />
+        <TextInput value={gender} label={"Select Gender"} isEditable={false} handleOnPress={() => setModalVisible(true)}  />
+              
+      </ScrollView>
+            {isCountryVisible && <CountryPicker onClose={() => setIsCountryVisible(false)} visible={isCountryVisible} onSelect={(value) => setCountry(value.name)} countryCode={"AF"} />}
+            
+      <View style={styles.centeredView}>
+        <Modal animationType="fade" transparent={true} visible={modalVisible} onRequestClose={() => setModalVisible(false)}>
+          <View style={styles.centeredView}>
+            <View style={styles.modalView}>
+              <ScrollView showsVerticalScrollIndicator={false}>
                 <View
                   style={{
                     width: "100%",
-                    justifyContent: "center",
-                    borderColor: Colors.white,
-                    height: 40,
+                    alignItems: "flex-start",
                   }}
                 >
-                  <Text style={styles.DateText}>{moment(validDate, "DD/MM/YYYY").format("DD-MM-YYYY")}</Text>
-                </View>
-              </Pressable>
-            </View>
-
-            <View style={styles.inputTopView}>
-              <Pressable
-                style={styles.inputtopviews}
-                onPress={() => {
-                  onPressFlag();
-                }}
-              >
-                <View style={styles.inputnameView}>
-                  <Text style={styles.inputnameText}>Country</Text>
-                </View>
-                <View style={styles.textinputView}>
-                  <Text
+                  <View
                     style={{
-                      color: Colors.white,
-                      marginTop: 5,
-                      marginLeft: 10,
-                      fontSize: RFValue(12, 580),
-                      fontFamily: "poppins-regular",
+                      width: "90%",
+                      alignSelf: "center",
+                      height: 60,
+                      justifyContent: "center",
                     }}
                   >
-                    {country}
-                  </Text>
-                </View>
-              </Pressable>
-            </View>
-            <View style={styles.inputTopView}>
-              <View style={styles.inputtopviews}>
-                <View style={styles.inputnameView}>
-                  <Text style={styles.inputnameText}>State</Text>
-                </View>
-                <View style={styles.textinputView}>
-                  <TextInput style={styles.inputEmail} placeholder="Enter State" placeholderTextColor="white" value={state} onChangeText={setState} />
-                </View>
-              </View>
-            </View>
-            <View style={styles.inputTopView}>
-              <View style={styles.inputtopviews}>
-                <View style={styles.inputnameView}>
-                  <Text style={styles.inputnameText}>City</Text>
-                </View>
-                <View style={styles.textinputView}>
-                  <TextInput style={styles.inputEmail} placeholder="Enter City" placeholderTextColor="white" value={city} onChangeText={setCity} />
-                </View>
-              </View>
-            </View>
-          </View>
-          <View style={styles.inputTopView}>
-            <Pressable onPress={() => setModalVisible(true)}>
-              <View style={styles.genderTopview}>
-                <View
-                  style={{
-                    width: "50%",
-                    justifyContent: "center",
-                  }}
-                >
-                  <Text style={styles.genderText}>Gender</Text>
-                </View>
-                <View
-                  style={{
-                    width: "40%",
-                    borderColor: "#fff",
-                    alignItems: "flex-end",
-                    justifyContent: "center",
-                  }}
-                >
-                  <Text style={styles.inputnameText}>{gender}</Text>
-                </View>
-                <View style={styles.iconView}>
-                  <Entypo
-                    name="chevron-down"
-                    style={{
-                      fontSize: 20,
-                      color: Colors.white,
-                    }}
-                  />
-                </View>
-              </View>
-            </Pressable>
-          </View>
+                    <Typography size={"heading1"}>
+                      Gender
+                      <Typography size="medium">{"  "}(Select one)</Typography>
+                    </Typography>
+                  </View>
 
-          {isCountryVisible && (
-            <CountryPicker
-              onClose={() => setIsCountryVisible(false)}
-              visible={isCountryVisible}
-              onSelect={(value: { name: string }) => {
-                setCountry(value?.name);
-              }}
-            />
-          )}
-
-          {/*Modal Start*/}
-          <View style={styles.centeredView}>
-            <Modal
-              animationType="fade"
-              transparent={true}
-              visible={modalVisible}
-              onRequestClose={() => {
-                setModalVisible(false);
-              }}
-            >
-              <View style={styles.centeredView}>
-                <View style={styles.modalView}>
-                  <ScrollView showsVerticalScrollIndicator={false}>
-                    <View style={styles.opercard}>{genderOptions.map(renderOption)}</View>
-                  </ScrollView>
-                </View>
-              </View>
-            </Modal>
-          </View>
-          {/* Modal End*/}
-          {/*modalVisibleDate Start*/}
-          <View style={styles.centeredView}>
-            <Modal
-              animationType="fade"
-              transparent={true}
-              visible={modalVisibleDate}
-              onRequestClose={() => {
-                setModalVisibleDate(false);
-              }}
-            >
-              <View style={styles.centeredView}>
-                <View style={styles.modalViewdate}>
-                  <ScrollView showsVerticalScrollIndicator={false}>
-                    <View
-                      style={{
-                        width: "100%",
-                        alignItems: "center",
+                  <View style={styles.opercard}>
+                    <Pressable
+                      style={styles.box}
+                      onPress={() => {
+                        setGender("Male");
+                        setModalVisible(false);
                       }}
                     >
-                      <View style={styles.cancelView}>
-                        <Pressable onPress={() => setModalVisibleDate(false)} style={styles.canceldoneView}>
-                          <Text style={styles.TextCancelDone}>Cancel</Text>
-                        </Pressable>
-                        <View style={styles.DOBView}>
-                          <Text style={styles.TextDOB}>Date of Birth</Text>
-                        </View>
-                        <Pressable
-                          onPress={() => {
-                            setModalVisibleDate(false);
-                          }}
-                          style={styles.canceldoneView}
-                        >
-                          <Text style={styles.TextCancelDone}>Done</Text>
-                        </Pressable>
+                      <View style={[gender === 'Male' ? styles.BoxViewBoder : styles.inner]}>
+                        <Image source={Images.Vector} />
+                        <Text style={styles.maletext}>Male</Text>
                       </View>
+                    </Pressable>
 
-                      <View style={styles.topView}>
-                        <DatePicker
-                          mode="date"
-                          date={date ? new Date(date) : new Date()}
-                          onDateChange={setDate}
-                          maximumDate={new Date(new Date().getFullYear() - 15, new Date().getMonth(), new Date().getDate())} // Set the maximum date to 18 years ago
-                        />
+                    <Pressable
+                      style={styles.box1}
+                      onPress={() => {
+                        setGender("Female");
+                        setModalVisible(false);
+                      }}
+                    >
+                      <View style={[gender === 'Female' ? styles.BoxViewBoder : styles.inner]}>
+                        <Image source={Images.Vector2} />
+                        <Text style={styles.maletext}>Female</Text>
                       </View>
-                    </View>
-                  </ScrollView>
+                    </Pressable>
+                  </View>
+                  <View
+                    style={{
+                      width: "100%",
+                      height: "30%",
+                      marginTop: 8,
+                    }}
+                  >
+                    <Pressable
+                      style={styles.otherView}
+                      onPress={() => {
+                        setGender("Other");
+                        setModalVisible(false);
+                      }}
+                    >
+                      <View style={[gender === 'Other' ? styles.oternameviewBorder : styles.oternameview]}>
+                        <Text style={styles.otherText}>Other</Text>
+                      </View>
+                    </Pressable>
+                  </View>
                 </View>
-              </View>
-            </Modal>
+              </ScrollView>
+            </View>
           </View>
-          {/* modalVisibleDate End*/}
-          <View style={{ paddingVertical: 10, alignItems: "center" }}>
-              <Button
-                loader={load}
-                label="Next"
-                onPress={() => {
-                accountUpdate();
-              }}
-            />
-          </View>
+        </Modal>
+      </View>
         </ScrollView>
       )}
-    </View>
+      <Button style={{marginVertical: 10}} label={"Next"} loader={load} onPress={accountUpdate} />
+    </Container>
   );
 };
 const styles = StyleSheet.create({
@@ -605,6 +500,15 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     position: "absolute",
+  },
+  inputMainView: {
+    backgroundColor: Colors.black,
+    borderRadius: 8,
+    marginTop: "3%",
+    marginBottom: "3%",
+    justifyContent: "center",
+    alignSelf: "center",
+    height: Platform.OS === "ios" ? 60 : 60,
   },
   centeredView: {
     flex: 1,

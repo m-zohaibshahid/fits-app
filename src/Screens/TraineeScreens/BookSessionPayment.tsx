@@ -67,7 +67,11 @@ const BookSessionPayment = ({ navigation }: PropsInterface) => {
       amount: -cost,
       subamount: cost,
     };
-    BookASession();
+
+    const result = tripePaymentTransferMutation(body)
+
+    if (result.data) BookASession();
+    else if (result.error) errorToast(result.error.data.message)
   };
 
   const BookASession = async () => {

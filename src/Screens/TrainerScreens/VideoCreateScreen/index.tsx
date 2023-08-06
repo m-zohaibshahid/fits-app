@@ -100,7 +100,7 @@ const VideoCreateScreen = ({ navigation }: PropsInterface) => {
     if (result?.data) navigation.navigate("Home");
     if (result?.error) errorToast(result?.error?.data.message)
   }
-
+  
   const uploadVideoOnCloud = async (video: any) => {
     const formData = new FormData();
     formData.append("file", video);
@@ -115,7 +115,11 @@ const VideoCreateScreen = ({ navigation }: PropsInterface) => {
       .then((res2) => {
         setUploadOnCLoudLoading({...uploadOnCloudLoading, video:false})
         setCloudVideoLink([res2?.url]);
-      })
+      }).catch((err) => { 
+        errorToast(err.message)
+        setUploadOnCLoudLoading({ ...uploadOnCloudLoading, video: false })
+        setVideo("")
+      })  
   };
 
   return (
@@ -143,15 +147,14 @@ const VideoCreateScreen = ({ navigation }: PropsInterface) => {
                 </Typography>
               <Button label="Upload Video" onPress={chooseVideoFromGallery} variant="tini" />
               </View>
-            ) : (
-                uploadOnCloudLoading.video ? <ActivityIndicator style={{marginVertical: 60}} /> : <View style={{ width: "100%", alignSelf: "center", position: 'relative' }}>
+          ) : (
+            uploadOnCloudLoading.video ? <ActivityIndicator /> :
+              <View style={{ width: "100%", alignSelf: "center", position: 'relative' }}>
                 <Pressable onPress={chooseVideoFromGallery} style={{paddingVertical: 5, paddingHorizontal: 10, backgroundColor: Colors.grayTransparent, position: 'absolute', top: 5, left: 5, borderRadius: 5}}><Typography color="white" size={'small'}>Another</Typography></Pressable>
                 <VideoPlayer
-                  video={{ uri: video }}
-                  filterEnabled={true}
+                  video={{ uri: cloudVideoUrl[0] }}
                   videoWidth={1600}
                   videoHeight={900}
-                  fullscreenAutorotate={false}
                   style={{ borderRadius: 10, alignSelf: "center" }}
                 />
               </View>
@@ -387,7 +390,7 @@ const VideoCreateScreen = ({ navigation }: PropsInterface) => {
         }}
           label={"Upload"}
           loader={isLoading}
-          disabled={!video || !videoTitle || !value || !price || !details || !cloudImageUrl || !cloudVideoUrl.length}
+          disabled={!videoTitle || !value || !price || !details || !cloudImageUrl || !cloudVideoUrl.length}
           onPress={handleUploadVideo}
         />
     </Container>

@@ -27,17 +27,23 @@ const CheckUser = ({ navigation }: PropsInterface) => {
   }
 
   const handleGetUserFromUserMeApi = async () => {
+  try {
     let result = await getUserInfoFromUserMe()
+    console.log(result.data?.profile_status.fitness_goal_step_3, "");
+    
     if (result.data) {
-      if (!result.data?.stripe?.customer?.id) {
+      if (!result.data?.stripe?.customer?.id && result.data?.profile_status.fitness_goal_step_3) {
         createStripeAccount(result.data?.personal_info.name, result.data?.user.email, result.data?.personal_info.phoneNumber)
       } else {
         await setDataInAsyncStorageAndUpdateState(result.data)
       }
       }
-    if (result?.error?.data?.message === 'unAuthorized') {
-      onLogout()
-    }
+    } catch (error: any) {
+      if (error?.data?.message === 'unAuthorized') {
+        onLogout()
+      }
+    errorToast(error)
+  }
   }
 
   const createStripeAccount = async( name: string, email: string, phone: number ) => {

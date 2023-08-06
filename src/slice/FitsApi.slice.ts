@@ -231,8 +231,8 @@ export const fitsApi = createApi({
       query: () => `/video`,
     }),
 
-    getMyBookedClasses: builder.query<any, string>({
-      query: (id) => `/book-a-session/trainee/${id}`,
+    getMyBookedClasses: builder.query({
+      query: () => `/get-booked-sessions`,
     }),
 
     stripeCustomerGet: builder.query<any, string>({

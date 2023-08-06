@@ -17,14 +17,16 @@ interface PropsInterface {
 const ScheduledClasses = ({ navigation }: PropsInterface) => {
   const { userInfo } = useSelector((state: { fitsStore: Partial<UserDetail> }) => state.fitsStore);
 
-  const {data: myBookedClassesApiResponse, refetch, isLoading} = useGetMyBookedClassesQuery(userInfo?.user?._id || "")
-
+  const {data: myBookedClassesApiResponse, refetch, isLoading} = useGetMyBookedClassesQuery({})
 
   useEffect(() => {
     navigation.addListener("focus", () => {
       refetch()
     });
   }, []);
+
+  console.log("|||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||", myBookedClassesApiResponse);
+  
 
   const detailsInfoCall = (item: any, i: number) => {
     let dummy = [...myBookedClassesApiResponse];
