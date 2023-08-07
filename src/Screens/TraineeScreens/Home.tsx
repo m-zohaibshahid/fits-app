@@ -67,16 +67,13 @@ const Home: React.FC<Props> = ({ navigation }) => {
     setClassType(item?.Name.toLowerCase());
   };
 
-  const classSorts = (item: { Name: React.SetStateAction<null> }) => {
+  const handleClassSorts = (item: { Name: React.SetStateAction<null> }) => {
     setModalVisible(false);
     setClassSort(item?.Name);
   };
 
   useEffect(() => {
     if (sportData || minimumPrice || maximumPrice || classType || classSort) {
-      setClassSort(null);
-      setClassType(null);
-      setSportData(null);
       Filter();
     }
   }, [sportData, minimumPrice, maximumPrice, classType, classSort]);
@@ -102,7 +99,7 @@ const Home: React.FC<Props> = ({ navigation }) => {
     };
 
     const result: any = await updateFilter(data);
-    console.log("result", result);
+    console.log("result", result, "------------------", data, "userLoaction", userLoaction);
     if (result?.error) errorToast(result.error?.data?.message);
     if (result?.data) setFilterData(result.data?.data?.result);
   };
@@ -342,10 +339,10 @@ const Home: React.FC<Props> = ({ navigation }) => {
               </Typography>
             </View>
             <ScrollView showsVerticalScrollIndicator={false}>
-              {filterType === FilterTypes.SORT && <Sort ClassSorts={classSorts} />}
-              {filterType === FilterTypes.SPORT && <Sports handleSportsData={handleSportsData} />}
+              {filterType === FilterTypes.SORT && <Sort handleClassSorts={handleClassSorts} classSort={classSort} />}
+              {filterType === FilterTypes.SPORT && <Sports handleSportsData={handleSportsData} sportData={sportData} />}
               {filterType === FilterTypes.PRICE && <Price MinPriceData={minPriceData} MaxPriceData={maxPriceData} />}
-              {filterType === FilterTypes.TYPE && <Type ClassType={handleClassType} />}
+              {filterType === FilterTypes.TYPE && <Type handleClassType={handleClassType} classType={classType} />}
             </ScrollView>
           </View>
         </View>
