@@ -16,7 +16,7 @@ interface Props {
 const Recommended: React.FC<Props> = ({ navigation, superLong, superLat }) => {
   const [data, setData] = useState<TrainerClassInterfaceInTraineeScreenInterface[]>([]);
   const [personalInfoData, setPersonalInfoData] = useState<TrainerPersonalinfoInTraineeScreenInterface[]>([]);
-  const [professionalData, setProfessionalData] = useState<TrainerProfessioninfoInTraineeScreen[]>([]);
+  const [professionalData] = useState<TrainerProfessioninfoInTraineeScreen[]>([]);
   const { data: data1, isLoading, error } = useTraineeSessionRecommentQuery({});
   console.log("data: " + data1, error);
   useEffect(() => {
