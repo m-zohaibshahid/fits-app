@@ -1,55 +1,39 @@
 import React, { useEffect, useState } from "react";
-import { Text, View, ImageBackground, Pressable, StyleSheet, ScrollView, ToastAndroid } from "react-native";
+import { Text, View, ImageBackground, Pressable, StyleSheet, ScrollView, ToastAndroid, Alert } from "react-native";
 import AntDesign from "react-native-vector-icons/AntDesign";
 import EvilIcons from "react-native-vector-icons/EvilIcons";
 import { RFValue } from "react-native-responsive-fontsize";
-import { url } from "../../constants/url";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import { getDistance } from "geolib";
 import { NavigationSwitchProp } from "react-navigation";
+import { TrainerClassInterfaceInTraineeScreenInterface, TrainerPersonalinfoInTraineeScreenInterface, TrainerProfessioninfoInTraineeScreen } from "../../interfaces";
+import FullPageLoader from "../../Components/FullpageLoader";
+import { useTraineeSessionRecommentQuery } from "../../slice/FitsApi.slice";
 interface Props {
   navigation: NavigationSwitchProp;
   superLong: any;
   superLat: any;
 }
 const Recommended: React.FC<Props> = ({ navigation, superLong, superLat }) => {
-  const [data, setData] = useState([]);
-  const [personalInfoData, setPersonalInfoData] = useState([]);
-  const [professionalData, setProfessionalData] = useState([]);
-  const GoBack = () => {
-    navigation.goBack();
-  };
+  const [data, setData] = useState<TrainerClassInterfaceInTraineeScreenInterface[]>([]);
+  const [personalInfoData, setPersonalInfoData] = useState<TrainerPersonalinfoInTraineeScreenInterface[]>([]);
+  const [professionalData, setProfessionalData] = useState<TrainerProfessioninfoInTraineeScreen[]>([]);
+  const { data: data1, isLoading, error } = useTraineeSessionRecommentQuery({});
+  console.log("data: " + data1, error);
   useEffect(() => {
     navigation.addListener("focus", () => {
-      bookASessioan();
+      // RecommendedSessioan();
     });
   }, []);
-  const bookASessioan = async () => {
-    const userData = await AsyncStorage.getItem("userData");
-    let userDatax = JSON.parse(userData);
-    //setLoad(true);
-
-    await fetch(`${url}/session`, {
-      method: "GET",
-      headers: {
-        Accept: "application/json",
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${userDatax?.access_token}`,
-      },
-    })
-      .then((res) => res.json())
-      .then((res2) => {
-        //setLoad(false);
-        if (res2.message === "all classes get successfully") {
-          setData(res2.data?.classes);
-          getDistanceFunction(res2.data?.classes);
-          setPersonalInfoData(res2.data?.personal_info);
-          setProfessionalData(res2.data?.profession_info);
-        } else {
-          Alert.alert(res2.errors);
-        }
-      })
-  };
+  // const RecommendedSessioan = async () => {
+  //   if (isLoading) {
+  //     return <FullPageLoader />;
+  //   }
+  //   if (!recommendedSessions?.data) return;
+  //   setData(recommendedSessions?.data?.classes);
+  //   getDistanceFunction(recommendedSessions?.data?.classes);
+  //   setPersonalInfoData(recommendedSessions?.data?.personal_info);
+  //   setProfessionalData(recommendedSessions?.data?.profession_info);
+  // };
   const dummyData = (id: any, item: any) => {
     const check = personalInfoData.find((data) => data?.user === id);
     const checkx = professionalData.find((data) => data?.user === id);
