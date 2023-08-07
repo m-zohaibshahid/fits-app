@@ -27,6 +27,7 @@ export interface PersonalInfoValidateSchemaInterface {
     gender: string;
     profileImage?: string;
     confirmPassword?: string;
+    userType?: string
 }
 export interface PersonalInfoValidateErrorsIntarface {
     name?: string;

@@ -6,37 +6,31 @@ import {
   Modal,
   Image,
   ScrollView,
-  ToastAndroid,
   TouchableOpacity,
   Alert,
   Platform,
   StyleSheet,
-  ImageSourcePropType,
 } from "react-native";
-import FastImage from "react-native-fast-image";
 import CountryPicker from "react-native-country-picker-modal";
 import ImagePicker from "react-native-image-crop-picker";
 import moment from "moment";
 import { RFValue } from "react-native-responsive-fontsize";
-import Entypo from "react-native-vector-icons/Entypo";
 import RNRestart from 'react-native-restart';
 import DatePicker from "react-native-date-picker";
 import * as Images from "../../constants/Images";
 import Header from "../../Components/Header";
 import Colors from "../../constants/Colors";
 import Button from "../../Components/Button";
-import { url } from "../../constants/url";
-import { useNavigation } from "@react-navigation/native";
 import * as Yup from "yup";
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import { useGetUserMeQuery } from "../../slice/FitsApi.slice";
-import { genderOptions } from "../../constants/utilities";
-import { useSelector } from "react-redux";
+import { useGetUserMeQuery, usePersonalInfoUpdateMutation } from "../../slice/FitsApi.slice";
 import Container from "../../Components/Container";
 import Typography from "../../Components/typography/text";
 import TextInput from "../../Components/Input";
-import { PersonalInfoValidateErrorsIntarface } from "./types";
-import { handleConfirmAlert } from "../../utils/handle-confirm";
+import { PersonalInfoFormValidationResultInterface, PersonalInfoValidateErrorsIntarface, PersonalInfoValidateSchemaInterface } from "./types";
+import FullPageLoader from "../../Components/FullpageLoader";
+import { errorToast } from "../../utils/toast";
+import { validateForm } from "../../utils/validation";
+import { NavigationSwitchProp } from "react-navigation";
 
 export const validationSchema = Yup.object().shape({
   name: Yup.string().required("Name is required"),
@@ -50,8 +44,11 @@ export const validationSchema = Yup.object().shape({
   confirmPassword: Yup.string().oneOf([Yup.ref("password")], "Passwords must match"),
 });
 
-const AccountUpdate = () => {
-  const navigation = useNavigation();
+interface Props {
+  navigation: NavigationSwitchProp;
+}
+
+const AccountUpdate = ({navigation}: Props) => {
   const [modalVisible, setModalVisible] = useState(false);
   const [modalVisibleDate, setModalVisibleDate] = useState(false);
   const [fullName, setFullName] = useState("");
@@ -59,70 +56,59 @@ const AccountUpdate = () => {
   const [state, setState] = useState("");
   const [city, setCity] = useState("");
   const [gender, setGender] = useState<any>("");
-  const [phoneNumber, setPhoneNumber] = useState("");
+  const [phoneNumber, setPhoneNumber] = useState('');
   const [date, setDate] = useState(new Date());
   const [image, setImage] = useState("");
   const [cloudImageUrl, setCloudImageUrl] = useState("");
   const [validationErrors, setValidationErrors] = useState<PersonalInfoValidateErrorsIntarface>({});
   const [isCountryVisible, setIsCountryVisible] = React.useState(false);
-  const [load, setLoad] = useState(false);
-  const [loadx, setLoadx] = useState(false);
-  const [userId, setUserId] = useState("");
-  const { data: userMeData, refetch, isLoading } = useGetUserMeQuery({});
-  const token = useSelector((state: { token: string }) => state.token);
+  const { data: userInfo, refetch: refetchUserMeApi, isLoading } = useGetUserMeQuery({});
+  const [mutateAsyncPersonalInfoUpdate, {isLoading: updateInfoLoading}] = usePersonalInfoUpdateMutation();
+
   useEffect(() => {
-    navigation.addListener("focus", () => {
-      userMe();
+    navigation.addListener("focus",async () => {
+      const result = await refetchUserMeApi();
+      if (result.data) setInitialState()
     });
   }, []);
+
+  const setInitialState = () => { 
+    setFullName(userInfo?.personal_info?.name ?? '');
+    setCountry(userInfo?.personal_info?.country ?? '');
+    setState(userInfo?.personal_info?.state ?? '');
+    setCity(userInfo?.personal_info?.city ?? '');
+    setGender(userInfo?.personal_info?.gender ?? '');
+    setPhoneNumber(userInfo?.personal_info?.phoneNumber ?? '');
+    setDate(new Date(userInfo?.personal_info?.date_of_birth) ?? new Date());
+    setImage(userInfo?.personal_info?.profileImage ?? '');
+    setCloudImageUrl(userInfo?.personal_info?.profileImage ?? '');
+  }
 
   const onPressFlag = () => {
     setIsCountryVisible(true);
   };
 
-  const GoBack = () => {
-    navigation.goBack();
-  };
-  const userApiCalling = async (data: any) => {
-    await AsyncStorage.setItem("userPersonalInfo", JSON.stringify(data));
-    userMe();
-  };
-
   const accountUpdate = async () => {
-    setLoad(true);
-    await fetch(`${url}/personal/${userId}`, {
-      method: "PUT",
-      headers: {
-        Accept: "application/json",
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
-      body: JSON.stringify({
-        name: fullName,
-        date_of_birth: date,
-        country: country,
-        state: state,
-        city: city,
-        phoneNumber: phoneNumber,
-        gender: gender,
-        profileImage: cloudImageUrl,
-      }),
-    })
-      .then((res) => res.json())
-      .then((res2) => {
-        refetch();
-          setLoad(false);
-          if (res2.success) {
-            userApiCalling(res2.data);
-            handleConfirmAlert('You must refresh your app', () => RNRestart.restart())
-          } else {
-            ToastAndroid.show(res2.message, ToastAndroid.LONG);
-          }
-      })
-      .catch(() => {
-        setLoad(false);
-        Alert.alert("Something Went Wrong");
-      });
+    const formValues: PersonalInfoValidateSchemaInterface = {
+      name: fullName,
+      date_of_birth: date,
+      country: country,
+      phoneNumber: phoneNumber,
+      state: state,
+      city: city,
+      gender: gender,
+      profileImage: cloudImageUrl,
+      userType: userInfo?.personal_info.user
+    };
+    
+    
+    const { isValid, errors }: PersonalInfoFormValidationResultInterface = await validateForm(formValues, validationSchema);
+    setValidationErrors(errors);
+    if (isValid) {
+      const result = await mutateAsyncPersonalInfoUpdate({id: userInfo?.personal_info._id, body: formValues});
+      if (result?.data?.success) RNRestart.restart()
+      if (result?.error) errorToast(result?.error?.data?.message);
+    }
   };
   // choose Photo From Camera
   const choosePhotoFromCamera = () => {
@@ -147,94 +133,25 @@ const AccountUpdate = () => {
   };
 
   const uploadImageOnCloud = async (image: { uri: string; type: string; name: string } | undefined) => {
-    setLoadx(true);
     const cloudImage = new FormData();
     cloudImage.append("file", image);
     cloudImage.append("upload_preset", "employeeApp");
     cloudImage.append("cloud_name", "ZACodders");
-
     await fetch("https://api.cloudinary.com/v1_1/ZACodders/image/upload", {
       method: "POST",
       body: cloudImage,
     })
       .then((res) => res.json())
       .then((res2) => {
-        setLoadx(false);
         setCloudImageUrl(res2?.url);
       })
       .catch((err) => {
-        setLoadx(false);
         Alert.alert(err.message);
       });
   };
-  // Assuming date is in the format "YYYY-MM-DD" e.g., "2023-07-06"
-  const validDate = moment(date, "YYYY-MM-DD");
 
-  const handleOptionPress = (
-    genderSelect:
-      | number
-      | boolean
-      | React.SetStateAction<string>
-      | React.ReactElement<any, string | React.JSXElementConstructor<any>>
-      | Iterable<React.ReactNode>
-      | null
-      | undefined
-  ) => {
-    setGender(genderSelect);
-    setModalVisible(false);
-  };
+  if (isLoading) return <FullPageLoader />
 
-  const renderOption = (
-    option: {
-      value: string | number | boolean | React.ReactElement<any, string | React.JSXElementConstructor<any>> | Iterable<React.ReactNode> | null | undefined;
-      image: ImageSourcePropType;
-    },
-    index: React.Key | null | undefined
-  ) => {
-    const isActive = gender === option.value;
-    return (
-      <>
-        {option.value !== "Other" ? (
-          <Pressable key={index} style={isActive ? styles.BoxViewBoder : styles.inner} onPress={() => handleOptionPress(option.value)}>
-            <View style={isActive ? styles.oternameview : styles.inner}>
-              {option.image && <Image source={option.image} />}
-              <Text style={styles.maletext}>{option.value}</Text>
-            </View>
-          </Pressable>
-        ) : (
-          <Pressable
-            style={styles.otherView}
-            onPress={() => {
-              handleOptionPress(option.value);
-            }}
-          >
-            <View style={[isActive ? styles.oternameviewBorder : styles.oternameview]}>
-              <Text style={styles.otherText}>Other</Text>
-            </View>
-          </Pressable>
-        )}
-      </>
-    );
-  };
-
-  // user Me api
-  const userMe = async () => {
-    const personalInfo = userMeData?.personal_info;
-    if (userMeData?.success) {
-      setFullName(personalInfo?.name);
-      setCountry(personalInfo?.country);
-      setState(personalInfo?.state);
-      setCity(personalInfo?.city);
-      setGender(personalInfo?.gender);
-      setUserId(personalInfo?._id);
-      setPhoneNumber(personalInfo?.phoneNumber);
-      setDate(personalInfo?.date_of_birth);
-      setImage(personalInfo?.profileImage);
-      setCloudImageUrl(personalInfo?.profileImage);
-    } else {
-      Alert.alert(userMeData?.message ?? "user Information not available");
-    }
-  };
   return (
     <Container style={styles.container}>
       <View style={{ position: "relative" }}>
@@ -263,23 +180,7 @@ const AccountUpdate = () => {
         </TouchableOpacity>
       </View>
       {/*Header rect end*/}
-      {loadx ? (
-        <View style={{ width: "100%", marginTop: 200, alignItems: "center" }}>
-          <FastImage
-            style={{
-              width: 50,
-              height: 50,
-            }}
-            source={{
-              uri: "https://i.gifer.com/ZZ5H.gif",
-              headers: { Authorization: "someAuthToken" },
-              priority: FastImage.priority.normal,
-            }}
-            resizeMode={FastImage.resizeMode.cover}
-          />
-        </View>
-      ) : (
-          <ScrollView showsVerticalScrollIndicator={false}>
+        <ScrollView showsVerticalScrollIndicator={false}>
              <ScrollView showsVerticalScrollIndicator={false}>
         <TextInput error={validationErrors.name} placeholder="Enter Name" label="Full Name" value={fullName} onChangeText={setFullName} />
         <TextInput
@@ -295,9 +196,7 @@ const AccountUpdate = () => {
         <TextInput error={validationErrors.state} placeholder="Enter Your State" value={state} onChangeText={setState} label={"State"} />
         <TextInput error={validationErrors.city} placeholder="Enter Your City" value={city} onChangeText={setCity} label={"City"} />
         <TextInput value={gender} label={"Select Gender"} isEditable={false} handleOnPress={() => setModalVisible(true)}  />
-              
-      </ScrollView>
-            {isCountryVisible && <CountryPicker onClose={() => setIsCountryVisible(false)} visible={isCountryVisible} onSelect={(value) => setCountry(value.name)} countryCode={"AF"} />}
+        </ScrollView>{isCountryVisible && <CountryPicker onClose={() => setIsCountryVisible(false)} visible={isCountryVisible} onSelect={(value) => setCountry(value.name)} countryCode={"AF"} />}
             
       <View style={styles.centeredView}>
         <Modal animationType="fade" transparent={true} visible={modalVisible} onRequestClose={() => setModalVisible(false)}>
@@ -376,9 +275,37 @@ const AccountUpdate = () => {
           </View>
         </Modal>
       </View>
-        </ScrollView>
-      )}
-      <Button style={{marginVertical: 10}} label={"Next"} loader={load} onPress={accountUpdate} />
+    </ScrollView>
+
+      <Modal animationType="fade" transparent={true} visible={modalVisibleDate} onRequestClose={() => setModalVisibleDate(false)}>
+        <View style={styles.bottomView}>
+          <View style={styles.modalContainer}>
+            <View style={styles.cancelView}>
+              <Pressable onPress={() => setModalVisibleDate(false)} style={styles.canceldoneView}>
+                <Text style={styles.TextCancelDone}>Cancel</Text>
+              </Pressable>
+              <View style={styles.DOBView}>
+                <Text style={styles.TextDOB}>Date of Birth</Text>
+              </View>
+              <Pressable onPress={() => setModalVisibleDate(false)} style={styles.canceldoneView}>
+                <Text style={styles.TextCancelDone}>Done</Text>
+              </Pressable>
+            </View>
+
+            <View style={styles.topView}>
+              <DatePicker
+                mode="date"
+                textColor="#000"
+                date={date ? new Date(date) : new Date()}
+                maximumDate={new Date(new Date().getFullYear() - 15, new Date().getMonth(), new Date().getDate())} // Set the maximum date to 18 years ago
+                style={styles.DatePicker}
+                onDateChange={setDate}
+              />
+            </View>
+          </View>
+        </View>
+      </Modal>
+      <Button style={{marginVertical: 10}} label={"Next"} loader={updateInfoLoading} onPress={accountUpdate} />
     </Container>
   );
 };
@@ -388,11 +315,30 @@ const styles = StyleSheet.create({
     width: "100%",
     backgroundColor: Colors.white,
     paddingTop: Platform.OS === "ios" ? 40 : 0,
-    paddingBottom: Platform.OS === "ios" ? 0 : 0,
+    paddingBottom: 0,
+  },
+  bottomView: {
+    flex: 1,
+    justifyContent: "flex-end",
+    backgroundColor: Colors.transparentBlack,
   },
   header: {
     width: "100%",
     height: 150,
+  },
+  modalContainer: {
+    backgroundColor: Colors.white,
+    borderRadius: 10,
+    paddingHorizontal: 24,
+    paddingTop: 28,
+    shadowColor: Colors.black,
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 6.84,
+    elevation: 9,
   },
   fixeheight: {
     height: 50,
@@ -416,11 +362,7 @@ const styles = StyleSheet.create({
     width: "100%",
     alignItems: "center",
   },
-  topView: {
-    flex: 1,
-    justifyContent: "center",
-    flexDirection: "row",
-  },
+  topView: { width: "90%", alignItems: "center", alignSelf: "center" },
   topView1: { width: "90%", alignItems: "center" },
   inner: {
     backgroundColor: Colors.black,
@@ -508,7 +450,7 @@ const styles = StyleSheet.create({
     marginBottom: "3%",
     justifyContent: "center",
     alignSelf: "center",
-    height: Platform.OS === "ios" ? 60 : 60,
+    height: 60,
   },
   centeredView: {
     flex: 1,
