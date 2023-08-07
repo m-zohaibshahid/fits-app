@@ -68,8 +68,8 @@ const Sporst = [
     name: "Other",
   },
 ];
-const Sports = (props: { handleSportsData: any }) => {
-  const { handleSportsData } = props;
+const Sports = (props: { handleSportsData: any; sportData: any }) => {
+  const { handleSportsData, sportData } = props;
   return (
     <View>
       <Text style={styles.SortText}>Sports </Text>
@@ -93,7 +93,7 @@ const Sports = (props: { handleSportsData: any }) => {
               <Text style={styles.titleText}>{item.name}</Text>
             </View>
             <View style={styles.iconView}>
-              <Feather name="check-circle" color={"#000"} size={25} />
+              <Feather name="check-circle" color={sportData === item.name ? "red" : "#000"} size={25} />
             </View>
           </Pressable>
         ))}

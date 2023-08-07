@@ -14,11 +14,11 @@ const ClassesType = [
     Name: "Online",
   },
 ];
-const Type = (props: { ClassType: any }) => {
-  const { ClassType } = props;
+const Type = (props: { handleClassType: any; classType: any }) => {
+  const { handleClassType, classType } = props;
   const detailsInfoCall = (item: { Name: string }) => {
     if (item.Name !== "") {
-      ClassType(item);
+      handleClassType(item);
     }
   };
   return (
@@ -32,7 +32,7 @@ const Type = (props: { ClassType: any }) => {
             <Text style={styles.titleText}>{item.Name}</Text>
           </View>
           <View style={styles.iconView}>
-            <Feather name="check-circle" color={"#000"} size={25} />
+            <Feather name="check-circle" color={item.Name.toLowerCase() === classType ? "red" : "#000"} size={25} />
           </View>
         </Pressable>
       ))}

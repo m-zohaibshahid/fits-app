@@ -13,7 +13,7 @@ import Sports from "./Filter/Sports";
 import Price from "./Filter/Price";
 import Type from "./Filter/Type";
 import Geolocation from "react-native-geolocation-service";
-import { useSessionsQuery, useUpdateFilterMutation } from "../../slice/FitsApi.slice";
+import { useRecommendQuery, useSessionsQuery, useUpdateFilterMutation } from "../../slice/FitsApi.slice";
 import { useDispatch, useSelector } from "react-redux";
 import { TrainerClassInterfaceInTraineeScreenInterface, TrainerPersonalinfoInTraineeScreenInterface, TrainerProfessioninfoInTraineeScreen, UserDetail } from "../../interfaces";
 import { NavigationSwitchProp } from "react-navigation";
@@ -23,13 +23,12 @@ import Header from "../../Components/Header";
 import Typography from "../../Components/typography/text";
 import { LocationState, setLocationState } from "../../slice/location.slice";
 import { calculateDistance } from "../../utils/calculateDistance";
-import MapWithMarker from "../../Components/Map/inde";
 interface Props {
   navigation: NavigationSwitchProp;
 }
 const Home: React.FC<Props> = ({ navigation }) => {
   const dispatch = useDispatch();
-  const { latitude, longitude } = useSelector((state: {location: LocationState}) => state.location);
+  const { latitude, longitude } = useSelector((state: { location: LocationState }) => state.location);
   const { userInfo } = useSelector((state: { fitsStore: Partial<UserDetail> }) => state.fitsStore);
   const [modalVisible, setModalVisible] = useState(false);
   const [filterType, setFilterType] = useState<FilterTypes>(FilterTypes.SORT);
@@ -44,7 +43,6 @@ const Home: React.FC<Props> = ({ navigation }) => {
   const [classType, setClassType] = useState(null);
   const [classSort, setClassSort] = useState(null);
   const [search, setSearch] = useState("");
-
   const { data: session, refetch: sessionRefetch } = useSessionsQuery({});
   const [updateFilter] = useUpdateFilterMutation({});
   const handleSportsData = (item: { name: null }) => {
@@ -67,16 +65,13 @@ const Home: React.FC<Props> = ({ navigation }) => {
     setClassType(item?.Name.toLowerCase());
   };
 
-  const classSorts = (item: { Name: React.SetStateAction<null> }) => {
+  const handleClassSorts = (item: { Name: React.SetStateAction<null> }) => {
     setModalVisible(false);
     setClassSort(item?.Name);
   };
 
   useEffect(() => {
     if (sportData || minimumPrice || maximumPrice || classType || classSort) {
-      setClassSort(null);
-      setClassType(null);
-      setSportData(null);
       Filter();
     }
   }, [sportData, minimumPrice, maximumPrice, classType, classSort]);
@@ -102,34 +97,32 @@ const Home: React.FC<Props> = ({ navigation }) => {
     };
 
     const result: any = await updateFilter(data);
-    console.log("result", result);
+    console.log("result", result, "------------------", data, "userLoaction", userLoaction);
     if (result?.error) errorToast(result.error?.data?.message);
     if (result?.data) setFilterData(result.data?.data?.result);
   };
- 
+
   const requestLocationPermission = async () => {
     try {
-      const granted = await PermissionsAndroid.request(
-        PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION
+      const granted = await PermissionsAndroid.request(PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION);
+      if (granted === PermissionsAndroid.RESULTS.GRANTED) {
+        Geolocation.getCurrentPosition(
+          (position) => {
+            dispatch(setLocationState({ longitude: position?.coords?.longitude, latitude: position?.coords?.latitude }));
+          },
+          (error) => console.log("Error:", error.message),
+          { enableHighAccuracy: true, timeout: 20000, maximumAge: 1000 }
         );
-        if (granted === PermissionsAndroid.RESULTS.GRANTED) {
-          Geolocation.getCurrentPosition(
-            (position) => {
-              dispatch(setLocationState({ longitude: position?.coords?.longitude, latitude: position?.coords?.latitude}))
-            },
-            (error) => console.log("Error:", error.message),
-            { enableHighAccuracy: true, timeout: 20000, maximumAge: 1000 }
-            );
-          }
-        } catch (error) {
-          console.error(error.message);
-        }
-      };
-      
+      }
+    } catch (error) {
+      console.error(error.message);
+    }
+  };
+
   useEffect(() => {
-      requestLocationPermission();
+    requestLocationPermission();
   }, []);
-      
+
   const handlePressOnCard = (item: TrainerClassInterfaceInTraineeScreenInterface) => {
     const findPersonalInfoById = personalInfoData.find((data: TrainerPersonalinfoInTraineeScreenInterface) => data.user === item.user?._id);
     const findProfessionalInfoById = professionalData.find((data: TrainerProfessioninfoInTraineeScreen) => data.user === item.user?._id);
@@ -189,83 +182,76 @@ const Home: React.FC<Props> = ({ navigation }) => {
 
   return (
     <Container>
-       <View style={{ position: "relative" }}>
-        <Header hideBackButton lableStyle={{marginTop: 40, marginBottom: 5}} style={{marginLeft: 5}} label={"Home Screen"} subLabel={"Hello: " + userInfo?.personal_info?.name} />
+      <View style={{ position: "relative" }}>
+        <Header hideBackButton lableStyle={{ marginTop: 40, marginBottom: 5 }} style={{ marginLeft: 5 }} label={"Home Screen"} subLabel={"Hello: " + userInfo?.personal_info?.name} />
         <TouchableOpacity style={{ position: "absolute", top: 40, right: 10 }}>
-            <Image
-              style={{
-                width: 80,
-                height: 80,
-                borderRadius: 200 / 2,
-                overflow: "hidden",
-                borderWidth: 1,
-                borderColor: "grey",
-              }}
-              source={{uri: userInfo?.personal_info?.profileImage}}
-            />
+          <Image
+            style={{
+              width: 80,
+              height: 80,
+              borderRadius: 200 / 2,
+              overflow: "hidden",
+              borderWidth: 1,
+              borderColor: "grey",
+            }}
+            source={{ uri: userInfo?.personal_info?.profileImage }}
+          />
         </TouchableOpacity>
       </View>
-          <View style={styles.TopView}>
-            <View style={styles.topView}>
-              <View style={styles.rowView1}>
-                <View style={styles.searchiconview}>
-                  <FontAwesome name="search" size={24} color="#fff" />
-                </View>
-                <View style={styles.textinputview}>
-                  <TextInput placeholder="Search by class" placeholderTextColor={"#fff"} style={styles.textinputstyle} value={search} onChangeText={(e) => find(e)} />
-                </View>
-                <Pressable
-                  style={styles.closeiconview}
-                  onPress={() => {
-                    modalVisible ? setModalVisible(false) : setModalVisible(true);
-                  }}
-                >
-                  <Feather name="sliders" size={19} color="#fff" />
-                </Pressable>
-              </View>
+      <View style={styles.TopView}>
+        <View style={styles.topView}>
+          <View style={styles.rowView1}>
+            <View style={styles.searchiconview}>
+              <FontAwesome name="search" size={24} color="#fff" />
             </View>
+            <View style={styles.textinputview}>
+              <TextInput placeholder="Search by class" placeholderTextColor={"#fff"} style={styles.textinputstyle} value={search} onChangeText={(e) => find(e)} />
+            </View>
+            <Pressable
+              style={styles.closeiconview}
+              onPress={() => {
+                modalVisible ? setModalVisible(false) : setModalVisible(true);
+              }}
+            >
+              <Feather name="sliders" size={19} color="#fff" />
+            </Pressable>
           </View>
-      <View style={{flexDirection: "row", justifyContent: 'space-between', marginVertical: 30, marginHorizontal: 20}}>
-      <Typography
-                color={screenTab === ScreenTabTypes.NEARYOU ? "redColor" : "black"}
-                size="large"
-                onPress={() => setScreenTab(ScreenTabTypes.NEARYOU)}
-                pressAble
-              >
-                Near You
-              </Typography>
-      <Typography
-                color={screenTab === ScreenTabTypes.RECOMMENDED ? "redColor" : "black"}
-                size="large"
-                onPress={() => setScreenTab(ScreenTabTypes.RECOMMENDED)}
-                pressAble
-              >
-                Recommended
-        </Typography>
         </View>
-        
-          <ScrollView horizontal={true} showsHorizontalScrollIndicator={false} style={styles.main}>
+      </View>
+      <View style={{ flexDirection: "row", justifyContent: "space-between", marginVertical: 30, marginHorizontal: 20 }}>
+        <Typography color={screenTab === ScreenTabTypes.NEARYOU ? "redColor" : "black"} size="large" onPress={() => setScreenTab(ScreenTabTypes.NEARYOU)} pressAble>
+          Near You
+        </Typography>
+        <Typography color={screenTab === ScreenTabTypes.RECOMMENDED ? "redColor" : "black"} size="large" onPress={() => setScreenTab(ScreenTabTypes.RECOMMENDED)} pressAble>
+          Recommended
+        </Typography>
+      </View>
+
+      <ScrollView horizontal={true} showsHorizontalScrollIndicator={false} style={styles.main}>
         {filterData ? (
           filterData.map((item: TrainerClassInterfaceInTraineeScreenInterface, i: number) => {
-              return  <Pressable onPress={() => handlePressOnCard(item)} style={styles.boxview} key={i}>
-              <ImageBackground imageStyle={{ borderRadius: 10 }} style={styles.ImageBackgroundstyle} source={{ uri: item.image } ?? dummyImageSource}>
-                <View style={{flexDirection: 'row', justifyContent: 'space-between', padding: 10}}>
-
-                          <Typography style={{backgroundColor: Colors.white80, padding: 10, borderRadius: 12}}>
-                            <AntDesign name="star" size={15} color={"#000"} /> {item?.averageRating?.toFixed(1)}
-                          </Typography>
-                          <Typography style={{backgroundColor: Colors.white80, padding: 10, borderRadius: 12}}>$ {item?.price} / Session</Typography>
+            return (
+              <Pressable onPress={() => handlePressOnCard(item)} style={styles.boxview} key={i}>
+                <ImageBackground imageStyle={{ borderRadius: 10 }} style={styles.ImageBackgroundstyle} source={{ uri: item.image } ?? dummyImageSource}>
+                  <View style={{ flexDirection: "row", justifyContent: "space-between", padding: 10 }}>
+                    <Typography style={{ backgroundColor: Colors.white80, padding: 10, borderRadius: 12 }}>
+                      <AntDesign name="star" size={15} color={"#000"} /> {item?.averageRating?.toFixed(1)}
+                    </Typography>
+                    <Typography style={{ backgroundColor: Colors.white80, padding: 10, borderRadius: 12 }}>$ {item?.price} / Session</Typography>
+                  </View>
+                </ImageBackground>
+                <View style={styles.jumerNameView}>
+                  <Typography size={"heading4"} weight="600" color="transparentBlack">
+                    {item.class_title}
+                  </Typography>
+                  <View style={{ width: "100%", flexDirection: "row" }}>
+                    <EvilIcons name="location" size={20} color="black" />
+                    <Text style={styles.kmtextstyle}>{calculateDistance(latitude, longitude, item.session_type.lat ?? 0, item.session_type.lng ?? 0)} km from you</Text>
+                  </View>
                 </View>
-              </ImageBackground>
-              <View style={styles.jumerNameView}>
-                <Typography size={"heading4"} weight="600" color="transparentBlack">{item.class_title}</Typography>
-                <View style={{ width: "100%", flexDirection: "row" }}>
-                  <EvilIcons name="location" size={20} color="black" />
-                  <Text style={styles.kmtextstyle}>{calculateDistance(latitude, longitude, item.session_type.lat ?? 0, item.session_type.lng ?? 0)} km from you</Text>
-                </View>
-              </View>
-            </Pressable>
-            })
+              </Pressable>
+            );
+          })
         ) : (
           <View
             style={{
@@ -286,9 +272,9 @@ const Home: React.FC<Props> = ({ navigation }) => {
           </View>
         )}
         {screenTab === ScreenTabTypes.RECOMMENDED && <Recommended navigation={navigation} superLong={undefined} superLat={undefined} />}
-        </ScrollView>
-        
-          <Modal animationType="fade" transparent={true} visible={modalVisible} onRequestClose={() => setModalVisible(false)}>
+      </ScrollView>
+
+      <Modal animationType="fade" transparent={true} visible={modalVisible} onRequestClose={() => setModalVisible(false)}>
         <View style={styles.bottomView}>
           <View style={styles.modalContainer}>
             <Header label={"Filter"} hideBackButton showCloseButton lableStyle={{ marginBottom: 30 }} onClose={() => setModalVisible(false)} />
@@ -325,27 +311,18 @@ const Home: React.FC<Props> = ({ navigation }) => {
               >
                 Sports
               </Typography>
-              <Typography color={filterType === FilterTypes.PRICE ? "redColor" : "black"}
-                size="medium"
-                onPress={() => setFilterType(FilterTypes.PRICE)}
-                pressAble
-              >
+              <Typography color={filterType === FilterTypes.PRICE ? "redColor" : "black"} size="medium" onPress={() => setFilterType(FilterTypes.PRICE)} pressAble>
                 Price
               </Typography>
-              <Typography
-                color={filterType === FilterTypes.TYPE ? "redColor" : "black"}
-                size="medium"
-                onPress={() => setFilterType(FilterTypes.TYPE)}
-                pressAble
-              >
+              <Typography color={filterType === FilterTypes.TYPE ? "redColor" : "black"} size="medium" onPress={() => setFilterType(FilterTypes.TYPE)} pressAble>
                 Type
               </Typography>
             </View>
             <ScrollView showsVerticalScrollIndicator={false}>
-              {filterType === FilterTypes.SORT && <Sort ClassSorts={classSorts} />}
-              {filterType === FilterTypes.SPORT && <Sports handleSportsData={handleSportsData} />}
+              {filterType === FilterTypes.SORT && <Sort handleClassSorts={handleClassSorts} classSort={classSort} />}
+              {filterType === FilterTypes.SPORT && <Sports handleSportsData={handleSportsData} sportData={sportData} />}
               {filterType === FilterTypes.PRICE && <Price MinPriceData={minPriceData} MaxPriceData={maxPriceData} />}
-              {filterType === FilterTypes.TYPE && <Type ClassType={handleClassType} />}
+              {filterType === FilterTypes.TYPE && <Type handleClassType={handleClassType} classType={classType} />}
             </ScrollView>
           </View>
         </View>
@@ -400,7 +377,7 @@ const styles = StyleSheet.create({
     marginTop: 20,
   },
   topView: {
-    width: '100%',
+    width: "100%",
   },
   boxview: {
     width: 300,
