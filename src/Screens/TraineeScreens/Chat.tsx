@@ -4,7 +4,7 @@ import EvilIcons from "react-native-vector-icons/EvilIcons";
 import { RFValue } from "react-native-responsive-fontsize";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { NavigationSwitchProp } from "react-navigation";
-import { useGetChatRoomsQuery, useGetRoomByIdMutation } from "../../slice/FitsApi.slice";
+import { useGetChatRoomsQuery } from "../../slice/FitsApi.slice";
 import Typography from "../../Components/typography/text";
 import Container from "../../Components/Container";
 import Colors from "../../constants/Colors";
