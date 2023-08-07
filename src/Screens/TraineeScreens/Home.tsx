@@ -74,6 +74,9 @@ const Home: React.FC<Props> = ({ navigation }) => {
 
   useEffect(() => {
     if (sportData || minimumPrice || maximumPrice || classType || classSort) {
+      setClassSort(null);
+      setClassType(null);
+      setSportData(null);
       Filter();
     }
   }, [sportData, minimumPrice, maximumPrice, classType, classSort]);
@@ -97,8 +100,9 @@ const Home: React.FC<Props> = ({ navigation }) => {
       type: classType,
       sort_by: classSort,
     };
-    const result: any = await updateFilter(data);
 
+    const result: any = await updateFilter(data);
+    console.log("result", result);
     if (result?.error) errorToast(result.error?.data?.message);
     if (result?.data) setFilterData(result.data?.data?.result);
   };
@@ -339,9 +343,9 @@ const Home: React.FC<Props> = ({ navigation }) => {
             </View>
             <ScrollView showsVerticalScrollIndicator={false}>
               {filterType === FilterTypes.SORT && <Sort ClassSorts={classSorts} />}
-              {filterType === FilterTypes.SPORT && <Sports navigation={navigation} handleSportsData={handleSportsData} />}
-              {filterType === FilterTypes.PRICE && <Price navigation={navigation} MinPriceData={minPriceData} MaxPriceData={maxPriceData} />}
-              {filterType === FilterTypes.TYPE && <Type navigation={navigation} ClassType={handleClassType} />}
+              {filterType === FilterTypes.SPORT && <Sports handleSportsData={handleSportsData} />}
+              {filterType === FilterTypes.PRICE && <Price MinPriceData={minPriceData} MaxPriceData={maxPriceData} />}
+              {filterType === FilterTypes.TYPE && <Type ClassType={handleClassType} />}
             </ScrollView>
           </View>
         </View>

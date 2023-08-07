@@ -33,7 +33,6 @@ const Sort = (props: { ClassSorts: any }) => {
     <ScrollView style={styles.marginView}>
       <Text style={styles.SortText}>Sort </Text>
       <View style={styles.borderWidth} />
-      {/*start flex box*/}
       {Sorts.map(
         (
           item: {
@@ -51,7 +50,6 @@ const Sort = (props: { ClassSorts: any }) => {
           </Pressable>
         )
       )}
-      {/*End flex box*/}
     </ScrollView>
   );
 };

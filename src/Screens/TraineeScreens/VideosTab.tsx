@@ -29,78 +29,85 @@ const VideosTab = ({ navigation }: PropsInterface) => {
   };
 
   const handleCheckIsSubscribed = (videoId: string) => {
-    return myBookedVideos?.data.some((item) => item._id === videoId)
+    if (!myBookedVideos || !myBookedVideos?.data || !Array.isArray(myBookedVideos?.data)) {
+      return false;
+    }
+
+    return myBookedVideos.data.some((item: any) => item?._id === videoId);
   };
 
   return (
     <Container>
-    <View style={styles.topView}>
-      <Typography size={"heading3"} weight="600">Recently Added</Typography>
-    </View>
-    <View style={styles.main}>
-      <ScrollView showsHorizontalScrollIndicator={false} horizontal>
+      <View style={styles.topView}>
+        <Typography size={"heading3"} weight="600">
+          Recently Added
+        </Typography>
+      </View>
+      <View style={styles.main}>
+        <ScrollView showsHorizontalScrollIndicator={false} horizontal>
           {trainerVideos?.data.map((video) => {
-          const isAlreadySubscribed = handleCheckIsSubscribed(video._id);
-          return (
-            <View style={styles.boxView} key={video._id}>
-              <View style={{ display: "flex", flexDirection: "row", justifyContent: "space-between", margin: 7 }}>
-                <View style={styles.badgeWraper}>
-                  <FontAwesome name="star" color={Colors.black} size={12} />
-                  <Typography>{" " + video.averageRating}</Typography>
+            const isAlreadySubscribed = handleCheckIsSubscribed(video._id);
+            console.log("isAlreadySubscribed", isAlreadySubscribed, myBookedVideos?.data);
+            return (
+              <View style={styles.boxView} key={video._id}>
+                <View style={{ display: "flex", flexDirection: "row", justifyContent: "space-between", margin: 7 }}>
+                  <View style={styles.badgeWraper}>
+                    <FontAwesome name="star" color={Colors.black} size={12} />
+                    <Typography>{" " + video.averageRating}</Typography>
+                  </View>
+                  <View style={[styles.badgeWraper, { backgroundColor: Colors.darkBack }]}>
+                    <Typography color="white" size={"heading3"}>{`$ ${video.price}`}</Typography>
+                    <Typography color="white" size={"heading3"}>
+                      {video.numReviews}
+                    </Typography>
+                  </View>
                 </View>
-                <View style={[styles.badgeWraper, { backgroundColor: Colors.darkBack }]}>
-                  <Typography color="white" size={"heading3"}>{`$ ${video.price}`}</Typography>
-                  <Typography color="white" size={"heading3"}>{video.numReviews}</Typography>
-                </View>
-              </View>
-              {isAlreadySubscribed ? (
-                <VideoPlayer
-                video={{
-                  uri: 'http://res.cloudinary.com/zacodders/video/upload/v1691309421/rywyzvdmi3jhrkxcvobq.mp4',
-                  }}
-                filterEnabled={true}
-                videoWidth={900}
-                videoHeight={500}
-                thumbnail={{
-                  uri: video.video_thumbnail,
-                }}
-                />
-              ) : (
-                  <View style={{ position: 'relative', justifyContent: 'center', alignItems: 'center', width: 300, height: 200 }}>
-              <Image
-                style={{
-                  width: 400,
-                  height: 200,
-                  overflow: 'hidden',
-                  position: 'absolute'
-                }}
-                source={{
-                  uri: video.video_thumbnail,
-                }}
-                resizeMode="cover"
+                {isAlreadySubscribed ? (
+                  <VideoPlayer
+                    video={{
+                      uri: "http://res.cloudinary.com/zacodders/video/upload/v1691309421/rywyzvdmi3jhrkxcvobq.mp4",
+                    }}
+                    filterEnabled={true}
+                    videoWidth={900}
+                    videoHeight={500}
+                    thumbnail={{
+                      uri: video.video_thumbnail,
+                    }}
+                  />
+                ) : (
+                  <View style={{ position: "relative", justifyContent: "center", alignItems: "center", width: 300, height: 200 }}>
+                    <Image
+                      style={{
+                        width: 400,
+                        height: 200,
+                        overflow: "hidden",
+                        position: "absolute",
+                      }}
+                      source={{
+                        uri: video.video_thumbnail,
+                      }}
+                      resizeMode="cover"
                     />
-                    <Typography size={"caption"} style={{ padding: 10,borderRadius: 10, zIndex: 999, backgroundColor: Colors.transparentBlack }} color="white" children={'Subsribe for play'} />
+                    <Typography size={"caption"} style={{ padding: 10, borderRadius: 10, zIndex: 999, backgroundColor: Colors.transparentBlack }} color="white" children={"Subscribe for play"} />
+                  </View>
+                )}
+
+                <View style={{ padding: 15, rowGap: 5 }}>
+                  <Typography size={"heading2"} weight="600" color="white">
+                    Description
+                  </Typography>
+                  <Typography size={"medium"} weight="600" color="white90">
+                    {video.video_details}
+                  </Typography>
                 </View>
-              )}
-              
-              <View style={{ padding: 15, rowGap: 5 }}>
-                <Typography size={"heading2"} weight="600" color="white">Description</Typography>
-                <Typography size={"medium"} weight="600" color="white90">{video.video_details}</Typography>
+                <Button style={{ alignSelf: "center", marginVertical: 10 }} variant="tini" label={isAlreadySubscribed ? "Play" : "Book Now"} onPress={() => goToNextScreen(video)} />
               </View>
-              {<Button
-                style={{ alignSelf: 'center', marginVertical: 10 }}
-                variant="tini"
-                disabled={isAlreadySubscribed}
-                label={isAlreadySubscribed ? "Subscribed" : "Book Now"}
-                onPress={() => goToNextScreen(video)}
-              />}
-            </View>
-          );
-        })}
-      </ScrollView>
-    </View>
-  </Container>
-);
+            );
+          })}
+        </ScrollView>
+      </View>
+    </Container>
+  );
 };
 export default VideosTab;
 

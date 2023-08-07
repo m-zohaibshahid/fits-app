@@ -329,5 +329,5 @@ export const {
   useGetStripeUserQuery,
   useStripePaymentTransferMutation,
   useVideoSubscribeMutation,
-  useGetMyBookedVideosQuery
+  useGetMyBookedVideosQuery,
 } = fitsApi;

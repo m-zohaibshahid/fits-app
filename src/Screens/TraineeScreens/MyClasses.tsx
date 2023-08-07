@@ -1,8 +1,5 @@
 import React, { useState } from "react";
-import {
-  View,
-  StyleSheet,
-} from "react-native";
+import { View, StyleSheet } from "react-native";
 import ScheduledClasses from "./ScheduledClasses";
 import VideosForClasses from "./MyBookedVideos";
 import Typography from "../../Components/typography/text";
@@ -12,8 +9,8 @@ import Header from "../../Components/Header";
 import Container from "../../Components/Container";
 
 enum TabsTypes {
-  CLASSES = 'classes',
-  VIDEOS = 'videos'
+  CLASSES = "classes",
+  VIDEOS = "videos",
 }
 
 interface PropsInterface {
@@ -25,43 +22,44 @@ const MyClasses = ({ navigation }: PropsInterface) => {
 
   return (
     <Container>
-      <Header label="My Classes" lableStyle={{marginBottom: 15, marginTop: 20}} />
+      <Header label="My Classes" lableStyle={{ marginBottom: 15, marginTop: 20 }} />
       <View style={styles.tabsTextWarper}>
-      <Typography style={currentTab === TabsTypes.CLASSES  ? {      borderBottomColor: Colors.redColor,      borderBottomWidth: 2,    }  : {} }
-                color={currentTab === TabsTypes.CLASSES ? "redColor" : "black"}
-                size="medium"
-                onPress={() => setCurrentTab(TabsTypes.CLASSES)}
-                pressAble
-                >
-                Booked Classes
-              </Typography>
-      <Typography
-                style={
-                  currentTab === TabsTypes.VIDEOS
-                  ? {
-                    borderBottomColor: Colors.redColor,
-                    borderBottomWidth: 2,
-                  }
-                    : {}
+        <Typography
+          style={currentTab === TabsTypes.CLASSES ? { borderBottomColor: Colors.redColor, borderBottomWidth: 2 } : {}}
+          color={currentTab === TabsTypes.CLASSES ? "redColor" : "black"}
+          size="medium"
+          onPress={() => setCurrentTab(TabsTypes.CLASSES)}
+          pressAble
+        >
+          Booked Classes
+        </Typography>
+        <Typography
+          style={
+            currentTab === TabsTypes.VIDEOS
+              ? {
+                  borderBottomColor: Colors.redColor,
+                  borderBottomWidth: 2,
                 }
-                color={currentTab === TabsTypes.VIDEOS ? "redColor" : "black"}
-                size="medium"
-                onPress={() => setCurrentTab(TabsTypes.VIDEOS)}
-                pressAble
-                >
-                My Videos
-              </Typography>
-                  </View>
-        {currentTab === TabsTypes.CLASSES ? <ScheduledClasses navigation={navigation} /> : null}
-        {currentTab === TabsTypes.VIDEOS ? <VideosForClasses navigation={navigation} /> : null}
+              : {}
+          }
+          color={currentTab === TabsTypes.VIDEOS ? "redColor" : "black"}
+          size="medium"
+          onPress={() => setCurrentTab(TabsTypes.VIDEOS)}
+          pressAble
+        >
+          My Videos
+        </Typography>
+      </View>
+      {currentTab === TabsTypes.CLASSES ? <ScheduledClasses navigation={navigation} /> : null}
+      {currentTab === TabsTypes.VIDEOS ? <VideosForClasses navigation={navigation} /> : null}
     </Container>
   );
 };
 
 const styles = StyleSheet.create({
   tabsTextWarper: {
-    flexDirection: 'row',
-    justifyContent: 'space-around'
+    flexDirection: "row",
+    justifyContent: "space-around",
   },
 });
 export default MyClasses;
