@@ -236,6 +236,12 @@ export const fitsApi = createApi({
     trainerSession: builder.query<any, string>({
       query: (id) => `/session/trainer/${id}`,
     }),
+    traineeSessionRecomment: builder.query<any, any>({
+      query: () => ({
+        url: `/book-a-session/recommended`,
+        method: "POST",
+      }),
+    }),
 
     getMyAllCreatedVideos: builder.query<any, any>({
       query: (id) => `/video/${id}`,
@@ -338,5 +344,6 @@ export const {
   useStripePaymentTransferMutation,
   useVideoSubscribeMutation,
   useGetMyBookedVideosQuery,
-  useProfessionInfoUpdateMutation
+  useTraineeSessionRecommentQuery,
+  useProfessionInfoUpdateMutation,
 } = fitsApi;
