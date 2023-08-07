@@ -84,9 +84,6 @@ const Home: React.FC<Props> = ({ navigation }) => {
 
   useEffect(() => {
     if (sportData || minimumPrice || maximumPrice || classType || classSort) {
-      setClassSort(null);
-      setClassType(null);
-      setSportData(null);
       Filter();
     }
   }, [sportData, minimumPrice, maximumPrice, classType, classSort]);
