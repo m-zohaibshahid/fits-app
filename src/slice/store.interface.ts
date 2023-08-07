@@ -34,13 +34,13 @@ export interface PersonalInfo {
   gender: string
   user: string
   profileImage: string
-  phoneNumber: number
+  phoneNumber: string
   createdAt: string
 }
 export interface ProfessionInfo {
   verification_status: string
   _id: string
-  experience_year: number
+  experience_year: string
   experience_note: string
   qualification: Qualification[]
   user: string
@@ -48,8 +48,6 @@ export interface ProfessionInfo {
 }
 
 export interface Qualification {
-  _id: string
-  id: number
   degree: string
   degree_note: string
 }

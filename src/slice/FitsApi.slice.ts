@@ -91,6 +91,14 @@ export const fitsApi = createApi({
       }),
     }),
 
+    professionInfoUpdate: builder.mutation<any, Partial<any>>({
+      query: ({ id: userId, body }) => ({
+        url: `/profession/${userId}`,
+        method: "PUT",
+        body: body,
+      }),
+    }),
+
     trainerProfessionalInfoCreate: builder.mutation<any, Partial<any>>({
       query: (body) => ({
         url: "/profession",
@@ -336,5 +344,6 @@ export const {
   useStripePaymentTransferMutation,
   useVideoSubscribeMutation,
   useGetMyBookedVideosQuery,
+  useProfessionInfoUpdateMutation,
   useTraineeSessionRecommentQuery,
 } = fitsApi;

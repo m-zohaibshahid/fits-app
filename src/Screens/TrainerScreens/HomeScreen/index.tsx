@@ -60,6 +60,9 @@ const Home: React.FC<Props> = ({ navigation }) => {
   useEffect(() => {
       requestLocationPermission();
   }, []);
+  console.log('====================================');
+  console.log(userInfo);
+  console.log('====================================');
 
 
   return (

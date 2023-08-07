@@ -1,445 +1,176 @@
 import React, { useState, useEffect } from "react";
-import { Text, View, Pressable, StyleSheet, TextInput, ScrollView, ToastAndroid, ActivityIndicator, Platform } from "react-native";
-import { widthPercentageToDP as wp, heightPercentageToDP as hp } from "react-native-responsive-screen";
-import { RFValue } from "react-native-responsive-fontsize";
+import { Text, View, Pressable, ScrollView, StyleSheet} from "react-native";
 import Ionicons from "react-native-vector-icons/Ionicons";
 import AntDesign from "react-native-vector-icons/AntDesign";
 import Header from "../../Components/Header";
 import Colors from "../../constants/Colors";
 import Button from "../../Components/Button";
-import { url } from "../../constants/url";
-import { useRoute } from "@react-navigation/native";
-import AsyncStorage from "@react-native-async-storage/async-storage";
+import TextInput from "../../Components/Input";
+import RNRestart from 'react-native-restart';
+import Conatiner from "../../Components/Container";
 import { NavigationSwitchProp } from "react-navigation";
+import { useSelector } from "react-redux";
+import { UserDetail } from "../../interfaces";
+import DateTimePickerModal from "react-native-modal-datetime-picker";
+import { Qualification } from "../../slice/store.interface";
+import { RFValue } from "react-native-responsive-fontsize";
+import Typography from "../../Components/typography/text";
+import { useProfessionInfoUpdateMutation } from "../../slice/FitsApi.slice";
+import { errorToast } from "../../utils/toast";
+import moment from "moment";
+
 interface Props {
   navigation: NavigationSwitchProp;
 }
-const UpdateProfessioninfo: React.FC<Props> = ({ navigation }) => {
-  const route = useRoute();
 
-  const [qualification, setQualification] = useState([
-    {
-      id: 1,
-      degree: "",
-      degree_note: "",
-    },
-  ]);
-  const [experienceYear, setExperienceYear] = useState("");
+const UpdateProfessioninfo: React.FC<Props> = ({ navigation }) => {
+  const { userInfo } = useSelector((state: { fitsStore: Partial<UserDetail> }) => state.fitsStore);
+const [professionInfoUpdateMutateAsync, {isLoading}] = useProfessionInfoUpdateMutation()
+  const [qualifications, setQualifications] = useState<Qualification[]>([{degree: '', degree_note: ''}]);
+  const [isYearPickerVisible, setIsYearPickerVisible] = useState<boolean>(false);
+  const [experienceYear, setExperienceYear] = useState(new Date().getFullYear().toString());
   const [experienceNote, setExperienceNote] = useState("");
 
-  const [load, setLoad] = useState(false);
-  const [token, setToken] = useState("");
-
-  const GoBack = () => {
-    navigation.goBack();
-  };
-
   useEffect(() => {
-    navigation.addListener("focus", () => {
-      getUserInfo();
-    });
+    navigation.addListener("focus", setInitialState);
   }, []);
 
-  const getUserInfo = async () => {
-    const userData = await AsyncStorage.getItem("userData");
-    let userDatax = JSON.parse(userData);
-    setToken(userDatax?.access_token);
-  };
+  
+  const setInitialState = () => { 
+    setQualifications(userInfo?.profession_info.qualification ?? []);
+    setExperienceYear(userInfo?.profession_info.experience_year ?? experienceYear);
+    setExperienceNote(userInfo?.profession_info.experience_note ?? '');
+  }
 
-  const UpdateProfessionallInfo = async () => {
-    if (experienceYear === "") {
-      ToastAndroid.show("Please Enter your Experience year.", ToastAndroid.SHORT);
-      return;
-    }
-    if (experienceNote === "") {
-      ToastAndroid.show("Please Enter your experienceNote.", ToastAndroid.SHORT);
-      return;
-    }
-    if (qualification.degree === "") {
-      ToastAndroid.show("Please Enter Degree.", ToastAndroid.SHORT);
-      return;
-    }
-    if (qualification.degree_note === "") {
-      ToastAndroid.show("Please Enter Degree note.", ToastAndroid.SHORT);
-      return;
-    } else {
-      setLoad(true);
 
-      await fetch(`${url}/profession/${route.params.Id}`, {
-        method: "PUT",
-        headers: {
-          Accept: "application/json",
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${route.params.token}`,
-        },
-        body: JSON.stringify({
-          qualification: qualification,
+   const UpdateProfessionallInfo = async () => {
+        const body = {
+          qualification: qualifications,
           experience_year: experienceYear,
           experience_note: experienceNote,
-        }),
-      })
-        .then((res) => res.json())
-        .then((res2) => {
-          setLoad(false);
-          if (res2.success === true) {
-            GoBack();
-          } else {
-            ToastAndroid.show(res2.message, ToastAndroid.LONG);
-          }
-        })
-        .catch((error) => {
-          setLoad(false);
-          Alert.alert("Something Went Wrong");
-        });
-    }
+        }
+     const result = await professionInfoUpdateMutateAsync({ id: userInfo?.profession_info._id, body })
+     if (result?.data?.success) RNRestart.restart()
+     if (result?.error) errorToast(result?.error?.data?.message);
+  }; 
+
+  const handleChangeInput = (value: string, index: number, field: 'degree_note' | 'degree') => {
+    setQualifications((prevQualifications) => {
+      const updatedQualifications = [...prevQualifications];
+      updatedQualifications[index] = {
+        ...updatedQualifications[index],
+        [field]: value,
+      };
+      return updatedQualifications;
+    });
+  };
+  
+  const delQualification = (index: number) => {
+    setQualifications(pre => {
+      const deepCopy = [...pre]
+      deepCopy.slice(index, 1)
+      return deepCopy
+    });
   };
 
-  const upDegree = (value, index) => {
-    let oldQualification = [...qualification];
-    oldQualification[index].degree = value;
-    setQualification(oldQualification);
-  };
-  const upDegreeNote = (value, index) => {
-    let oldQualification = [...qualification];
-    oldQualification[index].degree_note = value;
-    setQualification(oldQualification);
-  };
-
-  const delQualification = (id) => {
-    let oldQualification = [...qualification];
-    let newQualification = oldQualification.filter((item) => item.id !== id);
-    setQualification(newQualification);
-  };
   const addQualification = () => {
-    let oldQualification = [...qualification];
-    let newQualification = {
-      id: qualification.length + 1,
-      degree: "",
-      degree_note: "",
-    };
-    oldQualification.push(newQualification);
+    setQualifications([...qualifications, {degree: '', degree_note: ''}]);
+  };
 
-    setQualification(oldQualification);
+  const handleConfirmDate = (date: moment.MomentInput) => {
+    setExperienceYear(moment(date).format("YYYY"))
   };
 
   return (
-    <View style={styles.container}>
-      {/*Header rect start*/}
-      <View style={styles.header}>
-        <View style={styles.fixeheight}>
-          <Header navigation={navigation} />
-        </View>
-        <View style={styles.fixeheight1}>
-          <View style={styles.topView}>
-            <Text style={styles.Professioninfotext}>Professional Info</Text>
-          </View>
-        </View>
-      </View>
-      {/*Header rect end*/}
-      <ScrollView showsVerticalScrollIndicator={false}>
-        <View style={styles.main}>
-          <View style={styles.TopView}>
-            <View style={styles.inputtopviews}>
-              <View style={styles.inputnameView}>
-                <Text style={styles.inputnameText}> Experience (years)</Text>
-              </View>
-              <View style={styles.textinputView}>
-                <View style={styles.textinputView1}>
-                  <TextInput style={styles.inputEmail} placeholder="Enter Experience" keyboardType="number-pad" value={experienceYear} onChangeText={setExperienceYear} />
-                </View>
-              </View>
-            </View>
-          </View>
-          <View style={styles.descriptionTopview}>
-            <View style={styles.descriptiontopviews}>
-              <ScrollView showsVerticalScrollIndicator={false}>
-                <TextInput
-                  multiline={true}
-                  numberOfLines={5}
-                  maxLength={500}
-                  placeholder="Any description related to experience...."
-                  placeholderTextColor={Colors.white}
-                  value={experienceNote}
-                  onChangeText={setExperienceNote}
-                  style={{
-                    height: 200,
-                    paddingLeft: 8,
-                    left: 5,
-                    textAlignVertical: "top",
-                    fontFamily: "Poppins-Regular",
-                    color: Colors.white,
-                  }}
+    <Conatiner>
+      <Header label="Profession Info" />
+      <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.scrollViewContent}>
+        <TextInput
+          maxLength={500}
+          placeholderTextColor={Colors.white}
+          value={experienceNote}
+          isTextArea
+          onChangeText={setExperienceNote}
+          label={"Any Description related to your profession"}
+        />
+        <TextInput
+          value={experienceYear}
+          handleOnPress={() => setIsYearPickerVisible(true)}
+          isEditable={false}
+          label={"Select Experience Year"} />
+
+          <Typography size={'heading2'} weight="600" style={{marginTop: 20}} bottom={"mb7"}>
+            Qualifications <Typography size={"small"}>(up to 3 degrees)</Typography>
+          </Typography>
+          {qualifications.map((item, index) => (
+            <View key={index} style={styles.qualificationItem}>
+              <View style={styles.inputIconWrapper}>
+              <TextInput
+                style={{flex: 1}}
+                label="Degree/certificate"
+                placeholderTextColor={Colors.white}
+                value={item.degree}
+                onChangeText={(text) => handleChangeInput(text, index, 'degree')}
                 />
-              </ScrollView>
-            </View>
-          </View>
-          {/*Qualification section start*/}
-          <View style={styles.qualificationsView}>
-            <View style={{ width: "90%", flexDirection: "row" }}>
-              <View style={{ width: "100%", alignItems: "flex-start" }}>
-                <Text style={styles.qualificationstext}>
-                  Qualifications <Text style={styles.uptotext}>(up to 3 degrees)</Text>
-                </Text>
-              </View>
-            </View>
-          </View>
-          {qualification.map((item, i) => (
-            <View key={i} style={{ marginBottom: 10 }}>
-              <View style={{ width: "90%" }}>
-                <View style={styles.textinputtopview}>
-                  <View style={styles.bgcolorview}>
-                    <TextInput
-                      // multiline={true}
-                      // numberOfLines={5}
-                      // maxLength={500}
-                      placeholder="Degree/certificate "
-                      placeholderTextColor={Colors.white}
-                      value={item.degree}
-                      onChangeText={(text) => upDegree(text, i)}
-                      style={{
-                        color: Colors.white,
-                        height: 50,
-                        left: 8,
-                        fontFamily: "Poppins-Regular",
-                      }}
-                    />
-                  </View>
-                  <View style={{ width: "4%" }}></View>
-                  <View style={{ width: "15%" }}>
-                    <Pressable style={styles.deleteiconview} onPress={() => delQualification(item.id)}>
-                      <AntDesign
-                        name="delete"
-                        style={{
-                          fontSize: 20,
-                          color: "red",
-                        }}
-                      />
-                    </Pressable>
-                  </View>
+                  <Pressable style={{padding: 20}}  onPress={() => delQualification(index)}>
+                    <AntDesign name="delete" color={'red'} size={20} />
+                  </Pressable>
                 </View>
-              </View>
-              <View
-                style={{
-                  width: wp("90%"),
-                  alignItems: "center",
-                  marginTop: 10,
-                }}
-              >
-                <View
-                  style={{
-                    width: "100%",
-                    backgroundColor: Colors.black,
-                    borderRadius: 7,
-                    flexDirection: "column",
-                    height: 113,
-                  }}
-                >
-                  <ScrollView showsVerticalScrollIndicator={false}>
-                    <TextInput
-                      multiline={true}
-                      numberOfLines={5}
-                      maxLength={500}
-                      paddingLeft={5}
-                      placeholder="Any Description related to degrees....."
-                      placeholderTextColor={Colors.white}
-                      value={item.degree_note}
-                      onChangeText={(text) => upDegreeNote(text, i)}
-                      style={{
-                        textAlignVertical: "top",
-                        fontFamily: "Poppins-Regular",
-                        color: Colors.white,
-                      }}
-                    />
-                  </ScrollView>
-                </View>
-              </View>
+
+              <TextInput
+                isTextArea={true}
+                maxLength={500}
+                placeholderTextColor={Colors.white}
+                value={item.degree_note}
+                onChangeText={(text) => handleChangeInput(text, index, 'degree_note')} label={"Description related to degrees"}                  />
+              
             </View>
           ))}
-          {/*Qualification section end*/}
-          <Pressable onPress={addQualification}>
-            <View style={{ width: "100%", alignItems: "center", marginTop: 15 }}>
-              <View
-                style={{
-                  width: "100%",
-                  alignItems: "center",
-                  flexDirection: "row",
-                }}
-              >
-                <View style={{ width: "10%", alignItems: "flex-start" }}>
-                  <Ionicons
-                    name="add-circle-outline"
-                    style={{
-                      fontSize: 30,
-                      color: Colors.black,
-                    }}
-                  />
-                </View>
-                <View style={{ width: "80%" }}>
-                  <Text
-                    style={{
-                      color: Colors.black,
-                      fontSize: RFValue(14, 580),
-                      fontFamily: "Poppins-Regular",
-                      lineHeight: 25,
-                    }}
-                  >
-                    Add qualifications
-                  </Text>
-                </View>
-              </View>
-            </View>
+          <Pressable onPress={addQualification} style={styles.addQualificationButton}>
+            <Ionicons name="add-circle-outline" style={styles.addIcon} />
+            <Text style={styles.addQualificationText}>Add qualifications</Text>
           </Pressable>
-          <View style={{ paddingVertical: 10, width: "100%" }}>
-            <Button
-              navigation={navigation}
-              label={load === true ? <ActivityIndicator size="small" color="#fff" /> : "NEXT"}
-              onPress={() => {
-                if (load === true) {
-                } else {
-                  UpdateProfessionallInfo();
-                }
-              }}
-            />
-          </View>
-        </View>
       </ScrollView>
-    </View>
+      <Button loader={isLoading} style={{marginVertical: 10}} onPress={UpdateProfessionallInfo} label={"Update"}          />
+      <DateTimePickerModal
+        isVisible={isYearPickerVisible}
+        mode="date"
+        onConfirm={handleConfirmDate}
+        onCancel={() => setIsYearPickerVisible(false)}
+      />
+    </Conatiner>
   );
 };
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    width: "100%",
-    backgroundColor: Colors.white,
-    paddingTop: Platform.OS === "ios" ? 40 : 0,
-    paddingBottom: Platform.OS === "ios" ? 0 : 0,
-  },
-  header: {
-    width: "100%",
-    height: 150,
-  },
-  fixeheight: {
-    height: 50,
-    justifyContent: "center",
-    borderColor: "lightgrey",
-    borderBottomWidth: 0.5,
-    width: "100%",
-    alignItems: "center",
-  },
-  fixeheight1: {
-    width: "100%",
-    alignItems: "center",
-  },
-  main: {
-    width: "100%",
-    alignItems: "center",
-  },
-  inputEmail: {
-    borderRadius: 10,
-    width: "100%",
-    height: 40,
-    left: 8,
-    fontSize: RFValue(10, 580),
-    fontFamily: "Poppins-Regular",
-    color: Colors.white,
-  },
 
-  btn: {
-    padding: 10,
-    margin: 10,
-    width: "90%",
-    borderRadius: 10,
-    color: Colors.infos,
-    backgroundColor: Colors.bgRedBtn,
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  TopView: {
-    width: "100%",
-    alignItems: "center",
-  },
-  topView: { width: "90%" },
-  topView1: { width: "90%", alignItems: "center" },
-  backiconstyles: {
-    fontSize: 27,
-    color: Colors.black,
-    marginTop: 20,
-  },
-  Professioninfotext: {
-    color: Colors.black,
-    fontSize: RFValue(22, 580),
-    fontFamily: "Poppins-Bold",
-    marginTop: 10,
-  },
-  inputTopView: {
-    width: "100%",
-    alignItems: "center",
-    marginTop: 30,
-  },
-  inputtopviews: {
-    width: "91%",
-    height: 60,
-    borderWidth: 1,
-    backgroundColor: Colors.black,
-    borderRadius: 12,
-  },
-  inputnameView: {
-    width: "100%",
-    marginTop: 3,
-    paddingLeft: 10,
-    borderRadius: 8,
-  },
-  inputnameText: {
-    color: Colors.white,
-    fontSize: RFValue(9, 580),
-    fontFamily: "poppins-regular",
-  },
-  textinputView: {
-    width: "100%",
-    borderColor: Colors.white,
-    flexDirection: "row",
-  },
-  textinputView1: {
-    width: "90%",
-    borderColor: Colors.white,
-  },
-  hideIconView: {
-    width: "10%",
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  descriptionTopview: {
-    width: "100%",
-    alignItems: "center",
-    marginTop: 10,
-  },
-  descriptiontopviews: {
-    width: "90%",
-    backgroundColor: Colors.black,
-    borderRadius: 8,
-    flexDirection: "column",
-    height: 130,
+const styles = StyleSheet.create({
+  scrollViewContent: {
+    flexGrow: 1,
+    paddingBottom: 20,
   },
   qualificationsView: {
-    width: "100%",
-    alignItems: "center",
-    marginBottom: 10,
     marginTop: 25,
+    marginBottom: 10,
+    alignItems: "center",
   },
   qualificationstext: {
-    color: Colors.black,
-    fontSize: RFValue(18, 580),
     fontFamily: "Poppins-Bold",
-    left: 2,
+    fontSize: RFValue(18, 580),
+    color: Colors.black,
   },
   uptotext: {
-    fontSize: RFValue(9, 580),
     fontFamily: "Poppins-Regular",
+    fontSize: RFValue(9, 580),
     marginTop: 10,
   },
-  textinputtopview: {
-    width: "100%",
+  qualificationItem: {
+    marginBottom: 10,
+  },
+  inputIconWrapper: {
     flexDirection: "row",
+    width: "100%",
+    alignItems: "center",
+    borderRadius: 20,
+    overflow: 'hidden'
   },
   bgcolorview: {
     width: "81%",
@@ -454,5 +185,40 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     borderRadius: 10,
   },
+  deleteIcon: {
+    fontSize: 20,
+    color: "red",
+  },
+  degreeNoteView: {
+    width: "100%",
+    alignItems: "center",
+    marginTop: 10,
+  },
+  degreeNote: {
+    textAlignVertical: "top",
+    fontFamily: "Poppins-Regular",
+    color: Colors.white,
+  },
+  addQualificationButton: {
+    width: "100%",
+    alignItems: "center",
+    marginTop: 15,
+    flexDirection: 'row'
+  },
+  addIcon: {
+    fontSize: 30,
+    color: Colors.black,
+  },
+  addQualificationText: {
+    fontFamily: "Poppins-Regular",
+    fontSize: RFValue(14, 580),
+    lineHeight: 25,
+    color: Colors.black,
+  },
+  buttonContainer: {
+    paddingVertical: 10,
+    width: "100%",
+  },
 });
+
 export default UpdateProfessioninfo;

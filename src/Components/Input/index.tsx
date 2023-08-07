@@ -1,5 +1,13 @@
 import React, { useState } from "react";
-import { TextInput as RNTextInput, View, StyleSheet, TextStyle, ViewStyle, Platform, Pressable } from "react-native";
+import {
+  TextInput as RNTextInput,
+  View,
+  StyleSheet,
+  TextStyle,
+  ViewStyle,
+  Platform,
+  Pressable,
+} from "react-native";
 import Typography from "../typography/text";
 import Ionicons from "react-native-vector-icons/Ionicons";
 import Colors from "../../constants/Colors";
@@ -11,17 +19,18 @@ interface TextInputProps {
   placeholder?: string;
   placeholderTextColor?: string;
   secureTextEntry?: boolean;
-  value: string;
+  value: string | number;
   maxLength?: number;
   onChangeText?: (text: string) => void;
   icon?: JSX.Element;
   iconColor?: string;
-  style?: ViewStyle;
+  style?: any | ViewStyle | TextStyle; 
   inputStyle?: TextStyle;
   error?: string;
   editable?: boolean;
   isEditable?: boolean;
   handleOnPress?: () => void;
+  isTextArea?: boolean
 }
 
 const TextInput: React.FC<TextInputProps> = ({
@@ -37,7 +46,8 @@ const TextInput: React.FC<TextInputProps> = ({
   error,
   isEditable,
   handleOnPress,
-  maxLength
+  maxLength,
+  isTextArea = false,
 }) => {
   const [hidePass, setHidePass] = useState(true);
 
@@ -48,17 +58,19 @@ const TextInput: React.FC<TextInputProps> = ({
           {label}
         </Typography>
         <View>
-          <RNTextInput
-            editable={isEditable}
-            style={[styles.inputTypeStyle, inputStyle]}
-            keyboardType={keyboard}
-            placeholder={placeholder}
-            placeholderTextColor={placeholderTextColor}
-            secureTextEntry={secureTextEntry && hidePass}
-            value={value}
-            onChangeText={onChangeText}
-            maxLength={maxLength}
-          />
+            <RNTextInput
+              editable={isEditable}
+              style={[styles.inputTypeStyle, inputStyle, isTextArea ?styles.textAreaHeight : null]}
+              keyboardType={keyboard}
+              placeholder={placeholder}
+              placeholderTextColor={placeholderTextColor}
+              secureTextEntry={secureTextEntry && hidePass}
+              value={value}
+              onChangeText={onChangeText}
+              maxLength={maxLength}
+              multiline={isTextArea}
+              numberOfLines={isTextArea ? 100 : 1}
+            />
           {secureTextEntry && (
             <View style={styles.hideIconView}>
               <Ionicons name={hidePass ? "eye-off" : "eye"} onPress={() => setHidePass(!hidePass)} size={18} color={Colors.white} />
@@ -67,7 +79,7 @@ const TextInput: React.FC<TextInputProps> = ({
         </View>
       </Pressable>
       {error && (
-        <Typography style={styles.errorMessage} size={"small"} weight="700" color={"error"}>
+        <Typography style={styles.errorMessage} size={"small"} weight="700" color={"redColor"}>
           {error}
         </Typography>
       )}
@@ -99,6 +111,9 @@ const styles = StyleSheet.create({
     fontSize: RFValue(12, 580),
     fontWeight: "400",
     color: "#fff",
+  },
+  textAreaHeight: {
+    height: 120,
   },
   errorMessage: {
     marginBottom: 10,
