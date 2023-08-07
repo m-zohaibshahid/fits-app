@@ -1,11 +1,12 @@
-import React, { useState } from "react";
-import { Text, View, Pressable, StyleSheet, Modal, Image, ScrollView, Platform, Alert} from "react-native";
+import React, { useEffect, useState } from "react";
+import { Text, View, Pressable, StyleSheet, Modal, Image, ScrollView, Platform, Alert, TouchableOpacity} from "react-native";
 import AntDesign from "react-native-vector-icons/AntDesign";
 import EvilIcons from "react-native-vector-icons/EvilIcons";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import Entypo from "react-native-vector-icons/Entypo";
 import Fontisto from "react-native-vector-icons/Fontisto";
 import { RFValue } from "react-native-responsive-fontsize";
+import Geocoder from 'react-native-geocoder';
 import * as Images from "../../constants/Images";
 import FastImage from "react-native-fast-image";
 import { useGetUserMeQuery, useUpdatePasswordMutation} from "../../slice/FitsApi.slice";
@@ -20,21 +21,22 @@ import Typography from "../../Components/typography/text";
 import Container from "../../Components/Container";
 import { onLogout } from "../../utils/logout";
 import { errorToast, successToast } from "../../utils/toast";
+import { LocationState } from "../../slice/location.slice";
 interface Props {
   navigation: NavigationSwitchProp;
 }
 
 const Account: React.FC < Props > = ({ navigation }) => {
   const [ChangePassword, setChangePassword] = useState(false);
+  const { userInfo } = useSelector((state: { fitsStore: Partial<UserDetail> }) => state.fitsStore);
+  const { latitude, longitude } = useSelector((state: {location: LocationState}) => state.location);
   const [getLink, setGetLink] = useState(false);
   const [modalVisible, setModalVisible] = useState(false);
   const [userCurrentLocation, setUserCurrentLocation] = useState("");
   const [oldPassword, setOldPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
-  // const { userMeData } = useSelector((state: { fitsStore: Partial <UserDetail>}) => state.fitsStore);
   const [updatePassword, { isLoading: isPasswordUpdateLoading }] = useUpdatePasswordMutation();
-  const { data: userMeData, isLoading } = useGetUserMeQuery({});
  
   const UpdatePassword = async () => {
     const body={
@@ -42,373 +44,191 @@ const Account: React.FC < Props > = ({ navigation }) => {
       password: newPassword,
     }
     
-  const result = await updatePassword({ id: userMeData?.user._id, data: body })
+  const result = await updatePassword({ id: userInfo?.user._id, data: body })
   if (result.error) errorToast(result.error.data.message)
   if (result.data) {
     successToast('Password updated')
     setChangePassword(false)
   }
   }
+
+  const getUserLocation = () => {
+    Geocoder.geocodePosition({
+      lat: latitude,
+      lng: longitude,
+    }).then((res: string | any[]) => {
+      if (res.length > 0) {
+        const address = res[0].formattedAddress;
+        setUserCurrentLocation(address);
+      } else {
+        setUserCurrentLocation('Location not available');
+      }
+    }).catch((error: any) => {
+      setUserCurrentLocation('Location not available');
+    });
+  };
+
+  useEffect(() => {
+    getUserLocation();
+  }, []);
+
     
 
   return (<Container>
     <Header label='Settings' lableStyle={{fontSize: 20}} />
     <ScrollView showsVerticalScrollIndicator={false}>
-        <View style={{ width: "100%", alignItems: "center" }}>
-          <View
-            style={{
-              width: "90%",
-              marginTop: 15,
-              justifyContent: "center",
-              alignItems: "center",
-            }}
-          >
-            {userMeData?.personal_info?.profileImage ? (
-              <FastImage
+            <View style={{alignItems: 'center'}}>
+              <View
                 style={{
-                  width: 165,
-                  height: 165,
-                  borderRadius: 200 / 2,
-                }}
-                source={{
-                  uri: `${userMeData?.personal_info?.profileImage}`,
-                  headers: { Authorization: "someAuthToken" },
-                  priority: FastImage.priority.normal,
-                }}
-                resizeMode={FastImage.resizeMode.cover}
-              />
-            ) : (
-              <Image style={{ width: 165, height: 165, borderRadius: 200 / 2 }} source={Images.Profile} />
-            )}
-          </View>
-        </View>
-        <View style={{ width: "100%", alignItems: "center", marginTop: 10 }}>
-          <View style={{ width: "90%", alignItems: "center", marginTop: 5 }}>
-            <Text
-              style={{
-                fontSize: RFValue(19, 580),
-                fontFamily: "Poppins-Bold",
-                color: "#000",
-                textTransform: "capitalize",
-              }}
-            >
-              {userMeData?.personal_info?.name}
-            </Text>
-          </View>
-        </View>
-        <View style={{ width: "100%", alignItems: "center" }}>
-          <View
-            style={{
-              width: "90%",
-              alignItems: "center",
-              flexDirection: "row",
-            }}
-          >
-            <View
-              style={{
-                width: "6%",
-                justifyContent: "center",
-                alignItems: "flex-end",
-              }}
-            >
-              <EvilIcons name="location" style={{ color: "#000" }} size={25} />
-            </View>
-            <View style={{ width: "94%" }}>
-              <Text style={{ fontSize: RFValue(12, 580), color: "#000" }}> {userCurrentLocation}</Text>
-            </View>
-          </View>
-        </View>
-        <View style={{ width: "100%", alignItems: "center", marginTop: 30 }}>
-          <View
-            style={{
-              width: "90%",
-              alignItems: "center",
-              backgroundColor: "#000",
-              borderRadius: 14,
-              paddingVertical: 10,
-            }}
-          >
-            <View style={{ width: "100%", alignItems: "center" }}>
-              <View style={{ width: "90%", alignItems: "center" }}>
-                <View
-                  style={{
-                    marginTop: 10,
-                    width: "100%",
-                    flexDirection: "row",
-                  }}
-                >
-                  <View style={{ width: "50%" }}>
-                    <Text
-                      style={{
-                        color: "#fff",
-                        fontSize: RFValue(15, 580),
-                        fontFamily: "Poppins-Regular",
-                      }}
-                    >
-                      Profile
-                    </Text>
-                  </View>
-                  <View style={{ width: "50%", alignItems: "flex-end" }}>
-                    <Pressable onPress={() => navigation.navigate("AccountUpdate")}>
-                      <MaterialCommunityIcons name="pencil-outline" color={"#fff"} size={25} />
-                    </Pressable>
-                  </View>
-                </View>
-                <View
-                  style={{
-                    borderBottomColor: "#fff",
-                    borderBottomWidth: 1,
-                    width: "100%",
-                  }}
-                />
-                <View
-                  style={{
-                    marginTop: 10,
-                    width: "100%",
-                    flexDirection: "row",
-                  }}
-                >
-                  <View style={{ width: "50%" }}>
-                    <Text
-                      style={{
-                        color: "#fff",
-                        fontSize: RFValue(15, 580),
-                        fontFamily: "Poppins-Regular",
-                      }}
-                    >
-                      Full name
-                    </Text>
-                  </View>
-                  <View style={{ width: "50%", alignItems: "flex-end" }}>
-                    <Text
-                      style={{
-                        color: "#fff",
-                        fontSize: RFValue(12, 580),
-                        fontFamily: "Poppins-Regular",
-                        textTransform: "capitalize",
-                      }}
-                    >
-                      {userMeData?.personal_info?.name}
-                    </Text>
-                  </View>
-                </View>
-
-                <View
-                  style={{
-                    marginTop: 10,
-                    width: "100%",
-                  }}
-                >
-                  <View style={{ width: "100%", alignItems: "flex-start" }}>
-                    <Text
-                      style={{
-                        color: "#fff",
-                        fontSize: RFValue(15, 580),
-                        fontFamily: "Poppins-Regular",
-                      }}
-                    >
-                      E-mail
-                    </Text>
-                  </View>
-                  <View style={{ width: "100%", alignItems: "flex-end" }}>
-                    <Text
-                      style={{
-                        color: "#fff",
-                        fontSize: RFValue(10, 580),
-                        fontFamily: "Poppins-Regular",
-                      }}
-                    >
-                      {userMeData?.user?.email}
-                    </Text>
-                  </View>
-                </View>
-                <View
-                  style={{
-                    marginTop: 10,
-                    width: "100%",
-                    flexDirection: "row",
-                  }}
-                >
-                  <View style={{ width: "50%" }}>
-                    <Text
-                      style={{
-                        color: "#fff",
-                        fontSize: RFValue(15, 580),
-                        fontFamily: "Poppins-Regular",
-                      }}
-                    >
-                      Country
-                    </Text>
-                  </View>
-                  <View style={{ width: "50%", alignItems: "flex-end" }}>
-                    <Text
-                      style={{
-                        color: "#fff",
-                        fontSize: RFValue(12, 580),
-                        fontFamily: "Poppins-Regular",
-                      }}
-                    >
-                      {userMeData?.personal_info?.country}
-                    </Text>
-                  </View>
-                </View>
-                <View
-                  style={{
-                    marginTop: 10,
-                    width: "100%",
-                    flexDirection: "row",
-                  }}
-                >
-                  <View style={{ width: "50%" }}>
-                    <Text
-                      style={{
-                        color: "#fff",
-                        fontSize: RFValue(15, 580),
-                        fontFamily: "Poppins-Regular",
-                      }}
-                    >
-                      State
-                    </Text>
-                  </View>
-                  <View style={{ width: "50%", alignItems: "flex-end" }}>
-                    <Text
-                      style={{
-                        color: "#fff",
-                        fontSize: RFValue(12, 580),
-                        fontFamily: "Poppins-Regular",
-                      }}
-                    >
-                      {userMeData?.personal_info?.state}
-                    </Text>
-                  </View>
-                </View>
-                <View
-                  style={{
-                    marginTop: 10,
-                    width: "100%",
-                    flexDirection: "row",
-                  }}
-                >
-                  <View style={{ width: "50%" }}>
-                    <Text
-                      style={{
-                        color: "#fff",
-                        fontSize: RFValue(15, 580),
-                        fontFamily: "Poppins-Regular",
-                      }}
-                    >
-                      City
-                    </Text>
-                  </View>
-                  <View style={{ width: "50%", alignItems: "flex-end" }}>
-                    <Text
-                      style={{
-                        color: "#fff",
-                        fontSize: RFValue(12, 580),
-                        fontFamily: "Poppins-Regular",
-                      }}
-                    >
-                      {userMeData?.personal_info?.city}
-                    </Text>
-                  </View>
-                </View>
-                <View
-                  style={{
-                    marginTop: 10,
-                    width: "100%",
-                    flexDirection: "row",
-                  }}
-                >
-                  <View style={{ width: "50%" }}>
-                    <Text
-                      style={{
-                        color: "#fff",
-                        fontSize: RFValue(15, 580),
-                        fontFamily: "Poppins-Regular",
-                      }}
-                    >
-                      Gender
-                    </Text>
-                  </View>
-                  <View style={{ width: "50%", alignItems: "flex-end" }}>
-                    <Text
-                      style={{
-                        color: "#fff",
-                        fontSize: RFValue(12, 580),
-                        fontFamily: "Poppins-Regular",
-                      }}
-                    >
-                      {userMeData?.personal_info?.gender}
-                    </Text>
-                  </View>
-                </View>
-                <View
-                  style={{
-                    marginTop: 10,
-                    width: "100%",
-                    flexDirection: "row",
-                  }}
-                >
-                  <View style={{ width: "50%" }}>
-                    <Text
-                      style={{
-                        color: "#fff",
-                        fontSize: RFValue(15, 580),
-                        fontFamily: "Poppins-Regular",
-                      }}
-                    >
-                      Fitness level
-                    </Text>
-                  </View>
-                  <View style={{ width: "50%", alignItems: "flex-end" }}>
-                    <Text
-                      style={{
-                        color: "#fff",
-                        fontSize: RFValue(12, 580),
-                        fontFamily: "Poppins-Regular",
-                      }}
-                    >
-                      {userMeData?.user?.fitness_level?.key}
-                    </Text>
-                  </View>
-                </View>
-                <View
-                  style={{
-                    marginTop: 10,
-                    width: "100%",
-                    flexDirection: "row",
-                  }}
-                >
-                  <View style={{ width: "50%" }}>
-                    <Text
-                      style={{
-                        color: "#fff",
-                        fontSize: RFValue(15, 580),
-                        fontFamily: "Poppins-Regular",
-                      }}
-                    >
-                      Fitness Goal
-                    </Text>
-                  </View>
-                  <View style={{ width: "50%", alignItems: "flex-end" }}>
-                    <Text
-                      style={{
-                        color: "#fff",
-                        fontSize: RFValue(12, 580),
-                        fontFamily: "Poppins-Regular",
-                      }}
-                    >
-                      {userMeData?.user?.fitness_goal?.key}
-                    </Text>
-                  </View>
-                </View>
+                  width: '90%',
+                  marginTop: 15,
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                }}>
+                {userInfo?.personal_info?.profileImage ? (
+                  <FastImage
+                    style={{
+                      width: 165,
+                      height: 165,
+                      borderRadius: 200 / 2,
+                    }}
+                    source={{
+                      uri: `${userInfo?.personal_info?.profileImage}`,
+                      headers: {Authorization: 'someAuthToken'},
+                      priority: FastImage.priority.normal,
+                    }}
+                    resizeMode={FastImage.resizeMode.cover}
+                  />
+                ) : (
+                  <Image
+                    style={{width: 165, height: 165, borderRadius: 200 / 2}}
+                    source={Images.Profile}
+                  />
+                )}
               </View>
             </View>
-          </View>
-      </View>
+            <View style={{alignItems: 'center', marginTop: 10}}>
+                <Typography size={"heading1"} weight="700" color={'transparentBlack'}>
+                  {userInfo?.personal_info.name}
+                </Typography>
+            </View>
+            <View style={{alignItems: 'center',flexDirection: 'row', justifyContent: 'space-between', paddingVertical: 10, paddingHorizontal: 20}}>
+                  <EvilIcons
+                    name="location"
+                    style={{color: '#000'}}
+                    size={25}
+                  />
+          <Typography size={'medium'} style={{ marginLeft: 10}}>
+                    {userCurrentLocation}
+                  </Typography>
+              </View>
+            <View style={{alignItems: 'center'}}>
+              <View
+            style={{
+                  marginVertical: 5,
+                  width: '100%',
+                  backgroundColor: '#000',
+                  padding: 20,
+                  borderRadius: 10,
+                }}>
+                 <TouchableOpacity
+                        activeOpacity={0.8}
+                        onPress={() => navigation.navigate('AccountUpdate')}
+                        style={{
+                          width: '100%',
+                          flexDirection: 'row',
+                          justifyContent: 'space-between',
+                          }}>
+                          <Typography color='white'>Profile</Typography>
+                          <MaterialCommunityIcons
+                            name="pencil-outline"
+                            color={'#fff'}
+                            size={25}
+                          />
+                      </TouchableOpacity>
+                <View style={{
+                  width: '100%',
+                  flexDirection: 'row',
+                  justifyContent: 'space-between',
+                  marginVertical: 10
+                    }}>
+                        <Typography color='white' size={'regularText'}>
+                          Username
+                        </Typography>
+                        <Typography color='white' size={'regularText'}>
+                          {userInfo?.personal_info.name}
+                        </Typography>
+                    </View>
+                <View style={{
+                  width: '100%',
+                  flexDirection: 'row',
+                  justifyContent: 'space-between',
+                  marginVertical: 10
+                    }}>
+                        <Typography color='white' size={'regularText'}>
+                          Email
+                        </Typography>
+                        <Typography color='white' size={'regularText'}>
+                          {userInfo?.user.email}
+                        </Typography>
+                    </View>
+                <View style={{
+                  width: '100%',
+                  flexDirection: 'row',
+                  justifyContent: 'space-between',
+                  marginVertical: 10
+                    }}>
+                        <Typography color='white' size={'regularText'}>
+                          Country
+                        </Typography>
+                        <Typography color='white' size={'regularText'}>
+                        {userInfo?.personal_info.country}
+                        </Typography>
+                    </View>
+                <View style={{
+                  width: '100%',
+                  flexDirection: 'row',
+                  justifyContent: 'space-between',
+                  marginVertical: 10
+                    }}>
+                        <Typography color='white' size={'regularText'}>
+                        State
+                        </Typography>
+                        <Typography color='white' size={'regularText'}>
+                        {userInfo?.personal_info.state}
+                        </Typography>
+                    </View>
+                <View style={{
+                  width: '100%',
+                  flexDirection: 'row',
+                  justifyContent: 'space-between',
+                  marginVertical: 10
+                    }}>
+                        <Typography color='white' size={'regularText'}>
+                        City
+                        </Typography>
+                        <Typography color='white' size={'regularText'}>
+                        {userInfo?.personal_info.city}
+                        </Typography>
+                    </View>
+                <View style={{
+                  width: '100%',
+                  flexDirection: 'row',
+                  justifyContent: 'space-between',
+                  marginVertical: 10
+                    }}>
+                        <Typography color='white' size={'regularText'}>
+                        Gender
+                        </Typography>
+                        <Typography color='white' size={'regularText'}>
+                        {userInfo?.personal_info.gender}
+                        </Typography>
+                    </View>
+                  </View>
+            </View>
       <Pressable
         onPress={() => {
-          if (userMeData?.stripe?.card) {
+          if (userInfo?.stripe?.card) {
             navigation.navigate("WalletForTrainee");
           } else {
             navigation.navigate("CreateCardScreen");

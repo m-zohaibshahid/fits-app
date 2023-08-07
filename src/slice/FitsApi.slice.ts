@@ -5,6 +5,7 @@ import { LoginInterface, UserMeApiResponse } from "./store.interface";
 import { getUserAsyncStroageToken } from "../utils/async-storage";
 import { RoomMessagesResponse, TrainerSessionApiResultInterface, TrainerVideosForTrainerDetailsApiResponse } from "../interfaces";
 import { GetBookedVideosApiInterface } from "../Screens/TraineeScreens/MyBookedVideos";
+import { GetMyBookedSessionsApiInterface } from "../Screens/TraineeScreens/ScheduledClasses";
 
 // Define a service using a base URL and expected endpoints
 export const fitsApi = createApi({
@@ -232,7 +233,7 @@ export const fitsApi = createApi({
       query: (id) => `/video/${id}`,
     }),
 
-    getMyBookedClasses: builder.query({
+    getMyBookedClasses: builder.query<GetMyBookedSessionsApiInterface, any>({
       query: () => `/get-booked-sessions`,
     }),
 

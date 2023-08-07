@@ -46,7 +46,7 @@ const Home: React.FC<Props> = ({ navigation }) => {
         if (granted === PermissionsAndroid.RESULTS.GRANTED) {
           Geolocation.getCurrentPosition(
             (position) => {
-              dispatch(setLocationState({ longitute: position?.coords?.longitude, latitude: position?.coords?.latitude}))
+              dispatch(setLocationState({ longitude: position?.coords?.longitude, latitude: position?.coords?.latitude}))
             },
             (error) => console.log("Error:", error.message),
             { enableHighAccuracy: true, timeout: 20000, maximumAge: 1000 }

@@ -21,6 +21,8 @@ import Container from "../../../Components/Container";
 import Header from "../../../Components/Header";
 import Typography from "../../../Components/typography/text";
 import MapView, { LatLng, Marker } from "react-native-maps";
+import { useSelector } from "react-redux";
+import { LocationState } from "../../../slice/location.slice";
 
 enum SessionType {
   ONLINE = "online",
@@ -32,6 +34,7 @@ const BookSession = ({ navigation }: any) => {
   const route = useRoute();
   const mapRef = useRef<MapView | null>(null);
   const [superLong, setSuperLong] = useState<number>();
+  const locationState = useSelector((state: {location: LocationState}) => state.location);
   const [superLat, setSuperLat] = useState<number>();
   const [currentDate, setCurrentDate] = useState("");
   const [modalVisible, setModalVisible] = useState(false);
@@ -60,8 +63,8 @@ const BookSession = ({ navigation }: any) => {
 
   useEffect(() => {
     navigation.addListener("focus", () => {
-        setSuperLat(route?.params?.superLat);
-        setSuperLong(route?.params?.superLong);
+        setSuperLat(locationState.latitude);
+        setSuperLong(locationState.longitude);
     });
   }, [route.params]);
 
@@ -406,9 +409,8 @@ const BookSession = ({ navigation }: any) => {
             </View>
             <View style={styles.boxViews2}>
               <Pressable
-                style={type == SessionType.PHYSICAL ? styles.boxShadowborder : styles.boxShadowView}
+                style={type === SessionType.PHYSICAL ? styles.boxShadowborder : styles.boxShadowView}
                 onPress={() => {
-                  //readyHa();
                   setType(SessionType.PHYSICAL);
                 }}
               >

@@ -2,12 +2,12 @@ import { createSlice } from "@reduxjs/toolkit";
 
 export interface LocationState {
     latitude: number;
-    longitute: number;
+    longitude: number;
 }
 
 const initialState: LocationState = {
     latitude: 0,
-    longitute: 0
+    longitude: 0
 };
 
 const locationSlice = createSlice({
@@ -16,11 +16,11 @@ const locationSlice = createSlice({
     reducers: {
         setLocationState: (state, action: { payload: LocationState }) => {
             state.latitude = action.payload.latitude;
-            state.longitute = action.payload.longitute;
+            state.longitude = action.payload.longitude;
         },
         clearLocationState: (state, action) => {
             state.latitude = action.payload.latitude;
-            state.longitute = action.payload.longitute;
+            state.longitude = action.payload.longitude;
         },
     },
 });

@@ -42,7 +42,7 @@ interface PropsInterface {
 const AccountScreen = ({navigation}: PropsInterface) => {
   const [ChangePassword, setChangePassword] = useState(false);
   const { userInfo } = useSelector((state: { fitsStore: Partial<UserDetail> }) => state.fitsStore);
-  const { latitude, longitute } = useSelector((state: {location: LocationState}) => state.location);
+  const { latitude, longitude } = useSelector((state: {location: LocationState}) => state.location);
   const [userCurrentLocation, setUserCurrentLocation] = useState('');
   const [oldPassword, setOldPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');
@@ -52,7 +52,7 @@ const AccountScreen = ({navigation}: PropsInterface) => {
   const getUserLocation = () => {
     Geocoder.geocodePosition({
       lat: latitude,
-      lng: longitute,
+      lng: longitude,
     }).then((res: string | any[]) => {
       if (res.length > 0) {
         const address = res[0].formattedAddress;
