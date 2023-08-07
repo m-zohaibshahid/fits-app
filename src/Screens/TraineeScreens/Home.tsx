@@ -45,6 +45,7 @@ const Home: React.FC<Props> = ({ navigation }) => {
   const [classType, setClassType] = useState(null);
   const [classSort, setClassSort] = useState(null);
   const [search, setSearch] = useState("");
+  const [userLoaction, setUserLoaction] = useState("");
   const [nearyou, setNearyou] = useState(true);
   const [recommended, setRecommended] = useState(false);
   const [superLong, setSuperLong] = useState(55.9754);
@@ -75,7 +76,7 @@ const Home: React.FC<Props> = ({ navigation }) => {
     setClassType(item?.Name.toLowerCase());
   };
 
-  const classSorts = (item: { Name: React.SetStateAction<null> }) => {
+  const handleClassSorts = (item: { Name: React.SetStateAction<null> }) => {
     setModalVisible(false);
     setClassSort(item?.Name);
   };
@@ -110,7 +111,7 @@ const Home: React.FC<Props> = ({ navigation }) => {
     };
 
     const result: any = await updateFilter(data);
-    console.log("result", result);
+    console.log("result", result, "------------------", data, "userLoaction", userLoaction);
     if (result?.error) errorToast(result.error?.data?.message);
     if (result?.data) setFilterData(result.data?.data?.result);
   };
@@ -127,7 +128,9 @@ const Home: React.FC<Props> = ({ navigation }) => {
   if (isLoading || isLoading1) {
     return <FullPageLoader />;
   }
-  const setUserLocation = async (data: string) => {
+  const handleUserLocation = async (data: string) => {
+    console.log("data======>>>>>>", data);
+    setUserLoaction(data);
     await AsyncStorage.setItem("userLocation", JSON.stringify(data));
   };
 
@@ -158,7 +161,7 @@ const Home: React.FC<Props> = ({ navigation }) => {
                   }[]
                 ) => {
                   const address = res[0].subLocality + " " + res[0].locality + ", " + res[0].adminArea + "-" + res[0].country;
-                  setUserLocation(address);
+                  handleUserLocation(address);
                 }
               )
               .catch((error: string) => Alert.alert(error));
@@ -426,10 +429,10 @@ const Home: React.FC<Props> = ({ navigation }) => {
               </Typography>
             </View>
             <ScrollView showsVerticalScrollIndicator={false}>
-              {filterType === FilterTypes.SORT && <Sort ClassSorts={classSorts} />}
-              {filterType === FilterTypes.SPORT && <Sports handleSportsData={handleSportsData} />}
+              {filterType === FilterTypes.SORT && <Sort handleClassSorts={handleClassSorts} classSort={classSort} />}
+              {filterType === FilterTypes.SPORT && <Sports handleSportsData={handleSportsData} sportData={sportData} />}
               {filterType === FilterTypes.PRICE && <Price MinPriceData={minPriceData} MaxPriceData={maxPriceData} />}
-              {filterType === FilterTypes.TYPE && <Type ClassType={handleClassType} />}
+              {filterType === FilterTypes.TYPE && <Type handleClassType={handleClassType} classType={classType} />}
             </ScrollView>
           </View>
         </View>

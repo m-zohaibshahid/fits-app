@@ -20,12 +20,11 @@ const Sorts = [
     Name: "Highest rating",
   },
 ];
-const Sort = (props: { ClassSorts: any }) => {
-  const { ClassSorts } = props;
-
+const Sort = (props: { handleClassSorts: any; classSort: any }) => {
+  const { handleClassSorts, classSort } = props;
   const detailsInfoCall = (item: { Name: string }) => {
     if (item.Name !== "") {
-      ClassSorts(item);
+      handleClassSorts(item);
     }
   };
 
@@ -45,7 +44,7 @@ const Sort = (props: { ClassSorts: any }) => {
               <Text style={styles.titleText}>{item.Name}</Text>
             </View>
             <View style={styles.iconView}>
-              <Feather name="check-circle" color={"#000"} size={25} />
+              <Feather name="check-circle" color={classSort === item.Name ? "red" : "#000"} size={25} />
             </View>
           </Pressable>
         )
