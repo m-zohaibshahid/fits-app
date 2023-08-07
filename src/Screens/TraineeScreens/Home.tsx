@@ -5,17 +5,14 @@ import Feather from "react-native-vector-icons/Feather";
 import AntDesign from "react-native-vector-icons/AntDesign";
 import EvilIcons from "react-native-vector-icons/EvilIcons";
 import FontAwesome from "react-native-vector-icons/FontAwesome";
-import Geocoder from 'react-native-geocoder';
 import { RFValue } from "react-native-responsive-fontsize";
 import Recommended from "./Recommended";
-import * as Images from "../../constants/Images";
 import Colors from "../../constants/Colors";
 import Sort from "./Filter/Sort";
 import Sports from "./Filter/Sports";
 import Price from "./Filter/Price";
 import Type from "./Filter/Type";
 import Geolocation from "react-native-geolocation-service";
-import FastImage from "react-native-fast-image";
 import { useSessionsQuery, useUpdateFilterMutation } from "../../slice/FitsApi.slice";
 import { useDispatch, useSelector } from "react-redux";
 import { TrainerClassInterfaceInTraineeScreenInterface, TrainerPersonalinfoInTraineeScreenInterface, TrainerProfessioninfoInTraineeScreen, UserDetail } from "../../interfaces";
@@ -26,6 +23,7 @@ import Header from "../../Components/Header";
 import Typography from "../../Components/typography/text";
 import { LocationState, setLocationState } from "../../slice/location.slice";
 import { calculateDistance } from "../../utils/calculateDistance";
+import MapWithMarker from "../../Components/Map/inde";
 interface Props {
   navigation: NavigationSwitchProp;
 }
