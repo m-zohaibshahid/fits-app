@@ -282,15 +282,15 @@ export const fitsApi = createApi({
       }),
     }),
 
-    getRoomMessages: builder.query<RoomMessagesResponse, Partial<any>>({
+    getRoomMessages: builder.query<RoomMessagesResponse, any>({
       query: (id) => `chat/messages/${id}`,
     }),
 
-    getTrainerVideosForTrainerDetails: builder.query<TrainerVideosForTrainerDetailsApiResponse, Partial<any>>({
+    getTrainerVideosForTrainerDetails: builder.query<TrainerVideosForTrainerDetailsApiResponse, any>({
       query: (id) => `video/${id}`,
     }),
 
-    getSubscribedVideos: builder.query<any, Partial<any>>({
+    getSubscribedVideos: builder.query<any, any>({
       query: (id) => `subscription/videos/${id}`,
     }),
 
@@ -358,6 +358,6 @@ export const {
   useStripePaymentTransferMutation,
   useVideoSubscribeMutation,
   useGetMyBookedVideosQuery,
-  useProfessionInfoUpdateMutation,
   useTraineeSessionRecommentQuery,
+  useProfessionInfoUpdateMutation,
 } = fitsApi;
