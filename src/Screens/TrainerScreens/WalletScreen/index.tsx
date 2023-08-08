@@ -21,7 +21,6 @@ const WalletScreen: React.FC<Props> = ({ navigation }) => {
   const [details, setDetails] = useState(false);
   const { userInfo } = useSelector((state: { fitsStore: Partial<UserDetail> }) => state.fitsStore);
   const [cardData, setCardData] = useState<StripeCustomerInterface | null>();
-  console.log("userInfo?.stripe?.card?.customer", userInfo?.stripe?.card?.country);
   const { refetch: refetchStripeUser, isLoading } = useGetStripeUserQuery(userInfo?.stripe?.card?.customer || "");
   const [connectAccountLink, { data, isLoading: isLoading1 }] = useConnectAccountLinkMutation();
 
@@ -49,7 +48,6 @@ const WalletScreen: React.FC<Props> = ({ navigation }) => {
     if (responseConnectAccountLink.data.url) {
       await Linking.openURL(responseConnectAccountLink.data.url);
     } else {
-      console.log("Already account link.");
       navigation.navigate("WalletForTrainee");
     }
   };

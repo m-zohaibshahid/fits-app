@@ -18,7 +18,6 @@ const Recommended: React.FC<Props> = ({ navigation, superLong, superLat }) => {
   const [personalInfoData, setPersonalInfoData] = useState<TrainerPersonalinfoInTraineeScreenInterface[]>([]);
   const [professionalData] = useState<TrainerProfessioninfoInTraineeScreen[]>([]);
   const { data: data1, isLoading, error } = useTraineeSessionRecommentQuery({});
-  console.log("data: " + data1, error);
   useEffect(() => {
     navigation.addListener("focus", () => {
       // RecommendedSessioan();

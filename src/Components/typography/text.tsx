@@ -68,6 +68,7 @@ const getSize = (size: keyof SizeVariant | number): number => {
     heading5: 16,
     heading6: 14,
     paragraph: 16,
+    mediumButtonText: 15,
     regularText: 18,
     caption: 12,
     label: 12,
@@ -142,6 +143,7 @@ interface SizeVariant {
     heading5: number;
     heading6: number;
     paragraph: number;
+    mediumButtonText: number;
     regularText: number;
     caption: number;
     label: number;

@@ -236,10 +236,19 @@ export const fitsApi = createApi({
     trainerSession: builder.query<any, string>({
       query: (id) => `/session/trainer/${id}`,
     }),
+
     traineeSessionRecomment: builder.query<any, any>({
       query: () => ({
         url: `/book-a-session/recommended`,
         method: "POST",
+      }),
+    }),
+
+    submitReviews: builder.mutation<any, any>({
+      query: (body) => ({
+        url: `/review`,
+        method: "POST",
+        body
       }),
     }),
 
@@ -249,6 +258,10 @@ export const fitsApi = createApi({
 
     getMyBookedClasses: builder.query<GetMyBookedSessionsApiInterface, any>({
       query: () => `/get-booked-sessions`,
+    }),
+
+    getTrainerReviews: builder.query<any, any>({
+      query: (id) => `/review/${id}`,
     }),
 
     getMyBookedVideos: builder.query<GetBookedVideosApiInterface, any>({
@@ -346,4 +359,6 @@ export const {
   useGetMyBookedVideosQuery,
   useProfessionInfoUpdateMutation,
   useTraineeSessionRecommentQuery,
+  useSubmitReviewsMutation,
+  useGetTrainerReviewsQuery
 } = fitsApi;

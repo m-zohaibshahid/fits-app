@@ -97,7 +97,6 @@ const Home: React.FC<Props> = ({ navigation }) => {
     };
 
     const result: any = await updateFilter(data);
-    console.log("result", result, "------------------", data, "userLoaction", userLoaction);
     if (result?.error) errorToast(result.error?.data?.message);
     if (result?.data) setFilterData(result.data?.data?.result);
   };
@@ -183,7 +182,7 @@ const Home: React.FC<Props> = ({ navigation }) => {
   return (
     <Container>
       <View style={{ position: "relative" }}>
-        <Header hideBackButton lableStyle={{ marginTop: 40, marginBottom: 5 }} style={{ marginLeft: 5 }} label={"Home Screen"} subLabel={"Hello: " + userInfo?.personal_info?.name} />
+        <Header hideBackButton lableStyle={{ marginTop: 40, marginBottom: 5 }} style={{ marginLeft: 5 }} label={"Home"} subLabel={"Hello: " + userInfo?.personal_info?.name} />
         <TouchableOpacity style={{ position: "absolute", top: 40, right: 10 }}>
           <Image
             style={{

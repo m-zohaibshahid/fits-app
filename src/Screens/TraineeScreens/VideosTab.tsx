@@ -47,7 +47,6 @@ const VideosTab = ({ navigation }: PropsInterface) => {
         <ScrollView showsHorizontalScrollIndicator={false} horizontal>
           {trainerVideos?.data.map((video) => {
             const isAlreadySubscribed = handleCheckIsSubscribed(video._id);
-            console.log("isAlreadySubscribed", isAlreadySubscribed, myBookedVideos?.data);
             return (
               <View style={styles.boxView} key={video._id}>
                 <View style={{ display: "flex", flexDirection: "row", justifyContent: "space-between", margin: 7 }}>
@@ -65,7 +64,7 @@ const VideosTab = ({ navigation }: PropsInterface) => {
                 {isAlreadySubscribed ? (
                   <VideoPlayer
                     video={{
-                      uri: "http://res.cloudinary.com/zacodders/video/upload/v1691309421/rywyzvdmi3jhrkxcvobq.mp4",
+                      uri: video.video_links[0],
                     }}
                     filterEnabled={true}
                     videoWidth={900}
@@ -100,7 +99,7 @@ const VideosTab = ({ navigation }: PropsInterface) => {
                     {video.video_details}
                   </Typography>
                 </View>
-                <Button style={{ alignSelf: "center", marginVertical: 10 }} variant="tini" label={isAlreadySubscribed ? "Play" : "Book Now"} onPress={() => goToNextScreen(video)} />
+                <Button style={{ alignSelf: "center", marginVertical: 10 }} variant="tini" label={isAlreadySubscribed ? "Subscribed" : "Book Now"} disabled={isAlreadySubscribed}  onPress={() => goToNextScreen(video)} />
               </View>
             );
           })}

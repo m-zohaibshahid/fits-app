@@ -15,6 +15,7 @@ import Container from "../../../Components/Container";
 import Colors from "../../../constants/Colors";
 import { RFValue } from "react-native-responsive-fontsize";
 import { setLocationState } from "../../../slice/location.slice";
+import Header from "../../../Components/Header";
 
 interface Props {
   navigation: NavigationSwitchProp;
@@ -60,42 +61,27 @@ const Home: React.FC<Props> = ({ navigation }) => {
   useEffect(() => {
       requestLocationPermission();
   }, []);
-  console.log('====================================');
-  console.log(userInfo);
-  console.log('====================================');
-
 
   return (
     <Container>
       {/*Header rect start*/}
-      <View style={styles.mainHeaderRect}>
-        {/*First Header*/}
-        <View style={styles.topHeaderRect}>
-          <View style={{ width: "60%" }}>
-            <Typography variant="heading" size={"pageTitle"} style={{marginBottom: 10}} weight="800">Home</Typography>
-            <Typography >Hello, {userInfo?.personal_info?.name}</Typography>
-          </View>
-          <View style={styles.profileImageRect}>
-            {userInfo?.personal_info?.profileImage ? (
-              <FastImage
-                style={{
-                  width: 70,
-                  height: 70,
-                  borderRadius: 200 / 2,
-                }}
-                source={{
-                  uri: `${userInfo?.personal_info?.profileImage}`,
-                  headers: { Authorization: "someAuthToken" },
-                  priority: FastImage.priority.normal,
-                }}
-                resizeMode={FastImage.resizeMode.cover}
-              />
-            ) : (
-              <Image style={styles.imagestyles} source={Images.Profile} />
-            )}
-          </View>
-        </View>
-        {/*Second Header titles*/}
+    <View style={styles.mainHeaderRect}>
+      <View style={{ position: "relative" }}>
+        <Header hideBackButton lableStyle={{ marginTop: 40, marginBottom: 5 }} style={{ marginLeft: 5 }} label={"Home"} subLabel={"Hello: " + userInfo?.personal_info?.name} />
+        <TouchableOpacity style={{ position: "absolute", top: 40, right: 10 }}>
+          <Image
+            style={{
+              width: 80,
+              height: 80,
+              borderRadius: 200 / 2,
+              overflow: "hidden",
+              borderWidth: 1,
+              borderColor: "grey",
+            }}
+            source={{ uri: userInfo?.personal_info?.profileImage }}
+          />
+        </TouchableOpacity>
+      </View>
         <View style={styles.secondHeaderRect}>
           <TouchableOpacity style={styles.mainclassesview} onPress={() => classestrueState()}>
             <Text style={[classes ? styles.titleText : styles.activeTitleText]}>Classes</Text>
@@ -172,7 +158,8 @@ const styles = StyleSheet.create({
     height: 35,
     alignSelf: "center",
     flexDirection: "row",
-    marginTop: 20,
+    marginTop: 30,
+    marginBottom: 20
   },
   titleText: {
     fontSize: RFValue(12, 580),
