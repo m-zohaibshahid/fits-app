@@ -8,12 +8,16 @@ import { NavigationSwitchProp } from "react-navigation";
 import { TrainerClassInterfaceInTraineeScreenInterface, TrainerPersonalinfoInTraineeScreenInterface, TrainerProfessioninfoInTraineeScreen } from "../../interfaces";
 import FullPageLoader from "../../Components/FullpageLoader";
 import { useTraineeSessionRecommentQuery } from "../../slice/FitsApi.slice";
+import { calculateDistance } from "../../utils/calculateDistance";
+import { useSelector } from "react-redux";
+import { LocationState } from "../../slice/location.slice";
 interface Props {
   navigation: NavigationSwitchProp;
   superLong: any;
   superLat: any;
 }
 const Recommended: React.FC<Props> = ({ navigation, superLong, superLat }) => {
+  const { latitude, longitude } = useSelector((state: { location: LocationState }) => state.location);
   const [data, setData] = useState<TrainerClassInterfaceInTraineeScreenInterface[]>([]);
   const [personalInfoData, setPersonalInfoData] = useState<TrainerPersonalinfoInTraineeScreenInterface[]>([]);
   const [professionalData, setProfessionalData] = useState<TrainerProfessioninfoInTraineeScreen[]>([]);
@@ -105,7 +109,7 @@ const Recommended: React.FC<Props> = ({ navigation, superLong, superLat }) => {
                 <Text style={styles.jamesnameText}>{item.class_title}</Text>
                 <View style={{ width: "100%", flexDirection: "row" }}>
                   <EvilIcons name="location" size={20} color="black" />
-                  <Text style={styles.kmtextstyle}>{item?.session_type?.distance?.toFixed(1)} km from you</Text>
+                  <Text style={styles.kmtextstyle}>{calculateDistance(latitude, longitude, item.session_type.lat ?? 0, item.session_type.lng ?? 0)} km from you</Text>
                 </View>
               </View>
             </Pressable>

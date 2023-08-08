@@ -182,7 +182,7 @@ const Home: React.FC<Props> = ({ navigation }) => {
   return (
     <Container>
       <View style={{ position: "relative" }}>
-        <Header hideBackButton lableStyle={{ marginTop: 40, marginBottom: 5 }} style={{ marginLeft: 5 }} label={"Home Screen"} subLabel={"Hello: " + userInfo?.personal_info?.name} />
+        <Header hideBackButton lableStyle={{ marginTop: 40, marginBottom: 5 }} style={{ marginLeft: 5 }} label={"Home"} subLabel={"Hello: " + userInfo?.personal_info?.name} />
         <TouchableOpacity style={{ position: "absolute", top: 40, right: 10 }}>
           <Image
             style={{
