@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Text, View, ImageBackground, Pressable, StyleSheet, ScrollView, ToastAndroid, Alert } from "react-native";
+import { Text, View, ImageBackground, Pressable, StyleSheet, ScrollView, ToastAndroid } from "react-native";
 import AntDesign from "react-native-vector-icons/AntDesign";
 import EvilIcons from "react-native-vector-icons/EvilIcons";
 import { RFValue } from "react-native-responsive-fontsize";
@@ -16,24 +16,24 @@ interface Props {
 const Recommended: React.FC<Props> = ({ navigation, superLong, superLat }) => {
   const [data, setData] = useState<TrainerClassInterfaceInTraineeScreenInterface[]>([]);
   const [personalInfoData, setPersonalInfoData] = useState<TrainerPersonalinfoInTraineeScreenInterface[]>([]);
-  const [professionalData] = useState<TrainerProfessioninfoInTraineeScreen[]>([]);
-  const { data: data1, isLoading, error } = useTraineeSessionRecommentQuery({});
-  console.log("data: " + data1, error);
+  const [professionalData, setProfessionalData] = useState<TrainerProfessioninfoInTraineeScreen[]>([]);
+  const { data: recommendedSessions, isLoading, error } = useTraineeSessionRecommentQuery({});
+
   useEffect(() => {
-    navigation.addListener("focus", () => {
-      // RecommendedSessioan();
-    });
-  }, []);
-  // const RecommendedSessioan = async () => {
-  //   if (isLoading) {
-  //     return <FullPageLoader />;
-  //   }
-  //   if (!recommendedSessions?.data) return;
-  //   setData(recommendedSessions?.data?.classes);
-  //   getDistanceFunction(recommendedSessions?.data?.classes);
-  //   setPersonalInfoData(recommendedSessions?.data?.personal_info);
-  //   setProfessionalData(recommendedSessions?.data?.profession_info);
-  // };
+    RecommendedSessioan();
+  }, [recommendedSessions]);
+
+  const RecommendedSessioan = async () => {
+    if (isLoading) {
+      return <FullPageLoader />;
+    }
+
+    if (!recommendedSessions?.data) return;
+    setData(recommendedSessions?.data?.classes);
+    getDistanceFunction(recommendedSessions?.data?.classes);
+    setPersonalInfoData(recommendedSessions?.data?.personal_info);
+    setProfessionalData(recommendedSessions?.data?.profession_info);
+  };
   const dummyData = (id: any, item: any) => {
     const check = personalInfoData.find((data) => data?.user === id);
     const checkx = professionalData.find((data) => data?.user === id);
@@ -63,17 +63,16 @@ const Recommended: React.FC<Props> = ({ navigation, superLong, superLat }) => {
   };
   const getDistanceFunction = (data: any) => {
     let dummy = [...data];
-    dummy.map((item, i) => {
-      var dis = getDistanceGoogle(item.session_type.lat, item.session_type.lng);
-      item.session_type.distance = dis;
+    dummy.forEach((item) => {
+      const distance = getDistanceGoogle(item.session_type.lat, item.session_type.lng);
+      item.session_type.distance = distance;
     });
   };
 
   return (
     <ScrollView horizontal={true} showsHorizontalScrollIndicator={false} style={styles.main}>
-      {/*start image box view*/}
-      {data.map((item, i) => (
-        <View>
+      {data?.map((item, i) => (
+        <View key={i}>
           {item?.session_type?.type === "online" ? (
             <Pressable onPress={() => dummyData(item?.user?._id, item)} style={styles.boxview} key={i}>
               <ImageBackground
