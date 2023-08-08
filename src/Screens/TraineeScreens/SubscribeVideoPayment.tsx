@@ -12,7 +12,7 @@ import Typography from "../../Components/typography/text";
 import { heightPercentageToDP } from "react-native-responsive-screen";
 import { NavigationSwitchProp } from "react-navigation";
 import { StripeCustomerInterface, UserDetail } from "../../interfaces";
-import { useBookASessionMutation, useGetStripeUserQuery, useStripePaymentTransferMutation, useVideoSubscribeMutation } from "../../slice/FitsApi.slice";
+import { useGetStripeUserQuery, useStripePaymentTransferMutation, useVideoSubscribeMutation } from "../../slice/FitsApi.slice";
 import { TrainerData, Video } from "./types";
 import { errorToast, successToast } from "../../utils/toast";
 

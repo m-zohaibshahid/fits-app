@@ -13,7 +13,7 @@ import Sports from "./Filter/Sports";
 import Price from "./Filter/Price";
 import Type from "./Filter/Type";
 import Geolocation from "react-native-geolocation-service";
-import { useRecommendQuery, useSessionsQuery, useUpdateFilterMutation } from "../../slice/FitsApi.slice";
+import { useSessionsQuery, useUpdateFilterMutation } from "../../slice/FitsApi.slice";
 import { useDispatch, useSelector } from "react-redux";
 import { TrainerClassInterfaceInTraineeScreenInterface, TrainerPersonalinfoInTraineeScreenInterface, TrainerProfessioninfoInTraineeScreen, UserDetail } from "../../interfaces";
 import { NavigationSwitchProp } from "react-navigation";
@@ -113,7 +113,7 @@ const Home: React.FC<Props> = ({ navigation }) => {
           { enableHighAccuracy: true, timeout: 20000, maximumAge: 1000 }
         );
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error(error.message);
     }
   };
@@ -227,6 +227,7 @@ const Home: React.FC<Props> = ({ navigation }) => {
       </View>
 
       <ScrollView horizontal={true} showsHorizontalScrollIndicator={false} style={styles.main}>
+        {screenTab === ScreenTabTypes.RECOMMENDED && <Recommended navigation={navigation} superLong={undefined} superLat={undefined} />}
         {filterData ? (
           filterData.map((item: TrainerClassInterfaceInTraineeScreenInterface, i: number) => {
             return (
@@ -270,7 +271,6 @@ const Home: React.FC<Props> = ({ navigation }) => {
             </Text>
           </View>
         )}
-        {screenTab === ScreenTabTypes.RECOMMENDED && <Recommended navigation={navigation} superLong={undefined} superLat={undefined} />}
       </ScrollView>
 
       <Modal animationType="fade" transparent={true} visible={modalVisible} onRequestClose={() => setModalVisible(false)}>

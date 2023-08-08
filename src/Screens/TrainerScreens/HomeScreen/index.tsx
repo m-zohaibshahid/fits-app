@@ -23,11 +23,10 @@ interface Props {
 
 const Home: React.FC<Props> = ({ navigation }) => {
   // Hooks
-  const dispatch = useDispatch()
+  const dispatch = useDispatch();
   const { userInfo } = useSelector((state: { fitsStore: Partial<UserDetail> }) => state.fitsStore);
   const [classes, setClasses] = useState(true);
   const [reviews, setReviews] = useState(false);
-
 
   const classestrueState = () => {
     setClasses(true);
@@ -41,25 +40,23 @@ const Home: React.FC<Props> = ({ navigation }) => {
 
   const requestLocationPermission = async () => {
     try {
-      const granted = await PermissionsAndroid.request(
-        PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION
+      const granted = await PermissionsAndroid.request(PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION);
+      if (granted === PermissionsAndroid.RESULTS.GRANTED) {
+        Geolocation.getCurrentPosition(
+          (position) => {
+            dispatch(setLocationState({ longitude: position?.coords?.longitude, latitude: position?.coords?.latitude }));
+          },
+          (error) => console.log("Error:", error.message),
+          { enableHighAccuracy: true, timeout: 20000, maximumAge: 1000 }
         );
-        if (granted === PermissionsAndroid.RESULTS.GRANTED) {
-          Geolocation.getCurrentPosition(
-            (position) => {
-              dispatch(setLocationState({ longitude: position?.coords?.longitude, latitude: position?.coords?.latitude}))
-            },
-            (error) => console.log("Error:", error.message),
-            { enableHighAccuracy: true, timeout: 20000, maximumAge: 1000 }
-            );
-          }
-        } catch (error) {
-          console.error(error.message);
-        }
-      };
-      
+      }
+    } catch (error) {
+      console.error(error.message);
+    }
+  };
+
   useEffect(() => {
-      requestLocationPermission();
+    requestLocationPermission();
   }, []);
 
   return (
@@ -94,24 +91,19 @@ const Home: React.FC<Props> = ({ navigation }) => {
         </View>
       </View>
       <ScrollView showsVerticalScrollIndicator={false}>
-          {classes && <Classes />}
-          {reviews && <Reviews />}
+        {classes && <Classes />}
+        {reviews && <Reviews />}
       </ScrollView>
-        <View style={styles.footerRect}>
-          <TouchableOpacity
-            activeOpacity={0.8}
-            onPress={() => navigation.navigate("CreateBookSession")}
-            style={styles.addIconRect}
-          >
-            <AntDesign name="plus" color={"#fff"} size={wp(6)} />
-          </TouchableOpacity>
-        </View>
+      <View style={styles.footerRect}>
+        <TouchableOpacity activeOpacity={0.8} onPress={() => navigation.navigate("CreateBookSession")} style={styles.addIconRect}>
+          <AntDesign name="plus" color={"#fff"} size={wp(6)} />
+        </TouchableOpacity>
+      </View>
     </Container>
   );
 };
 
 export default Home;
-
 
 const styles = StyleSheet.create({
   mainContainer: {
