@@ -1,71 +1,76 @@
-import React, {  } from "react";
+import React, { useEffect } from "react";
 import {
   View,
   StyleSheet,
-  Platform,
+  Image,
+  ScrollView,
 } from "react-native";
-import { RFValue } from "react-native-responsive-fontsize";
 import { useGetTrainerReviewsQuery } from "../../slice/FitsApi.slice";
 import { useSelector } from "react-redux";
 import { UserDetail } from "../../interfaces";
+import Typography from "../../Components/typography/text";
+import AntDesign from "react-native-vector-icons/AntDesign";
+import { useNavigation } from "@react-navigation/core";
 
 const Reviews = () => {
+  const navigation = useNavigation()
   const { userInfo } = useSelector((state: { fitsStore: Partial<UserDetail> }) => state.fitsStore);
-  const { data: trainerReviews } = useGetTrainerReviewsQuery(userInfo?.user?._id || '');
+  const { data: trainerReviews, refetch } = useGetTrainerReviewsQuery(userInfo?.personal_info._id || '');
 
-  console.log(trainerReviews, "LL:::::::::::::::::::::::::::::::::::");
-  
+
+ /*  useEffect(() => {
+    navigation.addListener('focus', () => {
+      refetch()
+    })
+  }, []) */
 
   return (
-    <View style={styles.container}>
-   
-    </View>
+    <ScrollView>
+      {
+        trainerReviews?.data.map((item) => {
+          return  <View style={styles.BoxMianView}>
+          <View style={styles.imageView}>
+            <Image
+              style={styles.imagestyles}
+              source={{
+                uri: `${item.trainee.profileImage}`,
+              }}
+            />
+            <Typography color="white" size={"heading6"}>{item.trainee.name.split(' ').slice(0, 2).join(' ')}</Typography>
+            <Typography color="white" size={"heading6"}>
+              {item.rating.toFixed(2)} <AntDesign name="star" size={18} />
+            </Typography>
+          </View>
+          <View style={styles.lineView}></View>
+          <View style={styles.TextsView}>
+            <Typography color="white90">{item.comment.slice(0, 140)}...</Typography>
+          </View>
+        </View>
+        })
+   }
+    </ScrollView>
   );
 };
 
 export default Reviews;
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "#ffffff",
-    paddingTop: Platform.OS === "ios" ? 40 : 0,
-  },
-  main: {
-    width: "100%",
-  },
-  footer: {
-    width: "100%",
-    marginBottom: 0,
-    bottom: 0,
-    alignItems: "center",
-    justifyContent: "center",
-    position: "absolute",
-  },
-  TopView: {
-    width: "100%",
-    alignItems: "center",
-    marginTop: 10,
-  },
-  topView: { width: "90%" },
-  topView1: {
-    width: "90%",
-    alignItems: "center",
-  },
   BoxMianView: {
     width: "100%",
     flexDirection: "row",
     backgroundColor: "#000",
-    height: 145,
+    padding: 10,
+    // paddingHorizontal: 10,
     borderRadius: 20,
     alignItems: "center",
+    marginTop: 10
   },
   imageView: {
     width: "30%",
     alignItems: "center",
   },
   TextsView: {
-    width: "70%",
+    width: "60%",
     alignItems: "center",
   },
   lineView: {
@@ -73,88 +78,48 @@ const styles = StyleSheet.create({
     height: 115,
     backgroundColor: "#fff",
     borderRadius: 10,
+    marginHorizontal: 10
   },
   imagestyles: {
-    width: 80,
-    height: 80,
+    width: 70,
+    height: 70,
     borderRadius: 200 / 2,
-  },
-  nameTest: {
-    fontSize: RFValue(10, 580),
-    textAlign: "center",
-    fontFamily: "Poppins-Regular",
-    color: "#fff",
-  },
-  TextsStyle: {
-    fontSize: RFValue(10, 580),
-    fontFamily: "Poppins-Regular",
-    color: "#fff",
-    textAlign: "auto",
   },
 });
 
-
-export interface SessionItemType {
-  image: string
-  numReviews: number
-  averageRating: number
-  _id: string
-  session_title: string
-  class_title: string
-  select_date: string
-  class_time: string
-  duration: number
-  equipment: Equipment[]
-  session_type: SessionType
-  sports: string
-  details: string
-  price: number
-  no_of_slots: number
-  user: User
-  createdAt: string
+export interface GetReviewsApiInterface {
+  statusCode: number
+  success: boolean
+  message: string
+  data: ReviewsInterface[]
 }
 
-export interface Equipment {
+export interface ReviewsInterface {
+  alreadyReview: boolean
   _id: string
-  value: string
-}
-
-export interface SessionType {
-  _id: string
-  type: string
-  lat?: number
-  lng?: number
-  meetingLink?: string
-  recordCategory: string
-  no_of_play: string
-  videoTitle: string
-}
-
-export interface User {
-  services_offered: ServicesOffered
-  role: string
-  isVerified: boolean
-  amount: number
-  emailVerified: boolean
-  suspended: boolean
-  reset_password: boolean
-  trainerVerified: string
-  accountVerified: string
-  numReviews: number
-  averageRating: number
-  cardCreated: boolean
-  _id: string
-  email: string
-  password: string
+  rating: number
+  comment: string
+  trainer: string
+  reviewFor: string
+  trainee: Trainee
   createdAt: string
   updatedAt: string
   __v: number
-  personal: string
-  profession: string
-  cus_id: string
 }
 
-export interface ServicesOffered {
-  value: string
-  key: string
+export interface Trainee {
+  _id: string
+  name: string
+  date_of_birth: string
+  country: string
+  state: string
+  city: string
+  gender: string
+  user: string
+  profileImage: string
+  phoneNumber: number
+  createdAt: string
+  updatedAt: string
+  __v: number
 }
+

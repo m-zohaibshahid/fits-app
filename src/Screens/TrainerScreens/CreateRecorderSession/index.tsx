@@ -182,7 +182,7 @@ const UploadVideo = ({ navigation }) => {
 
   return (
     <View style={styles.container}>
-      <Header label={"Upload Video"} navigation={navigation} />
+      <Header label={"Upload Video"}  />
 
       {loadx === true ? (
         <ActivityIndicator size="large" color="#000" />

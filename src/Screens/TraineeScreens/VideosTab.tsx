@@ -29,11 +29,11 @@ const VideosTab = ({ navigation }: PropsInterface) => {
   };
 
   const handleCheckIsSubscribed = (videoId: string) => {
-    if (!myBookedVideos || !myBookedVideos?.data || !Array.isArray(myBookedVideos?.data)) {
+    if (!myBookedVideos || !myBookedVideos || !Array.isArray(myBookedVideos)) {
       return false;
     }
 
-    return myBookedVideos.data.some((item: any) => item?._id === videoId);
+    return myBookedVideos.some((item: any) => item?._id === videoId);
   };
 
   return (

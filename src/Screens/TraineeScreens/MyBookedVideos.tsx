@@ -11,6 +11,7 @@ import Entypo from "react-native-vector-icons/Entypo";
 import Button from "../../Components/Button";
 import ReviewsModal from "../../Components/reviewsModal";
 import { errorToast, successToast } from "../../utils/toast";
+import FullPageLoader from "../../Components/FullpageLoader";
 interface Props {
   navigation: NavigationSwitchProp;
 }
@@ -52,7 +53,7 @@ const MyBookedVideosScreen: React.FC<Props> = ({ navigation }) => {
     </Typography>
   }
   
-  if (getMyVideosIsLoading) return <ActivityIndicator style={{marginTop: 300, alignSelf: 'center'}} />
+  if (getMyVideosIsLoading) return <FullPageLoader />
 
   return (
     <ScrollView showsHorizontalScrollIndicator={false}>

@@ -30,11 +30,6 @@ const ScheduledClasses = ({ navigation }: PropsInterface) => {
       refetch();
   }, []);
 
-  console.log('====================================');
-  console.log(JSON.stringify(myBookedClassesApiResponse));
-  console.log('====================================');
-
-   
   const handleCommentSubmit = async (rating: number, comment: string) => {
     const body = {
       reviewFor: "session",
