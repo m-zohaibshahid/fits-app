@@ -163,6 +163,14 @@ export const fitsApi = createApi({
       }),
     }),
 
+    videoUpdate: builder.mutation<any, Partial<any>>({
+      query: ({ id, body }) => ({
+        url: `/video/${id}`,
+        method: "PUT",
+        body: body,
+      }),
+    }),
+
     createStripeCard: builder.mutation<any, Partial<any>>({
       query: ({ id, body }) => ({
         url: `/stripe/card/${id}`,
@@ -189,6 +197,13 @@ export const fitsApi = createApi({
     sessionDel: builder.mutation<void, string>({
       query: (id) => ({
         url: `/session/${id}`,
+        method: "DELETE",
+      }),
+    }),
+
+    videoDel: builder.mutation<void, string>({
+      query: (id) => ({
+        url: `/video/${id}`,
         method: "DELETE",
       }),
     }),
@@ -237,10 +252,7 @@ export const fitsApi = createApi({
       query: (id) => `/session/trainer/${id}`,
     }),
     traineeSessionRecomment: builder.query<any, any>({
-      query: () => ({
-        url: `/book-a-session/recommended`,
-        method: "POST",
-      }),
+      query: () => `/session/recommended`,
     }),
 
     getMyAllCreatedVideos: builder.query<any, any>({
@@ -270,15 +282,15 @@ export const fitsApi = createApi({
       }),
     }),
 
-    getRoomMessages: builder.query<RoomMessagesResponse, Partial<any>>({
+    getRoomMessages: builder.query<RoomMessagesResponse, any>({
       query: (id) => `chat/messages/${id}`,
     }),
 
-    getTrainerVideosForTrainerDetails: builder.query<TrainerVideosForTrainerDetailsApiResponse, Partial<any>>({
+    getTrainerVideosForTrainerDetails: builder.query<TrainerVideosForTrainerDetailsApiResponse, any>({
       query: (id) => `video/${id}`,
     }),
 
-    getSubscribedVideos: builder.query<any, Partial<any>>({
+    getSubscribedVideos: builder.query<any, any>({
       query: (id) => `subscription/videos/${id}`,
     }),
 
@@ -308,6 +320,8 @@ export const {
   useLoginUserMutation,
   useUpdateUserMutation,
   useDeleteUserMutation,
+  useVideoDelMutation,
+  useVideoUpdateMutation,
   useSessionDelMutation,
   useBookASessionMutation,
   useUpdatePasswordMutation,
