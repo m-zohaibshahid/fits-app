@@ -10,14 +10,5 @@ const getApi = (id: any, token: any) => {
     },
   });
 };
-const getDataApi = (endpoint: any, token: any) => {
-  return fetch(`${url}${endpoint}`, {
-    method: "GET",
-    headers: {
-      Accept: "application/json",
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${token}`,
-    },
-  });
-};
-export { getApi, getDataApi };
+
+export { getApi };

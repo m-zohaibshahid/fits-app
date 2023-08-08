@@ -47,7 +47,6 @@ const VideosTab = ({ navigation }: PropsInterface) => {
         <ScrollView showsHorizontalScrollIndicator={false} horizontal>
           {trainerVideos?.data.map((video) => {
             const isAlreadySubscribed = handleCheckIsSubscribed(video._id);
-            console.log("isAlreadySubscribed", isAlreadySubscribed, myBookedVideos?.data);
             return (
               <View style={styles.boxView} key={video._id}>
                 <View style={{ display: "flex", flexDirection: "row", justifyContent: "space-between", margin: 7 }}>
