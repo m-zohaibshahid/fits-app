@@ -31,6 +31,7 @@ interface TextInputProps {
   isEditable?: boolean;
   handleOnPress?: () => void;
   isTextArea?: boolean
+  isSearchBox?: boolean
 }
 
 const TextInput: React.FC<TextInputProps> = ({
@@ -48,16 +49,17 @@ const TextInput: React.FC<TextInputProps> = ({
   handleOnPress,
   maxLength,
   isTextArea = false,
+  isSearchBox = false,
 }) => {
   const [hidePass, setHidePass] = useState(true);
 
   return (
     <>
       <Pressable onPress={handleOnPress} style={[styles.inputMainView, !error ? styles.marginBottom : null, style]}>
-        <Typography color="white" size="small" style={{ margin: 0, transform: [{ translateY: 5 }] }}>
+        <Typography color="white" size={isTextArea ? "mediumButtonText" : 'small'} style={{ margin: 0, transform: [{ translateY: 5 }] }}>
           {label}
         </Typography>
-        <View>
+        <View style={{flexDirection: 'row', alignItems: "center"}}>{isSearchBox ? <Ionicons style={{paddingHorizontal: 5}} name="search" size={18} color={Colors.white} /> : null}
             <RNTextInput
               editable={isEditable}
               style={[styles.inputTypeStyle, inputStyle, isTextArea ?styles.textAreaHeight : null]}
@@ -69,7 +71,7 @@ const TextInput: React.FC<TextInputProps> = ({
               onChangeText={onChangeText}
               maxLength={maxLength}
               multiline={isTextArea}
-              numberOfLines={isTextArea ? 100 : 1}
+              numberOfLines={isTextArea ? 5 : 1}
             />
           {secureTextEntry && (
             <View style={styles.hideIconView}>

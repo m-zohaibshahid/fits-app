@@ -73,21 +73,7 @@ const BookSession = ({ navigation }: any) => {
   };
 
   const upLoadVideo = () => {
-    if ((classTitle || currentDate || time || image) === "" || !slots || !duration) {
-      errorToast("Fill out all fields")
-    } else {
-      navigation.navigate("CreateRecorderClass", {
-        // params
-        select_date: currentDate,
-        session_title: classTitle,
-        class_time: time,
-        duration: duration,
-        no_of_slots: slots,
-        image: cloudImageUrl,
-        lat: superLat,
-        lng: superLong,
-      });
-    }
+      navigation.navigate("CreateRecorderClass");
   };
 
   const showDatePicker = () => {
@@ -320,7 +306,7 @@ const BookSession = ({ navigation }: any) => {
 
             <Text style={styles.selectText}>
               Select type of Session <Text style={styles.selectTexts}>(select one)</Text>
-          </Text>
+            </Text>
           
           {type === SessionType.ONLINE ? (
             <View>
@@ -579,7 +565,6 @@ const BookSession = ({ navigation }: any) => {
                     />
                   </Pressable>
               </View>
-              {/*End Equipment Required  */}
             </View>
           ))}
 
@@ -627,16 +612,16 @@ const BookSession = ({ navigation }: any) => {
 
           {modalVisible ? (
             <View style={styles.SportsDropdown}>
-                {preDefineSports.map((data, i) => (
+                {preDefineSports.map((item, i) => (
                   <Text
                     key={i}
                     style={styles.sportsText}
                     onPress={() => {
-                      setSport(data.Name);
+                      setSport(item);
                       setModalVisible(false);
                     }}
                   >
-                    {data.Name}
+                    {item}
                   </Text>
                 ))}
             </View>
@@ -1709,65 +1694,4 @@ const styles = StyleSheet.create({
 
 
 
-const preDefineSports = [
-  {
-    Name: "Soccer",
-  },
-  {
-    Name: "Basketball",
-  },
-  {
-    Name: "Tennis",
-  },
-  {
-    Name: "Baseball",
-  },
-  {
-    Name: "Golf",
-  },
-  {
-    Name: "Volleyball",
-  },
-  {
-    Name: "Running",
-  },
-  {
-    Name: "Badminton",
-  },
-  {
-    Name: "Swimming",
-  },
-  {
-    Name: "Boxing",
-  },
-  {
-    Name: "Table tennis",
-  },
-  {
-    Name: "Skiing",
-  },
-  {
-    Name: "Ice skating",
-  },
-  {
-    Name: "Roller skating",
-  },
-  {
-    Name: "Cricket",
-  },
-  {
-    Name: "Rugby",
-  },
-  {
-    Name: "Pool",
-  },
-  {
-    Name: "Arts",
-  },
-  {
-    Name: "Bowling",
-  },
-  {
-    Name: "Karate",
-  },
-];
+const preDefineSports = [ "Soccer",  "Basketball",  "Tennis",  "Baseball",  "Golf",  "Volleyball",  "Running",  "Badminton",  "Swimming",  "Boxing",  "Table tennis",  "Skiing",  "Ice skating",  "Roller skating",  "Cricket",  "Rugby",  "Pool",  "Arts",  "Bowling",  "Karate" ];

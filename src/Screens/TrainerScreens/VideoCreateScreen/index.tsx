@@ -38,7 +38,7 @@ const VideoCreateScreen = ({ navigation }: PropsInterface) => {
   const [price, setPrice] = useState("");
   const [uploadOnCloudLoading, setUploadOnCLoudLoading] = useState<{ video: boolean; image: boolean }>({ image: false, video: false });
   const [videoTitle, setVideoTitle] = useState("");
-  const [cloudVideoUrl, setCloudVideoLink] = useState([]);
+  const [cloudVideoUrl, setCloudVideoLink] = useState();
   const [cloudImageUrl, setCloudImageUrl] = useState("");
   const [value, setValue] = useState("");
   const { userInfo } = useSelector((state: { fitsStore: Partial<UserDetail> }) => state.fitsStore);
@@ -154,7 +154,7 @@ const VideoCreateScreen = ({ navigation }: PropsInterface) => {
       .then((res) => res.json())
       .then((res2) => {
         setUploadOnCLoudLoading({ ...uploadOnCloudLoading, video: false });
-        setCloudVideoLink([res2?.url]);
+        setCloudVideoLink(res2?.url);
       })
       .catch((err) => {
         errorToast(err.message);
@@ -195,7 +195,7 @@ const VideoCreateScreen = ({ navigation }: PropsInterface) => {
                   Another
                 </Typography>
               </Pressable>
-              <VideoPlayer video={{ uri: cloudVideoUrl[0] }} videoWidth={1600} videoHeight={900} style={{ borderRadius: 10, alignSelf: "center" }} />
+              <VideoPlayer video={{ uri: cloudVideoUrl }} videoWidth={1600} videoHeight={900} style={{ borderRadius: 10, alignSelf: "center" }} />
             </View>
           )}
           {!cloudImageUrl ? (
@@ -405,7 +405,7 @@ const VideoCreateScreen = ({ navigation }: PropsInterface) => {
         }}
         label={paramater?.item ? "Update Video" : "Upload"}
         loader={isLoading || isLoading1}
-        disabled={!videoTitle || !value || !price || !details || !cloudImageUrl || !cloudVideoUrl.length}
+        disabled={!videoTitle || !value || !price || !details || !cloudImageUrl || !cloudVideoUrl}
         onPress={paramater?.item ? handleUpdateVideo : handleUploadVideo}
       />
     </Container>

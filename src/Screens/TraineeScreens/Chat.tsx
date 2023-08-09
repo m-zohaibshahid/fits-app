@@ -1,8 +1,6 @@
 import React, { useState, useEffect } from "react";
-import { Text, View, TouchableOpacity, StyleSheet, TextInput, ScrollView, Image, ActivityIndicator, Platform } from "react-native";
-import EvilIcons from "react-native-vector-icons/EvilIcons";
+import { View, TouchableOpacity, StyleSheet, ScrollView, Image, Platform } from "react-native";
 import { RFValue } from "react-native-responsive-fontsize";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import { NavigationSwitchProp } from "react-navigation";
 import { useGetChatRoomsQuery } from "../../slice/FitsApi.slice";
 import Typography from "../../Components/typography/text";
@@ -14,6 +12,7 @@ import { MessageInterface, UserDetail } from "../../interfaces";
 import { MessageState, clearUnReadMessages } from "../../slice/messages.slice";
 import { clearUnReadMessageFromAsyncStorage } from "../../utils/async-storage";
 import Header from "../../Components/Header";
+import TextInput from "../../Components/Input";
 
 interface PropsInterface {
   navigation: NavigationSwitchProp;
@@ -34,12 +33,15 @@ const Chat = ({ navigation }: PropsInterface) => {
   }, []);
   
     useEffect(() => {
-      navigation.addListener("focus", () => {
-      refetchRooms()
-      clearUnReadMessageFromAsyncStorage()
-      dispatch(clearUnReadMessages());
-    })
-  }, []) 
+      const focusListener = navigation.addListener('focus', () => {
+        refetchRooms()
+        clearUnReadMessageFromAsyncStorage()
+        dispatch(clearUnReadMessages());
+      });
+      return () => {
+        focusListener.remove()
+      };
+    }, [navigation, clearUnReadMessageFromAsyncStorage, refetchRooms]);
 
   const handlePressOnRoom = (item: RoomDataInterface) => {
     navigation.navigate("ChatBox", { roomId: item._id, linkedUser: item.linkedUser, status: !!activeUsers.some(user => user.userID === item.linkedUser.id) });
@@ -54,6 +56,7 @@ const Chat = ({ navigation }: PropsInterface) => {
       <Header label="Chat with others" />
       <ScrollView showsVerticalScrollIndicator={false}>
         <View style={styles.main}>
+          <TextInput isSearchBox placeholder="Search for chat..." value={searchText} onChangeText={setSearchText} label={"Search Chat"} />
           <View style={styles.topView}>
             {filteredRooms && filteredRooms.length === 0 ? (
               <View style={styles.noRoomsView}>
@@ -104,6 +107,11 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
   },
+  textinputview: {
+    width: "80%",
+    paddingTop: Platform.OS === "ios" ? 13 : 5,
+    justifyContent: "center",
+  },
   topView: {
     width: "100%",
   },
@@ -146,6 +154,12 @@ const styles = StyleSheet.create({
     position: "relative",
     flex: 1,
     alignItems: "center",
+  },
+  textinputstyle: {
+    color: "#fff",
+    height: 50,
+    fontFamily: "Poppins-Regular",
+    fontSize: RFValue(12, 580),
   },
   roomContent: {
     width: "100%",

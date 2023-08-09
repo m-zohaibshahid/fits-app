@@ -296,6 +296,14 @@ export const fitsApi = createApi({
       }),
     }),
 
+    requestVarification: builder.mutation<void, Partial<any>>({
+      query: ({ id, body }) => ({
+        url: `/profession/verification/${id}`,
+        method: "PUT",
+        body: body,
+      }),
+    }),
+
     getRoomMessages: builder.query<RoomMessagesResponse, any>({
       query: (id) => `chat/messages/${id}`,
     }),
@@ -376,4 +384,5 @@ export const {
   useSubmitReviewsMutation,
   useGetTrainerReviewsQuery,
   useProfessionInfoUpdateMutation,
+  useRequestVarificationMutation
 } = fitsApi;

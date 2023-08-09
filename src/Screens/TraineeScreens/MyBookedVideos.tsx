@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect , useState} from "react";
 import { View, StyleSheet, ActivityIndicator, ScrollView } from "react-native";
 import VideoPlayer from "react-native-video-player";
 import Colors from "../../constants/Colors";
@@ -23,10 +23,12 @@ const MyBookedVideosScreen: React.FC<Props> = ({ navigation }) => {
   const [reviewVideoDetails, setReviewVideoDetails] = useState<Video | null>();
 
   useEffect(() => {
-    navigation.addListener('focus', () => {
+    const focusListener = navigation.addListener('focus', () => {
       refetchMyBookedVideos()
-    })
-  }, [])
+    });
+    return focusListener
+  }, [navigation, refetchMyBookedVideos]);
+
   
   const handleCommentSubmit = async (rating: number, comment: string) => {
     const body = {
@@ -42,6 +44,7 @@ const MyBookedVideosScreen: React.FC<Props> = ({ navigation }) => {
     const result = await submitReviewMutateAsync(body)
     if (result?.error) errorToast(result.error.data.message)
     if (result?.data) {
+      refetchMyBookedVideos()
       successToast(result.data.message)
     }
     setReviewVideoDetails(null)
@@ -63,7 +66,7 @@ const MyBookedVideosScreen: React.FC<Props> = ({ navigation }) => {
               <View style={styles.VideoView}>
                 <VideoPlayer
                   video={{
-                    uri: `${item.video_links[0]}`,
+                    uri: `${item.video_links}`,
                   }}
                   videoWidth={900}
                   videoHeight={700}
@@ -100,7 +103,7 @@ const MyBookedVideosScreen: React.FC<Props> = ({ navigation }) => {
                   Class Rating:
                 </Typography>
                 <Typography color='white90' style={{marginLeft: 30, marginTop: 5}} size={'medium'}>
-                {item.averageRating}
+                {item.averageRating.toFixed(2)}
                 {"   "}
                   <Entypo name="star" style={{marginHorizontal: 10}} size={18} color={'#fff'} />
                 {"   "}

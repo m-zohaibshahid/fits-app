@@ -97,6 +97,6 @@ export interface Video {
     user: string
     video_category: string
     video_details: string
-    video_links: string[]
+    video_links: string
     video_thumbnail: string
 }

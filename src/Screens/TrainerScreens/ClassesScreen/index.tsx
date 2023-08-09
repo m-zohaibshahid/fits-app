@@ -40,11 +40,13 @@ const Classes = () => {
     })
   }, [trainerSession, refetchSessions])
 
- /*  useEffect(() => {
-    navigation.addListener('focus', () => {
-      if (!trainerSession) refetchSessions()
-    })
-  }, [trainerSession]) */
+  useEffect(() => {
+    const unsubscribe = navigation.addListener("focus", () => {
+      refetchSessions();
+    });
+
+    return unsubscribe; // Cleanup the listener when component unmounts
+  }, [navigation, refetchSessions]);
 
   const handleDeleteSession = async (id: string) => {
     mutateDeleleSession(id)

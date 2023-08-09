@@ -226,7 +226,7 @@ export interface TrainerVideosForTrainerDetailsApiResponse {
 }
 
 export interface VideosData {
-  video_links: string[]
+  video_links: string
   numReviews: number
   averageRating: number
   video_thumbnail: string

@@ -18,24 +18,28 @@ const Reviews = () => {
   const { data: trainerReviews, refetch } = useGetTrainerReviewsQuery(userInfo?.personal_info._id || '');
 
 
- /*  useEffect(() => {
-    navigation.addListener('focus', () => {
-      refetch()
-    })
-  }, []) */
+  useEffect(() => {
+    const unsubscribe = navigation.addListener("focus", () => {
+      refetch();
+    });
+
+    return unsubscribe; // Cleanup the listener when component unmounts
+  }, [navigation, refetch]);
 
   return (
     <ScrollView>
       {
         trainerReviews?.data.map((item) => {
-          return  <View style={styles.BoxMianView}>
-          <View style={styles.imageView}>
+          return (
+            <>
+            <View style={styles.BoxMianView}>
+              <View style={styles.imageView}>
             <Image
               style={styles.imagestyles}
               source={{
                 uri: `${item.trainee.profileImage}`,
               }}
-            />
+              />
             <Typography color="white" size={"heading6"}>{item.trainee.name.split(' ').slice(0, 2).join(' ')}</Typography>
             <Typography color="white" size={"heading6"}>
               {item.rating.toFixed(2)} <AntDesign name="star" size={18} />
@@ -43,9 +47,12 @@ const Reviews = () => {
           </View>
           <View style={styles.lineView}></View>
           <View style={styles.TextsView}>
+              <Typography size={"heading4"} color="white">Type {item.reviewFor}</Typography>
             <Typography color="white90">{item.comment.slice(0, 140)}...</Typography>
           </View>
         </View>
+      </>
+          )
         })
    }
     </ScrollView>
@@ -71,7 +78,9 @@ const styles = StyleSheet.create({
   },
   TextsView: {
     width: "60%",
-    alignItems: "center",
+    justifyContent: "flex-start",
+    height: '100%',
+
   },
   lineView: {
     width: 2,
