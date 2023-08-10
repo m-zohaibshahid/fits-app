@@ -9,7 +9,7 @@ import Container from "../../../Components/Container";
 import Colors from "../../../constants/Colors";
 import Typography from "../../../Components/typography/text";
 import { useSelector } from "react-redux";
-import { useConnectAccountLinkMutation, useGetStripeUserQuery } from "../../../slice/FitsApi.slice";
+import { useConnectAccountLinkMutation, useGetStripeUserQuery, useGetUserMeQuery, useStripeTransferMutation } from "../../../slice/FitsApi.slice";
 import { NavigationSwitchProp } from "react-navigation";
 import { StripeCustomerInterface, UserDetail, Transaction } from "../../../interfaces";
 
@@ -19,16 +19,21 @@ interface Props {
 
 const WalletScreen: React.FC<Props> = ({ navigation }) => {
   const [details, setDetails] = useState(false);
-  const { userInfo } = useSelector((state: { fitsStore: Partial<UserDetail> }) => state.fitsStore);
+  const { data: userMeData, isLoading: isGetUserMe } = useGetUserMeQuery({});
   const [cardData, setCardData] = useState<StripeCustomerInterface | null>();
-  const { refetch: refetchStripeUser, isLoading } = useGetStripeUserQuery(userInfo?.stripe?.card?.customer || "");
-  const [connectAccountLink, { data, isLoading: isLoading1 }] = useConnectAccountLinkMutation();
-
+  const { refetch: refetchStripeUser, isLoading } = useGetStripeUserQuery(userMeData?.stripe?.card?.customer || "");
+  const [connectAccountLink, { data, isLoading: isLoading1, error: connectionAccountLinkError }] = useConnectAccountLinkMutation();
+  const [stripeTransferAmount, { data: stripeTransfer, isLoading: isStripeTransferAmount, error }] = useStripeTransferMutation();
+  console.log("error", stripeTransfer);
   useEffect(() => {
     navigation.addListener("focus", () => {
       getStripeCard();
     });
   }, []);
+
+  useEffect(() => {
+    handleTransferBalance();
+  }, [connectionAccountLinkError]);
 
   const getStripeCard = async () => {
     try {
@@ -38,11 +43,24 @@ const WalletScreen: React.FC<Props> = ({ navigation }) => {
       // Handle error here
     }
   };
+  console.log("userMeData?.user", connectionAccountLinkError?.data.data.id);
+  const handleTransferBalance = async () => {
+    const body = {
+      amount: cardData?.balance,
+      currency: "USD",
+    };
+
+    if (connectionAccountLinkError?.data.data) {
+      const stripeTransferResponse = await stripeTransferAmount({ id: connectionAccountLinkError?.data.data.id, body }).unwrap();
+      console.log("stripeTransferResponse", stripeTransferResponse);
+    }
+  };
+
   const handleWithDrawFunds = async () => {
     const body = {
-      email: userInfo?.user?.email,
+      email: userMeData?.user?.email,
       type: "express",
-      country: userInfo?.stripe?.card?.country,
+      country: userMeData?.stripe?.card?.country,
     };
     const responseConnectAccountLink: any = await connectAccountLink(body).unwrap();
     if (responseConnectAccountLink.data.url) {
@@ -79,7 +97,7 @@ const WalletScreen: React.FC<Props> = ({ navigation }) => {
     ));
   };
 
-  if (isLoading || isLoading1) return <ActivityIndicator />;
+  if (isLoading || isLoading1 || isStripeTransferAmount || isGetUserMe) return <ActivityIndicator />;
 
   return (
     <Container>
@@ -93,7 +111,7 @@ const WalletScreen: React.FC<Props> = ({ navigation }) => {
             $ {cardData?.balance ?? 0}
           </Typography>
         </View>
-        <View style={styles.transactionHistoryView}>{renderTransactionHistory(userInfo?.transactions)}</View>
+        <View style={styles.transactionHistoryView}>{renderTransactionHistory(userMeData?.transactions)}</View>
       </ScrollView>
       <Button disabled={!cardData?.balance} style={{ marginBottom: 10 }} label={"Withdraw Funds"} onPress={() => handleWithDrawFunds()} />
     </Container>

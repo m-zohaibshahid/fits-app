@@ -28,9 +28,7 @@ const AddAccountTrainee: React.FC<Props> = ({ navigation }) => {
     navigation.navigate("Account");
   };
 
-
   const [load, setLoad] = useState(false);
-  const [loadx, setLoadx] = useState("");
 
   const [data, setData] = useState("");
 

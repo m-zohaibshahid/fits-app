@@ -325,6 +325,13 @@ export const fitsApi = createApi({
         body: body,
       }),
     }),
+    stripeTransfer: builder.mutation<any, Partial<any>>({
+      query: ({ id, body }) => ({
+        url: `/stripe/transfer_pay/${id}`,
+        method: "POST",
+        body: body,
+      }),
+    }),
   }),
 });
 
@@ -368,6 +375,7 @@ export const {
   useGetTrainerVideosForTrainerDetailsQuery,
   useGetSubscribedVideosQuery,
   useGetStripeUserQuery,
+  useStripeTransferMutation,
   useStripePaymentTransferMutation,
   useVideoSubscribeMutation,
   useGetMyBookedVideosQuery,
