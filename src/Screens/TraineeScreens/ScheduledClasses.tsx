@@ -1,4 +1,3 @@
-import React, { useState, useEffect } from "react";
 import { Text, View, StyleSheet, Pressable, Platform, ScrollView } from "react-native";
 import { RFValue } from "react-native-responsive-fontsize";
 import FontAwesome from "react-native-vector-icons/FontAwesome";
@@ -14,6 +13,7 @@ import { heightPercentageToDP } from "react-native-responsive-screen";
 import { errorToast, successToast } from "../../utils/toast";
 import ReviewsModal from "../../Components/reviewsModal";
 import Button from "../../Components/Button";
+import React, { useEffect, useState } from "react";
 
 interface PropsInterface {
   navigation: NavigationSwitchProp;
@@ -27,14 +27,13 @@ const ScheduledClasses = ({ navigation }: PropsInterface) => {
   const [isReviewsModalVisible, setIsReviewsModalVisible] = useState<boolean>(false)
 
   useEffect(() => {
+    const focusListener = navigation.addListener('focus', () => {
       refetch();
-  }, []);
-
-  console.log('====================================');
-  console.log(JSON.stringify(myBookedClassesApiResponse));
-  console.log('====================================');
-
-   
+    });
+    return focusListener
+  }, [navigation, refetch]);
+  
+  
   const handleCommentSubmit = async (rating: number, comment: string) => {
     const body = {
       reviewFor: "session",
@@ -51,6 +50,7 @@ const ScheduledClasses = ({ navigation }: PropsInterface) => {
     if (result?.data) {
       successToast(result.data.message)
     }
+    refetch();
     setIsReviewsModalVisible(false)
   };
 
@@ -65,7 +65,7 @@ const ScheduledClasses = ({ navigation }: PropsInterface) => {
             <Typography weight="700" color="white" size={"heading4"}>
               {label}:
             </Typography>
-            {"\n"}
+            {"\n"} 
             {Array.isArray(value) ? value.map(item => {
               return <Typography weight="300" color="whiteRegular">
                 {"          "}
@@ -89,7 +89,7 @@ const ScheduledClasses = ({ navigation }: PropsInterface) => {
         <DetailItem label="Title" value={expendedItemDetails?.class_title ?? ''} />
         <DetailItem label="Description" value={expendedItemDetails?.details ?? ''} />
         <DetailItem label="Price" value={expendedItemDetails?.price ?? 0} />
-        <DetailItem label="Ratings" value={expendedItemDetails?.averageRating ?? ''} />
+        <DetailItem label="Ratings" value={`${expendedItemDetails?.averageRating.toFixed(2)} * reviews(${expendedItemDetails?.numReviews})`} />
         <DetailItem label="Duration" value={expendedItemDetails?.duration ?? ''} />
         <DetailItem label="Equipments" value={expendedItemDetails?.equipment?.length ? expendedItemDetails?.equipment : 'No need of any Equipment'} />
         <DetailItem label="Trainer Name" value={expendedItemDetails?.trainer?.name ?? ''} />

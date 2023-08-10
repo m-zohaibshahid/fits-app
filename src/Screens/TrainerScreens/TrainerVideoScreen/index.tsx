@@ -24,7 +24,6 @@ interface PropsInterface {
 const TrainerVideoScreen = ({ navigation }: PropsInterface) => {
   const { userInfo } = useSelector((state: { fitsStore: Partial<UserDetail> }) => state.fitsStore);
   const { data: myAllVideos, refetch: refetchMyAllVideos, isLoading } = useGetMyAllCreatedVideosQuery(userInfo?.user._id ?? "");
-  const [mutateUpdateVideo, { isLoading: isVideoUpdateLoading }] = useVideoUpdateMutation();
   const [mutateDeleleVideo, { isLoading: isVideoDeleteLoading }] = useVideoDelMutation();
   const [thumbnailLoading, setThumbnailLoading] = useState(true);
 
@@ -42,7 +41,6 @@ const TrainerVideoScreen = ({ navigation }: PropsInterface) => {
   };
   const handleEditVideo = async (item: VideoInterface) => {
     navigation.navigate("VideoCreate", { item });
-
     refetchMyAllVideos();
   };
   return (
@@ -61,7 +59,7 @@ const TrainerVideoScreen = ({ navigation }: PropsInterface) => {
                 <View style={styles.VideoView}>
                   <VideoPlayer
                     video={{
-                      uri: `${item.video_links[0]}`,
+                      uri: item.video_links,
                     }}
                     videoWidth={900}
                     videoHeight={700}
@@ -244,6 +242,6 @@ export interface VideoInterface {
   user: string;
   video_category: string;
   video_details: string;
-  video_links: string[];
+  video_links: string;
   video_thumbnail: string;
 }

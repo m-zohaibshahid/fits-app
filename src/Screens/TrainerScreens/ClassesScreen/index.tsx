@@ -35,16 +35,18 @@ const Classes = () => {
   const [detailsItemId, setDetailsItemId] = useState<string | null>()
 
   const filteredClasses = useMemo(() => {
-    return trainerSession?.data.session.filter((item: SessionItemType) => {
+    return trainerSession?.data?.session?.filter((item: SessionItemType) => {
       return item.session_title.toLowerCase().includes(searchText.toLowerCase())
     })
   }, [trainerSession, refetchSessions])
 
   useEffect(() => {
-    navigation.addListener('focus', () => {
-      refetchSessions()
-    })
-  }, [])
+    const unsubscribe = navigation.addListener("focus", () => {
+      refetchSessions();
+    });
+
+    return unsubscribe; // Cleanup the listener when component unmounts
+  }, [navigation, refetchSessions]);
 
   const handleDeleteSession = async (id: string) => {
     mutateDeleleSession(id)

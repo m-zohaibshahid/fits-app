@@ -1,497 +1,414 @@
-import React, { useState, useEffect } from "react";
-import {
-  Text,
-  View,
-  ImageBackground,
-  Pressable,
-  StyleSheet,
-  TextInput,
-  ScrollView,
-  ToastAndroid,
-  ActivityIndicator,
-  Platform,
-  Image,
-  Modal,
-} from "react-native";
-import {
-  widthPercentageToDP as wp,
-  heightPercentageToDP as hp,
-} from "react-native-responsive-screen";
+import React, { useEffect, useState } from "react";
+import { Text, View, Pressable, StyleSheet, ScrollView, ToastAndroid, ActivityIndicator, Platform, Image } from "react-native";
+import Colors from "../../../constants/Colors";
+import VideoPlayer from "react-native-video-player";
+import { widthPercentageToDP as wp, heightPercentageToDP as hp } from "react-native-responsive-screen";
 import ImagePicker from "react-native-image-crop-picker";
-import {
-  CodeField,
-  Cursor,
-  useBlurOnFulfill,
-  useClearByFocusCell,
-} from "react-native-confirmation-code-field";
-import AntDesign from "react-native-vector-icons/AntDesign";
-import FontAwesome from "react-native-vector-icons/FontAwesome";
-import SimpleLineIcons from "react-native-vector-icons/SimpleLineIcons";
-import { RFPercentage, RFValue } from "react-native-responsive-fontsize";
-import { heightPercentageToDP } from "react-native-responsive-screen";
+import { RFValue } from "react-native-responsive-fontsize";
 import Header from "../../../Components/Header";
 import Button from "../../../Components/Button";
-import Colors from "../../../constants/Colors";
-import { url } from "../../../constants/url";
+import SimpleLineIcons from "react-native-vector-icons/SimpleLineIcons";
+import { NavigationSwitchProp } from "react-navigation";
+import { useGetMyAllCreatedVideosQuery, useUploadVideoMutation, useVideoUpdateMutation } from "../../../slice/FitsApi.slice";
+import Container from "../../../Components/Container";
+import Typography from "../../../Components/typography/text";
+import { errorToast } from "../../../utils/toast";
 import { useRoute } from "@react-navigation/native";
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import VideoPlayer from "react-native-video-player";
+import { useSelector } from "react-redux";
+import { UserDetail } from "../../../interfaces";
+import FullPageLoader from "../../../Components/FullpageLoader";
+import TextInput from "../../../Components/Input";
 
-const UploadVideo = ({ navigation }) => {
+interface PropsInterface {
+  navigation: NavigationSwitchProp;
+}
+const VideoCreateScreen = ({ navigation }: PropsInterface) => {
   const route = useRoute();
-
-  const NextScreen = () => {
-    navigation.navigate("TrainerPayment");
-  };
-  useEffect(() => {
-    navigation.addListener("focus", () => {
-      getUserInfo();
-    });
-  }, [getUserInfo]);
-
-  const [token, setToken] = useState("");
-  const getUserInfo = async () => {
-    const userData = await AsyncStorage.getItem("userData");
-    let userDatax = JSON.parse(userData);
-    setToken(userDatax?.access_token);
-  };
-  const [value, setValue] = useState("");
+  const paramater: any = route.params;
+  const [mutateAsyncVideoUpload, { isLoading }] = useUploadVideoMutation();
+  const [mutateUpdateVideo, { isLoading: isLoading1 }] = useVideoUpdateMutation();
   const [statusOne, setStatusOne] = useState(false);
   const [statusTwo, setStatusTwo] = useState(false);
   const [statusThree, setStatusThree] = useState(false);
   const [statusFour, setStatusFour] = useState(false);
   const [statusFive, setStatusFive] = useState(false);
   const [statusSix, setStatusSix] = useState(false);
-
   const [details, setDetails] = useState("");
   const [video, setVideo] = useState("");
   const [price, setPrice] = useState("");
-  const [videoLink, setVideoLink] = useState("");
-  const [equipment, setEquipment] = useState([
-    {
-      value: "Na",
-    },
-  ]);
-  const [load, setLoad] = useState(false);
-  const [loadx, setLoadx] = useState(false);
+  const [uploadOnCloudLoading, setUploadOnCLoudLoading] = useState<{ video: boolean; image: boolean }>({ image: false, video: false });
+  const [videoTitle, setVideoTitle] = useState("");
+  const [cloudVideoUrl, setCloudVideoLink] = useState();
+  const [cloudImageUrl, setCloudImageUrl] = useState("");
+  const [value, setValue] = useState("");
+  const { userInfo } = useSelector((state: { fitsStore: Partial<UserDetail> }) => state.fitsStore);
+  const { refetch: refetchMyAllVideos, isLoading: isLoading2 } = useGetMyAllCreatedVideosQuery(userInfo?.user._id ?? "");
 
-  const bookSession = async () => {
-    if (details === "") {
-      ToastAndroid.show("Please Enter Details.", ToastAndroid.SHORT);
-    } else if (value === "") {
-      ToastAndroid.show("Please select the Category.", ToastAndroid.SHORT);
-    } else if (price === "") {
-      ToastAndroid.show("Please enter the Price.", ToastAndroid.SHORT);
-    } else {
-      setLoad(true);
-      let session_type;
-      session_type = {
-        type: "recorded",
-        videoLink: videoLink,
-        lat: route?.params?.lat,
-        lng: route?.params?.lng,
-        // null
-        recordCategory: "NA",
-        no_of_play: "NA",
-        videoTitle: "NA",
-        desc: "NA",
-        meetingLink: "NA",
-        equipment: equipment,
-        sports: "NA",
-        image: "Na",
-      };
-      await fetch(`${url}/session`, {
-        method: "POST",
-        headers: {
-          Accept: "application/json",
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify({
-          // params
-          session_title: "NA",
-          select_date: route?.params?.select_date,
-          class_title: route?.params?.class_title,
-          class_time: route?.params?.class_time,
-          duration: route?.params?.duration,
-          no_of_slots: route?.params?.no_of_slots,
-          equipment: equipment,
-          sports: "NA",
-          image: route?.params?.image,
-          // body
-          category: value,
-          details: details,
-          price: price,
-          session_type: session_type,
-        }),
-      })
-        .then((res) => res.json())
-        .then((res2) => {
-          setLoad(false);
-          if (res2.message === "created successfully") {
-            NextScreen();
-          } else {
-            ToastAndroid.show(res2?.errors?.email);
-          }
-        })
-        .catch((error) => {
-          setLoad(false);
-          ToastAndroid.show("Something Went Wrong");
-        });
+  useEffect(() => {
+    if (paramater?.item) {
+      setVideo(paramater?.item.video);
+      setPrice(paramater?.item.price);
+      setValue(paramater?.item.video_category);
+      setCloudImageUrl(paramater?.item.video_thumbnail);
+      setDetails(paramater?.item.video_details);
+      setVideoTitle(paramater?.item.topic);
+      setCloudVideoLink(paramater?.item.video_links);
+      setStatusOne(paramater?.item.video_category === "Cardio/Abs");
+      setStatusTwo(paramater?.item.video_category === "No Equipment Home Exercise");
+      setStatusThree(paramater?.item.video_category === "Learn Technique");
+      setStatusFour(paramater?.item.video_category === "Strength Building Workout");
+      setStatusFive(paramater?.item.video_category === "Fat Burning Workout");
+      setStatusSix(paramater?.item.video_category === "Mental Health & Nutrition");
     }
-  };
-
-  const choosePhotoFromCamera = () => {
+  }, [paramater?.item]);
+  const chooseVideoFromGallery = () => {
     ImagePicker.openPicker({
       mediaType: "video",
-    })
-      .then((file) => {
-        let newFile = {
-          uri: file.path,
-          type: "video/mp4",
-          name: `video.mp4`,
-        };
-        uploadImageOnCloud(newFile);
-        setVideo(file.path);
-      })
-      .catch((err) => {
-      });
+    }).then((file) => {
+      let newFile = {
+        uri: file.path,
+        type: "video/mp4",
+        name: `video.mp4`,
+      };
+      setUploadOnCLoudLoading({ ...uploadOnCloudLoading, video: true });
+      uploadVideoOnCloud(newFile);
+      setVideo(file.path);
+    });
   };
 
-  const uploadImageOnCloud = async (image) => {
-    setLoadx(true);
-    const zzz = new FormData();
-    zzz.append("file", image);
-    zzz.append("upload_preset", "employeeApp");
-    zzz.append("cloud_name", "ZACodders");
+  const chooseImageFromGallery = () => {
+    ImagePicker.openPicker({
+      mediaType: "photo",
+    }).then((file) => {
+      let newFile = {
+        uri: file.path,
+        type: "photo/jpg",
+        name: `photo.jpg`,
+      };
+      uploadImageOnCloud(newFile);
+      setUploadOnCLoudLoading({ ...uploadOnCloudLoading, image: true });
+    });
+  };
 
-
-    await fetch("https://api.cloudinary.com/v1_1/ZACodders/video/upload", {
+  const uploadImageOnCloud = async (image: { uri: string; type: string; name: string }) => {
+    const imageUploadOnCloud = new FormData();
+    imageUploadOnCloud.append("file", image);
+    imageUploadOnCloud.append("upload_preset", "employeeApp");
+    imageUploadOnCloud.append("cloud_name", "ZACodders");
+    await fetch("https://api.cloudinary.com/v1_1/ZACodders/image/upload", {
       method: "POST",
-      body: zzz,
+      body: imageUploadOnCloud,
     })
       .then((res) => res.json())
       .then((res2) => {
-        setLoadx(false);
-        setVideoLink(res2?.url);
+        setCloudImageUrl(res2?.url);
+      })
+      .catch((error) => {
+        ToastAndroid.show(error, ToastAndroid.LONG);
+      });
+    setUploadOnCLoudLoading({ ...uploadOnCloudLoading, image: false });
+  };
+
+  const handleUploadVideo = async () => {
+    const body = {
+      topic: videoTitle,
+      video_links: cloudVideoUrl,
+      video_category: value,
+      video_details: details,
+      price: price,
+      video_thumbnail: cloudImageUrl,
+    };
+    const result = await mutateAsyncVideoUpload(body);
+
+    if (result?.data) navigation.navigate("Home");
+    if (result?.error) errorToast(result?.error?.data.message);
+  };
+  const handleUpdateVideo = async () => {
+    const body = {
+      topic: videoTitle,
+      video_links: cloudVideoUrl,
+      video_category: value,
+      video_details: details,
+      price: price,
+      video_thumbnail: cloudImageUrl,
+    };
+    const result: any = await mutateUpdateVideo({ id: paramater?.item._id, body });
+
+    if (result?.data) {
+      refetchMyAllVideos();
+      navigation.navigate("Home");
+    }
+    if (result?.error) errorToast(result?.error?.data.message);
+  };
+
+  const uploadVideoOnCloud = async (video: any) => {
+    const formData = new FormData();
+    formData.append("file", video);
+    formData.append("upload_preset", "employeeApp");
+    formData.append("cloud_name", "ZACodders");
+
+    await fetch("https://api.cloudinary.com/v1_1/ZACodders/video/upload", {
+      method: "POST",
+      body: formData,
+    })
+      .then((res) => res.json())
+      .then((res2) => {
+        setUploadOnCLoudLoading({ ...uploadOnCloudLoading, video: false });
+        setCloudVideoLink(res2?.url);
       })
       .catch((err) => {
-        setLoadx(false);
+        errorToast(err.message);
+        setUploadOnCLoudLoading({ ...uploadOnCloudLoading, video: false });
+        setVideo("");
       });
   };
 
+  if (isLoading2) return <FullPageLoader />;
   return (
-    <View style={styles.container}>
-      <Header label={"Upload Video"} navigation={navigation} />
-
-      {loadx === true ? (
-        <ActivityIndicator size="large" color="#000" />
-      ) : (
-        <ScrollView showsVerticalScrollIndicator={false}>
-          <View style={styles.TopView}>
-            <View style={styles.topView}>
-              {video === "" ? (
-                <View
-                  style={{
-                    width: "100%",
-                    marginTop: 10,
-                    backgroundColor: "#979797",
-                    height: 180,
-                    borderRadius: 10,
-                    alignItems: "center",
-                    justifyContent: "center",
-                  }}
-                >
-                  <SimpleLineIcons
-                    name="cloud-upload"
-                    size={40}
-                    color={"#000"}
-                  />
-                  <Text
-                    style={{ fontSize: RFValue(15, 580), color: Colors.Black }}
-                  >
-                    Tap to upload video file
-                  </Text>
-                  <Pressable
-                    style={{
-                      marginTop: 20,
-                      width: "35%",
-                      alignItems: "center",
-                      justifyContent: "center",
-                      backgroundColor: "#FF0000",
-                      borderRadius: 10,
-                      paddingVertical: 10,
-                    }}
-                    onPress={() => {
-                      choosePhotoFromCamera();
-                    }}
-                  >
-                    <Text
-                      style={{
-                        color: "#fff",
-                        fontFamily: "Poppins-SemiBold",
-                      }}
-                    >
-                      Upload video
-                    </Text>
-                  </Pressable>
-                </View>
-              ) : (
-                <VideoPlayer
-                  video={{
-                    uri: video,
-                  }}
-                  filterEnabled={true}
-                  videoWidth={1600}
-                  videoHeight={900}
-                  fullscreenAutorotate={false}
-                  //thumbnail={Images.videoImage}
-                  style={{ borderRadius: 10 }}
-                />
-              )}
-            </View>
-            <View
-              style={{ width: "100%", alignItems: "center", marginTop: 10 }}
-            >
-              <View style={styles.mainRectViewRow}>
-                <Text style={styles.selectText}>
-                  Select Category{" "}
-                  <Text style={styles.selectTexts}>(Select appropriate)</Text>
-                </Text>
-              </View>
-            </View>
-
-            <View style={styles.mainBoxView}>
-              <View style={{ width: "90%", flexDirection: "row" }}>
-                <View style={styles.BoxviewWidth1}>
-                  <Pressable
-                    style={
-                      statusOne
-                        ? styles.BoxShadowView
-                        : styles.BoxShadowViewBorder
-                    }
-                    onPress={() => {
-                      setStatusOne(true);
-                      setValue("Cardio/Abs");
-                      setStatusTwo(false);
-                      setStatusThree(false);
-                      setStatusFour(false);
-                      setStatusFive(false);
-                      setStatusSix(false);
-                    }}
-                  >
-                    <Text style={styles.BoxText}>Cardio/Abs</Text>
-                  </Pressable>
-                </View>
-                <View style={styles.BoxviewWidth2}>
-                  <Pressable
-                    style={
-                      statusTwo
-                        ? styles.BoxShadowView
-                        : styles.BoxShadowViewBorder
-                    }
-                    onPress={() => {
-                      setStatusOne(false);
-                      setStatusTwo(true);
-                      setValue("No Equipment Home Exercise");
-                      setStatusThree(false);
-                      setStatusFour(false);
-                      setStatusFive(false);
-                      setStatusSix(false);
-                    }}
-                  >
-                    <Text style={styles.BoxText}>
-                      No {"\n"}Equipment{"\n"}Home{"\n"}Exercise
-                    </Text>
-                  </Pressable>
-                </View>
-                <View style={styles.BoxviewWidth3}>
-                  <Pressable
-                    style={
-                      statusThree
-                        ? styles.BoxShadowView
-                        : styles.BoxShadowViewBorder
-                    }
-                    onPress={() => {
-                      setStatusOne(false);
-                      setStatusTwo(false);
-                      setStatusThree(true);
-                      setValue("Learn Technique");
-                      setStatusFour(false);
-                      setStatusFive(false);
-                      setStatusSix(false);
-                    }}
-                  >
-                    <Text style={styles.BoxText}>Learn Technique</Text>
-                  </Pressable>
-                </View>
-              </View>
-            </View>
-            <View style={styles.mainBoxView}>
-              <View style={{ width: "90%", flexDirection: "row" }}>
-                <View style={styles.BoxviewWidth1}>
-                  <Pressable
-                    style={
-                      statusFour
-                        ? styles.BoxShadowView
-                        : styles.BoxShadowViewBorder
-                    }
-                    onPress={() => {
-                      setStatusOne(false);
-                      setStatusTwo(false);
-                      setStatusThree(false);
-                      setStatusFour(true);
-                      setValue("Strength Building Workout");
-                      setStatusFive(false);
-                      setStatusSix(false);
-                    }}
-                  >
-                    <Text style={styles.BoxText}>
-                      Strength {"\n"} Building{"\n"} Workout
-                    </Text>
-                  </Pressable>
-                </View>
-                <View style={styles.BoxviewWidth2}>
-                  <Pressable
-                    style={
-                      statusFive
-                        ? styles.BoxShadowView
-                        : styles.BoxShadowViewBorder
-                    }
-                    onPress={() => {
-                      setStatusOne(false);
-                      setStatusTwo(false);
-                      setStatusThree(false);
-                      setStatusFour(false);
-                      setStatusFive(true);
-                      setValue("Fat Burning Worlout");
-                      setStatusSix(false);
-                    }}
-                  >
-                    <Text style={styles.BoxText}>
-                      Fat {"\n"} Burning{"\n"} Workout
-                    </Text>
-                  </Pressable>
-                </View>
-                <View style={styles.BoxviewWidth3}>
-                  <Pressable
-                    style={
-                      statusSix
-                        ? styles.BoxShadowView
-                        : styles.BoxShadowViewBorder
-                    }
-                    onPress={() => {
-                      setStatusOne(false);
-                      setStatusTwo(false);
-                      setStatusThree(false);
-                      setStatusFour(false);
-                      setStatusFive(false);
-                      setStatusSix(true);
-                      setValue("Mental Health & Nutritiion");
-                    }}
-                  >
-                    <Text style={styles.BoxText}>
-                      Mental{"\n"} Health & {"\n"} Nutritiion
-                    </Text>
-                  </Pressable>
-                </View>
-              </View>
-            </View>
-            <View style={{ width: "90%", alignSelf: "center", marginTop: 10 }}>
-              <Text
-                style={{
-                  fontSize: RFValue(18, 580),
-                  fontFamily: "Poppins-Regular",
-                  color: "#000",
-                }}
-              >
-                Any specific details
-              </Text>
-            </View>
+    <Container>
+      <Header label={"Upload Video"} />
+      <ScrollView showsVerticalScrollIndicator={false}>
+        <View style={styles.mainBody}>
+          {video === "" ? (
             <View
               style={{
                 width: "100%",
+                backgroundColor: "#979797",
+                height: 200,
                 alignItems: "center",
-                marginTop: 10,
+                justifyContent: "center",
+                alignSelf: "center",
               }}
             >
-              <View
-                style={{
-                  width: "90%",
-                  backgroundColor: "#414143",
-                  borderRadius: 8,
-                  flexDirection: "column",
-                  height: 130,
-                }}
-              >
-                <TextInput
-                  multiline={true}
-                  numberOfLines={5}
-                  maxLength={500}
-                  placeholder="Description"
-                  placeholderTextColor={"#fff"}
-                  value={details}
-                  onChangeText={setDetails}
-                  style={{
-                    height: 200,
-                    textAlignVertical: "top",
-                    fontFamily: "Poppins-Regular",
-                    color: "#fff",
-                    left: 6,
-                  }}
-                />
-              </View>
+              <SimpleLineIcons name="cloud-upload" size={80} color={"#000"} />
+              <Typography size={"heading2"} style={{ marginBottom: 20 }}>
+                Tap to upload Video
+              </Typography>
+              <Button label="Upload Video" onPress={chooseVideoFromGallery} variant="tini" />
             </View>
+          ) : uploadOnCloudLoading.video ? (
+            <ActivityIndicator />
+          ) : (
+            <View style={{ width: "100%", alignSelf: "center", position: "relative" }}>
+              <Pressable onPress={chooseVideoFromGallery} style={{ paddingVertical: 5, paddingHorizontal: 10, backgroundColor: Colors.grayTransparent, position: "absolute", top: 5, left: 5, borderRadius: 5 }}>
+                <Typography color="white" size={"small"}>
+                  Another
+                </Typography>
+              </Pressable>
+              <VideoPlayer video={{ uri: cloudVideoUrl }} videoWidth={1600} videoHeight={900} style={{ borderRadius: 10, alignSelf: "center" }} />
+            </View>
+          )}
+          {!cloudImageUrl ? (
             <View
               style={{
-                width: "90%",
+                marginTop: 20,
+                width: "100%",
+                backgroundColor: "#979797",
+                height: 200,
+                alignItems: "center",
+                justifyContent: "center",
                 alignSelf: "center",
-                marginVertical: hp(1),
               }}
             >
-              {/*start pricing */}
-              <Text style={styles.pricingText}>Total Cost</Text>
-              <View style={styles.TextInput}>
-                <Text style={styles.dolarStyle}>$</Text>
-                <TextInput
-                  style={styles.inputEmail}
-                  placeholderTextColor={"#fff"}
-                  value={price}
-                  keyboardType="numeric"
-                  maxLength={19}
-                  onChangeText={setPrice}
-                />
+              <SimpleLineIcons name="cloud-upload" size={50} color={"#000"} />
+              <Typography size={"heading2"} style={{ marginBottom: 20 }}>
+                Tap to upload Thumbnail
+              </Typography>
+              <Button variant="tini" onPress={chooseImageFromGallery} label="Thumbnail" />
+            </View>
+          ) : uploadOnCloudLoading.image ? (
+            <ActivityIndicator style={{ marginVertical: 60 }} />
+          ) : (
+            <Pressable onPress={chooseImageFromGallery}>
+              <Image
+                style={{
+                  marginVertical: 30,
+                  width: "100%",
+                  height: 200,
+                }}
+                source={{
+                  uri: cloudImageUrl,
+                }}
+              />
+            </Pressable>
+          )}
+        <Typography style={{ marginTop: 15 }} size={"heading3"}>
+            Video Title
+          </Typography>
+              <TextInput
+            placeholder="Please Enter Video Title"
+            placeholderTextColor={Colors.white80}
+            value={videoTitle}
+            onChangeText={setVideoTitle} label={"Video Title"}              />
+          <View style={{ width: "100%", alignItems: "center", marginTop: 20 }}>
+            <View style={{ width: "100%" }}>
+              <View style={{ width: "100%", flexDirection: "row" }}>
+                <View style={{ width: "60%" }}>
+                  <Text
+                    style={{
+                      fontSize: RFValue(14, 580),
+                      fontFamily: "Poppins-SemiBold",
+                      color: "#000",
+                    }}
+                  >
+                    Select Category
+                  </Text>
+                </View>
+                <View
+                  style={{
+                    width: "40%",
+                    marginTop: 9,
+                    alignItems: "flex-end",
+                  }}
+                >
+                  <Text
+                    style={{
+                      fontFamily: "Poppins-Regular",
+                      fontSize: RFValue(9, 580),
+                    }}
+                  >
+                    (select appropriate)
+                  </Text>
+                </View>
               </View>
             </View>
           </View>
-          <View style={{ marginVertical: 50 }}></View>
-        </ScrollView>
-      )}
-      <View
+          <View style={styles.mainBoxView}>
+            <View style={{ width: "100%", flexDirection: "row" }}>
+              <View style={styles.BoxviewWidth1}>
+                <Pressable
+                  style={statusOne ? styles.BoxShadowView : styles.BoxShadowViewBorder}
+                  onPress={() => {
+                    setStatusOne(true);
+                    setValue("Cardio/Abs");
+                    setStatusTwo(false);
+                    setStatusThree(false);
+                    setStatusFour(false);
+                    setStatusFive(false);
+                    setStatusSix(false);
+                  }}
+                >
+                  <Text style={styles.BoxText}>Cardio/Abs</Text>
+                </Pressable>
+              </View>
+              <View style={styles.BoxviewWidth2}>
+                <Pressable
+                  style={statusTwo ? styles.BoxShadowView : styles.BoxShadowViewBorder}
+                  onPress={() => {
+                    setStatusOne(false);
+                    setValue("No Equipment Home Exercise");
+                    setStatusTwo(true);
+                    setStatusThree(false);
+                    setStatusFour(false);
+                    setStatusFive(false);
+                    setStatusSix(false);
+                  }}
+                >
+                  <Text style={styles.BoxText}>
+                    No {"\n"}Equipment{"\n"}Home{"\n"}Exercise
+                  </Text>
+                </Pressable>
+              </View>
+              <View style={styles.BoxviewWidth3}>
+                <Pressable
+                  style={statusThree ? styles.BoxShadowView : styles.BoxShadowViewBorder}
+                  onPress={() => {
+                    setStatusOne(false);
+                    setValue("Learn Technique");
+                    setStatusTwo(false);
+                    setStatusThree(true);
+                    setStatusFour(false);
+                    setStatusFive(false);
+                    setStatusSix(false);
+                  }}
+                >
+                  <Text style={styles.BoxText}>Learn Technique</Text>
+                </Pressable>
+              </View>
+            </View>
+          </View>
+          <View style={styles.mainBoxView}>
+            <View style={{ width: "100%", flexDirection: "row" }}>
+              <View style={styles.BoxviewWidth1}>
+                <Pressable
+                  style={statusFour ? styles.BoxShadowView : styles.BoxShadowViewBorder}
+                  onPress={() => {
+                    setStatusOne(false);
+                    setValue("Strength Building Workout");
+                    setStatusTwo(false);
+                    setStatusThree(false);
+                    setStatusFour(true);
+                    setStatusFive(false);
+                    setStatusSix(false);
+                  }}
+                >
+                  <Text style={styles.BoxText}>
+                    Strength {"\n"} Building{"\n"} Workout
+                  </Text>
+                </Pressable>
+              </View>
+              <View style={styles.BoxviewWidth2}>
+                <Pressable
+                  style={statusFive ? styles.BoxShadowView : styles.BoxShadowViewBorder}
+                  onPress={() => {
+                    setStatusOne(false);
+                    setValue("Fat Burning Workout");
+                    setStatusTwo(false);
+                    setStatusThree(false);
+                    setStatusFour(false);
+                    setStatusFive(true);
+                    setStatusSix(false);
+                  }}
+                >
+                  <Text style={styles.BoxText}>
+                    Fat {"\n"} Burning{"\n"} Workout
+                  </Text>
+                </Pressable>
+              </View>
+              <View style={styles.BoxviewWidth3}>
+                <Pressable
+                  style={statusSix ? styles.BoxShadowView : styles.BoxShadowViewBorder}
+                  onPress={() => {
+                    setStatusOne(false);
+                    setValue("Mental Health & Nutritiion");
+                    setStatusTwo(false);
+                    setStatusThree(false);
+                    setStatusFour(false);
+                    setStatusFive(false);
+                    setStatusSix(true);
+                  }}
+                >
+                  <Text style={styles.BoxText}>
+                    Mental{"\n"} Health & {"\n"} Nutritiion
+                  </Text>
+                </Pressable>
+              </View>
+            </View>
+          </View>
+          <Typography style={{ marginTop: 15 }} size={"heading3"}>
+            Any specific details
+          </Typography>
+            <TextInput isTextArea maxLength={500} placeholder="Write your decription here....." value={details} onChangeText={setDetails} label={"Video Description"} />
+
+            <TextInput
+              keyboard="phone-pad"
+              value={price !== null ? price.toString() : ""}
+              placeholder="Enter price"
+              maxLength={5}
+              onChangeText={setPrice} label={"Price"}
+            />
+        </View>
+      </ScrollView>
+      <Button
         style={{
-          width: "100%",
-          marginBottom: 0,
-          backgroundColor: Colors.white,
-          bottom: 0,
-          position: "absolute",
-          alignItems: "center",
-          marginTop: 40,
+          marginVertical: 20,
         }}
-      >
-        <Button
-          loader={load}
-          disabled={!value || !videoLink || !details || !price}
-          label={"Done"}
-          onPress={() => {
-            if (!load === true) {
-              bookSession();
-              setDetails("");
-              setPrice("");
-            }
-          }}
-        />
-      </View>
-    </View>
+        label={paramater?.item ? "Update Video" : "Upload"}
+        loader={isLoading || isLoading1}
+        disabled={!videoTitle || !value || !price || !details || !cloudImageUrl || !cloudVideoUrl}
+        onPress={paramater?.item ? handleUpdateVideo : handleUploadVideo}
+      />
+    </Container>
   );
 };
 
@@ -500,7 +417,7 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: "#ffffff",
     paddingTop: Platform.OS === "ios" ? 40 : 0,
-    paddingBottom: Platform.OS === "ios" ? 0 : 0,
+    paddingBottom: 0,
   },
   header: {
     width: "100%",
@@ -520,46 +437,8 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     // alignItems: 'center',
   },
-  mainRectViewRow: {
-    width: "90%",
-    alignSelf: "center",
-    flexDirection: "row",
-    marginTop: 15,
-    marginBottom: 3,
-  },
-  selectText: {
-    fontFamily: "Poppins-SemiBold",
-    fontSize: RFValue(14, 580),
-    color: "#000",
-    fontWeight: "500",
-  },
-  selectTexts: {
-    fontFamily: "Poppins-Regular",
-    fontSize: RFValue(9, 580),
-    fontWeight: "500",
-  },
-  TopView: {
+  mainBody: {
     width: "100%",
-    alignItems: "center",
-  },
-  topView: { width: "90%" },
-  topView1: {
-    width: "90%",
-    alignItems: "center",
-  },
-  main: {
-    width: "100%",
-    height: "85%",
-  },
-  TextInput: {
-    width: "70%",
-    backgroundColor: Colors.black,
-    borderRadius: 9,
-    marginTop: 10,
-    height: 50,
-    justifyContent: "center",
-    marginBottom: -10,
-    flexDirection: "row",
   },
   footer: {
     width: "100%",
@@ -573,18 +452,25 @@ const styles = StyleSheet.create({
   btn: {
     padding: 10,
     margin: 10,
-    width: "90%",
+    width: "100%",
     borderRadius: 10,
     color: "#6698FF",
-    backgroundColor: "#979797",
+    backgroundColor: "#FF0000",
     alignItems: "center",
     justifyContent: "center",
   },
-  pricingText: {
-    fontSize: RFValue(17, 580),
-    fontFamily: "Poppins-SemiBold",
-    color: "#000",
-    fontWeight: "700",
+  mainBoxView: {
+    width: "100%",
+    alignItems: "center",
+    marginTop: 30,
+  },
+  BoxText: {
+    color: "#fff",
+    fontSize: RFValue(9, 580),
+    fontFamily: "Poppins-Bold",
+    textAlign: "center",
+    lineHeight: 21,
+    letterSpacing: 2,
   },
   BoxviewWidth1: {
     width: "33%",
@@ -600,19 +486,6 @@ const styles = StyleSheet.create({
     width: "33%",
     justifyContent: "center",
     alignItems: "flex-end",
-  },
-  inputEmail: {
-    borderRadius: 10,
-    width: "100%",
-    paddingLeft: 10,
-    fontSize: RFValue(15, 580),
-    color: Colors.white,
-  },
-  dolarStyle: {
-    fontSize: RFValue(15, 580),
-    color: Colors.white,
-    marginTop: 13,
-    marginLeft: 30,
   },
   BoxShadowView: {
     width: 101,
@@ -634,19 +507,47 @@ const styles = StyleSheet.create({
     paddingVertical: hp(1),
     paddingHorizontal: wp(1),
   },
-  mainBoxView: {
+  inputEmail: {
+    borderRadius: 10,
     width: "100%",
-    alignItems: "center",
-    marginTop: 15,
+    paddingLeft: 10,
+    fontSize: RFValue(14, 580),
+    color: Colors.white,
   },
-  BoxText: {
+  TextInput: {
+    width: "100%",
+    alignSelf: "center",
+    backgroundColor: Colors.black,
+    borderRadius: 9,
+    marginTop: 5,
+    height: 50,
+    justifyContent: "center",
+    marginBottom: 40,
+    flexDirection: "row",
+  },
+  dolarText: {
+    marginLeft: 30,
+    color: Colors.white,
+    marginTop: 10,
+    fontSize: 20,
+  },
+  InputView: {
+    width: "100%",
+    backgroundColor: "#414143",
+    borderRadius: 8,
+    alignSelf: "center",
+    flexDirection: "column",
+    height: 130,
+    marginVertical: hp(1),
+  },
+  Input: {
+    height: 200,
+    textAlignVertical: "top",
+    fontFamily: "Poppins-Regular",
     color: "#fff",
-    fontSize: RFValue(9, 580),
-    fontFamily: "Poppins-Bold",
-    textAlign: "center",
-    lineHeight: 21,
-    letterSpacing: 2,
+    fontSize: RFValue(12, 580),
+    left: 10,
   },
 });
 
-export default UploadVideo;
+export default VideoCreateScreen;

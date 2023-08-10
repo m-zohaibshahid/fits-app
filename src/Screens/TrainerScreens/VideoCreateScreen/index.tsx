@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Text, View, Pressable, StyleSheet, TextInput, ScrollView, ToastAndroid, ActivityIndicator, Platform, Image } from "react-native";
+import { Text, View, Pressable, StyleSheet, ScrollView, ToastAndroid, ActivityIndicator, Platform, Image } from "react-native";
 import Colors from "../../../constants/Colors";
 import VideoPlayer from "react-native-video-player";
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from "react-native-responsive-screen";
@@ -17,6 +17,7 @@ import { useRoute } from "@react-navigation/native";
 import { useSelector } from "react-redux";
 import { UserDetail } from "../../../interfaces";
 import FullPageLoader from "../../../Components/FullpageLoader";
+import TextInput from "../../../Components/Input";
 
 interface PropsInterface {
   navigation: NavigationSwitchProp;
@@ -37,7 +38,7 @@ const VideoCreateScreen = ({ navigation }: PropsInterface) => {
   const [price, setPrice] = useState("");
   const [uploadOnCloudLoading, setUploadOnCLoudLoading] = useState<{ video: boolean; image: boolean }>({ image: false, video: false });
   const [videoTitle, setVideoTitle] = useState("");
-  const [cloudVideoUrl, setCloudVideoLink] = useState([]);
+  const [cloudVideoUrl, setCloudVideoLink] = useState();
   const [cloudImageUrl, setCloudImageUrl] = useState("");
   const [value, setValue] = useState("");
   const { userInfo } = useSelector((state: { fitsStore: Partial<UserDetail> }) => state.fitsStore);
@@ -60,7 +61,6 @@ const VideoCreateScreen = ({ navigation }: PropsInterface) => {
       setStatusSix(paramater?.item.video_category === "Mental Health & Nutrition");
     }
   }, [paramater?.item]);
-  if (isLoading2) <FullPageLoader />;
   const chooseVideoFromGallery = () => {
     ImagePicker.openPicker({
       mediaType: "video",
@@ -89,7 +89,7 @@ const VideoCreateScreen = ({ navigation }: PropsInterface) => {
       setUploadOnCLoudLoading({ ...uploadOnCloudLoading, image: true });
     });
   };
-  console.log("value", value);
+
   const uploadImageOnCloud = async (image: { uri: string; type: string; name: string }) => {
     const imageUploadOnCloud = new FormData();
     imageUploadOnCloud.append("file", image);
@@ -154,7 +154,7 @@ const VideoCreateScreen = ({ navigation }: PropsInterface) => {
       .then((res) => res.json())
       .then((res2) => {
         setUploadOnCLoudLoading({ ...uploadOnCloudLoading, video: false });
-        setCloudVideoLink([res2?.url]);
+        setCloudVideoLink(res2?.url);
       })
       .catch((err) => {
         errorToast(err.message);
@@ -163,6 +163,7 @@ const VideoCreateScreen = ({ navigation }: PropsInterface) => {
       });
   };
 
+  if (isLoading2) return <FullPageLoader />;
   return (
     <Container>
       <Header label={"Upload Video"} />
@@ -194,7 +195,7 @@ const VideoCreateScreen = ({ navigation }: PropsInterface) => {
                   Another
                 </Typography>
               </Pressable>
-              <VideoPlayer video={{ uri: cloudVideoUrl[0] }} videoWidth={1600} videoHeight={900} style={{ borderRadius: 10, alignSelf: "center" }} />
+              <VideoPlayer video={{ uri: cloudVideoUrl }} videoWidth={1600} videoHeight={900} style={{ borderRadius: 10, alignSelf: "center" }} />
             </View>
           )}
           {!cloudImageUrl ? (
@@ -231,36 +232,14 @@ const VideoCreateScreen = ({ navigation }: PropsInterface) => {
               />
             </Pressable>
           )}
-
-          <View style={{ width: "100%", alignSelf: "center", marginTop: 10 }}>
-            {/*start pricing */}
-            <Typography size={"heading3"}>Video Title</Typography>
-            <View
-              style={{
-                width: "100%",
-                backgroundColor: "#414143",
-                borderRadius: 9,
-                marginTop: 10,
-                height: 50,
-                justifyContent: "center",
-              }}
-            >
+        <Typography style={{ marginTop: 15 }} size={"heading3"}>
+            Video Title
+          </Typography>
               <TextInput
-                placeholder="Please Enter Video Title"
-                style={{
-                  borderRadius: 10,
-                  width: "100%",
-                  paddingLeft: 10,
-                  fontSize: RFValue(12, 580),
-                  color: Colors.white,
-                }}
-                placeholderTextColor={Colors.white80}
-                value={videoTitle}
-                onChangeText={setVideoTitle}
-              />
-            </View>
-            {/*end pricing */}
-          </View>
+            placeholder="Please Enter Video Title"
+            placeholderTextColor={Colors.white80}
+            value={videoTitle}
+            onChangeText={setVideoTitle} label={"Video Title"}              />
           <View style={{ width: "100%", alignItems: "center", marginTop: 20 }}>
             <View style={{ width: "100%" }}>
               <View style={{ width: "100%", flexDirection: "row" }}>
@@ -409,25 +388,15 @@ const VideoCreateScreen = ({ navigation }: PropsInterface) => {
           <Typography style={{ marginTop: 15 }} size={"heading3"}>
             Any specific details
           </Typography>
-          <View style={styles.InputView}>
-            <TextInput multiline={true} numberOfLines={5} maxLength={500} placeholder="Write your decription here....." placeholderTextColor={"#fff"} value={details} onChangeText={setDetails} style={styles.Input} />
-          </View>
-          <Typography style={{ marginTop: 15 }} size={"heading3"}>
-            Total Cost
-          </Typography>
+            <TextInput isTextArea maxLength={500} placeholder="Write your decription here....." value={details} onChangeText={setDetails} label={"Video Description"} />
 
-          <View style={styles.TextInput}>
-            <Text style={styles.dolarText}>$</Text>
             <TextInput
-              style={styles.inputEmail}
-              placeholderTextColor="#fff"
-              value={price !== null ? price.toString() : ""} // Convert price to a string
-              keyboardType="numeric"
+              keyboard="phone-pad"
+              value={price !== null ? price.toString() : ""}
+              placeholder="Enter price"
               maxLength={5}
-              onChangeText={setPrice}
+              onChangeText={setPrice} label={"Price"}
             />
-          </View>
-          <View style={{ marginVertical: 60 }}></View>
         </View>
       </ScrollView>
       <Button
@@ -436,7 +405,7 @@ const VideoCreateScreen = ({ navigation }: PropsInterface) => {
         }}
         label={paramater?.item ? "Update Video" : "Upload"}
         loader={isLoading || isLoading1}
-        disabled={!videoTitle || !value || !price || !details || !cloudImageUrl || !cloudVideoUrl.length}
+        disabled={!videoTitle || !value || !price || !details || !cloudImageUrl || !cloudVideoUrl}
         onPress={paramater?.item ? handleUpdateVideo : handleUploadVideo}
       />
     </Container>

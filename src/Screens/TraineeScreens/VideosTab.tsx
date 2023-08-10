@@ -1,5 +1,4 @@
-import React from "react";
-import { View, StyleSheet, ScrollView, Image } from "react-native";
+import { View, StyleSheet, ScrollView, Pressable, Alert, Image } from "react-native";
 import FontAwesome from "react-native-vector-icons/FontAwesome";
 import { RFValue } from "react-native-responsive-fontsize";
 import VideoPlayer from "react-native-video-player";
@@ -12,6 +11,7 @@ import { NavigationSwitchProp } from "react-navigation";
 import Colors from "../../constants/Colors";
 import { useSelector } from "react-redux";
 import { UserDetail } from "../../interfaces";
+import { useEffect } from "react";
 
 interface PropsInterface {
   navigation: NavigationSwitchProp;
@@ -20,8 +20,8 @@ interface PropsInterface {
 const VideosTab = ({ navigation }: PropsInterface) => {
   const { userInfo } = useSelector((state: { fitsStore: Partial<UserDetail> }) => state.fitsStore);
   const route = useRoute();
-  const { data: trainerVideos } = useGetTrainerVideosForTrainerDetailsQuery(route.params?.userData.user._id);
-  const { data: myBookedVideos, refetch: refetchMyBookedVideos, isLoading: getMyVideosIsLoading } = useGetMyBookedVideosQuery(userInfo?.user?._id);
+  const { data: trainerVideos, refetch: trainerVideosRefecth } = useGetTrainerVideosForTrainerDetailsQuery(route.params?.userData.user._id);
+  const { data: myBookedVideos, refetch: refetchMyBookedVideos, } = useGetMyBookedVideosQuery(userInfo?.user?._id);
 
   const goToNextScreen = (video: any) => {
     if (!userInfo?.user?.cus_id) navigation.navigate("CreateCardScreen");
@@ -29,13 +29,23 @@ const VideosTab = ({ navigation }: PropsInterface) => {
   };
 
   const handleCheckIsSubscribed = (videoId: string) => {
-    if (!myBookedVideos || !myBookedVideos?.data || !Array.isArray(myBookedVideos?.data)) {
-      return false;
-    }
-
-    return myBookedVideos.data.some((item: any) => item?._id === videoId);
+    return myBookedVideos?.some((item: any) => item?._id === videoId);
   };
 
+  useEffect(() => {
+    const focusListener = navigation.addListener('focus', () => {
+      trainerVideosRefecth();
+      refetchMyBookedVideos();
+    });
+  
+    return () => {
+      focusListener.remove();
+    };
+  }, [navigation, trainerVideosRefecth, refetchMyBookedVideos]);
+
+
+  console.log(JSON.stringify(myBookedVideos));
+  
   return (
     <Container>
       <View style={styles.topView}>
@@ -64,7 +74,7 @@ const VideosTab = ({ navigation }: PropsInterface) => {
                 {isAlreadySubscribed ? (
                   <VideoPlayer
                     video={{
-                      uri: video.video_links[0],
+                      uri: video.video_links,
                     }}
                     filterEnabled={true}
                     videoWidth={900}

@@ -69,7 +69,6 @@ const AccountScreen = ({navigation}: PropsInterface) => {
     getUserLocation();
   }, []);
 
-
   const UpdatePassword = async () => {
       const body={
         oldPassword: oldPassword,
@@ -142,54 +141,16 @@ const AccountScreen = ({navigation}: PropsInterface) => {
                   </Typography>
               </View>
             <View style={{alignItems: 'center', marginTop: 10}}>
-              <Pressable
-                onPress={() => navigation.navigate('TrainerVerification')}
-                style={{
-                  width: '60%',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  flexDirection: 'row',
-                  backgroundColor: 'rgba(0, 0, 0, 0.4)',
-                  height: 44,
-                  borderRadius: 15,
-                }}>
-                <View
-                  style={{
-                    width: '90%',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                  }}>
-                  {userInfo?.user.accountVerified ? (
-                    <Text
-                      style={{
-                        fontFamily: 'Poppins-SemiBold',
-                        color: '#fff',
-                        fontSize: RFValue(12, 580),
-                        marginLeft: 15,
-                        marginRight: 4,
-                      }}>
-                      Verified
-                    </Text>
-                  ) : (
-                    <Text
-                      style={{
-                        fontFamily: 'Poppins-SemiBold',
-                        color: '#fff',
-                        fontSize: RFValue(12, 580),
-                        marginLeft: 15,
-                        marginRight: 4,
-                      }}>
-                      Apply For verification
-                    </Text>
-                  )}
-                </View>
-                <View style={{width: '20%'}}>
+              <Pressable disabled={!!userInfo?.user.accountVerified} style={{flexDirection: 'row', padding: 10, backgroundColor: Colors.lightGrays, columnGap: 15, borderRadius: 10}}
+                onPress={() => navigation.navigate('TrainerVerification')}>
+                    <Typography>
+                      {!userInfo?.user.accountVerified ? 'Apply For verification' : userInfo?.user.accountVerified.toUpperCase()}
+                    </Typography>
                   <AntDesign
-                    name="checksquare"
+                    name={userInfo?.user.accountVerified ? 'checksquare' : 'closesquare'}
                     size={20}
-                    color={'rgba(255, 0, 0, 1)'}
+                    color={userInfo?.user.accountVerified ? Colors.darkGreen : Colors.redColor}
                   />
-                </View>
               </Pressable>
             </View>
             <View style={{alignItems: 'center'}}>

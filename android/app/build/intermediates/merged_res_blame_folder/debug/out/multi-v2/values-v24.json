@@ -4,7 +4,7 @@
             "outputFile": "com.awesomeproject.app-mergeDebugResources-37:/values-v24/values-v24.xml",
             "map": [
                 {
-                    "source": "/Users/ebryx/.gradle/caches/transforms-3/0719b87c056b907d84ca9a0c40cc4291/transformed/appcompat-1.4.1/res/values-v24/values-v24.xml",
+                    "source": "/Users/zohaib.shahid/.gradle/caches/transforms-3/0719b87c056b907d84ca9a0c40cc4291/transformed/appcompat-1.4.1/res/values-v24/values-v24.xml",
                     "from": {
                         "startLines": "2,3",
                         "startColumns": "4,4",

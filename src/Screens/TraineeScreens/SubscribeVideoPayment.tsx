@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from "react";
-import { Text, View, StyleSheet, ScrollView, Pressable, Platform, Alert } from "react-native";
+import { Text, View, StyleSheet, ScrollView, Pressable, Platform, Alert, Image } from "react-native";
 import { RFValue } from "react-native-responsive-fontsize";
 import { useSelector } from "react-redux";
 import { RouteProp, useRoute } from "@react-navigation/native";
@@ -15,6 +15,7 @@ import { StripeCustomerInterface, UserDetail } from "../../interfaces";
 import { useGetStripeUserQuery, useStripePaymentTransferMutation, useVideoSubscribeMutation } from "../../slice/FitsApi.slice";
 import { TrainerData, Video } from "./types";
 import { errorToast, successToast } from "../../utils/toast";
+import Colors from "../../constants/Colors";
 
 type RootStackParamList = {
   SubscribeVideoPaymentScreen: {
@@ -56,7 +57,7 @@ const SubscribeVideoPayment = ({ navigation }: PropsInterface) => {
   };
 
   const handleSubscribeVideo = async () => {
-    const result = await bookSessionMutation({ video_links: route.params.video.video_links[0] });
+    const result = await bookSessionMutation({ video_links: route.params.video.video_links });
     if (result.error) errorToast(result.error.data.message);
     else if (result?.data) transferPayment();
   };
@@ -96,16 +97,21 @@ const SubscribeVideoPayment = ({ navigation }: PropsInterface) => {
       <Header label={"Payment"} style={{ marginBottom: 8 }} subLabel={"Pay before the class starts"} />
       <ScrollView style={{ marginBottom: 20 }}>
         <View style={styles.mainView}>
-          <VideoPlayer
-            video={{
-              uri: video.video_links[0],
+        <View style={{ position: "relative", justifyContent: "center", alignItems: "center", width: 300, height: 200 }}>
+          <Image
+            style={{
+              width: 400,
+              height: 200,
+              overflow: "hidden",
+              position: "absolute",
             }}
-            videoWidth={900}
-            videoHeight={500}
-            thumbnail={{
+            source={{
               uri: video.video_thumbnail,
             }}
+            resizeMode="cover"
           />
+          <Typography size={"caption"} style={{ padding: 10, borderRadius: 10, zIndex: 999, backgroundColor: Colors.transparentBlack }} color="white" children={"Subscribe for play"} />
+        </View>
           {renderDetails()}
         </View>
 
