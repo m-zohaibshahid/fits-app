@@ -1,21 +1,10 @@
-import React, {useState} from 'react';
-import {
-  Text,
-  View,
-  Button,
-  ImageBackground,
-  TouchableOpacity,
-  StyleSheet,
-  TextInput,
-  Modal,
-  Image,
-  ScrollView,
-} from 'react-native';
+import React from 'react';
+import { Text, View, StyleSheet, Image, ScrollView, Platform } from 'react-native';
 import AntDesign from 'react-native-vector-icons/AntDesign';
-import {RFPercentage, RFValue} from 'react-native-responsive-fontsize';
+import {RFValue} from 'react-native-responsive-fontsize';
 import * as Images from '../../constants/Images';
 
-const Ratings = ({navigation}) => {
+const Ratings = () => {
   return (
     <View style={styles.container}>
       <ScrollView showsVerticalScrollIndicator={false} style={styles.main}>

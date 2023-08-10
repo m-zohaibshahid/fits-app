@@ -71,7 +71,6 @@ const SubscribeVideoPayment = ({ navigation }: PropsInterface) => {
     };
     try {
       const result = await tripePaymentTransferMutation(body);
-
       if (result.data) {
         successToast("Subscription Successfully");
         navigation.navigate("Home");

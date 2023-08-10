@@ -1,76 +1,24 @@
-import React, { useState, useEffect } from "react";
+import React, {  } from "react";
 import {
-  Text,
   View,
   StyleSheet,
-  Image,
-  ToastAndroid,
-  ActivityIndicator,
   Platform,
 } from "react-native";
-import AntDesign from "react-native-vector-icons/AntDesign";
-import { RFPercentage, RFValue } from "react-native-responsive-fontsize";
-import * as Images from "../../constants/Images";
-import { url } from "../../constants/url";
-import { useRoute } from "@react-navigation/native";
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import Colors from "../../constants/Colors";
-import { useTrainerSessionQuery } from "../../slice/FitsApi.slice";
+import { RFValue } from "react-native-responsive-fontsize";
+import { useGetTrainerReviewsQuery } from "../../slice/FitsApi.slice";
 import { useSelector } from "react-redux";
 import { UserDetail } from "../../interfaces";
-import Typography from "../../Components/typography/text";
 
 const Reviews = () => {
   const { userInfo } = useSelector((state: { fitsStore: Partial<UserDetail> }) => state.fitsStore);
-  const { data: trainerSession } = useTrainerSessionQuery(userInfo?.user?._id || '');
+  const { data: trainerReviews } = useGetTrainerReviewsQuery(userInfo?.user?._id || '');
+
+  console.log(trainerReviews, "LL:::::::::::::::::::::::::::::::::::");
+  
 
   return (
     <View style={styles.container}>
-      <View style={styles.main}>
-        {/* Map */}
-            {trainerSession?.data.session.map((item: SessionItemType) => (
-              <View key={item._id}>
-                <Typography>
-                  {item.class_time}
-                </Typography>
-                {/* {item?.session?.reviews[0] == null ? null : (
-                  <View style={styles.TopView}>
-                    <View style={styles.topView}>
-                      <View style={styles.BoxMianView}>
-                        <View style={styles.imageView}>
-                          <Image
-                            style={styles.imagestyles}
-                            source={{
-                              uri: `${item?.session?.reviews[0]?.user?.personal[0]?.profileImage}`,
-                            }}
-                          />
-                          <View style={{ marginTop: 5 }}>
-                            <Text style={styles.nameTest}>
-                              {
-                                item?.session?.reviews[0]?.user?.personal[0]
-                                  ?.name
-                              }
-                            </Text>
-                            <Text style={styles.nameTest}>
-                              {item?.session?.averageRating}{" "}
-                              <AntDesign name="star" />
-                            </Text>
-                          </View>
-                        </View>
-                        <View style={styles.lineView}></View>
-                        <View style={styles.TextsView}>
-                          <Text style={styles.TextsStyle}>
-                            {item?.session?.reviews[0]?.comment}
-                          </Text>
-                        </View>
-                      </View>
-                    </View>
-                  </View>
-                )} */}
-              </View>
-            ))}
-        {/* Map */}
-      </View>
+   
     </View>
   );
 };
@@ -82,7 +30,6 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: "#ffffff",
     paddingTop: Platform.OS === "ios" ? 40 : 0,
-    paddingBottom: Platform.OS === "ios" ? 0 : 0,
   },
   main: {
     width: "100%",

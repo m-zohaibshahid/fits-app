@@ -6,11 +6,14 @@ import moment from "moment";
 import { NavigationSwitchProp } from "react-navigation";
 import { useSelector } from "react-redux";
 import { UserDetail } from "../../interfaces";
-import { useGetMyBookedClassesQuery } from "../../slice/FitsApi.slice";
+import { useGetMyBookedClassesQuery, useSubmitReviewsMutation } from "../../slice/FitsApi.slice";
 import Typography from "../../Components/typography/text";
 import Entypo from "react-native-vector-icons/Entypo";
 import FullPageLoader from "../../Components/FullpageLoader";
 import { heightPercentageToDP } from "react-native-responsive-screen";
+import { errorToast, successToast } from "../../utils/toast";
+import ReviewsModal from "../../Components/reviewsModal";
+import Button from "../../Components/Button";
 
 interface PropsInterface {
   navigation: NavigationSwitchProp;
@@ -18,54 +21,80 @@ interface PropsInterface {
 
 const ScheduledClasses = ({ navigation }: PropsInterface) => {
   const { userInfo } = useSelector((state: { fitsStore: Partial<UserDetail> }) => state.fitsStore);
-const [expendedItemDeatils, setExpendedItemDetails] = useState<SessionInterface | null>(null)
+  const [expendedItemDetails, setExpendedItemDetails] = useState<SessionInterface | null>(null)
   const {data: myBookedClassesApiResponse, refetch, isLoading} = useGetMyBookedClassesQuery({})
-  const [expandedClassIndex, setExpandedClassIndex] = useState<number | null>(null);
+  const [submitReviewMutateAsync, {isLoading: isReviewsSubmitLoading}] = useSubmitReviewsMutation()
+  const [isReviewsModalVisible, setIsReviewsModalVisible] = useState<boolean>(false)
 
   useEffect(() => {
-    navigation.addListener("focus", () => {
       refetch();
-    });
   }, []);
 
-  const DetailItem = ({ label, value }: { label: string; value: string | number | string[] }) => (
-    <View style={styles.dotmainview}>
-      <View style={styles.dotview}>
-        <FontAwesome name="circle" style={{ color: "#979797" }} />
+  console.log('====================================');
+  console.log(JSON.stringify(myBookedClassesApiResponse));
+  console.log('====================================');
+
+   
+  const handleCommentSubmit = async (rating: number, comment: string) => {
+    const body = {
+      reviewFor: "session",
+      sessionId: expendedItemDetails?._id,
+      trainerId: expendedItemDetails?.trainer._id,
+      reviews: {
+        rating: rating,
+        comment: comment,
+        userId: userInfo?.personal_info._id,
+      },
+    }
+    const result = await submitReviewMutateAsync(body)
+    if (result?.error) errorToast(result.error.data.message)
+    if (result?.data) {
+      successToast(result.data.message)
+    }
+    setIsReviewsModalVisible(false)
+  };
+
+  const DetailItem = ({ label, value }: { label: string; value: string | number | string[] }) => {
+    return (
+      <View style={styles.dotmainview}>
+        <View style={styles.dotview}>
+          <FontAwesome name="circle" style={{ color: "#979797" }} />
+        </View>
+        <View style={{ width: "100%" }}>
+          <Text style={styles.textstyle}>
+            <Typography weight="700" color="white" size={"heading4"}>
+              {label}:
+            </Typography>
+            {"\n"}
+            {Array.isArray(value) ? value.map(item => {
+              return <Typography weight="300" color="whiteRegular">
+                {"          "}
+                {item}
+              </Typography>;
+            })
+              :
+              <Typography weight="300" color="whiteRegular">
+                {"          "}
+                {value}
+              </Typography>}
+          </Text>
+        </View>
       </View>
-      <View style={{ width: "100%" }}>
-        <Text style={styles.textstyle}>
-          <Typography weight="700" color="white" size={"heading4"}>
-            {label}:
-          </Typography>
-          {"\n"}
-          {Array.isArray(value) ? value?.map(item => {
-            return <Typography weight="300" color="whiteRegular">
-            {"          "}
-            {item}
-          </Typography>
-          } )
-          : 
-          <Typography weight="300" color="whiteRegular">
-            {"          "}
-            {value}
-          </Typography>}
-        </Text>
-      </View>
-    </View>
-  );
+    );
+  };
 
   const renderDetails = () => {
     return (
-      <View style={{ padding: heightPercentageToDP(2) }}>
-        <DetailItem label="Title" value={expendedItemDeatils?.class_title ?? ''} />
-        <DetailItem label="Description" value={expendedItemDeatils?.details ?? ''} />
-        <DetailItem label="Price" value={expendedItemDeatils?.price ?? 0} />
-        <DetailItem label="Ratings" value={expendedItemDeatils?.averageRating ?? ''} />
-        <DetailItem label="Duration" value={expendedItemDeatils?.duration ?? ''} />
-        <DetailItem label="Equipments" value={expendedItemDeatils?.equipment.length ? expendedItemDeatils?.equipment : 'No need of any Equipment'} />
-        <DetailItem label="Trainer Name" value={expendedItemDeatils?.trainer.name ?? ''} />
-        <DetailItem label="Session Type" value={expendedItemDeatils?.session_type.type ?? ''} />
+      <View style={{ paddingHorizontal: 10 }}>
+        <DetailItem label="Title" value={expendedItemDetails?.class_title ?? ''} />
+        <DetailItem label="Description" value={expendedItemDetails?.details ?? ''} />
+        <DetailItem label="Price" value={expendedItemDetails?.price ?? 0} />
+        <DetailItem label="Ratings" value={expendedItemDetails?.averageRating ?? ''} />
+        <DetailItem label="Duration" value={expendedItemDetails?.duration ?? ''} />
+        <DetailItem label="Equipments" value={expendedItemDetails?.equipment?.length ? expendedItemDetails?.equipment : 'No need of any Equipment'} />
+        <DetailItem label="Trainer Name" value={expendedItemDetails?.trainer?.name ?? ''} />
+        <DetailItem label="Session Type" value={expendedItemDetails?.session_type?.type ?? ''} />
+        <Button variant="medium" style={{alignSelf: "center", marginBottom: 10, paddingVertical: 15, width: 160}} label={"Add Reviews"}  onPress={() => setIsReviewsModalVisible(true)} />
       </View>
     );
   };
@@ -75,10 +104,9 @@ const [expendedItemDeatils, setExpendedItemDetails] = useState<SessionInterface 
   }
   
   return (
-    <View>
-       <ScrollView showsVerticalScrollIndicator={false}>
+       <ScrollView style={{marginBottom: 20}} showsVerticalScrollIndicator={false}>
         {!myBookedClassesApiResponse?.length ? <View style={{ display: 'flex', justifyContent: 'center', alignItems: "center", height: '100%' }}><Typography style={{ marginBottom: 30 }}>---You dont have any Class yet---</Typography></View> : myBookedClassesApiResponse.map((item, i) => {
-          const isExpended = expendedItemDeatils?._id === item._id
+          const isExpended = expendedItemDetails?._id === item._id
            return <>
            <View style={styles.marchmainview}>
              <View style={styles.marchmainview2}>
@@ -107,7 +135,7 @@ const [expendedItemDeatils, setExpendedItemDetails] = useState<SessionInterface 
                  </Text>
                </View>
                <Pressable
-                 onPress={() => setExpendedItemDetails(expendedItemDeatils?._id === item._id ? null : item)}
+                 onPress={() => setExpendedItemDetails(expendedItemDetails?._id === item._id ? null : item)}
                  style={{
                    width: "30%",
                    backgroundColor: "#414143",
@@ -144,8 +172,8 @@ const [expendedItemDeatils, setExpendedItemDetails] = useState<SessionInterface 
              </View>
            </>
         })}
+        <ReviewsModal isLoading={isReviewsSubmitLoading} onSubmitReviews={handleCommentSubmit} isVisible={isReviewsModalVisible} onClose={() => setIsReviewsModalVisible(false)} />
       </ScrollView>
-    </View>
   );
 };
 
@@ -201,9 +229,9 @@ const styles = StyleSheet.create({
     fontFamily: "Poppins-Regular",
   },
   dotmainview: {
-    width: "100%",
+    width: "90%",
     flexDirection: "row",
-    marginBottom: 10,
+    marginBottom: 5,
   },
   dotview: {
     width: "10%",
@@ -318,10 +346,10 @@ export default ScheduledClasses;
 export type GetMyBookedSessionsApiInterface = SessionInterface[]
 
 export interface SessionInterface {
-  _id: string
   image: string
   numReviews: number
   averageRating: number
+  _id: string
   session_title: string
   class_title: string
   select_date: string
@@ -338,11 +366,14 @@ export interface SessionInterface {
   updatedAt: string
   __v: number
   trainer: Trainer
+  recommended?: boolean
 }
 
 export interface SessionType {
   _id: string
   type: string
+  lat?: number
+  lng?: number
   recordCategory: string
   no_of_play: string
   videoTitle: string

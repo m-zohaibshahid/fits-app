@@ -251,8 +251,17 @@ export const fitsApi = createApi({
     trainerSession: builder.query<any, string>({
       query: (id) => `/session/trainer/${id}`,
     }),
+
     traineeSessionRecomment: builder.query<any, any>({
       query: () => `/session/recommended`,
+    }),
+
+    submitReviews: builder.mutation<any, any>({
+      query: (body) => ({
+        url: `/review`,
+        method: "POST",
+        body
+      }),
     }),
 
     getMyAllCreatedVideos: builder.query<any, any>({
@@ -261,6 +270,10 @@ export const fitsApi = createApi({
 
     getMyBookedClasses: builder.query<GetMyBookedSessionsApiInterface, any>({
       query: () => `/get-booked-sessions`,
+    }),
+
+    getTrainerReviews: builder.query<any, any>({
+      query: (id) => `/review/${id}`,
     }),
 
     getMyBookedVideos: builder.query<GetBookedVideosApiInterface, any>({
@@ -282,15 +295,15 @@ export const fitsApi = createApi({
       }),
     }),
 
-    getRoomMessages: builder.query<RoomMessagesResponse, Partial<any>>({
+    getRoomMessages: builder.query<RoomMessagesResponse, any>({
       query: (id) => `chat/messages/${id}`,
     }),
 
-    getTrainerVideosForTrainerDetails: builder.query<TrainerVideosForTrainerDetailsApiResponse, Partial<any>>({
+    getTrainerVideosForTrainerDetails: builder.query<TrainerVideosForTrainerDetailsApiResponse, any>({
       query: (id) => `video/${id}`,
     }),
 
-    getSubscribedVideos: builder.query<any, Partial<any>>({
+    getSubscribedVideos: builder.query<any, any>({
       query: (id) => `subscription/videos/${id}`,
     }),
 
@@ -366,6 +379,8 @@ export const {
   useStripePaymentTransferMutation,
   useVideoSubscribeMutation,
   useGetMyBookedVideosQuery,
-  useProfessionInfoUpdateMutation,
   useTraineeSessionRecommentQuery,
+  useSubmitReviewsMutation,
+  useGetTrainerReviewsQuery,
+  useProfessionInfoUpdateMutation,
 } = fitsApi;

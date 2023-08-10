@@ -4,67 +4,49 @@ import VideoPlayer from "react-native-video-player";
 import Colors from "../../constants/Colors";
 import { NavigationSwitchProp } from "react-navigation";
 import { useSelector } from "react-redux";
-import { useGetMyBookedVideosQuery } from "../../slice/FitsApi.slice";
+import { useGetMyBookedVideosQuery, useSubmitReviewsMutation } from "../../slice/FitsApi.slice";
 import { UserDetail } from "../../interfaces";
 import Typography from "../../Components/typography/text";
 import Entypo from "react-native-vector-icons/Entypo";
+import Button from "../../Components/Button";
+import ReviewsModal from "../../Components/reviewsModal";
+import { errorToast, successToast } from "../../utils/toast";
 interface Props {
   navigation: NavigationSwitchProp;
 }
 const MyBookedVideosScreen: React.FC<Props> = ({ navigation }) => {
   const { userInfo } = useSelector((state: { fitsStore: Partial<UserDetail> }) => state.fitsStore);
   const { data: myBookedVideos, refetch: refetchMyBookedVideos, isLoading: getMyVideosIsLoading } = useGetMyBookedVideosQuery(userInfo?.user._id)
+  const [submitReviewMutateAsync, {isLoading: isReviewsSubmitLoading}] = useSubmitReviewsMutation()
   const [thumbnailLoading, setThumbnailLoading] = useState(true);
+  const [reviewVideoDetails, setReviewVideoDetails] = useState<Video | null>();
 
   useEffect(() => {
     navigation.addListener('focus', () => {
       refetchMyBookedVideos()
     })
   }, [])
+  
+  const handleCommentSubmit = async (rating: number, comment: string) => {
+    const body = {
+      reviewFor: "video",
+      videoId: reviewVideoDetails?._id,
+      trainerId: reviewVideoDetails?.user._id,
+      reviews: {
+        rating: rating,
+        comment: comment,
+        userId: userInfo?.personal_info._id,
+      },
+    }
+    const result = await submitReviewMutateAsync(body)
+    if (result?.error) errorToast(result.error.data.message)
+    if (result?.data) {
+      successToast(result.data.message)
+    }
+    setReviewVideoDetails(null)
+  };
 
-  /*   const RattingReviews = async () => {
-      if (rating === "") {
-        ToastAndroid.show("Enter your ratings", ToastAndroid.LONG);
-      } else {
-        {
-        }
-        let reviews;
-        (reviews = {
-          rating: rating,
-          comment: "Na",
-          user: id,
-        }),
-          await fetch(`${url}/review`, {
-            method: "POST",
-            headers: {
-              Accept: "application/json",
-              "Content-Type": "application/json",
-              Authorization: `Bearer ${token}`,
-            },
-            body: JSON.stringify({
-              videoId: videoId,
-              reviewFor: "video",
-              reviews: reviews,
-            }),
-          })
-            .then((res) => res.json())
-            .then((res2) => {
-              setLoadxx(false);
-              if (res2.message === "reviews submit successfully") {
-                ToastAndroid.show("Confirmed your reviews", ToastAndroid.LONG);
-                getAllVideos();
-              } else {
-                ToastAndroid.show(res2.message, ToastAndroid.LONG);
-              }
-            })
-            .catch((error) => {
-              setLoadxx(false);
-              Alert.alert("Something Went Wrong");
-            });
-      }
-    }; */
-
-  if (!myBookedVideos || !myBookedVideos?.data.length) {
+  if (!myBookedVideos || !myBookedVideos?.length) {
     return <Typography style={{ marginTop: 50 }} align="center">
       ---You dont have any video yet---
     </Typography>
@@ -74,7 +56,7 @@ const MyBookedVideosScreen: React.FC<Props> = ({ navigation }) => {
 
   return (
     <ScrollView showsHorizontalScrollIndicator={false}>
-      {myBookedVideos?.data.map((item: Daum) => {
+      {myBookedVideos.map((item) => {
           const duration = '1 hour';
             return <View style={styles.topView1} key={item._id}>
               <View style={styles.VideoView}>
@@ -99,13 +81,13 @@ const MyBookedVideosScreen: React.FC<Props> = ({ navigation }) => {
               <View style={{
                 width: '100%',
                 flexDirection: 'column',
-                marginVertical: 5
+                marginTop: 5
               }}>
                 <Typography color='white' size={'regularText'}>
                   Trainer Name:
                 </Typography>
                 <Typography color='white90' style={{marginLeft: 30, marginTop: 5}} size={'medium'}>
-                kuch bh
+                  {item.user.name}
                 </Typography>
               </View>
               <View style={{
@@ -160,9 +142,12 @@ const MyBookedVideosScreen: React.FC<Props> = ({ navigation }) => {
                   {item.video_details}
                 </Typography>
                 </View>
+              </View>
+              <Button variant="medium" style={{alignSelf: "center", marginBottom: 10, paddingVertical: 15, width: 160}} label={"Add Reviews"} onPress={() => setReviewVideoDetails(item)} />
             </View>
-            </View>
-        })}
+      })}
+      
+      <ReviewsModal isVisible={!!reviewVideoDetails} onClose={() => setReviewVideoDetails(null)} onSubmitReviews={handleCommentSubmit} isLoading={isReviewsSubmitLoading} />
     </ScrollView>
   );
 };
@@ -198,56 +183,26 @@ const styles = StyleSheet.create({
 export default MyBookedVideosScreen;
 
 
-export interface GetBookedVideosApiInterface {
-  data: Daum[]
-  statusCode: number
-  message: string
-  success: boolean
-}
 
-export interface Daum {
-  _id: string
+export type GetBookedVideosApiInterface = Video[]
+
+export interface Video {
   video_links: string[]
   numReviews: number
   averageRating: number
   video_thumbnail: string
+  _id: string
   topic: string
   video_category: string
   video_details: string
   price: number
-  user: string
+  user: User
   createdAt: string
   updatedAt: string
   __v: number
-  trainer: Trainer
-  reviews: any[]
 }
 
-export interface Trainer {
-  _id: string
-  role: string
-  isVerified: boolean
-  amount: number
-  emailVerified: boolean
-  suspended: boolean
-  reset_password: boolean
-  trainerVerified: string
-  accountVerified: string
-  numReviews: number
-  averageRating: number
-  cardCreated: boolean
-  email: string
-  password: string
-  createdAt: string
-  updatedAt: string
-  __v: number
-  personal: Personal
-  profession: string
-  services_offered: ServicesOffered
-  cus_id: string
-}
-
-export interface Personal {
+export interface User {
   _id: string
   name: string
   date_of_birth: string
@@ -263,7 +218,3 @@ export interface Personal {
   __v: number
 }
 
-export interface ServicesOffered {
-  value: string
-  key: string
-}
