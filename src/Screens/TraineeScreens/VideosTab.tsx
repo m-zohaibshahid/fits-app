@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from "react";
-import { View, StyleSheet, ScrollView, Pressable, Alert, Image } from "react-native";
+import React from "react";
+import { View, StyleSheet, ScrollView, Image } from "react-native";
 import FontAwesome from "react-native-vector-icons/FontAwesome";
 import { RFValue } from "react-native-responsive-fontsize";
 import VideoPlayer from "react-native-video-player";
