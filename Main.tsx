@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useEffect } from "react";
+import React, { createContext, useContext, useEffect, useState } from "react";
 import { SafeAreaView, View } from "react-native";
 import { NavigationContainer } from "@react-navigation/native";
 import Toast from "react-native-toast-message";
@@ -31,6 +31,7 @@ const App = () => {
   const { userInfo } = useSelector((state: { fitsStore: Partial<UserDetail> }) => state.fitsStore);
   const { socket } = useSocket(userInfo?.user?._id || '')
   const dispatch = useDispatch();
+  const [iseStoredUser, setIsSoredUser] = useState(false);
 
   socket.on("receive-message", async () => {
     await storeUnReadMessageInAsyncStorage()
@@ -50,14 +51,16 @@ const App = () => {
       const unreadMessagesExist = await getUnReadMessagesFromAsyncStorage();
       if (unreadMessagesExist) dispatch(setUnReadMessage())
       else dispatch(clearUnReadMessages())
+      setIsSoredUser(true)
     } catch (e) {}
   };
 
   const renderNavigation = () => {
     if (!token) {
       return <UnauthenticatedStack />;
+    } else if (iseStoredUser) {
+      return <AuthenticatedStack />;
     }
-    return <AuthenticatedStack />;
   };
 
   return (

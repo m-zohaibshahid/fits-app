@@ -241,6 +241,14 @@ export const fitsApi = createApi({
       }),
     }),
 
+    createPassword: builder.mutation<void, Partial<any>>({
+      query: (data) => ({
+        url: `/change-password`,
+        method: "POST",
+        body: data,
+      }),
+    }),
+
     sessions: builder.query<TrainerSessionApiResultInterface, Partial<any>>({
       query: () => "/session",
     }),
@@ -260,6 +268,14 @@ export const fitsApi = createApi({
     submitReviews: builder.mutation<any, any>({
       query: (body) => ({
         url: `/review`,
+        method: "POST",
+        body
+      }),
+    }),
+
+    emailSend: builder.mutation<any, any>({
+      query: (body) => ({
+        url: `/email-send`,
         method: "POST",
         body
       }),
@@ -327,6 +343,7 @@ export const fitsApi = createApi({
         body: body,
       }),
     }),
+
     rechargeStripe: builder.mutation<any, Partial<any>>({
       query: ({ id, body }) => ({
         url: `/stripe/recharge/${id}`,
@@ -392,5 +409,7 @@ export const {
   useSubmitReviewsMutation,
   useGetTrainerReviewsQuery,
   useProfessionInfoUpdateMutation,
-  useRequestVarificationMutation
+  useRequestVarificationMutation,
+  useEmailSendMutation,
+  useCreatePasswordMutation
 } = fitsApi;

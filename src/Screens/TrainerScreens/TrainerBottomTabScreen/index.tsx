@@ -18,7 +18,7 @@ const TrainerBottomTabScreen = () => {
 
   return (
     <Tab.Navigator
-    screenOptions={({ route }) => ({
+      screenOptions={({ route }) => ({
       tabBarIcon: ({ color }) => {
         let iconName;
 
@@ -50,15 +50,14 @@ const TrainerBottomTabScreen = () => {
         height: Platform.OS === 'ios' ? 110 : 50,
         justifyContent: 'center',
         bottom: Platform.OS === 'ios' ? -30 : 0,
-        marginBottom: 0,
         position: 'absolute',
       },
     })}
-    tabBarOptions={{
+    tabBarOptions = {{
       activeTintColor: '#fff',
       inactiveTintColor: 'grey',
-      activeBackgroundColor: '#000',
-      inactiveBackgroundColor: '#000',
+      activeBackgroundColor: '#161616',
+      inactiveBackgroundColor: '#000000',
       labelStyle: {
         paddingBottom: Platform.OS === 'ios' ? 20 : 0,
       },

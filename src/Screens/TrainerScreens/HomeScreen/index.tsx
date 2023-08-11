@@ -2,15 +2,12 @@ import React, { useState, useEffect } from "react";
 import { Text, View, TouchableOpacity, Image, ScrollView, PermissionsAndroid, StyleSheet, Platform } from "react-native";
 import { widthPercentageToDP as wp } from "react-native-responsive-screen";
 import AntDesign from "react-native-vector-icons/AntDesign";
-import * as Images from "../../../constants/Images";
 import Classes from "../ClassesScreen";
 import Reviews from "../Reviews";
 import Geolocation from "react-native-geolocation-service";
-import FastImage from "react-native-fast-image";
 import { useDispatch, useSelector } from "react-redux";
 import { UserDetail } from "../../../interfaces";
 import { NavigationSwitchProp } from "react-navigation";
-import Typography from "../../../Components/typography/text";
 import Container from "../../../Components/Container";
 import Colors from "../../../constants/Colors";
 import { RFValue } from "react-native-responsive-fontsize";
@@ -110,7 +107,6 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: Colors.white,
     paddingTop: Platform.OS === "ios" ? 40 : 0,
-    paddingBottom: Platform.OS === "ios" ? 0 : 0,
   },
   mainHeaderRect: {
     width: "100%",
@@ -177,7 +173,7 @@ const styles = StyleSheet.create({
   },
   footerRect: {
     height: "16%",
-    bottom: 0,
+    bottom: Platform.OS === "ios" ? 26 : 0,
     alignItems: "flex-end",
     paddingTop: 7,
   },

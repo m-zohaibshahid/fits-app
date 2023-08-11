@@ -217,7 +217,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     position: "absolute",
-    bottom: 8,
+    bottom: Platform.OS === "ios" ? 35 : 0,
     right: 12,
   },
   thumbnailLoader: {
