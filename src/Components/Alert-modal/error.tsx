@@ -1,15 +1,17 @@
 import React from "react";
-import { View, Text, StyleSheet } from "react-native";
+import { StyleSheet } from "react-native";
+import Toast from "react-native-toast-message";
 
-const ErrorHandler = ({ error }: any) => {
-  if (!error) {
-    return null;
-  }
-
+const ToastHandler = (message: string) => {
   return (
-    <View style={styles.container}>
-      <Text style={styles.message}>{error}</Text>
-    </View>
+    <Toast
+      style={{ ...styles.container }}
+      text1Style={{ ...styles.message }}
+      position="bottom"
+      visibilityTime={4000} // Adjust as needed
+      autoHide
+      text1={message}
+    />
   );
 };
 
@@ -18,6 +20,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#ff0000",
     padding: 10,
     marginBottom: 10,
+    borderRadius: 8,
   },
   message: {
     color: "#fff",
@@ -25,4 +28,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default ErrorHandler;
+export default ToastHandler;

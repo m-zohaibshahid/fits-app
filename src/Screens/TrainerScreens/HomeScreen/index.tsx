@@ -2,20 +2,18 @@ import React, { useState, useEffect } from "react";
 import { Text, View, TouchableOpacity, Image, ScrollView, PermissionsAndroid, StyleSheet, Platform } from "react-native";
 import { widthPercentageToDP as wp } from "react-native-responsive-screen";
 import AntDesign from "react-native-vector-icons/AntDesign";
-import * as Images from "../../../constants/Images";
 import Classes from "../ClassesScreen";
 import Reviews from "../Reviews";
 import Geolocation from "react-native-geolocation-service";
-import FastImage from "react-native-fast-image";
-import { useDispatch, useSelector } from "react-redux";
-import { UserDetail } from "../../../interfaces";
+import { useDispatch } from "react-redux";
 import { NavigationSwitchProp } from "react-navigation";
-import Typography from "../../../Components/typography/text";
 import Container from "../../../Components/Container";
 import Colors from "../../../constants/Colors";
 import { RFValue } from "react-native-responsive-fontsize";
 import { setLocationState } from "../../../slice/location.slice";
 import Header from "../../../Components/Header";
+import { useGetUserMeQuery } from "../../../slice/FitsApi.slice";
+import FullPageLoader from "../../../Components/FullpageLoader";
 
 interface Props {
   navigation: NavigationSwitchProp;
@@ -24,7 +22,8 @@ interface Props {
 const Home: React.FC<Props> = ({ navigation }) => {
   // Hooks
   const dispatch = useDispatch();
-  const { userInfo } = useSelector((state: { fitsStore: Partial<UserDetail> }) => state.fitsStore);
+  const { data: userMeData, isLoading, error } = useGetUserMeQuery({});
+
   const [classes, setClasses] = useState(true);
   const [reviews, setReviews] = useState(false);
 
@@ -37,7 +36,7 @@ const Home: React.FC<Props> = ({ navigation }) => {
     setClasses(false);
     setReviews(true);
   };
-
+  if (isLoading) return <FullPageLoader />;
   const requestLocationPermission = async () => {
     try {
       const granted = await PermissionsAndroid.request(PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION);
@@ -50,7 +49,7 @@ const Home: React.FC<Props> = ({ navigation }) => {
           { enableHighAccuracy: true, timeout: 20000, maximumAge: 1000 }
         );
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error(error.message);
     }
   };
@@ -62,23 +61,23 @@ const Home: React.FC<Props> = ({ navigation }) => {
   return (
     <Container>
       {/*Header rect start*/}
-    <View style={styles.mainHeaderRect}>
-      <View style={{ position: "relative" }}>
-        <Header hideBackButton lableStyle={{ marginTop: 40, marginBottom: 5 }} style={{ marginLeft: 5 }} label={"Home"} subLabel={"Hello: " + userInfo?.personal_info?.name} />
-        <TouchableOpacity style={{ position: "absolute", top: 40, right: 10 }}>
-          <Image
-            style={{
-              width: 80,
-              height: 80,
-              borderRadius: 200 / 2,
-              overflow: "hidden",
-              borderWidth: 1,
-              borderColor: "grey",
-            }}
-            source={{ uri: userInfo?.personal_info?.profileImage }}
-          />
-        </TouchableOpacity>
-      </View>
+      <View style={styles.mainHeaderRect}>
+        <View style={{ position: "relative" }}>
+          <Header hideBackButton lableStyle={{ marginTop: 40, marginBottom: 5 }} style={{ marginLeft: 5 }} label={"Home"} subLabel={"Hello: " + userMeData?.personal_info?.name} />
+          <TouchableOpacity style={{ position: "absolute", top: 40, right: 10 }}>
+            <Image
+              style={{
+                width: 80,
+                height: 80,
+                borderRadius: 200 / 2,
+                overflow: "hidden",
+                borderWidth: 1,
+                borderColor: "grey",
+              }}
+              source={{ uri: userMeData?.personal_info?.profileImage }}
+            />
+          </TouchableOpacity>
+        </View>
         <View style={styles.secondHeaderRect}>
           <TouchableOpacity style={styles.mainclassesview} onPress={() => classestrueState()}>
             <Text style={[classes ? styles.titleText : styles.activeTitleText]}>Classes</Text>
@@ -151,7 +150,7 @@ const styles = StyleSheet.create({
     alignSelf: "center",
     flexDirection: "row",
     marginTop: 30,
-    marginBottom: 20
+    marginBottom: 20,
   },
   titleText: {
     fontSize: RFValue(12, 580),
