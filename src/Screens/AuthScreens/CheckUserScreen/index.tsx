@@ -30,7 +30,7 @@ const CheckUser = ({ navigation }: PropsInterface) => {
     try {
       let result = await getUserInfoFromUserMe();
       if (result.data) {
-        if (!result.data?.user.cus_id && result.data?.profile_status.service_offered_step_3) {
+        if (!result.data?.user.cus_id && result.data?.profile_status.step_3) {
           createStripeAccount(result.data?.personal_info.name, result.data?.user.email, result.data?.personal_info.phoneNumber);
         } else {
           await setDataInAsyncStorageAndUpdateState(result.data);
@@ -42,7 +42,7 @@ const CheckUser = ({ navigation }: PropsInterface) => {
     }
   };
 
-  const createStripeAccount = async (name: string, email: string, phone: number) => {
+  const createStripeAccount = async (name: string, email: string, phone: string) => {
     const body = { name, email, phone };
     const result: any = await stripeCustomer(body);
     if (result?.error) errorToast(result?.error?.data?.message);
@@ -60,26 +60,26 @@ const CheckUser = ({ navigation }: PropsInterface) => {
     }
   }, [userInfo]);
 
-  const getUserInfo = async (profile_status: { personal_step_1: boolean; professional_step_2: boolean; service_offered_step_3: boolean; fitness_level_step_2: boolean; fitness_goal_step_3: boolean }) => {
+  const getUserInfo = async (profile_status: { step_1: boolean; step_2: boolean; step_3: boolean;}) => {
     if (userInfo === null) {
       navigation.navigate("Welcome");
     } else {
       if (userInfo.user.role === "trainer") {
-        if (profile_status?.personal_step_1 === false) {
+        if (profile_status?.step_1 === false) {
           navigation.navigate("PersonalInfo");
-        } else if (profile_status?.professional_step_2 === false) {
+        } else if (profile_status?.step_2 === false) {
           navigation.navigate("ProfessionalInfo");
-        } else if (profile_status?.service_offered_step_3 === false) {
+        } else if (profile_status?.step_3 === false) {
           navigation.navigate("ServicesOffered");
         } else {
           navigation.navigate("TrainerTabb");
         }
       } else if (userInfo.user.role === "trainee") {
-        if (profile_status?.personal_step_1 === false) {
+        if (profile_status?.step_1 === false) {
           navigation.navigate("PersonalInfo");
-        } else if (profile_status?.fitness_level_step_2 === false) {
+        } else if (profile_status?.step_2 === false) {
           navigation.navigate("FitnessLevel");
-        } else if (profile_status?.fitness_goal_step_3 === false) {
+        } else if (profile_status?.step_3 === false) {
           navigation.navigate("FitnessGoal");
         } else {
           navigation.navigate("TraineeTabb");

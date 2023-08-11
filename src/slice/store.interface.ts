@@ -53,9 +53,9 @@ export interface Qualification {
 }
 
 export interface ProfileStatus {
-  personal_step_1: boolean
-  fitness_level_step_2: boolean
-  service_offered_step_3: boolean
+  step_1: boolean
+  step_2: boolean
+  step_3: boolean
 }
 
 export interface User {

@@ -50,9 +50,9 @@ export interface ServicesOffered {
 }
 
 export interface ProfileStatus {
-  personal_step_1: boolean;
-  professional_step_2: boolean;
-  service_offered_step_3: boolean;
+  step_1: boolean;
+  step_2: boolean;
+  step_3: boolean;
 }
 
 export interface MyRequestHeaders {
