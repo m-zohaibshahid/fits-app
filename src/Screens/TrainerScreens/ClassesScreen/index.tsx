@@ -5,7 +5,6 @@ import {
   ScrollView,
   Pressable,
   ActivityIndicator,
-  TextInput,
   StyleSheet,
   Platform,
 } from "react-native";
@@ -23,6 +22,8 @@ import { UserDetail } from "../../../interfaces";
 import Entypo from "react-native-vector-icons/Entypo";
 import Button from "../../../Components/Button";
 import { useNavigation } from "@react-navigation/native";
+import TextInput from "../../../Components/Input";
+import Container from "../../../Components/Container";
 
 const Classes = () => {
   const navigation = useNavigation()
@@ -62,18 +63,11 @@ const Classes = () => {
   
   return (
       <View>
-          <View style={styles.searchBarMainView}>
-          <EvilIcons name="search" size={30} style={{ color: "#fff" }} />
-              <TextInput
-                numberOfLines={1}
-                placeholder="Search... "
-                placeholderTextColor="#fff"
-                value={searchText}
-                onChangeText={setSearchText}
-                style={styles.searchBarTextInput}
-              />
-      </View>
-
+        <TextInput
+          isSearchBox
+          placeholder="Search by class"
+          value={searchText}
+          onChangeText={setSearchText} label={"Search Chat"} />
       <View style={styles.CalendarView}>
         <Calendar
           markingType={"custom"}
@@ -226,7 +220,6 @@ const styles = StyleSheet.create({
   mainContainer: {
     flex: 1,
     paddingTop: Platform.OS === "ios" ? 40 : 0,
-    paddingBottom: Platform.OS === "ios" ? 0 : 0,
   },
   mainBody: {
     width: "100%",
