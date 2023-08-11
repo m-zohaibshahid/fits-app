@@ -9,13 +9,11 @@ import Header from "../../../Components/Header";
 import Button from "../../../Components/Button";
 import SimpleLineIcons from "react-native-vector-icons/SimpleLineIcons";
 import { NavigationSwitchProp } from "react-navigation";
-import { useGetMyAllCreatedVideosQuery, useUploadVideoMutation, useVideoUpdateMutation } from "../../../slice/FitsApi.slice";
+import { useGetMyAllCreatedVideosQuery, useGetUserMeQuery, useUploadVideoMutation, useVideoUpdateMutation } from "../../../slice/FitsApi.slice";
 import Container from "../../../Components/Container";
 import Typography from "../../../Components/typography/text";
 import { errorToast } from "../../../utils/toast";
 import { useRoute } from "@react-navigation/native";
-import { useSelector } from "react-redux";
-import { UserDetail } from "../../../interfaces";
 import FullPageLoader from "../../../Components/FullpageLoader";
 import TextInput from "../../../Components/Input";
 
@@ -41,8 +39,8 @@ const VideoCreateScreen = ({ navigation }: PropsInterface) => {
   const [cloudVideoUrl, setCloudVideoLink] = useState();
   const [cloudImageUrl, setCloudImageUrl] = useState("");
   const [value, setValue] = useState("");
-  const { userInfo } = useSelector((state: { fitsStore: Partial<UserDetail> }) => state.fitsStore);
-  const { refetch: refetchMyAllVideos, isLoading: isLoading2 } = useGetMyAllCreatedVideosQuery(userInfo?.user._id ?? "");
+  const { data: userMeData, isLoading: isUserMeLoading, error } = useGetUserMeQuery({});
+  const { refetch: refetchMyAllVideos, isLoading: isLoading2 } = useGetMyAllCreatedVideosQuery(userMeData?.user._id ?? "");
 
   useEffect(() => {
     if (paramater?.item) {
@@ -76,6 +74,52 @@ const VideoCreateScreen = ({ navigation }: PropsInterface) => {
       setVideo(file.path);
     });
   };
+  const renderUploadView = () => {
+    if (video === "") {
+      return (
+        <View
+          style={{
+            width: "100%",
+            backgroundColor: "#979797",
+            height: 200,
+            alignItems: "center",
+            justifyContent: "center",
+            alignSelf: "center",
+          }}
+        >
+          <SimpleLineIcons name="cloud-upload" size={80} color={"#000"} />
+          <Typography size="heading2" style={{ marginBottom: 20 }}>
+            Tap to upload Video
+          </Typography>
+          <Button label="Upload Video" onPress={chooseVideoFromGallery} variant="tini" />
+        </View>
+      );
+    } else if (uploadOnCloudLoading.video) {
+      return <ActivityIndicator />;
+    } else {
+      return (
+        <View style={{ width: "100%", alignSelf: "center", position: "relative" }}>
+          <Pressable
+            onPress={chooseVideoFromGallery}
+            style={{
+              paddingVertical: 5,
+              paddingHorizontal: 10,
+              backgroundColor: Colors.grayTransparent,
+              position: "absolute",
+              top: 5,
+              left: 5,
+              borderRadius: 5,
+            }}
+          >
+            <Typography color="white" size="small">
+              Another
+            </Typography>
+          </Pressable>
+          <VideoPlayer video={{ uri: cloudVideoUrl }} videoWidth={1600} videoHeight={900} style={{ borderRadius: 10, alignSelf: "center" }} />
+        </View>
+      );
+    }
+  };
 
   const chooseImageFromGallery = () => {
     openPicker({
@@ -90,7 +134,6 @@ const VideoCreateScreen = ({ navigation }: PropsInterface) => {
       setUploadOnCLoudLoading({ ...uploadOnCloudLoading, image: true });
     });
   };
-
   const uploadImageOnCloud = async (image: { uri: string; type: string; name: string }) => {
     const imageUploadOnCloud = new FormData();
     imageUploadOnCloud.append("file", image);
@@ -119,7 +162,7 @@ const VideoCreateScreen = ({ navigation }: PropsInterface) => {
       price: price,
       video_thumbnail: cloudImageUrl,
     };
-    const result = await mutateAsyncVideoUpload(body);
+    const result: any = await mutateAsyncVideoUpload(body);
 
     if (result?.data) navigation.navigate("Home");
     if (result?.error) errorToast(result?.error?.data.message);
@@ -164,13 +207,13 @@ const VideoCreateScreen = ({ navigation }: PropsInterface) => {
       });
   };
 
-  if (isLoading2) return <FullPageLoader />;
+  if (isLoading2 || isUserMeLoading) return <FullPageLoader />;
   return (
     <Container>
       <Header label={"Upload Video"} />
       <ScrollView showsVerticalScrollIndicator={false}>
         <View style={styles.mainBody}>
-          {video === "" ? (
+          {/* {!video ? (
             <View
               style={{
                 width: "100%",
@@ -191,14 +234,27 @@ const VideoCreateScreen = ({ navigation }: PropsInterface) => {
             <ActivityIndicator />
           ) : (
             <View style={{ width: "100%", alignSelf: "center", position: "relative" }}>
-              <Pressable onPress={chooseVideoFromGallery} style={{ paddingVertical: 5, paddingHorizontal: 10, backgroundColor: Colors.grayTransparent, position: "absolute", top: 5, left: 5, borderRadius: 5 }}>
+              <Pressable
+                onPress={chooseVideoFromGallery}
+                style={{
+                  paddingVertical: 5,
+                  paddingHorizontal: 10,
+                  backgroundColor: Colors.grayTransparent,
+                  position: "absolute",
+                  top: 5,
+                  left: 5,
+                  borderRadius: 5,
+                }}
+              >
                 <Typography color="white" size={"small"}>
                   Another
                 </Typography>
               </Pressable>
               <VideoPlayer video={{ uri: cloudVideoUrl }} videoWidth={1600} videoHeight={900} style={{ borderRadius: 10, alignSelf: "center" }} />
             </View>
-          )}
+          )} */}
+
+          {renderUploadView()}
           {!cloudImageUrl ? (
             <View
               style={{
@@ -233,14 +289,10 @@ const VideoCreateScreen = ({ navigation }: PropsInterface) => {
               />
             </Pressable>
           )}
-        <Typography style={{ marginTop: 15 }} size={"heading3"}>
+          <Typography style={{ marginTop: 15 }} size={"heading3"}>
             Video Title
           </Typography>
-              <TextInput
-            placeholder="Please Enter Video Title"
-            placeholderTextColor={Colors.white80}
-            value={videoTitle}
-            onChangeText={setVideoTitle} label={"Video Title"}              />
+          <TextInput placeholder="Please Enter Video Title" placeholderTextColor={Colors.white80} value={videoTitle} onChangeText={setVideoTitle} label={"Video Title"} />
           <View style={{ width: "100%", alignItems: "center", marginTop: 20 }}>
             <View style={{ width: "100%" }}>
               <View style={{ width: "100%", flexDirection: "row" }}>
@@ -389,15 +441,9 @@ const VideoCreateScreen = ({ navigation }: PropsInterface) => {
           <Typography style={{ marginTop: 15 }} size={"heading3"}>
             Any specific details
           </Typography>
-            <TextInput isTextArea maxLength={500} placeholder="Write your decription here....." value={details} onChangeText={setDetails} label={"Video Description"} />
+          <TextInput isTextArea maxLength={500} placeholder="Write your decription here....." value={details} onChangeText={setDetails} label={"Video Description"} />
 
-            <TextInput
-              keyboard="phone-pad"
-              value={price !== null ? price.toString() : ""}
-              placeholder="Enter price"
-              maxLength={5}
-              onChangeText={setPrice} label={"Price"}
-            />
+          <TextInput keyboard="phone-pad" value={price !== null ? price.toString() : ""} placeholder="Enter price" maxLength={5} onChangeText={setPrice} label={"Price"} />
         </View>
       </ScrollView>
       <Button

@@ -1,20 +1,20 @@
-import React from 'react';
-import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
-import { widthPercentageToDP as wp } from 'react-native-responsive-screen';
-import { Platform, StyleSheet, View } from 'react-native';
-import TrainerVideoScreen from '../TrainerVideoScreen';
-import AccountScreen from '../AccountScreen/index';
-import Home from '../HomeScreen';
-import Chat from '../../TraineeScreens/Chat';
-import Colors from '../../../constants/Colors';
-import { useSelector } from 'react-redux';
-import { MessageState } from '../../../slice/messages.slice';
+import React from "react";
+import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
+import MaterialIcons from "react-native-vector-icons/MaterialIcons";
+import { widthPercentageToDP as wp } from "react-native-responsive-screen";
+import { Platform, StyleSheet, View } from "react-native";
+import TrainerVideoScreen from "../TrainerVideoScreen";
+import AccountScreen from "../AccountScreen/index";
+import Home from "../HomeScreen";
+import Chat from "../../TraineeScreens/Chat";
+import Colors from "../../../constants/Colors";
+import { useSelector } from "react-redux";
+import { MessageState } from "../../../slice/messages.slice";
 
 const Tab = createBottomTabNavigator();
 
 const TrainerBottomTabScreen = () => {
-  const {unReadMessages} = useSelector((state: { messages: Partial<MessageState> }) => state.messages);
+  const { unReadMessages } = useSelector((state: { messages: Partial<MessageState> }) => state.messages);
 
   return (
     <Tab.Navigator
@@ -22,26 +22,26 @@ const TrainerBottomTabScreen = () => {
       tabBarIcon: ({ color }) => {
         let iconName;
 
-        switch (route.name) {
-          case 'Home':
-            iconName = 'home-filled';
-            break;
-          case 'Video':
-            iconName = 'folder-video';
-            break;
-          case 'Chat':
-            iconName = 'send';
-            break;
-          case 'Account':
-            iconName = 'settings';
-            break;
-          default:
-            return null;
-        }
+          switch (route.name) {
+            case "Home":
+              iconName = "home-filled";
+              break;
+            case "Video":
+              iconName = "ondemand-video";
+              break;
+            case "Chat":
+              iconName = "send";
+              break;
+            case "Account":
+              iconName = "settings";
+              break;
+            default:
+              return null;
+          }
 
-        return (
-          <View style={styles.iconContainer}>
-            <MaterialIcons name={iconName} size={wp(6)} color={color} />
+          return (
+            <View style={styles.iconContainer}>
+              <MaterialIcons name={iconName} size={wp(6)} color={color} />
               {route.name === "Chat" && unReadMessages ? <View style={styles.unreadIcon} /> : null}
           </View>
         );
@@ -66,9 +66,9 @@ const TrainerBottomTabScreen = () => {
       <Tab.Screen name="Video" component={TrainerVideoScreen} options={{ headerShown: false }} />
       <Tab.Screen name="Chat" component={Chat} options={{ headerShown: false }} />
       <Tab.Screen name="Account" component={AccountScreen} options={{ headerShown: false }} />
-  </Tab.Navigator>
-  )
-}
+    </Tab.Navigator>
+  );
+};
 
 const styles = StyleSheet.create({
   iconContainer: {
@@ -85,6 +85,5 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.bgRedBtn, // Use your desired color here
   },
 });
-
 
 export default TrainerBottomTabScreen;

@@ -1,20 +1,18 @@
 /* eslint-disable quotes */
 /* eslint-disable prettier/prettier */
 import React, { useEffect, useState } from "react";
-import { Text, View, StyleSheet, Platform, ActivityIndicator, TouchableOpacity, ScrollView, Alert } from "react-native";
+import { View, StyleSheet, Platform, ActivityIndicator, TouchableOpacity, ScrollView } from "react-native";
 import AntDesign from "react-native-vector-icons/AntDesign";
 import { RFValue } from "react-native-responsive-fontsize";
 import VideoPlayer from "react-native-video-player";
 import Colors from "../../../constants/Colors";
 import Container from "../../../Components/Container";
 import Header from "../../../Components/Header";
-import { useGetMyAllCreatedVideosQuery, useVideoDelMutation, useVideoUpdateMutation } from "../../../slice/FitsApi.slice";
+import { useGetMyAllCreatedVideosQuery, useGetUserMeQuery, useVideoDelMutation } from "../../../slice/FitsApi.slice";
 import Typography from "../../../Components/typography/text";
 import { NavigationSwitchProp } from "react-navigation";
 import Entypo from "react-native-vector-icons/Entypo";
 import Button from "../../../Components/Button";
-import { useSelector } from "react-redux";
-import { UserDetail } from "../../../interfaces";
 import FullPageLoader from "../../../Components/FullpageLoader";
 
 interface PropsInterface {
@@ -22,8 +20,9 @@ interface PropsInterface {
 }
 
 const TrainerVideoScreen = ({ navigation }: PropsInterface) => {
-  const { userInfo } = useSelector((state: { fitsStore: Partial<UserDetail> }) => state.fitsStore);
-  const { data: myAllVideos, refetch: refetchMyAllVideos, isLoading } = useGetMyAllCreatedVideosQuery(userInfo?.user._id ?? "");
+  const { data: userMeData, isLoading: isUserMeLoading, error } = useGetUserMeQuery({});
+
+  const { data: myAllVideos, refetch: refetchMyAllVideos, isLoading } = useGetMyAllCreatedVideosQuery(userMeData?.user._id ?? "");
   const [mutateDeleleVideo, { isLoading: isVideoDeleteLoading }] = useVideoDelMutation();
   const [thumbnailLoading, setThumbnailLoading] = useState(true);
 
@@ -33,7 +32,8 @@ const TrainerVideoScreen = ({ navigation }: PropsInterface) => {
     });
   }, []);
 
-  if (isLoading || isVideoDeleteLoading) return <FullPageLoader />;
+  if (isLoading || isVideoDeleteLoading || isUserMeLoading) return <FullPageLoader />;
+
   const handleDeleteVideo = async (item: VideoInterface) => {
     const id = item._id;
     mutateDeleleVideo(id);
@@ -86,7 +86,7 @@ const TrainerVideoScreen = ({ navigation }: PropsInterface) => {
                       Trainer Name:
                     </Typography>
                     <Typography color="white90" style={{ marginLeft: 30, marginTop: 5 }} size={"medium"}>
-                      {userInfo?.personal_info.name}
+                      {userMeData?.personal_info.name}
                     </Typography>
                   </View>
                   <View
