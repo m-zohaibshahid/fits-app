@@ -687,7 +687,7 @@ const BookSession = ({ navigation }: any) => {
               </View>
               <ScrollView showsVerticalScrollIndicator={false}>
                 {data.map((item: any, i) => (
-                  <View style={styles.TopView} key={i}>
+                  <View style={styles.TopView}>
                     <View style={styles.marchmainview}>
                       <View style={styles.marchmainview2}>
                         <View style={{ width: "25%", alignItems: "center" }}>
