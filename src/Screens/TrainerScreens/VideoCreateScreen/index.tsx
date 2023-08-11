@@ -3,7 +3,7 @@ import { Text, View, Pressable, StyleSheet, ScrollView, ToastAndroid, ActivityIn
 import Colors from "../../../constants/Colors";
 import VideoPlayer from "react-native-video-player";
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from "react-native-responsive-screen";
-import ImagePicker from "react-native-image-crop-picker";
+import {openPicker} from "react-native-image-crop-picker";
 import { RFValue } from "react-native-responsive-fontsize";
 import Header from "../../../Components/Header";
 import Button from "../../../Components/Button";
@@ -59,8 +59,9 @@ const VideoCreateScreen = ({ navigation }: PropsInterface) => {
       setStatusSix(paramater?.item.video_category === "Mental Health & Nutrition");
     }
   }, [paramater?.item]);
+
   const chooseVideoFromGallery = () => {
-    ImagePicker.openPicker({
+    openPicker({
       mediaType: "video",
     }).then((file) => {
       let newFile = {
@@ -121,7 +122,7 @@ const VideoCreateScreen = ({ navigation }: PropsInterface) => {
   };
 
   const chooseImageFromGallery = () => {
-    ImagePicker.openPicker({
+    openPicker({
       mediaType: "photo",
     }).then((file) => {
       let newFile = {

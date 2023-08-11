@@ -109,7 +109,6 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: Colors.white,
     paddingTop: Platform.OS === "ios" ? 40 : 0,
-    paddingBottom: Platform.OS === "ios" ? 0 : 0,
   },
   mainHeaderRect: {
     width: "100%",
@@ -176,7 +175,7 @@ const styles = StyleSheet.create({
   },
   footerRect: {
     height: "16%",
-    bottom: 0,
+    bottom: Platform.OS === "ios" ? 26 : 0,
     alignItems: "flex-end",
     paddingTop: 7,
   },

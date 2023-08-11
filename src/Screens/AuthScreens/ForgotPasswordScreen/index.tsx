@@ -1,114 +1,76 @@
 /* eslint-disable prettier/prettier */
 import React, { useState } from 'react';
-import { Text, View, TextInput, ScrollView } from 'react-native';
+import { Text, View, ScrollView, Alert } from 'react-native';
 import Header from '../../../Components/Header';
 import Button from '../../../Components/Button';
 import { url } from '../../../constants/url';
 import styles from './styles';
 import { Toast } from 'react-native-toast-message/lib/src/Toast';
 import { useNavigation } from '@react-navigation/native';
+import TextInput from '../../../Components/Input';
+import Container from '../../../Components/Container';
+import { useCodeVerifyMutation, useEmailSendMutation } from '../../../slice/FitsApi.slice';
+import { errorToast, successToast } from '../../../utils/toast';
+import Typography from '../../../Components/typography/text';
 
-const ForgotPassword = () => {
+const ForgotPassword = ({navigation}: any) => {
   // Hooks
-  const navigation = useNavigation();
   const [email, setEmail] = useState('');
-  const [load, setLoad] = useState(false);
-
+  const [receivedOtp, setReceivedOtp] = useState('');
+  const [otp, setOtp] = useState('');
+  const [emailSendMutateAsync, {isLoading}] = useEmailSendMutation()
+  // const [mutateAsyncVarification] = useCodeVerifyMutation();
+  
   const sendCode = async () => {
-    if (email === '') {
-      Toast.show({
-        type: 'error',
-        text1: 'Please enter your email'
-      });
-    } else if (!email.includes('@')) {
-      Toast.show({
-        type: 'error',
-        text1: 'Please enter valid email'
-      });
-    } else {
-      setLoad(true);
-      await fetch(`${url}/email-send`, {
-        method: 'POST',
-        headers: {
-          Accept: 'application/json',
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-          email: email
-        })
-      })
-        .then((res) => res.json())
-        .then((res2) => {
-          setLoad(false);
-          if (res2.message === 'send code successfully') {
-            Toast.show({
-              type: 'success',
-              text1: res2?.message
-            });
-            NextScreen(res2.email, res2);
-          } else {
-            Toast.show({
-              type: 'error',
-              text1: res2?.message
-            });
-          }
-        })
-        .catch((error) => {
-          setLoad(false);
-          Toast.show({
-            type: 'error'
-          });
-        });
+    const body = {email}
+    const result = await emailSendMutateAsync(body)
+    if (result.error) errorToast(result.error.data.message)
+    if (result.data) {
+      setReceivedOtp(result.data.data)
+      successToast(result.data.message)
     }
   };
-  const NextScreen = (i: number, code: any) => {
-    Toast.show({
-      type: 'success',
-      text1: 'Verification code has been sent to your email'
-    });
-    navigation.navigate('ForgotCode', {
-      email: [email, code]
-    });
+
+const handleVarification = async () => {
+  if (receivedOtp === otp) {
+    navigation.navigate('CreatePassword', {email});
+  } else {
+    errorToast('Invalid OTP')
+  }
+  // const body = {
+    //   email: email,
+    //   code: otp,
+    //   type : "verification"
+    // }
+
+    // const result = await mutateAsyncVarification(body) as any
+    // if (result?.data?.message === 'verified') {
+    //   Alert.alert('varified')
+    // }
+    // if (!!result.error) Alert.alert(result.error.data.message)
   };
+  
+
   return (
-    <View style={styles.mainContainer}>
-      <Header label={'Forgot Password'} navigation={navigation} />
-      <ScrollView showsVerticalScrollIndicator={false}>
-        <View style={styles.mainBody}>
-          <View style={{ width: '90%', alignSelf: 'center' }}>
-            <Text style={styles.subTitle}>Please enter your email address so we {'\n'}can sand your verification code.</Text>
-          </View>
-
-          <View style={styles.inputMainView}>
-            <View style={styles.inputTitleView}>
-              <Text style={styles.inputTitleText}>E-mail</Text>
-            </View>
-            <View style={styles.inputTypeMainView}>
-              <View style={styles.inputTypeView}>
+    <Container style={styles.mainContainer}>
+      <Header label='Forgot Password' subLabel={!receivedOtp ? "Enter your account email so we can sand your verification code" : 'Check your email and enter received otp'} />
+      {receivedOtp ? <Typography size={'medium'} color='transparentBlack' align='center' bottom={'mb10'}>Your OTP is: {receivedOtp}</Typography> : null}
+      <ScrollView>
                 <TextInput
-                  style={styles.inputTypeStyle}
-                  // label="Email"
-                  placeholder="Enter Email"
-                  value={email}
-                  onChangeText={setEmail}
-                />
-              </View>
-            </View>
-          </View>
-
-          <Button
-            navigation={navigation}
-            loader={load}
-            label={'Send'}
-            onPress={() => {
-              if (!load) {
-                sendCode();
-              }
-            }}
-          />
-        </View>
+        value={email}
+        placeholder='Enter your email'
+        onChangeText={setEmail} label={'Email'}                />
+      
+      {receivedOtp ? <>
+        <TextInput label={'Otp'} placeholder='Enter otp here' value={otp} onChangeText={setOtp} />
+      </>: null}
       </ScrollView>
-    </View>
+          <Button
+            loader={isLoading}
+            label={receivedOtp ? 'Done' : 'Send'}
+            onPress={!receivedOtp ? sendCode : handleVarification}
+      />
+    </Container>
   );
 };
 

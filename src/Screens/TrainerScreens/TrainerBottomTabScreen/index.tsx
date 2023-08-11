@@ -19,8 +19,8 @@ const TrainerBottomTabScreen = () => {
   return (
     <Tab.Navigator
       screenOptions={({ route }) => ({
-        tabBarIcon: ({ color }) => {
-          let iconName;
+      tabBarIcon: ({ color }) => {
+        let iconName;
 
           switch (route.name) {
             case "Home":
@@ -43,27 +43,25 @@ const TrainerBottomTabScreen = () => {
             <View style={styles.iconContainer}>
               <MaterialIcons name={iconName} size={wp(6)} color={color} />
               {route.name === "Chat" && unReadMessages ? <View style={styles.unreadIcon} /> : null}
-            </View>
-          );
-        },
-        tabBarStyle: {
-          height: Platform.OS === "ios" ? 110 : 50,
-          justifyContent: "center",
-          bottom: Platform.OS === "ios" ? -30 : 0,
-          marginBottom: 0,
-          position: "absolute",
-        },
-      })}
-      tabBarOptions={{
-        activeTintColor: "#fff",
-        inactiveTintColor: "grey",
-        activeBackgroundColor: "#000",
-        inactiveBackgroundColor: "#000",
-        labelStyle: {
-          paddingBottom: Platform.OS === "ios" ? 20 : 0,
-        },
-      }}
-    >
+          </View>
+        );
+      },
+      tabBarStyle: {
+        height: Platform.OS === 'ios' ? 110 : 50,
+        justifyContent: 'center',
+        bottom: Platform.OS === 'ios' ? -30 : 0,
+        position: 'absolute',
+      },
+    })}
+    tabBarOptions = {{
+      activeTintColor: '#fff',
+      inactiveTintColor: 'grey',
+      activeBackgroundColor: '#161616',
+      inactiveBackgroundColor: '#000000',
+      labelStyle: {
+        paddingBottom: Platform.OS === 'ios' ? 20 : 0,
+      },
+    }}>
       <Tab.Screen name="Home" component={Home} options={{ headerShown: false }} />
       <Tab.Screen name="Video" component={TrainerVideoScreen} options={{ headerShown: false }} />
       <Tab.Screen name="Chat" component={Chat} options={{ headerShown: false }} />

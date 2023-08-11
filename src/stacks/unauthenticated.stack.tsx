@@ -5,7 +5,7 @@ import SelectStatusScreen from "../Screens/AuthScreens/SelectStatusScreen";
 import SignUpScreen from "../Screens/AuthScreens/SignUpScreen";
 import SignInScreen from "../Screens/AuthScreens/SignInScreen";
 import ForgotPassword from "../Screens/AuthScreens/ForgotPasswordScreen";
-import ForgotCode from "../Screens/AuthScreens/ForgotCodeScreen";
+import CreatePassword from "../Screens/AuthScreens/CreatePassword";
 import GeneratePassword from "../Screens/AuthScreens/GeneratePasswordScreen";
 import { LoginNow } from "../../Main";
 
@@ -18,7 +18,7 @@ export const UnauthenticatedStack = () => (
     <Stack.Screen name="SignUp" component={SignUpScreen} options={{ headerShown: false }} />
     <Stack.Screen name="SignIn" component={SignInScreen} options={{ headerShown: false }} />
     <Stack.Screen name="ForgotPassword" component={ForgotPassword} options={{ headerShown: false }} />
-    <Stack.Screen name="ForgotCode" component={ForgotCode} options={{ headerShown: false }} />
+    <Stack.Screen name="CreatePassword" component={CreatePassword} options={{ headerShown: false }} />
     <Stack.Screen name="GeneratePassword" component={GeneratePassword} options={{ headerShown: false }} />
     <Stack.Screen name="LoginNow" component={LoginNow} options={{ headerShown: false }} />
   </Stack.Navigator>

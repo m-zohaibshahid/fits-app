@@ -23,6 +23,8 @@ import Typography from "../../../Components/typography/text";
 import MapView, { LatLng, Marker } from "react-native-maps";
 import { useSelector } from "react-redux";
 import { LocationState } from "../../../slice/location.slice";
+import PreviousTemplatesModal from "../../../Components/previousTemplatesModal";
+import { SessionItemType } from "../ClassesScreen";
 
 enum SessionType {
   ONLINE = "online",
@@ -162,7 +164,7 @@ const BookSession = ({ navigation }: any) => {
     setEquipment(oldEquipment);
   };
 
-  const UseTemplate = (item) => {
+  const onSelectTemplate = (item: SessionItemType) => {
     if (item?.session_type?.type === SessionType.RECORDED) {
       Recorded(item);
       setModalVisibleTopSelect(false);
@@ -175,33 +177,33 @@ const BookSession = ({ navigation }: any) => {
     }
   };
 
-  const Physical = (item) => {
+  const Physical = (item: SessionItemType) => {
     setClassTitle(item?.class_title);
-    setDuration(item?.duration);
     setDescription(item?.details);
-    setPrice(item?.price);
+    setDuration(item?.duration.toString());
+    setPrice(item?.price.toString());
     setSessionTitle(item?.session_title);
     setTime(item?.class_time);
     setSlots(item?.no_of_slots);
     setSport(item?.sports);
   };
 
-  const Online = (item) => {
+  const Online = (item: SessionItemType) => {
     setClassTitle(item?.class_title);
-    setDuration(item?.duration);
     setDescription(item?.details);
-    setPrice(item?.price);
+    setDuration(item?.duration.toString());
+    setPrice(item?.price.toString());
     setSessionTitle(item?.session_title);
-    setMeetingLink(item?.session_type?.meetingLink);
+    setMeetingLink(item?.session_type?.meetingLink ?? '');
     setTime(item?.class_time);
     setSlots(item?.no_of_slots);
     // setEquipment(item?.equipment[0]?.value);
     setSport(item?.sports);
   };
 
-  const Recorded = (item) => {
+  const Recorded = (item: SessionItemType) => {
     setClassTitle(item?.class_title);
-    setDuration(item?.duration);
+    setDuration(item?.duration.toString());
   };
 
   const choosePhotoFromCamera = () => {
@@ -241,7 +243,7 @@ const BookSession = ({ navigation }: any) => {
       });
   };
 
-  const detailsInfoCall = (index: number) => {
+ /*  const detailsInfoCall = (index: number) => {
     let dummy = [...data];
     if (dummy[index].status == true) {
       dummy.forEach((item) => (item.status = false));
@@ -250,7 +252,7 @@ const BookSession = ({ navigation }: any) => {
       dummy[index].status = true;
     }
     setData(dummy);
-  };
+  }; */
 
   const handleOnMapReady = () => {
     if (mapRef.current && superLat !== undefined && superLong !== undefined) {
@@ -658,165 +660,8 @@ const BookSession = ({ navigation }: any) => {
       <Button style={{
           marginVertical: 20
         }} onPress={callBookSession} disabled={!sport || !currentDate || !description || !image || !time || !value || !slots || !duration || !price} label={"Create"} />
-      {/*end btn*/}
       <DateTimePickerModal isVisible={isDatePickerVisible} mode="time" onConfirm={handleConfirm} onCancel={hideDatePicker} />
-      {/*filter option model  Start*/}
-      <View style={styles.centerView}>
-        <Modal
-          animationType="fade"
-          transparent={true}
-          visible={modalVisibleTopSelect}
-          onRequestClose={() => {
-            setModalVisibleTopSelect(false);
-          }}
-        >
-          <View style={styles.centerView}>
-            <View style={styles.modalView}>
-              <View
-                style={{
-                  height: 80,
-                  borderWidth: 1,
-                  justifyContent: "center",
-                  //borderBottomWidth: 0.5,
-                  borderColor: "lightgrey",
-                  width: "100%",
-                  alignItems: "center",
-                }}
-              >
-                <Text style={styles.addText}>Choose Template to Duplicate</Text>
-              </View>
-              <ScrollView showsVerticalScrollIndicator={false}>
-                {data.map((item: any, i) => (
-                  <View style={styles.TopView} key={i}>
-                    <View style={styles.marchmainview}>
-                      <View style={styles.marchmainview2}>
-                        <View style={{ width: "25%", alignItems: "center" }}>
-                          <Text style={styles.marchtext}>
-                            {moment(item?.select_date).format("DD ")}
-                            {moment(item?.select_date).format("MMMM")}
-                          </Text>
-                          <Text style={styles.Daytext}>({moment(item?.select_date).format("dddd")})</Text>
-                        </View>
-                        <View
-                          style={{
-                            width: "5%",
-                            alignItems: "center",
-                          }}
-                        >
-                          <View
-                            style={{
-                              width: 2,
-                              height: 50,
-                              backgroundColor: "#fff",
-                            }}
-                          ></View>
-                        </View>
-                        <View style={{ width: "35%", flexDirection: "column" }}>
-                          <Text style={styles.marchtext}>
-                            {item?.class_title} {"\n"}
-                            <Text
-                              style={{
-                                color: "#fff",
-                                fontSize: RFValue(10, 580),
-                                fontFamily: "Poppins-Regular",
-                              }}
-                            >
-                              {item?.class_time}
-                            </Text>
-                          </Text>
-                        </View>
-                        <Pressable
-                          onPress={() => detailsInfoCall(i)}
-                          style={{
-                            width: "30%",
-                            backgroundColor: "#414143",
-                            alignItems: "center",
-                            borderRadius: 12,
-                            height: 50,
-                            justifyContent: "center",
-                          }}
-                        >
-                          <View
-                            style={{
-                              width: "100%",
-                              alignItems: "center",
-                              flexDirection: "row",
-                            }}
-                          >
-                            <View style={{ width: "80%", justifyContent: "center" }}>
-                              <Text
-                                style={{
-                                  color: "#fff",
-                                  fontSize: RFValue(14, 580),
-                                  fontFamily: "Poppins-Regular",
-                                  textAlign: "center",
-                                }}
-                              >
-                                Details
-                              </Text>
-                            </View>
-                            <Entypo name={item.status ? "chevron-up" : "chevron-down"} size={18} color={"#fff"} />
-                          </View>
-                        </Pressable>
-                      </View>
-                      {/*end Yoga */}
-                      {item.status && (
-                        <View style={{ width: "100%", paddingBottom: 18 }}>
-                          <View style={styles.dotmainview}>
-                            <View style={styles.dotview}>
-                              <FontAwesome name="circle" style={{ color: "#979797" }} />
-                            </View>
-                            <View style={{ width: "100%" }}>
-                              <Text style={styles.textstyle}>
-                                Type:{"\n"} {item?.session_type?.type} session
-                              </Text>
-                            </View>
-                          </View>
-                          <View style={styles.dotmainview}>
-                            <View style={styles.dotview}>
-                              <FontAwesome name="circle" style={{ color: "#979797" }} />
-                            </View>
-                            <View style={{ width: "100%" }}>
-                              <Text style={styles.textstyle}>
-                                Cost: {"\n"}$ {item?.price}
-                              </Text>
-                            </View>
-                          </View>
-                          <View style={styles.dotmainview}>
-                            <View style={styles.dotview}>
-                              <FontAwesome name="circle" style={{ color: "#979797" }} />
-                            </View>
-                            <View style={{ width: "100%" }}>
-                              <Text style={styles.textstyle}>
-                                Available slots:: {"\n"} {item?.no_of_slots}
-                              </Text>
-                            </View>
-                          </View>
-                          <View style={styles.dotmainview}>
-                            <View style={styles.dotview}>
-                              <FontAwesome name="circle" style={{ color: "#979797" }} />
-                            </View>
-                            <View style={{ width: "100%" }}>
-                              <Text style={styles.textstyle}>{item?.details}</Text>
-                            </View>
-                          </View>
-                          <View style={styles.bookNow}>
-                            <Pressable onPress={() => UseTemplate(item)} style={styles.profilebtnview}>
-                              <Text style={styles.btntextstyle}>Use Template</Text>
-                            </Pressable>
-                          </View>
-                        </View>
-                      )}
-                    </View>
-                  </View>
-                ))}
-                {/*end total */}
-              </ScrollView>
-            </View>
-          </View>
-        </Modal>
-      </View>
-      {/*end modal*/}
+      <PreviousTemplatesModal isVisible={modalVisibleTopSelect} onClose={() =>setModalVisibleTopSelect(false)} onSelect={onSelectTemplate}  />
     </Container>
   );
 };
@@ -827,7 +672,6 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: "#ffffff",
     paddingTop: Platform.OS === "ios" ? 40 : 0,
-    paddingBottom: Platform.OS === "ios" ? 0 : 0,
   },
   mainHeaderRect: {
     width: "100%",

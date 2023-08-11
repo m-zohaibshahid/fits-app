@@ -8,15 +8,13 @@ import Container from '../../../Components/Container';
 import * as Yup from 'yup'
 import { SignUpFormValidationErrors, SignUpFormValidationResult, SignUpFormValues } from '../types';
 import { validateForm } from '../../../utils/validation';
-import { useRegisterUserMutation, useStripeCustomerMutation } from '../../../slice/FitsApi.slice';
+import { useRegisterUserMutation } from '../../../slice/FitsApi.slice';
 import { errorToast } from '../../../utils/toast';
 import VarificationModal from '../../../Components/VerificationModal';
 import { NavigationSwitchProp } from 'react-navigation';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import { setToken } from '../../../slice/token.slice';
 import { storeUserTokenInAsyncStorage } from '../../../utils/async-storage';
-import { setCreateStripeData } from '../../../slice/FitsSlice.store';
-import { UserDetail } from '../../../interfaces';
 
 interface PropsInterface {
   navigation: NavigationSwitchProp
